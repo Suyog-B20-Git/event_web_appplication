@@ -288,7 +288,7 @@ function Login() {
   };
 
   return (
-    <div className="flex sm:flex-col-reverse flex-col md:flex-row h-screen lg:pt-[160px] pt-[30px]  ">
+    <div className="flex sm:flex-col-reverse flex-col md:flex-row lg:h-screen md:h-screen lg:pt-[160px] pt-[80px]  ">
       {/* Left Section */}
 
       <Photo />
@@ -347,7 +347,7 @@ function Login() {
                 />
               </div>
 
-              <p className="flex justify-center">
+              <p className="flex gap-1 justify-center">
                 Need and account ?{" "}
                 <Link style={{ color: "#FF2459" }} to={"/register"}>
                   {" "}

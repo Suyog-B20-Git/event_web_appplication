@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Overview from "../../Components/FeaturedEvent/OverView";
 import EventInfo from "../../Components/FeaturedEvent/EventInfo";
 import RatingReview from "../../Components/FeaturedEvent/RatingReview";
@@ -8,8 +8,8 @@ import Sponsors from "../../Components/FeaturedEvent/Sponsors";
 import EventHeading from "../../Components/FeaturedEvent/EventHeading";
 import Dj from "../../Components/FeaturedEvent/Dj";
 import Button from "../../Components/ReusableComponents/Button";
-import { FaTelegramPlane } from "react-icons/fa";
-import { IoMdStar } from "react-icons/io";
+import { FaPhoneAlt, FaTelegramPlane } from "react-icons/fa";
+import { IoIosContact, IoMdStar } from "react-icons/io";
 import { CiCalendarDate, CiLocationOn } from "react-icons/ci";
 import GetTicket from "../../Components/FeaturedEvent/GetTicket";
 import EventGallery from "../../Components/FeaturedEvent/EventGallery";
@@ -21,6 +21,11 @@ import { Context } from "../../Components/Util/ContextProvider";
 import LoginModal from "../../Components/FeaturedEvent/LoginModal";
 import Guest from "../../Components/FeaturedEvent/Guest";
 import RegisterModal from "../../Components/FeaturedEvent/RegisterModal";
+import { IoIosInformationCircleOutline } from "react-icons/io";
+import { FaEye, FaHeart } from "react-icons/fa6";
+import { MdDateRange, MdOutlineMailOutline } from "react-icons/md";
+import { PiBuildingApartmentFill } from "react-icons/pi";
+import OrganiserContact from "../../Components/FeaturedEvent/OrganiserContact";
 
 function FeaturedEvent() {
   const location = useLocation();
@@ -37,7 +42,7 @@ function FeaturedEvent() {
     setAccount,
     setGuest,
   } = useContext(Context);
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -59,19 +64,42 @@ function FeaturedEvent() {
     // Store the updated count back in localStorage
     localStorage.setItem("pageVisits", newCount);
   }, []);
-
+  const sectionRef = useRef(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   return (
-    <div className="lg:pt-[160px] pt-[105px]">
+    <div className="lg:pt-[160px] pt-[88px]">
       <div className="flex lg:flex-row flex-col gap-4 ">
         <div
-          className="lg:w-[80%]  h-[300px] md:h-[300px] lg:h-[450px]"
+          className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px]"
           style={{
             backgroundImage: `url(${receivedData.img})`,
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
           }}
-        ></div>
+        >
+          <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
+            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
+              {" "}
+              <IoIosInformationCircleOutline className="text-lg " />
+              Send Enquiry
+            </p>
+            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px]  font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
+              {" "}
+              <FaHeart className="text-lg " />
+              Add To Favourite
+            </p>
+            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
+              {" "}
+              <MdDateRange className="text-lg " />
+              Add to My Calender
+            </p>
+            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
+              <FaEye className="relative top-0.5 text-blue-600" />
+              <span>124 </span>
+            </p>
+          </div>
+        </div>
         <div className="rounded-xl lg:m-0 m-2 mt-1 lg:p-4 p-2  shadow-xl lg:w-[20%] ">
           <h1 className="font-bold font-sans break-words text-xl p-2">
             {" "}
@@ -95,11 +123,32 @@ function FeaturedEvent() {
           <div className="pt-2 flex justify-between gap-2 lg:p-2 lg:pt-3 md:p-2 pr-3">
             <p className="lg:text-xl text-base font-bold">$99 onwards </p>
 
-            <button
-              onClick={() => setModal(true)}
-              className="lg:text-lg text-xs bg-[#ff2459] text-white font-medium rounded-md p-2 px-4"
+            {/* <button
+              onClick={() => {
+                setModal(true);
+                sectionRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "nearest",
+                });
+              }}
+              className="relative lg:text-lg text-xs overflow-hidden font-medium rounded-md p-2 px-4 bg-[#ff2459] hover:text-black  text-white   transition-all duration-300 before:absolute before:top-0 before:left-0 before:w-0 before:h-full before:bg-pink-400 hover:before:w-full before:transition-all before:duration-300"
+              // className="lg:text-lg text-xs bg-[#ff2459] text-white font-medium rounded-md p-2 px-4"
             >
               Get Ticket
+            </button> */}
+            <button
+              onClick={() => {
+                setModal(true);
+                sectionRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "nearest",
+                });
+              }}
+              className="relative lg:text-lg text-xs font-medium rounded-md p-2 px-4 bg-[#ff2459] text-white transition-all duration-300 
+  before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
+  hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
+            >
+              <p className="relative "> Get Ticket</p>
             </button>
           </div>
           <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
@@ -152,8 +201,8 @@ function FeaturedEvent() {
         </div>
       </div>
 
-      <div className="lg:p-10 p-5 flex w-full gap-4">
-        <div className="w-[90%]">
+      <div className="lg:p-10 p-5 flex lg:flex-row md:flex-row flex-col w-full gap-4">
+        <div className="lg:w-[90%] md:w-[90%]  ">
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
@@ -166,7 +215,7 @@ function FeaturedEvent() {
           )}
           {modal && (
             <div className="border-2 m-1 rounded-lg">
-              <div className="p-2 pb-3">
+              <div ref={sectionRef} className="p-2 pb-3">
                 <p className="font-semibold text-base lg:text-3xl pt-3 pb-3">
                   Get Tickets Now
                 </p>
@@ -212,43 +261,77 @@ function FeaturedEvent() {
             </div>
           )}
         </div>
-        <div className="w-[20%] flex flex-col gap-2">
-          {/* <div className="border-2 flex justify-center items-center p-4 rounded-xl">
-            <button
-              onClick={() => setModal(true)}
-              className="lg:text-lg font-medium text-sm bg-[#ff2459] text-white p-2 rounded-lg"
-            >
-              Get Ticket
-            </button>
-          </div> */}
-          <div className="p-2  border-2 rounded-xl">
-            <h1 className="lg:text-lg md:text-base text-xs   font-semibold gap-2 items-center justify-center pb-5   flex lg:flex-row flex-col">
-              Organiser
-              <p className="flex text-yellow-300 relative top-1">
-                <IoMdStar /> <IoMdStar />
+
+        <div className="lg:w-[20%] md:w-[90%] flex flex-col gap-2">
+          <div className="p-2 flex lg:flex-col md:flex-col justify-around  flex-row  w-full border rounded-xl">
+            <div>
+              <h1 className="lg:text-lg md:text-base text-xs lg:left-0 relative md:left-0 left-4   font-semibold gap-2  lg:pb-5   flex lg:flex-row flex-col">
+                Organiser
+                <p
+                  className="flex text-yellow-300 relative lg:left-0 md:left-0 
+                left-4 top-1"
+                >
+                  <IoMdStar /> <IoMdStar />
+                </p>
+              </h1>
+              <div>
+                <div className="h-20 lg:hidden md:hidden  block w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 m-2 md:m-0  rounded-full bg-gray-500"></div>
+                <p className="font-semibold lg:hidden md:hidden relative  left-7 block lg:text-base text-sm">
+                  Name
+                </p>
+              </div>
+            </div>
+            <div className="flex  flex-col lg:items-center  lg:p-2">
+              <div className="h-14 lg:block md:block hidden w-14 lg:h-32 lg:w-32 md:w-20 md:h-20 m-2 md:m-0  rounded-full bg-gray-500"></div>
+              <p className="font-semibold lg:block md:block hidden  lg:text-base text-sm pt-2">
+                Name
               </p>
-            </h1>
-            <div className="flex flex-col items-center  lg:p-2">
-              <div className="h-14 w-14 lg:h-32 lg:w-32 md:w-20 md:h-20 m-2 md:m-0  rounded-full bg-gray-500"></div>
-              <p className="font-semibold">Name</p>
+              <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-2 pt-4">
+                <p className="flex lg:text-xs md:text-xs  text-sm break-words gap-1 lg:whitespace-nowrap">
+                  <PiBuildingApartmentFill className="relative top-1" />
+                  Benguluru ,India
+                </p>
+                <p className="flex lg:text-xs   md:text-xs  text-sm break-words gap-1 lg:whitespace-nowrap">
+                  <FaPhoneAlt className="relative top-1" />
+                  +91 8456789032
+                </p>
+                <p className="flex lg:text-xs  md:text-xs   text-sm break-words gap-1 lg:whitespace-nowrap">
+                  <MdOutlineMailOutline className="relative top-1" />{" "}
+                  xyz@gmail.com
+                </p>
+              </div>
+              <button
+                onClick={() => setIsFormOpen(true)}
+                className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
+              >
+                <IoIosContact className="relative top-1 text-xl" />
+                Contact Organiser
+              </button>
             </div>
           </div>
-          <div className="border-2 rounded-xl p-2">
+
+          <div className="border-2 rounded-xl p-2 flex flex-col items-center">
             <p className="font-semibold"> where</p>
             <p className="flex font-semibold ">
               Goa <CiLocationOn className="relative top-1 text-pink-500" />
             </p>
             <p className="text-gray-400 ">Goa, india</p>
           </div>
-          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2">
+          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2 items-center">
             <p className="text-gray-400">Page visited By </p>
             <p className="font-semibold">{visitCount} Times</p>
           </div>
         </div>
       </div>
-      <div className="p-10">
+      <div className="p-5 lg:p-10 md:p-10">
         <Overview />
         <EventInfo />
+        <div>
+          <h1 className="text-gray-900 font-bold pt-10 text-lg p-4 pl-0">
+            Location
+          </h1>
+          <div className="bg-gray-100 w-full lg:h-60 h-48"></div>
+        </div>
         <EventGallery />
         <Sponsors />
         <WatchTrailer />
@@ -256,7 +339,18 @@ function FeaturedEvent() {
         <Dj />
         <RatingReview />
       </div>
-
+      {isFormOpen && (
+        <div className="w-[60%]">
+          <div className="fixed w-full inset-0 flex flex-col items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
+            <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
+              <OrganiserContact
+                isFormOpen={isFormOpen}
+                setIsFormOpen={setIsFormOpen}
+              />
+            </div>
+          </div>
+        </div>
+      )}
       {/*show Meditation Form */}
       {form && (
         <div className="w-[45%]">

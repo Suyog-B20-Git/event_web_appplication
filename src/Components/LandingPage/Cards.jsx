@@ -143,12 +143,12 @@ function Cards({ heading }) {
         </div>
 
         {/* Cards container with horizontal scrolling */}
-        <div className="flex gap-9 overflow-x-auto p-4 scrollbar-hide w-full">
+        <div className="flex gap-9 overflow-x-auto p-4 relative right-46 scrollbar-hide w-full">
           {card1.map((item, index) => (
             <div
               key={index}
               // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
-              className="flex-none shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
+              className="flex-none  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
               onClick={() => navigate("/featuredEvent", { state: item })}
             >
               <div

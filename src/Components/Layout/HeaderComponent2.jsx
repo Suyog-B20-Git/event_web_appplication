@@ -2,7 +2,7 @@
 
 import { IoLocationSharp, IoMenu, IoSearch } from "react-icons/io5";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "../ReusableComponents/Button";
 import InputField from "../ReusableComponents/InputField";
 import SideBarComponent from "./SideBArComponent";
@@ -16,6 +16,7 @@ import {
 import { GrGroup } from "react-icons/gr";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode"; // Correct import
+import { CiSearch } from "react-icons/ci";
 
 const HeaderComponent2 = () => {
   const navigate = useNavigate();
@@ -34,13 +35,14 @@ const HeaderComponent2 = () => {
       }
     }
   }, [authToken]);
-
+  const [isSearch, setIsSearch] = useState(false);
   const handleShowAlert = () => setShowPopup(true);
   var text_data = [
     { name: "Home", icon: <IoMdHome />, path: "/landingPage" },
-    { name: "Event", path: "/event-category", icon: <MdEvent /> },
+    { name: "Event", path: "/eventComponent", icon: <MdEvent /> },
     { name: "Organisers", path: "#", icon: <GrGroup /> },
     { name: "Performers", path: "#", icon: <IoIosPerson /> },
+
     {
       name: "Services",
       paths: "#",
@@ -49,6 +51,22 @@ const HeaderComponent2 = () => {
     { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
     { name: "Venues", path: "/Vanue", icon: <IoLocationSharp /> },
   ];
+
+  const handleClickOutside1 = (event) => {
+    if (searchRef.current && !searchRef.current.contains(event.target)) {
+      setIsSearch(false);
+    }
+  };
+  const searchRef = useRef(null);
+  useEffect(() => {
+    if (isSearch) {
+      document.addEventListener("mousedown", handleClickOutside1);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside1);
+    };
+  }, [isSearch]);
+
   return (
     <div className="bg-gray-900 text-white p-1 fixed w-full z-30">
       <div>
@@ -61,26 +79,43 @@ const HeaderComponent2 = () => {
               ml-3 relative lg: p-1 rounded-md"
               >
                 {/* <div className="md:w-[35%] w-[80%]  ml-3 relative z-20 p-1 rounded-md"> */}
+
                 <img
-                  src="public/Logo.png"
+                  src="logo.png"
                   className="lg:block md:block hidden md:w-[17vw] relative  sm:[17vw] w-[80%] "
                   alt="logo"
                 />
+              </div>
+
+              {/*Mobile view */}
+              {isSearch ? (
+                <div
+                  ref={searchRef}
+                  className="flex relative lg:hidden md:hidden right-12 px-4 items-center rounded-full bg-gray-100 shadow-md p-2 w-[110%]   mx-auto "
+                >
+                  <span className="text-gray-700 relative lg:left-0 text-lg font-bold ">
+                    <IoSearch />
+                  </span>
+                  <input
+                    type="search"
+                    placeholder="Search events"
+                    onClick={() => setLocation(true)}
+                    className="bg-transparent outline-none px-4 text-gray-700"
+                  />
+                </div>
+              ) : (
                 <img
-                  src="public/logo2.jpg"
-                  className="lg:hidden mt-3 ml-3 rounded-full md:hidden block md:w-[17vw] relative  sm:[17vw] w-[80%] "
+                  src="public/Logo.png"
+                  className="relative right-24 lg:hidden md:hidden block    h-[40%]   w-[40%] "
                   alt="logo"
                 />
-                <p className=" lg:hidden pt-2 text-[10px] whitespace-nowrap font-bold text-[#ff2459]">
-                  Event Node
-                </p>
-              </div>
+              )}
 
               <div className="relative flex  md:w-[65%] w-[96%] p-2 ">
                 {/* <div className="relative z-20 md:w-[65%] w-[96%] "> */}
                 {/* search bar */}
 
-                <div className="flex  lg:flex-row flex-col items-center rounded-full bg-gray-100 shadow-md p-2 lg:w-full w-[80%]  mx-auto">
+                <div className="lg:flex md:flex hidden  lg:flex-row flex-col items-center rounded-full bg-gray-100 shadow-md p-2 lg:w-full w-[80%]  mx-auto">
                   {/* Search Input */}
                   <div className="flex items-center  flex-1 px-4 ">
                     <span className="text-gray-700 relative lg:left-0 text-lg font-bold">
@@ -128,6 +163,16 @@ const HeaderComponent2 = () => {
                   </div>
                 </div>
 
+                {/*Mobile view search bar button*/}
+                {!isSearch && (
+                  <button
+                    onClick={() => setIsSearch(true)}
+                    className={`lg:hidden md:hidden block text-2xl m-1 mr-6 p-1 rounded-full bg-[#ff2459] font-bold`}
+                  >
+                    <CiSearch />
+                  </button>
+                )}
+
                 <div
                   className="relative z-20 w-[10%] block lg:hidden md:left-4  text-4xl sm:font-medium font-normal  sm:text-2xl"
                   onClick={(e) => handleShowAlert()}
@@ -152,6 +197,7 @@ const HeaderComponent2 = () => {
                   text={"Create Page"}
                   rounded={"rounded"}
                   variant={"primary"}
+                  onClick={() => navigate("/createPage")}
                 />
               </div>
             </div>

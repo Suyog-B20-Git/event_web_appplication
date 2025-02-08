@@ -104,7 +104,7 @@ function Speakers() {
             return (
               <div
                 key={index}
-                className="shadow flex flex-col justify-center items-center p-5 rounded-lg min-w-[120px] lg:min-w-[250px]"
+                className="shadow-xl border flex flex-col justify-center items-center p-5 rounded-lg min-w-[120px] lg:min-w-[250px]"
               >
                 <img
                   src={item.img}

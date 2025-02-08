@@ -9,7 +9,7 @@ const EventComponent = () => {
   const SelectMenuOptions = ["Work", "Option 1", "Option 2", "Option 3"];
 
   return (
-    <div className="lg:pt-[180px]">
+    <div className="lg:pt-[180px] pt-[87px]">
       <div className=" w-[100%]lg:p-0 p-2 ">
         <div className="sm:p-7 pt-3  items-center flex justify-center  w-[100%] ">
           <div className="w-[100%] sm:w-[90%] ">
@@ -29,13 +29,13 @@ const EventComponent = () => {
             <div className="flex sm:p-2  ">
               <LuSettings2  className="lg:text-xl rounded" />
 
-              <h2 className="sm:text-xl text-[#FF2459]   mb-3 text-lg font-medium ml-3 sm:font-semibold">
+              <h2 className="sm:text-xl text-[#FF2459] relative lg:bottom-0 bottom-1   mb-3 text-lg font-medium ml-3 sm:font-semibold">
                 Filters
               </h2>
             </div>
 
             <div>
-              <div className="flex justify-center items-center border border-[#FF2459]  sm:p-2 rounded text-[#FF2459]">
+              <div className="flex justify-center items-center border border-[#FF2459] p-1  sm:p-2 rounded text-[#FF2459]">
                 <GrPowerReset />
 
                 <span className="ml-3 text-base font-medium">Reset Filter</span>
@@ -46,7 +46,7 @@ const EventComponent = () => {
         <div className="sm:p-7 pt-5  items-center     flex justify-center w-[100%] ">
           <div className="md:w-[90%] sm:w-[100%] w-[100%]  p-3  flex flex-wrap  ">
             <div className=" text-black w-[100%] lg:w-[24%] md:w-[48%] sm:w-[48%] m-1  ">
-              <InputField label={"Search Event"} width={"w-[100%]"} />
+              <InputField label={"Search Event"} shadow={"shadow-none"} width={"w-[100%]"} />
             </div>
             <div className=" text-black w-[100%] lg:w-[24%] md:w-[48%] sm:w-[48%] m-1 ">
               <h2 className="text-gray-600 text-base sm:font-medium  mt-1 mb-3 ">
@@ -56,7 +56,7 @@ const EventComponent = () => {
               <SelectMenu Options={SelectMenuOptions} />
             </div>
             <div className=" text-black w-[100%] lg:w-[24%] md:w-[48%] sm:w-[48%] m-1 ">
-              <InputField label={"Date"} type={"date"} width={"w-[100%]"} />
+              <InputField label={"Date"} type={"date"} shadow={"shadow-none"}  width={"w-[100%]"} />
             </div>
             <div className=" text-black w-[100%]  lg:w-[24%] md:w-[48%] sm:w-[48%] m-1">
               <h2 className="text-gray-600  text-base sm:font-medium  mb-1 mt-3  ">
@@ -90,10 +90,10 @@ const EventComponent = () => {
             </div>
           </div>
         </div>
-        <div className="p-7 items-center flex justify-center w-[100%] ">
-          <div className="w-[90%] p-1  flex flex-wrap   ">
+        <div className="lg:p-7 items-center flex w-[100%] ">
+          <div className="w-[100%] p-1  lg:relative right-10 flex flex-wrap   ">
             <div className=" text-black w-[100%] gap-5  items-center flex flex-wrap ">
-             <Cards/>
+             <Cards heading={"Featured Events"}/>
             </div>
           </div>
         </div>

@@ -217,12 +217,17 @@ function CreateEvent({ one, two, three }) {
     console.log("Clicked event:", item.text);
   };
 
-  const [radio1, setRadio1] = useState("");
-  const [radio2, setRadio2] = useState("");
+  // const [radio1, setRadio1] = useState("");
+  // const [radio2, setRadio2] = useState("");
+  const [selectedRadio, setSelectedRadio] = useState("");
+
+  const handleRadioChange = (value) => {
+    setSelectedRadio(value);
+  };
   const [fees, setFees] = useState(0);
 
   return (
-    <div className="lg:pt-[160px] md:pt-[200px] pt-[80px]  lg:h-[96vh] ">
+    <div className="lg:pt-[160px] md:pt-[200px] pt-[80px] h-[124vh]  lg:h-[96vh] ">
       <div className="flex   lg:flex-row h-screen">
         <Photo1 h={75} />
         <div className="p-3   lg:w-1/2 w-full ">
@@ -276,21 +281,28 @@ function CreateEvent({ one, two, three }) {
                 <div className="flex flex-col ">
                   <div className="flex flex-col sm:flex-row sm:justify-center gap-4 p-2 text-gray-600">
                     <div className="flex items-center gap-2">
-                      <input
+                      {/* <input
                         type="radio"
                         name="Registration"
                         id="registrations"
-                        // onChange={() => setRadio1("registration")}
                       />
                       <label
                         htmlFor="registrations"
                         className="font-medium lg:text-base text-xs"
                       >
-                        Registrations
-                      </label>
+                        Registrations */}
+                      <input
+                        type="radio"
+                        name="event"
+                        id="registrations"
+                        checked={selectedRadio === "registration"}
+                        onChange={() => handleRadioChange("registration")}
+                        disabled={selectedRadio === "Tickets"}
+                      />
+                      <label htmlFor="registrations">Registrations</label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <input
+                      {/* <input
                         type="radio"
                         name="Tickets"
                         id="tickets"
@@ -301,7 +313,17 @@ function CreateEvent({ one, two, three }) {
                         className="font-medium lg:text-base text-xs"
                       >
                         Tickets
-                      </label>
+                      </label> */}
+                      <input
+                        type="radio"
+                        name="event"
+                        id="tickets"
+                        className="font-medium lg:text-base text-xs"
+                        checked={selectedRadio === "Tickets"}
+                        onChange={() => handleRadioChange("Tickets")}
+                        disabled={selectedRadio === "registration"}
+                      />
+                      <label htmlFor="tickets">Tickets</label>
                     </div>
                   </div>
 
@@ -325,7 +347,7 @@ function CreateEvent({ one, two, three }) {
                       </label>
                     </div>
                   </div>
-                  {radio1 == "Tickets" && (
+                  {selectedRadio == "Tickets" && (
                     <div className="lg:hidden flex-col justify-center items-center  p-2 w-full">
                       <label
                         htmlFor="fees"
@@ -341,7 +363,7 @@ function CreateEvent({ one, two, three }) {
                       />
                     </div>
                   )}
-                  {radio1 == "Tickets" && (
+                  {selectedRadio == "Tickets" && (
                     <div className="lg:hidden flex flex-row gap-4">
                       <label
                         htmlFor="fees"

@@ -24,9 +24,9 @@ const EventCategory = () => {
   ];
   return (
     <>
-      <div className=" p-4 ">
+      <div className=" lg:p-4 lg:pb-0 p-4 lg:pl-10  md:pl-12 ">
         <div className="flex justify-around items-center p-2 font-sans">
-          <div className="w-[95%]  lg:text-2xl text-xl font-bold  font-sans lg:px-28  flex gap-2 ">
+          <div className="w-[95%]  lg:text-2xl text-xl font-bold  font-sans lg:px-28 relative md:right-8 lg:right-5  flex gap-2 ">
           <MdOutlineCategory className="relative top-1" /> Event Category
           </div>
           <div
@@ -47,8 +47,10 @@ const EventCategory = () => {
           `}
         > */}
         <div
-          className={` grid grid-cols-2 lg:flex lg:justify-center flex-wrap gap-5  lg:p-8 lg:px-16 pt-4 lg:pt-8
+          className={` grid grid-cols-2 md:grid md:grid-cols-3  lg:grid-cols-4  gap-5  lg:p-24 pt-4 lg:pt-8
           `}
+          // className={` grid grid-cols-2 md:grid md:grid-cols-3 lg:flex lg:justify-center flex-wrap gap-5  lg:p-8 lg:px-16 pt-4 lg:pt-8
+          // `}
         >
           {show
             ? data.map((item, index) => <Card2 key={index} item={item} />)

@@ -3,9 +3,9 @@ import React from "react";
 
 const Card2 = ({ item, customStyle }) => {
   return (
-    <div className="sm:w-[80%]   w-[100%] md:w-[28%]   rounded-lg border border-blue-500">
+    <div className="sm:w-[80%] lg:w-max   md:w-[80%]   rounded-lg border border-blue-500 ">
       <div
-        className="relative lg:h-44 h-28  w-[100%] rounded-lg overflow-hidden shadow-lg bg-cover bg-center"
+        className="relative lg:h-44 h-28 lg:w-60  w-[100%] rounded-lg overflow-hidden shadow-lg bg-cover bg-center"
         style={{
           backgroundImage: `url(${item.Name})`, // Replace with your image URL
         }}

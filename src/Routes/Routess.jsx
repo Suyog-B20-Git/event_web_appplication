@@ -14,6 +14,7 @@ import BookingDetails from "../Pages/UserPanel/BookingDetails";
 import Login from "../Users/Login";
 
 import Register from "../Users/Register";
+import CreateProfile from "../Pages/UserPanel/CreateProfile";
 
 function Routess() {
   return (
@@ -24,18 +25,17 @@ function Routess() {
           <Route path="/landingPage" element={<LandingPage />} />
           <Route path="/createEvent" element={<CreateEvent />} />
           <Route path="/createEventForm" element={<CreateEventForm />} />
-          {/* <Route path="/account" element={<Account />} /> */}
+          <Route path="/createPage" element={<CreateProfile />} />
 
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/event-category" element={<EventComponent />} />
+          <Route path="/eventComponent" element={<EventComponent />} />
           <Route path="/Vanue" element={<Vanue />} />
           <Route path="/myBooking" element={<MyBooking />} />
           <Route path="/bookingDetails" element={<BookingDetails />} />
           <Route path="/login" element={<Login />} />
-         
+
           <Route path="/register" element={<Register />} />
-   
         </Route>
       </Routes>
     </div>

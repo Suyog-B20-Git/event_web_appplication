@@ -99,6 +99,7 @@ const InputField = ({
   label,
   placeholder,
   value,
+  shadow,
   onChange,
   isPasswordField = false,
   width,
@@ -122,7 +123,7 @@ const InputField = ({
 
       <div className="relative">
         <input
-          className={`${width} px-5 shadow-lg py-3 rounded-lg font-medium border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white text-gray-600  ${
+          className={`${width} px-5 ${shadow?shadow:"shadow-lg"} py-3 rounded-lg font-medium border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white text-gray-600  ${
             isPasswordField ? "pr-12" : ""
           }`}
           type={inputType}

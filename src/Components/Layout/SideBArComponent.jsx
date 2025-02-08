@@ -14,28 +14,29 @@ import { RiPagesLine } from "react-icons/ri";
 // import Dropdown from './DropDown'
 // import SA_FilterCheckBox from './SA_FilterCheckBox'
 
-const SideBarComponent = ({ setShowPopup, text_data }) => {
+const SideBarComponent = ({ setShowPopup }) => {
   console.log(setShowPopup);
   //  const [ShowPopup,setShowPopup]=useState(false);
 
   var text_data = [
-    { name: "Home", icon: <IoMdHome />,path:"/landingPage" },
+    { name: "Home", icon: <IoMdHome />, path: "/landingPage" },
 
-    { name: "Event", paths: "/organiser", icon: <MdEvent /> },
-    { name: "Organisers", paths: "#", icon: <GrGroup /> },
-    { name: "Performers", paths: "#", icon: <IoIosPerson /> },
+    { name: "Event", path: "/eventComponent", icon: <MdEvent /> },
+    { name: "Organisers", path: "#", icon: <GrGroup /> },
+    { name: "Performers", path: "#", icon: <IoIosPerson /> },
+
     {
       name: "Services",
-      paths: "#",
+      path: "#",
       icon: <MdMiscellaneousServices />,
     },
-    { name: "Contact Us", paths: "#", icon: <MdContactPhone /> },
-    { name: "Venues", paths: "/Vanue", icon: <IoLocationSharp /> },
-    { name: "Create Event",path:"/createEvent",icon:<MdEvent /> },
-    { name: "Create Page",path:"#",icon:<RiPagesLine /> },
-    { name: "SignUp/Login",path:"/login",icon:<MdAccountCircle /> },
+    { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
+    { name: "Venues", path: "/Vanue", icon: <IoLocationSharp /> },
+    { name: "Create Event", path: "/createEvent", icon: <MdEvent /> },
+    { name: "Create Page", path: "/createPage", icon: <RiPagesLine /> },
+    { name: "SignUp/Login", path: "/login", icon: <MdAccountCircle /> },
   ];
-const navigate=useNavigate()
+  const navigate = useNavigate();
   return (
     <>
       <div>
@@ -60,8 +61,9 @@ const navigate=useNavigate()
             {text_data.map((item) => (
               <div
                 key={item}
-                onClick={()=>{navigate(item.path)
-                  setShowPopup(false)
+                onClick={() => {
+                  navigate(item.path);
+                  setShowPopup(false);
                 }}
                 className=" flex gap-2 hover:bg-gray-300 p-3  hover:border-s-4  border-red-500 rounded-e-lg "
               >

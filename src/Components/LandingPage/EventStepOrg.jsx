@@ -3,7 +3,7 @@ import React from "react";
 
 const StepsComponent = ({ heading, step1, step2, step3, i1, i2, i3 }) => {
   return (
-    <div className="flex flex-col items-center p-6 pt-8 ">
+    <div className="flex flex-col items-center p-6 lg:pt-8 md:pt-0 md:p-20 ">
       <h2 className="text-gray-500 text-lg mb-2">How it Works</h2>
       <h3 className="text-[#FF2459] text-3xl font-semibold mb-8">{heading}</h3>
       <div className="flex flex-col md:flex-row items-center md:justify-between gap-10 md:gap-4 w-full max-w-4xl">

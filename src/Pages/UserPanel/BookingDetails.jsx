@@ -174,7 +174,7 @@ function BookingDetails() {
   ];
 
   return (
-    <div className="p-8 flex flex-col items-center lg:pt-[180px]">
+    <div className="p-8 flex flex-col items-center lg:pt-[180px] pt-[88px]">
       {/* Header */}
       <div className="flex justify-start">
         <div

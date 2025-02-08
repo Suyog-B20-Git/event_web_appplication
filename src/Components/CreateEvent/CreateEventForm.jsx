@@ -484,12 +484,12 @@ export default function EventForm() {
   };
 
   return (
-    <div className="lg:pt-[160px]  md:pt-[160px] pt-[100px]  lg:h-[140vh] lg:mb-0 mb-32 ">
-      <div className="flex   lg:flex-row h-screen ">
+    <div className="lg:pt-[160px]  md:pt-[160px] pt-[88px]  lg:h-[140vh] lg:mb-0  ">
+      <div className="flex    lg:flex-row lg:h-screen ">
         <Photo1 h={119} />
         <div className="flex flex-col pb-4   ">
-          <div className=" flex flex-col  gap-1 pr-10  "></div>
-          <div className="lg:w-[110%] max-w-4xl p-6 lg:pl-10 lg:pr-10  bg-gray-100 rounded-xl shadow-md">
+          <div className=" flex flex-col  gap-1 lg:pr-10  "></div>
+          <div className="lg:w-[110%] max-w-4xl p-6 pl-12 lg:pl-10 lg:pr-10  bg-gray-100 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold mb-6 text-[#ff2459]">Event Registration</h2>
             <form onSubmit={handleSubmit}>
               {/* Name */}
@@ -513,7 +513,7 @@ export default function EventForm() {
               </div>
 
               {/* State and City */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
                 <div>
                   <label
                     htmlFor="state"
@@ -574,7 +574,7 @@ export default function EventForm() {
               </div>
 
               {/* Venue and Facebook Link */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
                 <div>
                   <label
                     htmlFor="venue"
@@ -614,7 +614,7 @@ export default function EventForm() {
               </div>
 
               {/* Start and End Date */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
                 <div>
                   <label
                     htmlFor="startDate"
@@ -670,7 +670,7 @@ export default function EventForm() {
               </div>
 
               {/* Image and Video Upload */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
                 <div>
                   <label
                     htmlFor="image"
@@ -704,7 +704,7 @@ export default function EventForm() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4">
                 {/* Description */}
                 <div className="mb-4 w-full">
                   <label
@@ -744,7 +744,7 @@ export default function EventForm() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4">
                 {/* Performers */}
                 <div className="mb-4">
                   <label

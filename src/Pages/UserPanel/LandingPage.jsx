@@ -167,7 +167,7 @@ function LandingPage() {
   }, [isTransitioning]);
 
   return (
-    <div className="flex flex-col lg:gap-0 gap-0.5 lg:pt-[160px] pt-[87px]">
+    <div className="flex flex-col lg:gap-0 gap-0.5 lg:pt-[160px] pt-[87px] overflow-x-hidden">
       <div className=" bg-gray-900 flex items-center justify-center">
         <div className="w-full h-[250px] flex items-center justify-center bg-gray-900 p-1">
           <div className="relative w-[350px] h-full flex items-center">
