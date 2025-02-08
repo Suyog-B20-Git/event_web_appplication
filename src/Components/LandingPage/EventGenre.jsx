@@ -51,7 +51,7 @@ function EventGenre() {
   ];
   return (
     <div className="lg:px-16 lg:relative left-16 top-2">
-      <div className="flex gap-2 p-3">
+      <div className="flex gap-2 p-3 relative md:left-5">
         <TbCategory className="relative top-1 text-xl" />
         <p className="font-semibold font-sans">BROWSE EVENT BY GENRE</p>
       </div>

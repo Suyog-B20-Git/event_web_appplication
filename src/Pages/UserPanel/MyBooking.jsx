@@ -327,7 +327,7 @@ function MyBooking() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-6 my-8 lg:pt-[180px]">
+    <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-6 my-8 lg:pt-[180px] ">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="flex items-center gap-2 bg-white shadow-md rounded-lg p-3">

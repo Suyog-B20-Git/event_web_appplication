@@ -25,10 +25,10 @@ function Dj() {
           <h1 className="text-lg   font-medium  p-2 ">Dj</h1>
         </div>
 
-        <div className="flex gap-1    md:gap-20 ">
+        <div className="flex gap-12    md:gap-20 ">
           {card1.map((item, index) => {
             return (
-              <div key={index} className="shadow-lg p-2 rounded-lg">
+              <div key={index} className="shadow-lg border p-2 rounded-lg">
                 <img
                   src={item.img}
                   className="h-20 w-20 lg:h-48 md:h-32 md:w-32 lg:w-48  rounded-full"

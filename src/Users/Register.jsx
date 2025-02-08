@@ -248,7 +248,7 @@ function Register() {
   };
 
   return (
-    <div className="flex sm:flex-col-reverse h-[100vh] flex-col md:flex-row  lg:pt-[160px] md:pt-0 pt-[110px]   ">
+    <div className="flex sm:flex-col-reverse lg:h-[100vh] md:h-[100vh] flex-col md:flex-row  lg:pt-[160px] md:pt-0 pt-[88px]   ">
       {/* Left Section */}
 
       <Photo />
