@@ -227,7 +227,7 @@ function CreateEvent({ one, two, three }) {
   const [fees, setFees] = useState(0);
 
   return (
-    <div className="lg:pt-[160px] md:pt-[200px] pt-[80px] h-[124vh]  lg:h-[96vh] ">
+    <div className="lg:pt-[160px] md:pt-[100px] pt-[80px] h-[124vh] md:h-[65vh]  lg:h-[96vh] ">
       <div className="flex   lg:flex-row h-screen">
         <Photo1 h={75} />
         <div className="p-3   lg:w-1/2 w-full ">
