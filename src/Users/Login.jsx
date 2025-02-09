@@ -288,12 +288,12 @@ function Login() {
   };
 
   return (
-    <div className="flex sm:flex-col-reverse flex-col md:flex-row lg:h-screen md:h-screen lg:pt-[160px] pt-[80px]  ">
+    <div className="flex sm:flex-col-reverse flex-col md:flex-row lg:h-screen md:h-max lg:pt-[160px] md:pt-[105px] pt-[80px]  ">
       {/* Left Section */}
 
       <Photo />
       {/* Right Section */}
-      <div className="flex flex-col  justify-center items-center w-full md:w-1/2 px-4 md:px-6 h-full bg-gray-100 p-4">
+      <div className="flex flex-col  justify-center items-center w-full md:w-1/2 px-4 md:px-6  h-full bg-gray-100 p-4">
         <div className="flex flex-col items-center w-full max-w-sm mx-auto">
           <div className="w-full mt-2">
             {/* Input fields */}
