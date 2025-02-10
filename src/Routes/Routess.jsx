@@ -1,26 +1,26 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import LandingPage from "../Pages/UserPanel/LandingPage";
-import FeaturedEvent from "../Pages/UserPanel/FeaturedEvent";
-import Screen from "../Main/Screen";
-import CreateEvent from "../Components/CreateEvent/CreateEvent";
-import CreateEventForm from "../Components/CreateEvent/CreateEventForm";
-import Profile from "../Components/Profile/Profile";
-import EventComponent from "../Components/Event/Event";
-import Vanue from "../Components/Vanue/Vanue";
-import MyBooking from "../Pages/UserPanel/MyBooking";
-import BookingDetails from "../Pages/UserPanel/BookingDetails";
-import Login from "../Users/Login";
-import Register from "../Users/Register";
-import CreateProfile from "../Pages/UserPanel/CreateProfile";
-import {Orgnizer} from "../../views/Orgnizer"; // Remove curly braces
+// import LandingPage from "../Pages/UserPanel/LandingPage";
+// import FeaturedEvent from "../Pages/UserPanel/FeaturedEvent";
+// import Screen from "../Main/Screen";
+// import CreateEvent from "../Components/CreateEvent/CreateEvent";
+// import CreateEventForm from "../Components/CreateEvent/CreateEventForm";
+// import Profile from "../Components/Profile/Profile";
+// import EventComponent from "../Components/Event/Event";
+// import Vanue from "../Components/Vanue/Vanue";
+// import MyBooking from "../Pages/UserPanel/MyBooking";
+// import BookingDetails from "../Pages/UserPanel/BookingDetails";
+// import Login from "../Users/Login";
+// import Register from "../Users/Register";
+// import CreateProfile from "../Pages/UserPanel/CreateProfile";
+import {Orgnizer} from "../../views/pages/Orgnizer/Orgnizer"; // Remove curly braces
 
 function Routess() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Screen />}>
-          <Route index element={<LandingPage />} />
+        {/* <Route path="/" element={<Screen />}> */}
+          {/* <Route index element={<LandingPage />} />
           <Route path="/landingPage" element={<LandingPage />} />
           <Route path="/createEvent" element={<CreateEvent />} />
           <Route path="/createEventForm" element={<CreateEventForm />} />
@@ -32,9 +32,9 @@ function Routess() {
           <Route path="/myBooking" element={<MyBooking />} />
           <Route path="/bookingDetails" element={<BookingDetails />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<Register />} /> */}
           <Route path="/orgniser" element={<Orgnizer />} />
-        </Route>
+        {/* </Route> */}
       </Routes>
     </div>
   );

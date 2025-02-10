@@ -1,8 +1,9 @@
 // ** Redux Imports
 import {combineReducers} from 'redux'
+import organizerReducer from './pages/organizerReducer'
 
 // ** Reducers Import **//
-import organizerReducer from './master/typeOfLiftReducer'
+
 
 const rootReducer = combineReducers({
 

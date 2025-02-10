@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, FormGroup, Label, Input, Button, Card, CardBody, CardTitle, Row, Col } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { createNewOrganizer } from "../src/redux/actions/master/typeOfLift";
+import { createNewOrganizer } from "../../../src/redux/actions/master/Organizer";
 
 export const Orgnizer = () => {
   const {
