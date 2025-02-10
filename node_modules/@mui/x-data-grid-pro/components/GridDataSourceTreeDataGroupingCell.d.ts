@@ -1,0 +1,12 @@
+import * as React from 'react';
+import { GridRenderCellParams, GridDataSourceGroupNode } from '@mui/x-data-grid';
+interface GridTreeDataGroupingCellProps extends GridRenderCellParams<any, any, any, GridDataSourceGroupNode> {
+    hideDescendantCount?: boolean;
+    /**
+     * The cell offset multiplier used for calculating cell offset (`rowNode.depth * offsetMultiplier` px).
+     * @default 2
+     */
+    offsetMultiplier?: number;
+}
+export declare function GridDataSourceTreeDataGroupingCell(props: GridTreeDataGroupingCellProps): React.JSX.Element;
+export {};
