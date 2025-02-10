@@ -84,7 +84,7 @@ function Cards({data}) {
         <div className="flex justify-between">
           <div className="flex gap-2">
             <BsFire className="text-2xl relative top-1" />
-            <p className="font-bold font-sans lg:text-2xl">{heading}</p>
+            <p className="font-bold font-sans lg:text-2xl">{data?.heading}</p>
           </div>
           <button
             // onClick={() =>

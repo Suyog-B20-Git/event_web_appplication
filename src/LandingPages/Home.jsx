@@ -47,10 +47,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { getEventData } from "../redux/actions/master/Events/index";
 function Home() {
   const dispatch = useDispatch();
-  const { data, loading, error } = useSelector((state) => state.eventReducer);
+  // const {data,loading,error} = useSelector((state) => state.eventReducer);
+
   useEffect(() => {
     dispatch(getEventData()); // Call API when component mounts
-  }, [dispatch]);
+  },[dispatch]);
+  const heading= []
+  const store = useSelector(state => state.eventReducer) || {eventData: []}
+const data = store.eventData
+    console.log(store.eventData,"data....:");
+
+
   const [currentSlide, setCurrentSlide] = useState(2);
   const [isTransitioning, setIsTransitioning] = useState(true);
 
@@ -58,7 +65,6 @@ function Home() {
 
   const authToken = localStorage.getItem("authToken");
   const name = authToken ? jwt_decode(authToken)?.name : "Guest";
-  console.log(name);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -83,8 +89,8 @@ function Home() {
     }
   }, [isTransitioning]);
 
-  if (loading) return <p>Loading events...</p>;
-  if (error) return <p>Error: {error}</p>;
+  // if (loading) return <p>Loading events...</p>;
+  // if (error) return <p>Error: {error}</p>;
   return (
     <div className="flex  flex-col lg:gap-0 gap-0.5  overflow-x-hidden">
       <div className=" bg-gray-900 flex items-center justify-center">
