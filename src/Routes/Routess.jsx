@@ -13,14 +13,18 @@ import { Route, Routes } from "react-router-dom";
 // import Login from "../Users/Login";
 // import Register from "../Users/Register";
 // import CreateProfile from "../Pages/UserPanel/CreateProfile";
-import {Orgnizer} from "../../views/pages/Orgnizer/Orgnizer"; // Remove curly braces
+import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer"; // Remove curly braces
+import Index from "../Main/Index";
+import Home from '../LandingPages/Home'
+
+import Viewall from "../LandingPages/Viewall";
 
 function Routess() {
   return (
     <div>
       <Routes>
         {/* <Route path="/" element={<Screen />}> */}
-          {/* <Route index element={<LandingPage />} />
+        {/* <Route index element={<LandingPage />} />
           <Route path="/landingPage" element={<LandingPage />} />
           <Route path="/createEvent" element={<CreateEvent />} />
           <Route path="/createEventForm" element={<CreateEventForm />} />
@@ -33,7 +37,13 @@ function Routess() {
           <Route path="/bookingDetails" element={<BookingDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} /> */}
-          <Route path="/orgniser" element={<Orgnizer />} />
+        <Route path="/" element={<Index />}>
+          <Route index element={<Home/>} />
+          <Route path="home" element={<Home />} />
+          <Route path="viewAll" element={<Viewall />} />
+          <Route path="organiser" element={<Orgnizer />} />
+        </Route>
+
         {/* </Route> */}
       </Routes>
     </div>
