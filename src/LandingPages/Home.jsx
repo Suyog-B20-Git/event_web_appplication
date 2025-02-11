@@ -45,18 +45,36 @@ const slides = [
 
 import { useDispatch, useSelector } from "react-redux";
 import { getEventData } from "../redux/actions/master/Events/index";
+import { getUpcomingEventData } from "../redux/actions/master/Events/UpcomingEvent";
+import { getFeaturedEventData } from "../redux/actions/master/Events/FeaturedEvent";
+import Loading from "../Components/Loading";
 function Home() {
   const dispatch = useDispatch();
   // const {data,loading,error} = useSelector((state) => state.eventReducer);
 
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
-    dispatch(getEventData()); // Call API when component mounts
-  },[dispatch]);
-  const heading= []
-  const store = useSelector(state => state.eventReducer) || {eventData: []}
-const data = store.eventData
-    console.log(store.eventData,"data....:");
+    dispatch(getEventData(setLoading)); // Call API when component mounts
+    dispatch(getUpcomingEventData(setLoading));
+    dispatch(getFeaturedEventData(setLoading));
+  }, [dispatch]);
 
+  const heading = [];
+  const store = useSelector((state) => state.eventReducer) || { eventData: [] };
+  const data = store.eventData;
+  console.log(store.eventData, "data....:");
+
+  const store1 = useSelector((state) => state.upcomingEventReducer) || {
+    upcomingEventData: [],
+  };
+  const data1 = store1.upcomingEventData;
+  console.log(store.upcomingEventData, "data....:");
+
+  const store2 = useSelector((state) => state.featuredEventReducer) || {
+    featuredEventData: [],
+  };
+  const data2 = store2.featuredEventData;
+  console.log(store.featuredEventData, "data....:");
 
   const [currentSlide, setCurrentSlide] = useState(2);
   const [isTransitioning, setIsTransitioning] = useState(true);
@@ -89,10 +107,15 @@ const data = store.eventData
     }
   }, [isTransitioning]);
 
-  // if (loading) return <p>Loading events...</p>;
-  // if (error) return <p>Error: {error}</p>;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
   return (
-    <div className="flex  flex-col lg:gap-0 gap-0.5  overflow-x-hidden">
+    <div className="flex  flex-col lg:gap-0 gap-0.5  overflow-x-hidden lg:pt-0 md:pt-0 pt-[87px]">
       <div className=" bg-gray-900 flex items-center justify-center">
         <div className="w-full h-[250px] flex items-center justify-center bg-gray-900 p-1">
           <div className="relative w-[350px] h-full flex items-center">
@@ -171,7 +194,21 @@ const data = store.eventData
 
       <RecentView />
 
-      {data.length > 0 ? <Cards data={data} /> : "No Event Data"}
+      {data.length > 0 ? (
+        <Cards data={data} heading={"TRENDING EVENTS"} />
+      ) : (
+        "No Event Data"
+      )}
+      {data1.length > 0 ? (
+        <Cards data={data1} heading={"UPCOMING EVENTS"} />
+      ) : (
+        "No Event Data"
+      )}
+      {data2.length > 0 ? (
+        <Cards data={data2} heading={"FEATURED EVENTS"} />
+      ) : (
+        "No Event Data"
+      )}
       {/* <Cards heading={"TRENDING EVENTS"} />
       <Cards heading={"FEATURED EVENTS"} /> */}
 

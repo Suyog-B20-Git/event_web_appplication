@@ -1,11 +1,11 @@
-import {Axios} from "axios";
-import {axiosInstance} from "../../../../../utility/utils";
+import { Axios } from "axios";
+import { axiosInstance } from "../../../../../utility/utils";
 
-import {toast} from "react-toastify";
-import {Zoom} from "react-toastify";
+import { toast } from "react-toastify";
+import { Zoom } from "react-toastify";
 
-export const updateLiftType = (data,props,setisLoader) => {
-  return (dispatch,getStore) => {
+export const updateLiftType = (data, props, setisLoader) => {
+  return (dispatch, getStore) => {
     Axios.put(
       `/api/master/type-of-lift-master/${props.preloadValue.detail._id}`,
       {
@@ -15,13 +15,13 @@ export const updateLiftType = (data,props,setisLoader) => {
     )
       .then((response) => {
         if (response.data.status === false) {
-          toast.error(response.data.message,{
+          toast.error(response.data.message, {
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
           });
         } else {
-          toast.success(response.data.message,{
+          toast.success(response.data.message, {
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
@@ -38,7 +38,7 @@ export const updateLiftType = (data,props,setisLoader) => {
       })
       .then(() =>
         dispatch(
-          getTypeOfLiftList(getStore().typeOfLiftMasterData.params,setisLoader)
+          getTypeOfLiftList(getStore().typeOfLiftMasterData.params, setisLoader)
         )
       )
       .catch(function (error) {
@@ -46,7 +46,7 @@ export const updateLiftType = (data,props,setisLoader) => {
           error.response && error.response.data
             ? error.response.data.message
             : "Something Went Wrong !",
-          {transition: Zoom,hideProgressBar: false,autoClose: 2000}
+          { transition: Zoom, hideProgressBar: false, autoClose: 2000 }
         );
       });
   };
@@ -121,22 +121,29 @@ import axios from "axios";
 
 // import axios from "axios";
 
-export const getEventData = () => {
+export const getEventData = (setLoader) => {
   return async (dispatch) => {
+    setLoader(true); // Start loading
+   
     try {
       const response = await axios.get("http://localhost:5000/api/event");
-      console.log("response",response);
+      console.log("response", response);
       dispatch({
         type: "GET_EVENT",
         eventData: response.data.events, // Ensure the API actually returns this structure
       });
     } catch (error) {
-      console.error("API Error:",error.response ? error.response.data : error.message);
+      console.error(
+        "API Error:",
+        error.response ? error.response.data : error.message
+      );
       dispatch({
         type: "GET_EVENT",
         eventData: [],
-      });
+      })
     }
+    finally {
+      setLoader(false); // Stop loading
+    } 
   };
 };
-

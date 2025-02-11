@@ -7,7 +7,7 @@ import { MdEvent } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 // function Cards({ heading }) {
-function Cards({data}) {
+function Cards({data,heading}) {
   const navigate = useNavigate();
 
   // const card1 = [
@@ -79,12 +79,12 @@ function Cards({data}) {
   // ];
 
   return (
-    <div className="flex lg:justify-start  justify-center lg:relative left-20 items-center overflow-hidden">
-      <div className="lg:p-12 pt-5 p-5 w-full max-w-[1340px]">
+    <div className="flex lg:justify-start  justify-center lg:relative left-[70px] items-center overflow-hidden">
+      <div className="lg:p-12 lg:pb-5 lg:pt-10 pt-5 p-5 w-full max-w-[1340px]">
         <div className="flex justify-between">
-          <div className="flex gap-2">
+          <div className="flex gap-2 lg:pl-3">
             <BsFire className="text-2xl relative top-1" />
-            <p className="font-bold font-sans lg:text-2xl">{data?.heading}</p>
+            <p className="font-bold font-sans lg:text-2xl">{heading}</p>
           </div>
           <button
             // onClick={() =>
@@ -92,29 +92,29 @@ function Cards({data}) {
             //     state: { card1: card1, heading: heading },
             //   })
             // }
-            className="shadow-md lg:text-base text-sm p-2 font-medium"
+            className="shadow-md lg:text-base text-sm p-2  font-medium"
           >
             View All
           </button>
         </div>
 
         {/* Cards container with horizontal scrolling */}
-        <div className="flex gap-9 overflow-x-auto p-4 relative right-46 scrollbar-hide w-full">
+        <div className="  flex gap-9 overflow-x-auto lg:p-4 pt-2 relative lg:right-46  scrollbar-hide w-full">
           {data.map((item, index) => (
             <div
               key={index}
               // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
-              className="flex-none  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
-              onClick={() => navigate("/featuredEvent", { state: item })}
+              className="overflow-hidden flex-none  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
+              // onClick={() => navigate("/featuredEvent", { state: item })}
             >
               <div
                 style={{
-                  backgroundImage: `url(${item.media.posterImage})`,
+                  backgroundImage: `url(${item.media.thumbnailImage})`,
                   backgroundRepeat: "no-repeat",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
-                className="h-24 lg:h-52 md:h-32 w-full rounded-2xl p-2 flex justify-end"
+                className=" h-24 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end"
               >
                 <div className=" text-white bg-blue-300 rounded-xl lg:text-base text-xs   font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
                   {item.category}
@@ -128,7 +128,7 @@ function Cards({data}) {
                       {item.name}{" "}
                       <p className="flex gap-2 text-gray-500 lg:text-base text-xs  ">
                         <FaEye className="relative top-1 text-blue-600" />
-                        <span>124 </span>
+                        <span>{item.visits}</span>
                       </p>
                     </p>
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
@@ -139,7 +139,7 @@ function Cards({data}) {
                     </p>
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <CiLocationOn className="relative top-1" />
-                      <span>No Location</span>
+                      <span>{item.venue.city} , {item.venue.country}</span>
                     </p>
                   </div>
 

@@ -55,7 +55,7 @@ function EventGenre() {
         <TbCategory className="relative top-1 text-xl" />
         <p className="font-semibold font-sans">BROWSE EVENT BY GENRE</p>
       </div>
-     <div className="grid grid-cols-4  grid-rows-2  lg:grid-rows-1 lg:grid-cols-9 lg:gap-3">
+     <div className="grid grid-cols-4 md:grid-cols-5  grid-rows-2  lg:grid-rows-1 lg:grid-cols-9 lg:gap-3">
      {/* <div className="grid grid-cols-4  grid-rows-2  lg:grid-rows-1 lg:grid-cols-8 lg:gap-3"> */}
      {icons.map((item, index) => {
         return (
