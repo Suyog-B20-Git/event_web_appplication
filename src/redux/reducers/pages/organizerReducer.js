@@ -28,8 +28,6 @@ const organizerReducer = (state = initialState,action) => {
   switch (action.type) {
     case "CREATE_ORGANIZER":
       return {...state,organizer: action.payload};
-    case "CREATE_ORGANIZER_FAIL":
-      return {...state,error: action.payload};
     default:
       return state;
   }

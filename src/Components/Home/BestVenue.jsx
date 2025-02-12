@@ -45,12 +45,12 @@ function BestVenue() {
   ];
   return (
     // <div className="max-w-7xl rounded-md  mx-auto p-6 bg-gray-100 mt-5">
-    <div className="lg:max-w-7xl  w-full rounded-lg mx-auto p-4 shadow-md mt-5">
-      <h1 className="lg:text-3xl text-lg relative lg:left-3 md:left-3  font-semibold  font-sans">
+    <div className="lg:max-w-7xl lg:ml-32  w-full rounded-lg mx-auto p-4  pt-0 shadow-md ">
+      <h1 className="lg:text-3xl text-lg relative lg:left-3 md:left-3 left-4  font-semibold  font-sans">
         Top Best Venue
       </h1>
 
-      <div className="relative flex justify-around items-center">
+      <div className="relative left-3 flex justify-around items-center">
         {/* Back button */}
         <button
           className="lg:block hidden h-[max-content] bg-black text-white p-3 rounded-full shadow-md hover:bg-gray-800"
@@ -61,7 +61,7 @@ function BestVenue() {
         {/* Scrollable container */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scroll-smooth space-x-6 pb-4 ml-4 pr-12" // Added `ml-12` for spacing
+          className="flex overflow-x-auto scroll-smooth lg:space-x-6 md:space-x-6 pb-4 lg:ml-4 md:ml-4 pr-12" // Added `ml-12` for spacing
           style={{ scrollbarWidth: "none" }} // Hide scrollbar for modern browsers
         >
           {Venues.map((venue, index) => (

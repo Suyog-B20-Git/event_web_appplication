@@ -1,10 +1,10 @@
-import { Axios } from "axios";
+import {Axios} from "axios";
 // import {toast,Zoom,Slide} from 'react-toastify'
 // import 'react-toastify/dist/ReactToastify.css1
 //
 // '
 
-import { axiosInstance } from "../../../../../utility/utils";
+import {axiosInstance} from "../../../../../utility/utils";
 
 //-----------get type of lift with paginated data--------------------------//
 // export const getTypeOfLiftList = (params,setisLoader) => {
@@ -83,62 +83,62 @@ import { axiosInstance } from "../../../../../utility/utils";
 // };
 
 //------------------update Lift Type information------------------------//
-export const updateLiftType = (data, props, setisLoader) => {
-  return (dispatch, getStore) => {
-    Axios.put(
-      `/api/master/type-of-lift-master/${props.preloadValue.detail._id}`,
-      {
-        lift_name: data.lift_name.toLowerCase(),
-        status: JSON.parse(data.status),
-      }
-    )
-      .then((response) => {
-        if (response.data.status === false) {
-          toast.error(response.data.message, {
-            transition: Zoom,
-            hideProgressBar: true,
-            autoClose: 2000,
-          });
-        } else {
-          toast.success(response.data.message, {
-            transition: Zoom,
-            hideProgressBar: true,
-            autoClose: 2000,
-          });
-          props.onMasterSave();
-          // props.history.push({state : {}})
-          return (dispatch) => {
-            dispatch({
-              type: "UPDATE_LIFT_TYPE",
-              data,
-            });
-          };
-        }
-      })
-      .then(() =>
-        dispatch(
-          getTypeOfLiftList(getStore().typeOfLiftMasterData.params, setisLoader)
-        )
-      )
-      .catch(function (error) {
-        toast.error(
-          error.response && error.response.data
-            ? error.response.data.message
-            : "Something Went Wrong !",
-          { transition: Zoom, hideProgressBar: false, autoClose: 2000 }
-        );
-      });
-  };
-};
+// export const updateLiftType = (data,props,setisLoader) => {
+//   return (dispatch,getStore) => {
+//     Axios.put(
+//       `/api/master/type-of-lift-master/${props.preloadValue.detail._id}`,
+//       {
+//         lift_name: data.lift_name.toLowerCase(),
+//         status: JSON.parse(data.status),
+//       }
+//     )
+//       .then((response) => {
+//         if (response.data.status === false) {
+//           toast.error(response.data.message,{
+//             transition: Zoom,
+//             hideProgressBar: true,
+//             autoClose: 2000,
+//           });
+//         } else {
+//           toast.success(response.data.message,{
+//             transition: Zoom,
+//             hideProgressBar: true,
+//             autoClose: 2000,
+//           });
+//           props.onMasterSave();
+//           // props.history.push({state : {}})
+//           return (dispatch) => {
+//             dispatch({
+//               type: "UPDATE_LIFT_TYPE",
+//               data,
+//             });
+//           };
+//         }
+//       })
+//       .then(() =>
+//         dispatch(
+//           getTypeOfLiftList(getStore().typeOfLiftMasterData.params,setisLoader)
+//         )
+//       )
+//       .catch(function (error) {
+//         toast.error(
+//           error.response && error.response.data
+//             ? error.response.data.message
+//             : "Something Went Wrong !",
+//           {transition: Zoom,hideProgressBar: false,autoClose: 2000}
+//         );
+//       });
+//   };
+// };
 
-import { toast } from "react-toastify";
-import { Zoom } from "react-toastify";
+import {toast} from "react-toastify";
+import {Zoom} from "react-toastify";
 
 export const createNewOrganizer = (data) => {
-  console.log("data.:::", data);
-  return (dispatch) => {
+  console.log("data.:::",data);
+  return () => {
     axiosInstance
-      .post(`http://localhost:5000/api/organizer`, {
+      .post(`http://localhost:5000/api/organizer`,{
         name: data.name.trim(),
         categories: data.categories, // Assuming it's an array
         description: data.description.trim(),
@@ -164,13 +164,13 @@ export const createNewOrganizer = (data) => {
       })
       .then((response) => {
         if (!response.data.status) {
-          toast.error(response.data.message, {
+          toast.error(response.data.message,{
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
           });
         } else {
-          toast.success(response.data.message, {
+          toast.success(response.data.message,{
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
@@ -190,7 +190,7 @@ export const createNewOrganizer = (data) => {
           error.response && error.response.data
             ? error.response.data.message
             : "Something went wrong!",
-          { transition: Zoom, hideProgressBar: false, autoClose: 2000 }
+          {transition: Zoom,hideProgressBar: false,autoClose: 2000}
         );
       });
   };

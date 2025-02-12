@@ -6,7 +6,7 @@ import Footer from "../layout/Footer";
 function Index() {
   return (
     <div>
-      <div className="lg:pb-[160px] pb:[87px]">
+      <div className="lg:pb-[160px] md:pb-[90px]  ">
         {" "}
         <Header />
       </div>
