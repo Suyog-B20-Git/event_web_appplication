@@ -7,7 +7,7 @@ import { MdEvent } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 // function Cards({ heading }) {
-function Cards({data,heading}) {
+function Cards({ data, heading }) {
   const navigate = useNavigate();
 
   // const card1 = [
@@ -133,13 +133,13 @@ function Cards({data,heading}) {
                     </p>
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <MdEvent className="relative top-1" />
-                      <span>
-                        {item.startDate}
-                      </span>
+                      <span>{item.startDate}</span>
                     </p>
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <CiLocationOn className="relative top-1" />
-                      <span>{item.venue.city} , {item.venue.country}</span>
+                      <span>
+                        {item.venue.city} , {item.venue.country}
+                      </span>
                     </p>
                   </div>
 

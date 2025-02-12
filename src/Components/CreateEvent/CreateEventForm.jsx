@@ -1,0 +1,922 @@
+import React, { useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+import Button from "../Button";
+import { GiPartyPopper } from "react-icons/gi";
+import { FcViewDetails } from "react-icons/fc";
+import { MdAccountCircle, MdCancel } from "react-icons/md";
+import { alpha, styled } from "@mui/material/styles";
+import { pink } from "@mui/material/colors";
+
+import Photo1 from "./Photo1";
+import { useForm } from "react-hook-form";
+import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
+export default function EventForm() {
+  const [tagInput, setTagInput] = useState("");
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    setValue,
+
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      disableEventAfterSoldOut: false, // Default value
+      isRepetitive: false,
+      isPublish: false,
+      enableRatingReview: false,
+      isSeasonal: false,
+      seo: {
+        metaTitle: "",
+        metaTags: "",
+        metaDescription: "",
+      },
+
+      eventTag: [],
+      performrs: [],
+      media: {
+        thumbnailImage: null,
+        posterImage: null,
+        seatingChartImage: null,
+        images: [],
+      }, // Default media object
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log("formData:", data);
+    reset();
+  };
+
+  const PinkSwitch = styled(Switch)(({ theme }) => ({
+    "& .MuiSwitch-switchBase.Mui-checked": {
+      color: "#ff2459",
+      "&:hover": {
+        backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
+      },
+    },
+    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: pink[600],
+    },
+  }));
+  const eventTag = watch("eventTag"); // Watch tag values
+
+  // Add tag when Enter or Comma is pressed
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const newTag = tagInput.trim();
+
+      if (newTag && !eventTag.includes(newTag)) {
+        setValue("eventTag", [...eventTag, newTag]); // Update tags array
+      }
+      setTagInput(""); // Clear input
+    }
+  };
+
+  // Remove tag function
+  const removeTag = (index) => {
+    setValue(
+      "eventTag",
+      eventTag.filter((_, i) => i !== index)
+    );
+  };
+
+  //image input
+  const handleImageChange = (e, type) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setValue(`media.${type}`, { file, preview: imageUrl });
+    }
+  };
+  const removeImage = (type) => {
+    setValue(`media.${type}`, null);
+  };
+
+  const handleImagesChange1 = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    // Append new images to existing ones
+    setValue("media.images", [...media.images, ...newImages]);
+  };
+  const removeImage1 = (index) => {
+    const updatedImages = media.images.filter((_, i) => i !== index);
+    setValue("media.images", updatedImages);
+  };
+
+  // Watching values
+
+  const startDate = watch("startDate");
+  const endDate = watch("endDate");
+  const startTime = watch("startTime");
+  const endTime = watch("endTime");
+  const repeatEndTime = watch("repeatEndTime");
+  const repeatStartTime = watch("repeatStartTime");
+  const disableEventAfterSoldOut = watch("disableEventAfterSoldOut"); // Watch state
+  const isRepetitive = watch("isRepetitive"); // Watch state
+  const isPublish = watch("isPublish"); // Watch state
+  const isSeasonal = watch("isSeasonal"); // Watch state
+  const media = watch("media"); // Watching media state
+  const enableRatingReview = watch("enableRatingReview"); // Watching media state
+  return (
+    <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
+      <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">
+        <Photo1 h={119} />
+        <div className="flex flex-col pb-4 overflow-y-scroll lg:w-full  pr-3  lg:h-[120vh]  ">
+          <div className=" flex flex-col  gap-1 lg:pr-10   "></div>
+          <div className="lg:w-[100%] max-w-4xl  p-6 pl-8  lg:pl-10 lg:pr-10  bg-gray-100 rounded-xl shadow-md">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <h2 className="text-xl font-semibold mb-6 text-[#ff2459]">
+                Event Registration
+              </h2>
+
+              {/* Name */}
+              <div className="mb-4 ">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Enter Name*
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter name"
+                  {...register("name", { required: "name is required" })}
+                />
+                {errors.name && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.name.message}*
+                  </p>
+                )}
+              </div>
+
+              {/*textArea*/}
+              <div className="mb-4 ">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Enter Description*
+                </label>
+
+                <textarea
+                  id="name"
+                  name="description"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter Description"
+                  {...register("description", {
+                    required: "Event description is required",
+                  })}
+                ></textarea>
+                {errors.description && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.description.message}*
+                  </p>
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Select Category
+                </label>
+                <select
+                  id="state"
+                  name="state"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  {...register("category", {
+                    required: "category is required",
+                  })}
+                >
+                  <option value="">Select Category</option>
+                  <option value="Music & concert">Music & concert</option>
+                  <option value="Business">Business</option>
+                  <option value="Fiteness & Yoga">Fiteness & Yoga</option>
+                  <option value="Travelling & Trekking">
+                    Travelling & Trekking
+                  </option>
+                  <option value="Sport & fitness">Sport & fitness</option>
+                  <option value="Education & Classes">
+                    Education & Classes
+                  </option>
+                </select>
+              </div>
+
+              {/* Location */}
+              <div className="mb-4">
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Location
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter your location"
+                  {...register("location", {
+                    required: "location is required",
+                  })}
+                />
+                {errors.location && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.location.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Venue and Facebook Link */}
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
+                <div>
+                  <label
+                    htmlFor="venue"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Venue
+                  </label>
+                  <select
+                    id="venue"
+                    name="venue"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    {...register("venue", { required: "venue is required" })}
+                  >
+                    <option value="">Select a venue</option>
+                    <option value="Stadium">Stadium</option>
+                    <option value="Auditorium">Auditorium</option>
+                  </select>
+                  {errors.venue && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.venue.message}*
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="facebookLink"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Facebook Link
+                  </label>
+                  <input
+                    type="url"
+                    id="facebookLink"
+                    name="facebookLink"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="Enter your Facebook link"
+                    {...register("facebookLink", {
+                      required: "Email is required",
+                    })}
+                  />
+                  {errors.facebookLink && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.facebookLink.message}*
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/*Event Url */}
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
+                <div>
+                  <label
+                    htmlFor="eventUrl"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Event url
+                  </label>
+                  <input
+                    type="url"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="Enter your Event link"
+                    {...register("eventUrl", {
+                      required: "Event url is required",
+                    })}
+                  />
+                  {errors.eventUrl && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.eventUrl.message}*
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="shortUrl"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Short Url
+                  </label>
+                  <input
+                    type="url"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="Enter your short link"
+                    {...register("shortUrl", {
+                      required: "shortUrl is required",
+                    })}
+                  />
+                  {errors.shortUrl && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.shortUrl.message}*
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/*excerpt*/}
+              <div className="mb-4">
+                <label
+                  htmlFor="excerpt"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Excerpt
+                </label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter your excerpt"
+                  {...register("excerpt", {
+                    required: "Event url is required",
+                  })}
+                />
+                {errors.excerpt && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.excerpt.message}*
+                  </p>
+                )}
+              </div>
+              {/*Offline Payment Instruction*/}
+              <div className="mb-4">
+                <label
+                  htmlFor="Offline Payment Instructions"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Offline Payment Instructions
+                </label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter Offline Payment Instructions"
+                  {...register("offlinePaymentInstructions", {
+                    required: "Offline payment instructions",
+                  })}
+                />
+                {errors.offlinePaymentInstructions && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.offlinePaymentInstructions.message}*
+                  </p>
+                )}
+              </div>
+
+              {/* Start and End Date */}
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4  mb-4">
+                <div>
+                  <label
+                    htmlFor="startDate"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Start Date & Time*
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    {...register("startDate", {
+                      required: "startDate is required",
+                    })}
+                  />
+                  {errors.startDate && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.startDate.message}*
+                    </p>
+                  )}
+                  <input
+                    type="time"
+                    id="startTime"
+                    name="startTime"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    {...register("startTime", {
+                      required: "startTime is required",
+                    })}
+                  />
+                  {errors.startTime && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.startTime.message}*
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="endDate"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    End Date & Time*
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    {...register("endDate", {
+                      required: "endDate is required",
+                      validate: (value) =>
+                        !startDate ||
+                        value > startDate ||
+                        "End date must be after start date",
+                    })}
+                  />
+                  {errors.endDate && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.endDate.message}*
+                    </p>
+                  )}
+                  <input
+                    type="time"
+                    id="endTime"
+                    name="endTime"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    {...register("endTime", {
+                      required: "endTime is required",
+                      validate: (value) => {
+                        if (!startDate || !endDate || !startTime || !value)
+                          return true;
+                        if (endDate > startDate) return true; // If end date is later, no need to check time
+                        return (
+                          value > startTime ||
+                          "End time must be after start time"
+                        );
+                      },
+                    })}
+                  />
+                  {errors.endTime && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.endTime.message}*
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/*IsRepeititive button*/}
+              <div>
+                <h1 className="font-medium text-[#ff2459]">Repeitive Status</h1>
+                <FormGroup className="mb-2 lg:ml-3">
+                  <FormControlLabel
+                    control={
+                      <PinkSwitch
+                        checked={isRepetitive}
+                        size="small"
+                        onClick={() => setValue("isRepetitive", !isRepetitive)}
+                      />
+                    }
+                    label=" Is Event Repetitive"
+                  />
+                </FormGroup>
+                {isRepetitive && (
+                  <div className="bg-white p-4 shadow rounded-lg gap-5 grid  lg:grid-cols-2 grid-cols-1">
+                    <div className="mb-4">
+                      <label
+                        htmlFor="repetitiveType"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Repetitive Type
+                      </label>
+                      <select
+                        className="block mt-1 w-full border rounded-md p-2"
+                        {...register("repetitiveType", {
+                          required: "Repetitive type is required",
+                        })}
+                      >
+                        <option value="">Select Repetitive Type</option>
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Yearly">Yearly</option>
+                      </select>
+                      {errors.repetitiveType && (
+                        <p className="text-red-600 text-sm px-2">
+                          {errors.repetitiveType.message}*
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Repetitive Except
+                      </label>
+                      <input
+                        type="number"
+                        className="mt-1 block w-full border rounded-md p-2"
+                        placeholder="Enter repeat except "
+                        {...register("repeatExcept", {
+                          required: "Repeat Except required",
+                        })}
+                      />
+                      {errors.except && (
+                        <p className="text-red-600 text-sm px-2">
+                          {errors.repeatExcept.message}*
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="RepeatStartTime"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Repeat Start Time*
+                      </label>
+                      <input
+                        type="time"
+                        className="mt-1 block w-full border rounded-md p-2"
+                        {...register("repeatStartTime", {
+                          required: "repeatStartTime is required",
+                        })}
+                      />
+                      {errors.repeatStartTime && (
+                        <p className="text-red-600 text-sm px-2">
+                          {errors.repeatStartTime.message}*
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Repeat End Time*
+                      </label>
+                      <input
+                        type="time"
+                        className="mt-1 block w-full border rounded-md p-2"
+                        {...register("repeatEndTime", {
+                          required: "repeatEndTime is required",
+                          validate: (value) => {
+                            return (
+                              value > repeatStartTime ||
+                              "End time must be after start time"
+                            );
+                          },
+                        })}
+                      />
+                      {errors.repeatEndtTime && (
+                        <p className="text-red-600 text-sm px-2">
+                          {errors.repeatEndTime.message}*
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <FormGroup className=" ">
+                        <FormControlLabel
+                          control={
+                            <PinkSwitch
+                              checked={isSeasonal}
+                              size="small"
+                              onClick={() =>
+                                setValue("isSeasonal", !isSeasonal)
+                              }
+                            />
+                          }
+                          label="Is seasonal"
+                        />
+                      </FormGroup>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-4">
+                {/* Input Field for Tags */}
+                <label
+                  htmlFor="EventTag"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  EventTag
+                </label>
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type a tag and press Enter"
+                  className=" mt-1 block w-full border rounded-md p-2"
+                />
+
+                {/* Hidden input field to store tags */}
+                <input type="hidden" {...register("eventTag")} />
+
+                {/* Display Tags as List */}
+                <div className="flex flex-wrap mt-2">
+                  {eventTag.map((tag, index) => (
+                    <div
+                      key={index}
+                      className="bg-blue-500 text-white px-2 py-1 rounded flex items-center m-1"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(index)}
+                        className="ml-2 text-gray-800 hover:text-red-500"
+                      >
+                        <MdCancel />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/*thumbnail image*/}
+              <div className="mb-4">
+                <label className="block font-medium">Thumbnail Image:</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageChange(e, "thumbnailImage")}
+                  className="border p-2 rounded w-full"
+                />
+                {media.thumbnailImage && (
+                  <div className="mt-2 relative">
+                    <img
+                      src={media.thumbnailImage.preview}
+                      alt="Thumbnail Preview"
+                      className="w-32 h-32 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("thumbnailImage")}
+                      className="absolute top-0 left-[105px]  text-red-600  p-1 rounded-full"
+                    >
+                      <MdCancel />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Poster Image Upload */}
+              <div className="mb-4">
+                <label className="block font-medium">Poster Image:</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageChange(e, "posterImage")}
+                  className="border p-2 rounded w-full"
+                />
+                {media.posterImage && (
+                  <div className="mt-2 relative">
+                    <img
+                      src={media.posterImage.preview}
+                      alt="Poster Preview"
+                      className="w-32 h-32 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("posterImage")}
+                      className="absolute top-0 left-[105px]  text-red-600 p-1 rounded-full"
+                    >
+                      <MdCancel />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* seating Chart Image Upload */}
+              <div className="mb-4">
+                <label className="block font-medium">
+                  Seating chart Image:
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageChange(e, "seatingChartImage")}
+                  className="border p-2 rounded w-full"
+                />
+                {media.seatingChartImage && (
+                  <div className="mt-2 relative">
+                    <img
+                      src={media.seatingChartImage.preview}
+                      alt="seatingChartImage Preview"
+                      className="w-32 h-32 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage("seatingChartImage")}
+                      className="absolute top-0 left-[105px]  text-red-600 p-1 rounded-full"
+                    >
+                      <MdCancel />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/*images*/}
+              <div>
+                <div className="mb-4">
+                  <label className="block font-medium">Select Images:</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImagesChange1}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
+
+                {/* Image Previews */}
+                <div className="grid grid-cols-3 gap-2">
+                  {media.images.map((image, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={image.preview}
+                        alt={`Uploaded ${index}`}
+                        className="w-32 h-24 object-cover rounded"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage1(index)}
+                        className="absolute top-0 left-[105px] text-red-600 p-1 rounded-full"
+                      >
+                        <MdCancel />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/*performer Link*/}
+              <div className="mt-4">
+                <div></div>
+                <div>
+                  <label
+                    htmlFor="shortUrl"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Performer Link
+                  </label>
+                  <input
+                    type="url"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="Enter performer link"
+                    {...register("performerLink", {
+                      required: "performerLink is required",
+                    })}
+                  />
+                  {errors.performerLink && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.performerLink.message}*
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/*Seo*/}
+              <div className="mb-4 mt-4 grid lg:grid-cols-2 grid-cols-1 gap-4">
+                <div>
+                  <label
+                    htmlFor="metaTitle"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Meta Title
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="Enter your Meta Title"
+                    {...register("seo.metaTitle", {
+                      required: "Meta Title is required",
+                    })}
+                  />
+                  {errors.seo?.metaTitle && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.seo.metaTitle.message}*
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="metaTags"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Meta Tag
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="Enter your Meta Tags"
+                    {...register("seo.metaTags", {
+                      required: "Meta Tag is required",
+                    })}
+                  />
+                  {errors.seo?.metaTags && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.seo.metaTags.message}*
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="metaDescription"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Meta Description
+                  </label>
+                  <textarea
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="Enter your Meta description"
+                    {...register("seo.metaDescription", {
+                      required: "Meta Description is required",
+                    })}
+                  />
+                  {errors.seo?.metaDescription && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.seo.metaDescription.message}*
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/*Disabel event after sold out*/}
+              <div className="mb-4 mt-4 flex justify-between">
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <PinkSwitch
+                        checked={disableEventAfterSoldOut}
+                        size="small"
+                        onClick={() =>
+                          setValue(
+                            "disableEventAfterSoldOut",
+                            !disableEventAfterSoldOut
+                          )
+                        }
+                      />
+                    }
+                    label="Disable Event after sold out"
+                  />
+                </FormGroup>
+
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <PinkSwitch
+                        checked={isPublish}
+                        size="small"
+                        onClick={() => setValue("isPublish", !isPublish)}
+                      />
+                    }
+                    label="Publish Event.."
+                  />
+                </FormGroup>
+              </div>
+              <div className="mb-4 mt-4">
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        {...register("enableRatingReview")}
+                        defaultChecked={false}
+                        size="small"
+                        sx={{ "& .MuiSvgIcon-root": { fontSize: 16 } }} // Adjusts icon size
+                        onChange={() =>
+                          setValue("enableRatingReview", !enableRatingReview)
+                        }
+                      />
+                    }
+                    label="Enable Rating Review"
+                    componentsProps={{ typography: { fontSize: "12px" } }} // Reduces label size
+                  />
+                </FormGroup>
+              </div>
+
+              {/* Submit Button */}
+
+              <div className="flex justify-around p-4">
+                <Button
+                  text={"previous"}
+                  variant={"normal"}
+                  rounded={"rounded-lg"}
+                  onClick={() => navigate("/createEvent")}
+                />
+                <button
+                  // onClick={() => navigate("/login")}
+                  className="p-1 bg-[#ff2459] px-4 rounded-lg text-white"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
