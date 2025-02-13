@@ -96,10 +96,19 @@ export default function EventForm() {
       return;
     }
 
+    const formData = new FormData();
+
+    // Assuming `media.thumbnail.file` contains the actual file object
+    if (data.media?.thumbnail?.file) {
+      formData.append("thumbnail", data.media.thumbnail.file);
+    }
+
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
     if (isLogin) {
       dispatch(createNewEvent(data));
       reset();
+      localStorage.removeItem("eventData");
+      navigate("/home");
     } else {
       navigate("/login");
     }
@@ -152,23 +161,39 @@ export default function EventForm() {
   // };
 
   // Image Input Handler
+  // const handleImageChange = (e, type) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const imageUrl = URL.createObjectURL(file);
+  //     // setValue(`media.${type}`, file);
+  //     setValue(`media.${type}`, { file, preview: imageUrl });
+  //     clearErrors(`media.${type}`); // Clear validation error on file selection
+  //   }
+  // };
+
+  // // Remove Image
+  // const removeImage = (type) => {
+  //   setValue(`media.${type}`, null);
+  //   setError(`media.${type}`, {
+  //     type: "manual",
+  //     message: "Thumbnail image is required",
+  //   });
+  // };
+
   const handleImageChange = (e, type) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      // setValue(`media.${type}`, file);
-      setValue(`media.${type}`, { file, preview: imageUrl });
-      clearErrors(`media.${type}`); // Clear validation error on file selection
-    }
-  };
+      const reader = new FileReader();
 
-  // Remove Image
-  const removeImage = (type) => {
-    setValue(`media.${type}`, null);
-    setError(`media.${type}`, {
-      type: "manual",
-      message: "Thumbnail image is required",
-    });
+      reader.onloadend = () => {
+        const base64String = reader.result; // Get the Base64 URL
+
+        setValue(`media.${type}`, { file, preview: base64String });
+        clearErrors(`media.${type}`); // Clear validation error on file selection
+      };
+
+      reader.readAsDataURL(file); // Convert to Base64
+    }
   };
 
   const handleImagesChange1 = (e) => {
