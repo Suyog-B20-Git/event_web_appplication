@@ -43,8 +43,6 @@ const slides = [
   },
 ];
 
-
-
 import { useDispatch, useSelector } from "react-redux";
 import { getEventData } from "../redux/actions/master/Events/index";
 import { getUpcomingEventData } from "../redux/actions/master/Events/UpcomingEvent";
@@ -52,7 +50,6 @@ import { getFeaturedEventData } from "../redux/actions/master/Events/FeaturedEve
 import Loading from "../Components/Loading";
 function Home() {
   const dispatch = useDispatch();
-  // const {data,loading,error} = useSelector((state) => state.eventReducer);
 
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -201,18 +198,16 @@ function Home() {
       ) : (
         "No Event Data"
       )}
-      {data1.length > 0 ? (
+      {/* {data1.length > 0 ? (
         <Cards data={data1} heading={"UPCOMING EVENTS"} />
       ) : (
         "No Event Data"
-      )}
+      )} */}
       {data2.length > 0 ? (
         <Cards data={data2} heading={"FEATURED EVENTS"} />
       ) : (
         "No Event Data"
       )}
-      {/* <Cards heading={"TRENDING EVENTS"} />
-      <Cards heading={"FEATURED EVENTS"} /> */}
 
       <EventCategory />
       <BestVenue />

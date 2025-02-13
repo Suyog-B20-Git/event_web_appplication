@@ -189,10 +189,10 @@
 // export default Register;
 
 import React, { useState } from "react";
-import InputField from "../Components/ReusableComponents/InputField";
+import InputField from "../../../src/Components/InputField";
 import { Link, useNavigate } from "react-router-dom";
 
-import Button from "../Components/ReusableComponents/Button";
+import Button from "../../../src/Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
 import { HiOutlineDeviceMobile } from "react-icons/hi";
@@ -248,16 +248,16 @@ function Register() {
   };
 
   return (
-    <div className="flex sm:flex-col-reverse lg:h-[100vh] md:h-[80vh] flex-col md:flex-row  lg:pt-[160px] md:pt-0 pt-[88px]   ">
+    <div className="flex sm:flex-col-reverse lg:h-[100vh]  md:h-[80vh] flex-col md:flex-row      ">
       {/* Left Section */}
 
       <Photo />
       {/* Right Section */}
-      <div className="flex flex-col justify-center  items-center w-full md:w-1/2 px-4 md:px-8 py-3 h-full bg-gray-100 lg:pt-5  ">
+      <div className="flex flex-col justify-center  items-center w-full md:w-1/2  px-4 md:px-8 py-3 h-full bg-gray-100 lg:pt-5  ">
         <div className="flex flex-col items-center w-full max-w-sm mx-auto">
-          <div className="w-full lg:mt-0 mt-2">
+          <div className="w-full  lg:mt-0 mt-2">
             {/* Input fields */}
-            <div className="mx-auto flex flex-col gap-1">
+            <div className="mx-auto flex flex-col  gap-1">
               <h2
                 className=" text-3xl  md:text-2xl font-semibold"
                 style={{
@@ -322,8 +322,12 @@ function Register() {
               </div>
 
               <p className="flex justify-center pt-3">
-                Already have account ? {" "}
-                <Link style={{ color: "#FF2459" }} className="px-2" to={"/login"}>
+                Already have account ?{" "}
+                <Link
+                  style={{ color: "#FF2459" }}
+                  className="px-2"
+                  to={"/login"}
+                >
                   {" "}
                   Login
                 </Link>

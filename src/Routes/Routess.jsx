@@ -8,6 +8,8 @@ import Home from "../LandingPages/Home";
 import Viewall from "../LandingPages/Viewall";
 import CreateEvent from "../Components/CreateEvent/CreateEvent";
 import CreateEventForm from "../Components/CreateEvent/CreateEventForm";
+import Login from '../../views/pages/Users/Login'
+import Register from "../../views/pages/Users/Register";
 
 function Routess() {
   return (
@@ -24,8 +26,7 @@ function Routess() {
           <Route path="/Vanue" element={<Vanue />} />
           <Route path="/myBooking" element={<MyBooking />} />
           <Route path="/bookingDetails" element={<BookingDetails />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} /> */}
+           */}
         <Route path="/" element={<Index />}>
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
@@ -33,6 +34,8 @@ function Routess() {
           <Route path="/createEvent" element={<CreateEvent />} />
           <Route path="/createEventForm" element={<CreateEventForm />} />
           <Route path="organiser" element={<Orgnizer />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
 
         {/* </Route> */}

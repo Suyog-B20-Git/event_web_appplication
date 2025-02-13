@@ -233,10 +233,10 @@
 // export default Login;
 
 import React, { useState } from "react";
-import InputField from "../Components/ReusableComponents/InputField";
+import InputField from  "../../../src/Components/InputField";
 import { Link, useNavigate } from "react-router-dom";
 
-import Button from "../Components/ReusableComponents/Button";
+import Button from "../../../src/Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
 import { HiOutlineDeviceMobile } from "react-icons/hi";
@@ -270,6 +270,7 @@ function Login() {
         setSuccessMessage("Login successful!");
         // Save the token in localStorage or sessionStorage
         localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("isLogin",JSON.stringify(true))
         // Redirect to the landing page
         navigate("/");
       }
@@ -277,6 +278,7 @@ function Login() {
       if (error.response) {
         // Server responded with a status other than 200
         setErrorMessage(error.response.data.message || "Login failed.");
+      
       } else {
         // Network or other errors
         setErrorMessage("An error occurred. Please try again.");
@@ -288,7 +290,7 @@ function Login() {
   };
 
   return (
-    <div className="flex sm:flex-col-reverse flex-col md:flex-row lg:h-screen md:h-max lg:pt-[160px] md:pt-[105px] pt-[80px]  ">
+    <div className="flex sm:flex-col-reverse flex-col md:flex-row lg:h-screen md:h-max   ">
       {/* Left Section */}
 
       <Photo />

@@ -109,7 +109,11 @@ function Cards({ data, heading }) {
             >
               <div
                 style={{
-                  backgroundImage: `url(${item.media.thumbnailImage})`,
+                  // backgroundImage: `url(${item.media.thumbnailImage})`,
+                  backgroundImage: `url(${
+                    item.media?.thumbnailImage || "fallback-image.jpg"
+                  })`,
+
                   backgroundRepeat: "no-repeat",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
@@ -138,7 +142,8 @@ function Cards({ data, heading }) {
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <CiLocationOn className="relative top-1" />
                       <span>
-                        {item.venue.city} , {item.venue.country}
+                        {item && item.venue.city ? item.venue.city : "Pune"} ,{" "}
+                        {item && item.venue.country ? item.venue.country : "India"}
                       </span>
                     </p>
                   </div>
