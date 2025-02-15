@@ -65,7 +65,7 @@ export const getFeaturedEventData = (setLoader) => {
       console.log("response", response);
       dispatch({
         type: "GET_FEATURED_EVENT",
-        eventData: response.data.events, // Ensure the API actually returns this structure
+        eventData: response.data.updatedEvents, // Ensure the API actually returns this structure
       });
     } catch (error) {
       console.error(

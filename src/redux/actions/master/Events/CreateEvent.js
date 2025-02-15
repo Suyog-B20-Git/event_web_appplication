@@ -33,16 +33,16 @@ export const createNewEvent = (data) => {
           venue: data.venue,
           performers: data.performers,
           performerLink: data.performerLink,
-          media: data.media,
-          // media: {
-          //   thumbnailImage: data.media.thumbnailImage ?? null,
-          //   posterImage: data.media.posterImage ?? null,
-          //   seatingChartImage: data.media.seatingChartImage ?? null,
-          //   youtubeUrl: data.media.youtubeUrl,
-          //   images: data.media.images,
-          // },
+          // media: data.media,
+
           startDate: `${data.startDate}T${data.startTime}`,
           endDate: `${data.endDate}T${data.endTime}`,
+          media: {
+            thumbnailImage: data.media.thumbnailImage,
+            posterImage: data.media.posterImage,
+            seatingChartImage: data.media.seatingChartImage,
+            images: data.media.images,
+          },
 
           seo: {
             metaTitle: data.seo.metaTitle,
@@ -50,7 +50,9 @@ export const createNewEvent = (data) => {
             metaDescription: data.seo.metaDescription,
           },
         },
-        
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       )
       .then((response) => {
         if (!response.data.status) {
@@ -68,7 +70,7 @@ export const createNewEvent = (data) => {
           if (isLogin) {
             dispatch({
               type: "CREATE_EVENT",
-              payload: data,
+              payload: response.data,
             });
           }
           console.log(response);

@@ -61,19 +61,20 @@ function Home() {
   const heading = [];
   const store = useSelector((state) => state.eventReducer) || { eventData: [] };
   const data = store.eventData;
-  console.log(store.eventData, "data....:");
+  // console.log(store.eventData, "data....:");
 
   const store1 = useSelector((state) => state.upcomingEventReducer) || {
     upcomingEventData: [],
   };
   const data1 = store1.upcomingEventData;
-  console.log(store.upcomingEventData, "data....:");
+  // console.log(store.upcomingEventData, "data1....:");
 
   const store2 = useSelector((state) => state.featuredEventReducer) || {
     featuredEventData: [],
   };
   const data2 = store2.featuredEventData;
-  console.log(store.featuredEventData, "data....:");
+  // console.log(store.featuredEventData, "data2....:");
+  // console.log(data2, "data2....:");
 
   const [currentSlide, setCurrentSlide] = useState(2);
   const [isTransitioning, setIsTransitioning] = useState(true);
@@ -198,11 +199,11 @@ function Home() {
       ) : (
         "No Event Data"
       )}
-      {/* {data1.length > 0 ? (
+      {data1.length > 0 ? (
         <Cards data={data1} heading={"UPCOMING EVENTS"} />
       ) : (
         "No Event Data"
-      )} */}
+      )}
       {data2.length > 0 ? (
         <Cards data={data2} heading={"FEATURED EVENTS"} />
       ) : (

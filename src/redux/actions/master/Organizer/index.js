@@ -1,10 +1,10 @@
-import {Axios} from "axios";
+import { Axios } from "axios";
 // import {toast,Zoom,Slide} from 'react-toastify'
 // import 'react-toastify/dist/ReactToastify.css1
 //
 // '
 
-import {axiosInstance} from "../../../../../utility/utils";
+import { axiosInstance } from "../../../../../utility/utils";
 
 //-----------get type of lift with paginated data--------------------------//
 // export const getTypeOfLiftList = (params,setisLoader) => {
@@ -131,68 +131,112 @@ import {axiosInstance} from "../../../../../utility/utils";
 //   };
 // };
 
-import {toast} from "react-toastify";
-import {Zoom} from "react-toastify";
+// import {toast} from "react-toastify";
+// import {Zoom} from "react-toastify";
+
+// export const createNewOrganizer = (data) => {
+//   console.log("data.:::",data);
+//   return () => {
+//     axiosInstance
+//       .post(`http://localhost:5000/api/organizer`,{
+//         name: data.name.trim(),
+//         categories: data.categories, // Assuming it's an array
+//         description: data.description.trim(),
+//         tags: data.tags,
+//         city: data.city,
+//         state: data.state,
+//         address: data.address,
+//         country: data.country,
+//         googleSearchLocation: data.googleSearchLocation,
+//         googleSearchLat: data.googleSearchLat,
+//         googleSearchLong: data.googleSearchLong,
+//         phoneNumber: data.phoneNumber,
+//         email: data.email,
+//         availableTime: data.availableTime,
+//         rating: Number(data.rating), // Convert rating to number
+//         website: data.website,
+//         profileImage: data.profileImage ?? null,
+//         facebookUrl: data.facebookUrl,
+//         instagramUrl: data.instagramUrl,
+//         youtubeUrl: data.youtubeUrl,
+//         twitterUrl: data.twitterUrl,
+//         visits: Number(data.visits) || 0, // Default to 0 if undefined
+//       })
+//       .then((response) => {
+//         if (!response.data.status) {
+//           toast.error(response.data.message,{
+//             transition: Zoom,
+//             hideProgressBar: true,
+//             autoClose: 2000,
+//           });
+//         } else {
+//           toast.success(response.data.message,{
+//             transition: Zoom,
+//             hideProgressBar: true,
+//             autoClose: 2000,
+//           });
+
+//           dispatch({
+//             type: "CREATE_ORGANIZER",
+//             payload: data,
+//           });
+//         }
+//       })
+//       // .then(() => {
+//       //   dispatch(getOrganizersList(getState().organizers.params,setIsLoader));
+//       // })
+//       .catch((error) => {
+//         toast.error(
+//           error.response && error.response.data
+//             ? error.response.data.message
+//             : "Something went wrong!",
+//           {transition: Zoom,hideProgressBar: false,autoClose: 2000}
+//         );
+//       });
+//   };
+// };
+
+import { toast } from "react-toastify";
+import { Zoom } from "react-toastify";
 
 export const createNewOrganizer = (data) => {
-  console.log("data.:::",data);
+  console.log("data.:::", data);
+  const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
-      .post(`http://localhost:5000/api/organizer`,{
-        name: data.name.trim(),
-        categories: data.categories, // Assuming it's an array
-        description: data.description.trim(),
-        tags: data.tags,
-        city: data.city,
-        state: data.state,
-        address: data.address,
-        country: data.country,
-        googleSearchLocation: data.googleSearchLocation,
-        googleSearchLat: data.googleSearchLat,
-        googleSearchLong: data.googleSearchLong,
-        phoneNumber: data.phoneNumber,
-        email: data.email,
-        availableTime: data.availableTime,
-        rating: Number(data.rating), // Convert rating to number
-        website: data.website,
-        profileImage: data.profileImage ?? null,
-        facebookUrl: data.facebookUrl,
-        instagramUrl: data.instagramUrl,
-        youtubeUrl: data.youtubeUrl,
-        twitterUrl: data.twitterUrl,
-        visits: Number(data.visits) || 0, // Default to 0 if undefined
+      .post(`http://localhost:5000/api/organizer`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
         if (!response.data.status) {
-          toast.error(response.data.message,{
+          toast.error(response.data.message, {
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
           });
         } else {
-          toast.success(response.data.message,{
+          toast.success(response.data.message, {
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
           });
-
-          dispatch({
-            type: "CREATE_ORGANIZER",
-            payload: data,
-          });
+          if (isLogin) {
+            dispatch({
+              type: "CREATE_ORGANIZER",
+              payload: response.data,
+            });
+          }
+          console.log(response);
         }
       })
-      // .then(() => {
-      //   dispatch(getOrganizersList(getState().organizers.params,setIsLoader));
-      // })
+
       .catch((error) => {
         toast.error(
           error.response && error.response.data
             ? error.response.data.message
             : "Something went wrong!",
-          {transition: Zoom,hideProgressBar: false,autoClose: 2000}
+          { transition: Zoom, hideProgressBar: false, autoClose: 2000 }
         );
       });
   };
 };
-

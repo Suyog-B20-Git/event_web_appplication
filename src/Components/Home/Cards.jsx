@@ -142,8 +142,8 @@ function Cards({ data, heading }) {
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <CiLocationOn className="relative top-1" />
                       <span>
-                        {item && item.venue.city ? item.venue.city : "Pune"} ,{" "}
-                        {item && item.venue.country ? item.venue.country : "India"}
+                        {item.venue?.city || "Pune"} -{" "}
+                        {item.venue?.country || "India"}
                       </span>
                     </p>
                   </div>

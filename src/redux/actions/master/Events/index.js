@@ -126,7 +126,7 @@ export const getEventData = (setLoader) => {
     setLoader(true); // Start loading
    
     try {
-      const response = await axios.get("http://localhost:5000/api/event/featured?page=1&limit=10&timezoneOffset=0");
+      const response = await axios.get("http://localhost:5000/api/event");
       console.log("response", response);
       dispatch({
         type: "GET_EVENT",

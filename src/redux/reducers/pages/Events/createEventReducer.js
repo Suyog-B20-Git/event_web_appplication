@@ -3,6 +3,7 @@ const initialState = {
   total: 1,
   params: {},
   allData: [],
+  event:[]
 };
 
 const createEventReducer = (state = initialState, action) => {

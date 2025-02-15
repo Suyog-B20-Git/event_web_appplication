@@ -15,6 +15,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
+import { toast } from "react-toastify";
 export default function EventForm() {
   const [tagInput, setTagInput] = useState("");
   const [query, setQuery] = useState("");
@@ -32,7 +33,7 @@ export default function EventForm() {
 
   const store = useSelector((state) => state.venuesReducer) || { venues: [] };
   const data = store?.venues || []; // Ensure data is always an array
-  console.log(data);
+  // console.log(data);
   const options = data.map((venue) => ({
     value: venue._id,
     label: venue.name,
@@ -42,7 +43,7 @@ export default function EventForm() {
     performers: [],
   };
   const data1 = store1?.performers || []; // Ensure data is always an array
-  console.log(data1);
+  // console.log(data1);
   const performerOptions = data1.map((performer) => ({
     value: performer._id,
     label: performer.name,
@@ -62,6 +63,12 @@ export default function EventForm() {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      name: "",
+      category: "",
+      eventUrl: "",
+      shortUrl: "",
+      startDate: "",
+      endDate: "",
       disableEventAfterSoldOut: false, // Default value
       isRepetitive: false,
       isPublish: false,
@@ -86,27 +93,77 @@ export default function EventForm() {
     },
   });
 
+  useEffect(() => {
+    const storedData = localStorage.getItem("eventData");
+
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+
+      if (parsedData.eventType == "Public") {
+        setValue("isPublish", true);
+      } else {
+        setValue("isPublish", false);
+      }
+      if (parsedData.selectedRadio == "Tickets") {
+        setValue("isOnline", true);
+      } else {
+        setValue("isOnline", false);
+      }
+      setValue("category", parsedData.selectedEvent);
+    }
+  }, [setValue]);
+  const notifySuccess = () => toast.success("Event created successfully!");
   const onSubmit = (data) => {
-    console.log("formData:", data);
-    if (!data.media?.thumbnailImage) {
-      setError("media.thumbnailImage", {
-        type: "manual",
-        message: "Thumbnail image is required",
-      });
-      return;
-    }
+    console.log(data);
+    console.log(data.media.thumbnailImage);
+    // const formData = new FormData();
+    // formData.append("name", data.name);
+    // formData.append("category", data.category);
+    // formData.append("eventUrl", data.eventUrl);
+    // formData.append("shortUrl", data.shortUrl);
+    // formData.append("excerpt", data.excerpt);
+    // formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut);
+    // formData.append("enableRatingReview", data.enableRatingReview);
+    // formData.append("isRepetitive", data.isRepetitive);
+    // formData.append("isPublish", data.isPublish);
+    // formData.append("isSeasonal", data.isSeasonal);
+    // formData.append("isOnline", data.isOnline);
+    // formData.append("venue", data.venue);
+    // formData.append("repeatExcept", data.repeatExcept);
+    // formData.append("repeatStartTime", data.repeatStartTime);
+    // formData.append("repeatEndTime", data.repeatEndTime);
+    // formData.append("facebookLink", data.facebookLink);
+    // formData.append("startDate", `${data.startDate}T${data.startTime}`);
+    // formData.append("endDate", `${data.endDate}T${data.endTime}`);
+    // formData.append("description", data.description);
 
-    const formData = new FormData();
+    // // Assuming `media.thumbnail.file` contains the actual file object
+    // // 🔹 Append Individual Images from Media Object
+    // if (data.media?.thumbnailImage) {
+    //   formData.append("media[thumbnailImage]", data.media.thumbnailImage);
+    // }
+    // if (data.media?.posterImage) {
+    //   formData.append("media[posterImage]", data.media.posterImage);
+    // }
+    // if (data.media?.seatingChartImage) {
+    //   formData.append("media[seatingChartImage]", data.media.seatingChartImage);
+    // }
 
-    // Assuming `media.thumbnail.file` contains the actual file object
-    if (data.media?.thumbnail?.file) {
-      formData.append("thumbnail", data.media.thumbnail.file);
-    }
-
+    // // 🔹 Append Images Array (Multiple Images)
+    // if (data.media?.images?.length > 0) {
+    //   data.media.images.forEach((image, index) => {
+    //     formData.append(`media[images][${index}]`, image.file);
+    //   });
+    // }
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
     if (isLogin) {
       dispatch(createNewEvent(data));
+      notifySuccess();
+
       reset();
+      setThumnPreview(null);
+      setPosterPreview(null);
+      setSeatingChartPreview(null);
       localStorage.removeItem("eventData");
       navigate("/home");
     } else {
@@ -148,53 +205,32 @@ export default function EventForm() {
     );
   };
 
-  //image input
+  // image input
+  const [thumbnailImage, setThumbnailImage] = useState(null);
+  const [posterImage, setPosterImage] = useState(null);
+  const [seatingChartImage, setSeatingChartImage] = useState(null);
+  const [thumnPreview, setThumnPreview] = useState(null);
+  const [posterPreview, setPosterPreview] = useState(null);
+  const [seatingChartPreview, setSeatingChartPreview] = useState(null);
   // const handleImageChange = (e, type) => {
   //   const file = e.target.files[0];
   //   if (file) {
+  //     setValue(`media.${type}`, file);
   //     const imageUrl = URL.createObjectURL(file);
-  //     setValue(`media.${type}`, { file, preview: imageUrl });
+  //     if (type === "thumbnailImage") {
+  //       setThumnPreview(imageUrl);
+  //     }
+  //     if (type === "posterImage") {
+  //       setPosterPreview(imageUrl);
+  //     }
+  //     if (type === "seatingChartImage") {
+  //       setSeatingChartPreview(imageUrl);
+  //     }
   //   }
   // };
   // const removeImage = (type) => {
   //   setValue(`media.${type}`, null);
   // };
-
-  // Image Input Handler
-  // const handleImageChange = (e, type) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const imageUrl = URL.createObjectURL(file);
-  //     // setValue(`media.${type}`, file);
-  //     setValue(`media.${type}`, { file, preview: imageUrl });
-  //     clearErrors(`media.${type}`); // Clear validation error on file selection
-  //   }
-  // };
-
-  // // Remove Image
-  // const removeImage = (type) => {
-  //   setValue(`media.${type}`, null);
-  //   setError(`media.${type}`, {
-  //     type: "manual",
-  //     message: "Thumbnail image is required",
-  //   });
-  // };
-
-  const handleImageChange = (e, type) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        const base64String = reader.result; // Get the Base64 URL
-
-        setValue(`media.${type}`, { file, preview: base64String });
-        clearErrors(`media.${type}`); // Clear validation error on file selection
-      };
-
-      reader.readAsDataURL(file); // Convert to Base64
-    }
-  };
 
   const handleImagesChange1 = (e) => {
     const files = Array.from(e.target.files);
@@ -203,32 +239,16 @@ export default function EventForm() {
       preview: URL.createObjectURL(file),
     }));
 
-    // Append new images to existing ones
-    setValue("media.images", [...media.images, ...newImages]);
+    const existingImages = watch("media.images") || []; // Use watch to access current state
+    setValue("media.images", [...existingImages, ...newImages]);
   };
+
+  // Fix removeImage1
   const removeImage1 = (index) => {
-    const updatedImages = media.images.filter((_, i) => i !== index);
+    const updatedImages =
+      watch("media.images")?.filter((_, i) => i !== index) || [];
     setValue("media.images", updatedImages);
   };
-  useEffect(() => {
-    const storedData = localStorage.getItem("eventData");
-
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-
-      if (parsedData.eventType == "Public") {
-        setValue("isPublish", true);
-      } else {
-        setValue("isPublish", false);
-      }
-      if (parsedData.selectedRadio == "Tickets") {
-        setValue("isOnline", true);
-      } else {
-        setValue("isOnline", false);
-      }
-      setValue("category", parsedData.selectedEvent);
-    }
-  }, [setValue]);
 
   // Watching values
 
@@ -249,7 +269,7 @@ export default function EventForm() {
     <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
       <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">
         <Photo1 h={119} />
-        <div className="flex flex-col pb-4 overflow-y-scroll lg:w-full  pr-3  lg:h-[120vh]  ">
+        <div className="flex flex-col pb-4 overflow-y-scroll w-full lg:w-full  lg:pr-3 lg:h-[120vh]  ">
           <div className=" flex flex-col  gap-1 lg:pr-10   "></div>
           <div className="lg:w-[100%] max-w-4xl  p-6 pl-8  lg:pl-10 lg:pr-10  bg-gray-100 rounded-xl shadow-md">
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -267,8 +287,6 @@ export default function EventForm() {
                 </label>
                 <input
                   type="text"
-                  id="name"
-                  name="name"
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter name"
                   {...register("name", { required: "name is required" })}
@@ -458,7 +476,7 @@ export default function EventForm() {
                     </p>
                   )}
                 </div>
-
+                {/*youtube url*/}
                 <div>
                   <label
                     htmlFor="youtube url"
@@ -632,24 +650,6 @@ export default function EventForm() {
                     id="endTime"
                     name="endTime"
                     className=" mt-6 block w-full border rounded-md p-2"
-                    //   {...register("endTime", {
-                    //     required: "endTime is required",
-                    //     validate: (value) => {
-                    //       // if (!startDate || !endDate || !startTime || !value)
-                    //       //   return true;
-                    //       // if (endDate > startDate) return true; // If end date is later, no need to check time
-                    //       // return (
-                    //       //   value > startTime ||
-                    //       //   "End time must be after start time"
-                    //       // );
-                    //     },
-                    //   })}
-                    // />
-                    // {errors.endTime && (
-                    //   <p className="text-red-600 text-sm px-2">
-                    //     {errors.endTime.message}*
-                    //   </p>
-                    // )}
                     {...register("endTime", {
                       required: "End time is required",
                       validate: (value) => {
@@ -847,19 +847,29 @@ export default function EventForm() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageChange(e, "thumbnailImage")}
+                  // onChange={(e) => handleImageChange(e, "thumbnailImage")}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setThumbnailImage(file);
+                      setValue(`media.thumbnailImage`, file);
+                      const imageUrl = URL.createObjectURL(file);
+
+                      setThumnPreview(imageUrl);
+                    }
+                  }}
                   className="border p-2 rounded w-full"
                 />
                 {media.thumbnailImage && (
                   <div className="mt-2 relative">
                     <img
-                      src={media.thumbnailImage.preview}
+                      src={thumnPreview}
                       alt="Thumbnail Preview"
                       className="w-16 h-16 object-cover rounded"
                     />
                     <button
                       type="button"
-                      onClick={() => removeImage("thumbnailImage")}
+                      onClick={() => setThumnPreview(null)}
                       className="absolute top-0 left-[44px]  text-red-600  p-1 rounded-full"
                     >
                       <MdCancel />
@@ -879,19 +889,30 @@ export default function EventForm() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageChange(e, "posterImage")}
+                  // onChange={(e) => handleImageChange(e, "posterImage")}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setPosterImage(file);
+                      setValue(`media.posterImage`, file);
+                      const imageUrl = URL.createObjectURL(file);
+
+                      setPosterPreview(imageUrl);
+                    }
+                  }}
                   className="border p-2 rounded w-full"
                 />
                 {media.posterImage && (
                   <div className="mt-2 relative">
                     <img
-                      src={media.posterImage.preview}
+                      src={posterPreview}
                       alt="Poster Preview"
                       className="w-16 h-16 object-cover rounded"
                     />
                     <button
                       type="button"
-                      onClick={() => removeImage("posterImage")}
+                      // onClick={() => removeImage("posterImage")}
+                      onClick={() => setPosterPreview(null)}
                       className="absolute top-0 left-[44px]  text-red-600 p-1 rounded-full"
                     >
                       <MdCancel />
@@ -908,19 +929,30 @@ export default function EventForm() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageChange(e, "seatingChartImage")}
+                  // onChange={(e) => handleImageChange(e, "seatingChartImage")}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setSeatingChartImage(file);
+                      setValue(`media.seatingChartImage`, file);
+                      const imageUrl = URL.createObjectURL(file);
+
+                      setSeatingChartPreview(imageUrl);
+                    }
+                  }}
                   className="border p-2 rounded w-full"
                 />
                 {media.seatingChartImage && (
                   <div className="mt-2 relative">
                     <img
-                      src={media.seatingChartImage.preview}
+                      src={seatingChartPreview}
                       alt="seatingChartImage Preview"
                       className="w-16 h-16 object-cover rounded"
                     />
                     <button
                       type="button"
-                      onClick={() => removeImage("seatingChartImage")}
+                      // onClick={() => removeImage("seatingChartImage")}
+                      onClick={() => setSeatingChartPreview(null)}
                       className="absolute top-0 left-[44px]  text-red-600 p-1 rounded-full"
                     >
                       <MdCancel />

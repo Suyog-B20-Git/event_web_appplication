@@ -8,8 +8,11 @@ import Home from "../LandingPages/Home";
 import Viewall from "../LandingPages/Viewall";
 import CreateEvent from "../Components/CreateEvent/CreateEvent";
 import CreateEventForm from "../Components/CreateEvent/CreateEventForm";
-import Login from '../../views/pages/Users/Login'
+import Login from "../../views/pages/Users/Login";
 import Register from "../../views/pages/Users/Register";
+import CreatePage from "../Components/CreatePage/CreatePage";
+import GetOrganizer from "../Components/Organizer/GetOrganizer";
+import GetOrganizerById from "../Components/Organizer/GetOrganizerById";
 
 function Routess() {
   return (
@@ -36,6 +39,9 @@ function Routess() {
           <Route path="organiser" element={<Orgnizer />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/createPage" element={<CreatePage />} />
+          <Route path="/getOrganizer" element={<GetOrganizer />} />
+          <Route path="/getOrganizerById" element={<GetOrganizerById />} />
         </Route>
 
         {/* </Route> */}
