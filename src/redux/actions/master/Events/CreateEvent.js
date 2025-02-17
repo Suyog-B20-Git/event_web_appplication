@@ -5,7 +5,12 @@ import { axiosInstance } from "../../../../../utility/utils";
 import { toast } from "react-toastify";
 import { Zoom } from "react-toastify";
 
-export const createNewEvent = (data) => {
+export const createNewEvent = (
+  data,
+  thumbnailImage,
+  posterImage,
+  seatingChartImage
+) => {
   console.log("data.:::", data);
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
@@ -38,9 +43,12 @@ export const createNewEvent = (data) => {
           startDate: `${data.startDate}T${data.startTime}`,
           endDate: `${data.endDate}T${data.endTime}`,
           media: {
-            thumbnailImage: data.media.thumbnailImage,
-            posterImage: data.media.posterImage,
-            seatingChartImage: data.media.seatingChartImage,
+            // thumbnailImage: data.media.thumbnailImage,
+            // posterImage: data.media.posterImage,
+            // seatingChartImage: data.media.seatingChartImage,
+            thumbnailImage: thumbnailImage,
+            posterImage: posterImage,
+            seatingChartImage: seatingChartImage,
             images: data.media.images,
           },
 
@@ -49,10 +57,11 @@ export const createNewEvent = (data) => {
             metaTags: data.seo.metaTags,
             metaDescription: data.seo.metaDescription,
           },
-        },
-        {
-          headers: { "Content-Type": "multipart/form-data" },
+          // data,
         }
+        // {
+        //   headers: { "Content-Type": "multipart/form-data" },
+        // }
       )
       .then((response) => {
         if (!response.data.status) {
@@ -70,7 +79,7 @@ export const createNewEvent = (data) => {
           if (isLogin) {
             dispatch({
               type: "CREATE_EVENT",
-              payload: response.data,
+              event: response.data,
             });
           }
           console.log(response);

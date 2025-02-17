@@ -189,6 +189,7 @@ function CreatePage() {
       // setPreview(URL.createObjectURL(file)); // Show image preview
     }
   };
+  console.log(image)
   const onSubmit = (data) => {
     const formData = new FormData();
     formData.append("profileImage", image); // Append file

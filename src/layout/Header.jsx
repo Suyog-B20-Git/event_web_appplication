@@ -37,7 +37,7 @@ const Header = () => {
   var text_data = [
     { name: "Home", icon: <IoMdHome />, path: "/home" },
     { name: "Event", path: "#", icon: <MdEvent /> },
-    { name: "Organisers", path: "#", icon: <GrGroup /> },
+    { name: "Organisers", path: "/getOrganizer", icon: <GrGroup /> },
     { name: "Performers", path: "#", icon: <IoIosPerson /> },
 
     {

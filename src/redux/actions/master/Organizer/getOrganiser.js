@@ -53,15 +53,35 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
+let api = "http://localhost:5000/api/organizer";
 
-export const getOrganizer = (setLoader) => {
+export const getOrganizer = (setLoader, filter) => {
+  switch (filter) {
+    case "title asc":
+      api =
+        "http://localhost:5000/api/organizer/filter?page=1&limit=8&sortOrder=asc";
+      break;
+
+    case "title desc":
+      api =
+        "http://localhost:5000/api/organizer/filter?page=1&limit=8&sortOrder=desc";
+      break;
+
+    case "alphabetical":
+      api =
+        "http://localhost:5000/api/organizer/filter?page=1&limit=8&sortOrder=asc";
+      break;
+
+    default:
+      api = " http://localhost:5000/api/organizer/filter?page=1&limit=8";
+      break;
+  }
+
   return async (dispatch) => {
     setLoader(true); // Start loading
 
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/organizer"
-      );
+      const response = await axios.get(`${api}`);
       console.log("response", response);
       dispatch({
         type: "GET_ORGANIZER",

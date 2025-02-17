@@ -22,7 +22,7 @@ const Sidebar = ({ setShowPopup }) => {
     { name: "Home", icon: <IoMdHome />, path: "/landingPage" },
 
     { name: "Event", path: "/eventComponent", icon: <MdEvent /> },
-    { name: "Organisers", path: "#", icon: <GrGroup /> },
+    { name: "Organisers", path: "/getOrganizer", icon: <GrGroup /> },
     { name: "Performers", path: "#", icon: <IoIosPerson /> },
 
     {

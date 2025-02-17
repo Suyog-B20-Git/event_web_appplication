@@ -112,64 +112,7 @@ export default function EventForm() {
       setValue("category", parsedData.selectedEvent);
     }
   }, [setValue]);
-  const notifySuccess = () => toast.success("Event created successfully!");
-  const onSubmit = (data) => {
-    console.log(data);
-    console.log(data.media.thumbnailImage);
-    // const formData = new FormData();
-    // formData.append("name", data.name);
-    // formData.append("category", data.category);
-    // formData.append("eventUrl", data.eventUrl);
-    // formData.append("shortUrl", data.shortUrl);
-    // formData.append("excerpt", data.excerpt);
-    // formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut);
-    // formData.append("enableRatingReview", data.enableRatingReview);
-    // formData.append("isRepetitive", data.isRepetitive);
-    // formData.append("isPublish", data.isPublish);
-    // formData.append("isSeasonal", data.isSeasonal);
-    // formData.append("isOnline", data.isOnline);
-    // formData.append("venue", data.venue);
-    // formData.append("repeatExcept", data.repeatExcept);
-    // formData.append("repeatStartTime", data.repeatStartTime);
-    // formData.append("repeatEndTime", data.repeatEndTime);
-    // formData.append("facebookLink", data.facebookLink);
-    // formData.append("startDate", `${data.startDate}T${data.startTime}`);
-    // formData.append("endDate", `${data.endDate}T${data.endTime}`);
-    // formData.append("description", data.description);
-
-    // // Assuming `media.thumbnail.file` contains the actual file object
-    // // 🔹 Append Individual Images from Media Object
-    // if (data.media?.thumbnailImage) {
-    //   formData.append("media[thumbnailImage]", data.media.thumbnailImage);
-    // }
-    // if (data.media?.posterImage) {
-    //   formData.append("media[posterImage]", data.media.posterImage);
-    // }
-    // if (data.media?.seatingChartImage) {
-    //   formData.append("media[seatingChartImage]", data.media.seatingChartImage);
-    // }
-
-    // // 🔹 Append Images Array (Multiple Images)
-    // if (data.media?.images?.length > 0) {
-    //   data.media.images.forEach((image, index) => {
-    //     formData.append(`media[images][${index}]`, image.file);
-    //   });
-    // }
-    const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-    if (isLogin) {
-      dispatch(createNewEvent(data));
-      notifySuccess();
-
-      reset();
-      setThumnPreview(null);
-      setPosterPreview(null);
-      setSeatingChartPreview(null);
-      localStorage.removeItem("eventData");
-      navigate("/home");
-    } else {
-      navigate("/login");
-    }
-  };
+  
 
   const PinkSwitch = styled(Switch)(({ theme }) => ({
     "& .MuiSwitch-switchBase.Mui-checked": {
@@ -265,6 +208,63 @@ export default function EventForm() {
   const isSeasonal = watch("isSeasonal"); // Watch state
   const media = watch("media"); // Watching media state
   const enableRatingReview = watch("enableRatingReview"); // Watching media state
+  const onSubmit = (data) => {
+    console.log(data);
+    console.log(data.media.thumbnailImage);
+    // const formData = new FormData();
+    // formData.append("name", data.name);
+    // formData.append("category", data.category);
+    // formData.append("eventUrl", data.eventUrl);
+    // formData.append("shortUrl", data.shortUrl);
+    // formData.append("excerpt", data.excerpt);
+    // formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut);
+    // formData.append("enableRatingReview", data.enableRatingReview);
+    // formData.append("isRepetitive", data.isRepetitive);
+    // formData.append("isPublish", data.isPublish);
+    // formData.append("isSeasonal", data.isSeasonal);
+    // formData.append("isOnline", data.isOnline);
+    // formData.append("venue", data.venue);
+    // formData.append("repeatExcept", data.repeatExcept);
+    // formData.append("repeatStartTime", data.repeatStartTime);
+    // formData.append("repeatEndTime", data.repeatEndTime);
+    // formData.append("facebookLink", data.facebookLink);
+    // formData.append("startDate", `${data.startDate}T${data.startTime}`);
+    // formData.append("endDate", `${data.endDate}T${data.endTime}`);
+    // formData.append("description", data.description);
+
+    // // 🔹 Append Individual Images from Media Object
+    // if (data.media?.thumbnailImage) {
+    //   formData.append("media[thumbnailImage]", data.media.thumbnailImage);
+    // }
+    // if (data.media?.posterImage) {
+    //   formData.append("media[posterImage]", data.media.posterImage);
+    // }
+    // if (data.media?.seatingChartImage) {
+    //   formData.append("media[seatingChartImage]", data.media.seatingChartImage);
+    // }
+
+    // // 🔹 Append Images Array (Multiple Images)
+    // if (data.media?.images?.length > 0) {
+    //   data.media.images.forEach((image, index) => {
+    //     formData.append(`media[images][${index}]`, image.file);
+    //   });
+    // }
+    const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+    if (isLogin) {
+      dispatch(
+        createNewEvent(data,thumbnailImage,posterImage,seatingChartImage)
+      );
+
+      reset();
+      setThumnPreview(null);
+      setPosterPreview(null);
+      setSeatingChartPreview(null);
+      localStorage.removeItem("eventData");
+      navigate("/home");
+    } else {
+      navigate("/login");
+    }
+  };
   return (
     <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
       <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">

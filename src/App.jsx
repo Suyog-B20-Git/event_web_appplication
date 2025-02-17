@@ -18,7 +18,7 @@ function App() {
       <Routess />
       <ToastContainer position="top-right" autoClose={3000} />
 
-      {/* <GetOrganizer/> */}
+      {/* <GetOrganizer /> */}
     </Provider>
     // <CreatePage/>
   );

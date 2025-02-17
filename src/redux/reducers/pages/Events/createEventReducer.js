@@ -3,13 +3,13 @@ const initialState = {
   total: 1,
   params: {},
   allData: [],
-  event:[]
+  event: [],
 };
 
 const createEventReducer = (state = initialState, action) => {
   switch (action.type) {
     case "CREATE_EVENT":
-      return { ...state,event: action.payload };
+      return { ...state, event: action.event };
     default:
       return state;
   }
