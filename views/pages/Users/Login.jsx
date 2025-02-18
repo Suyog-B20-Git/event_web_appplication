@@ -233,7 +233,7 @@
 // export default Login;
 
 import React, { useState } from "react";
-import InputField from  "../../../src/Components/InputField";
+import InputField from "../../../src/Components/InputField";
 import { Link, useNavigate } from "react-router-dom";
 
 import Button from "../../../src/Components/Button";
@@ -270,7 +270,7 @@ function Login() {
         setSuccessMessage("Login successful!");
         // Save the token in localStorage or sessionStorage
         localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("isLogin",JSON.stringify(true))
+        localStorage.setItem("isLogin", JSON.stringify(true));
         // Redirect to the landing page
         navigate("/");
       }
@@ -278,7 +278,6 @@ function Login() {
       if (error.response) {
         // Server responded with a status other than 200
         setErrorMessage(error.response.data.message || "Login failed.");
-      
       } else {
         // Network or other errors
         setErrorMessage("An error occurred. Please try again.");

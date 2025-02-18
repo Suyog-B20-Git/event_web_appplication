@@ -10,7 +10,7 @@ const FacebookComments = ({ dataHref, numPosts = 5, width = "600" }) => {
       }
     };
     const appId = "2099487807026347";
-    console.log(import.meta.env)
+    console.log(import.meta.env);
     if (window.FB) {
       parseFB();
     } else {

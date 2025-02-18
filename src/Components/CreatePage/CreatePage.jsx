@@ -11,6 +11,8 @@ import { getLocationDetails } from "../../redux/actions/master/location/location
 import MapContainer from "./MapComponent";
 import { createNewOrganizer } from "../../redux/actions/master/Organizer";
 import { toast } from "react-toastify";
+import { createNewPerformer } from "../../redux/actions/master/Performers/PostPerformer";
+import { createNewService } from "../../redux/actions/master/Services/PostServices";
 
 function CreatePage() {
   const {
@@ -68,12 +70,12 @@ function CreatePage() {
       { value: "anchor", label: "Anchor" },
       { value: "decor", label: "Decor" },
       { value: "entertainer", label: "Entertainer" },
-      { value: "party Supplies", label: "Party Supplies" },
+      { value: " party supplier", label: "Party Supplier" },
       {
-        value: "photography & Videography",
+        value: "photography & videography",
         label: "Photography & Videography",
       },
-      { value: "promoters", label: "Promoters" },
+      { value: "promoter", label: "Promoters" },
       { value: "dance studio", label: "Dance Studio" },
     ],
     Venues: [
@@ -189,7 +191,7 @@ function CreatePage() {
       // setPreview(URL.createObjectURL(file)); // Show image preview
     }
   };
-  console.log(image)
+  console.log(image);
   const onSubmit = (data) => {
     const formData = new FormData();
     formData.append("profileImage", image); // Append file
@@ -219,10 +221,24 @@ function CreatePage() {
     formData.append("instagramUrl", data.instagramUrl);
     formData.append("youtubeUrl", data.youtubeUrl);
     formData.append("twitterUrl", data.twitterUrl);
+    if (selectedCategory.value === "Performers") {
+      formData.append("cloudSoundUrl", data.cloudSoundUrl);
+      formData.append("spotifyUrl", data.spotifyUrl);
+      dispatch(createNewPerformer(formData));
+      // notifySuccess(data.listingTitle);
+    }
 
-    dispatch(createNewOrganizer(formData));
-    notifySuccess(data.listingTitle);
+    if (selectedCategory.value === "Organiser") {
+      dispatch(createNewOrganizer(formData));
+      // notifySuccess(data.listingTitle);
+    }
+    if (selectedCategory.value === "Services") {
+      dispatch(createNewService(formData));
+      // notifySuccess(data.listingTitle);
+    }
+
     console.log("Form Data:", data);
+
     setImage(null);
 
     reset();
@@ -258,8 +274,8 @@ function CreatePage() {
           </div>
 
           {/* Subcategory Selection */}
-          <div>
-            <label className="font-medium text-gray-700">
+          <div className="flex flex-col gap-1">
+            <label className="font-medium text-gray-700 ">
               Select Subcategory*
             </label>
             <Controller
@@ -297,7 +313,7 @@ function CreatePage() {
             />
           </div>
           {/*Listing Title*/}
-          <div>
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
@@ -307,7 +323,7 @@ function CreatePage() {
             <input
               type="text"
               name="listingTitle"
-              className="mt-1 block w-full border rounded-md p-2"
+              className=" block w-full border rounded-md p-2"
               placeholder="Lsting Title"
               {...register("listingTitle", {
                 required: "Listing title is required",
@@ -504,7 +520,7 @@ function CreatePage() {
               />
             </div>
           </div>
-          <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+          <div className="grid lg:mt-4 lg:grid-cols-2 grid-cols-1 gap-6">
             <div>
               <label
                 htmlFor="city"
@@ -741,6 +757,46 @@ function CreatePage() {
               );
             })}
           </div>
+          {selectedCategory && selectedCategory.value == "Performers" && (
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-4">
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">Spotify Url</label>
+                <input
+                  type="url"
+                  name="spotifyUrl"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder={`Enter SpotifyUrl`}
+                  {...register("spotifyUrl", {
+                    required: `spotify url is required`,
+                  })}
+                />
+                {errors.spotifyUrl && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.spotifyUrl.message}*
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">
+                  SoundCloud Url
+                </label>
+                <input
+                  type="url"
+                  name="soundCloudUrl"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder={`Enter SoundCloud Url`}
+                  {...register("soundCloudUrl", {
+                    required: `soundCloudUrl url is required`,
+                  })}
+                />
+                {errors.soundCloudUrl && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.soundCloudUrl.message}*
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-2 mt-4">

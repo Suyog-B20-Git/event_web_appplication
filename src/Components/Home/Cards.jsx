@@ -87,11 +87,7 @@ function Cards({ data, heading }) {
             <p className="font-bold font-sans lg:text-2xl">{heading}</p>
           </div>
           <button
-            // onClick={() =>
-            //   navigate("/viewall", {
-            //     state: { card1: card1, heading: heading },
-            //   })
-            // }
+            onClick={() => navigate("/viewall")}
             className="shadow-md lg:text-base text-sm p-2  font-medium"
           >
             View All

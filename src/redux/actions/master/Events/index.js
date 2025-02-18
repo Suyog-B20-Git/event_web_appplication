@@ -126,7 +126,8 @@ export const getEventData = (setLoader) => {
     setLoader(true); // Start loading
    
     try {
-      const response = await axios.get("http://localhost:5000/api/event");
+      
+      const response = await axios.get("http://localhost:5000/api/event?limit=60");
       console.log("response", response);
       dispatch({
         type: "GET_EVENT",

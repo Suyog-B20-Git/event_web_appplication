@@ -59,21 +59,21 @@ export const getOrganizer = (setLoader, filter) => {
   switch (filter) {
     case "title asc":
       api =
-        "http://localhost:5000/api/organizer/filter?page=1&limit=8&sortOrder=asc";
+        "http://localhost:5000/api/organizer/filter?page=1&limit=50&sortOrder=asc";
       break;
 
     case "title desc":
       api =
-        "http://localhost:5000/api/organizer/filter?page=1&limit=8&sortOrder=desc";
+        "http://localhost:5000/api/organizer/filter?page=1&limit=50&sortOrder=desc";
       break;
 
     case "alphabetical":
       api =
-        "http://localhost:5000/api/organizer/filter?page=1&limit=8&sortOrder=asc";
+        "http://localhost:5000/api/organizer/filter?page=1&limit=50&sortOrder=asc";
       break;
 
     default:
-      api = " http://localhost:5000/api/organizer/filter?page=1&limit=8";
+      api = " http://localhost:5000/api/organizer/filter?page=1&limit=50";
       break;
   }
 
