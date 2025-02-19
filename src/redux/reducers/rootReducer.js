@@ -16,6 +16,7 @@ import getOrganizerByIdReducer from "./pages/getOrganizerById";
 
 import postPerformerReducer from "./pages/Performer/PostPerformer";
 import postServiceReducer from "./pages/Services/postServiceReducer";
+import postVenueReducer from "./pages/Venue/postVenue";
 
 // ** Reducers Import **//
 
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   getOrganizerByIdReducer,
   postPerformerReducer,
   postServiceReducer,
+  postVenueReducer,
 });
 
 export default rootReducer;

@@ -13,6 +13,7 @@ import { createNewOrganizer } from "../../redux/actions/master/Organizer";
 import { toast } from "react-toastify";
 import { createNewPerformer } from "../../redux/actions/master/Performers/PostPerformer";
 import { createNewService } from "../../redux/actions/master/Services/PostServices";
+import { createNewVenue } from "../../redux/actions/master/Venue/postVenue";
 
 function CreatePage() {
   const {
@@ -34,13 +35,23 @@ function CreatePage() {
       : [];
     setSelectedTags(newTags);
   };
+  // const handleSubcategoryChange = (selectedOptions) => {
+  //   const newSubCategory = selectedOptions
+  //     ? selectedOptions.map((option) => option.value)
+  //     : [];
+  //   setSelectedSubCategory(newSubCategory);
+  // };
   const handleSubcategoryChange = (selectedOptions) => {
-    const newSubCategory = selectedOptions
-      ? selectedOptions.map((option) => option.value)
-      : [];
+    let newSubCategory;
+    if (Array.isArray(selectedOptions)) {
+      newSubCategory = selectedOptions.map((option) => option.value);
+    } else {
+      newSubCategory = selectedOptions ? [selectedOptions.value] : [];
+    }
+
+    console.log("Updated SubCategory:", newSubCategory); // Debugging log
     setSelectedSubCategory(newSubCategory);
   };
-
   const categoryList = [
     { value: "Organiser", label: "Organiser" },
     { value: "Performers", label: "Performers" },
@@ -101,6 +112,7 @@ function CreatePage() {
   const subCategoryList = selectedCategory
     ? subCategoryOptions[selectedCategory.value]
     : [];
+
   const validateBusinessHours = (value) => {
     if (!value) return "Time is required";
     const [hours, minutes] = value.split(":").map(Number);
@@ -184,10 +196,18 @@ function CreatePage() {
   console.log(data4);
   // Handle Image Selection
   const [image, setImage] = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setImage(file);
+      // setPreview(URL.createObjectURL(file)); // Show image preview
+    }
+  };
+  const handleImageChange1 = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setCoverImage(file);
       // setPreview(URL.createObjectURL(file)); // Show image preview
     }
   };
@@ -213,10 +233,11 @@ function CreatePage() {
     formData.append("googleSearchLong", data4.location.lng);
 
     selectedTags.forEach((tag) => formData.append("tags[]", tag));
-    formData.append("phoneNumber", data.phone);
-    formData.append("email", data.email);
-    formData.append("availableTime", data.availableTime);
-    formData.append("website", data.website);
+    if (data.phone) formData.append("phoneNumber", data.phone);
+    if (data.email) formData.append("email", data.email);
+    if (data.availableTime)
+      formData.append("availableTime", data.availableTime);
+    if (data.website) formData.append("website", data.website);
     formData.append("facebookUrl", data.facebookUrl);
     formData.append("instagramUrl", data.instagramUrl);
     formData.append("youtubeUrl", data.youtubeUrl);
@@ -225,21 +246,36 @@ function CreatePage() {
       formData.append("cloudSoundUrl", data.cloudSoundUrl);
       formData.append("spotifyUrl", data.spotifyUrl);
       dispatch(createNewPerformer(formData));
-      // notifySuccess(data.listingTitle);
     }
 
     if (selectedCategory.value === "Organiser") {
       dispatch(createNewOrganizer(formData));
-      // notifySuccess(data.listingTitle);
     }
     if (selectedCategory.value === "Services") {
       dispatch(createNewService(formData));
+      // notifySuccess(data.listingTitle);
+    }
+    if (selectedCategory.value === "Venues") {
+      formData.append("coverImage", coverImage); // Append file
+      formData.append("url", data.url);
+      formData.append("zipcode", data.zipcode);
+      formData.append("quotedForm", data.quotedForm);
+      formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
+      formData.append("availability", data.availability);
+      formData.append("pricing", data.pricing);
+      formData.append("neighbourhoods", data.neighbourhoods);
+      formData.append("noOfStandingGuest", data.noOfStandingGuest);
+      formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
+      formData.append("amenities", data.amenities);
+      formData.append("type", data.type);
+      dispatch(createNewVenue(formData));
       // notifySuccess(data.listingTitle);
     }
 
     console.log("Form Data:", data);
 
     setImage(null);
+    setCoverImage(null);
 
     reset();
   };
@@ -359,6 +395,185 @@ function CreatePage() {
             </p>
           )}
         </div>
+        {selectedCategory && selectedCategory.value == "Venues" && (
+          <div className="flex flex-col gap-1">
+            <h1 className="text-[#ff2459] text-2xl mb-2 font-semibold">
+              Venue
+            </h1>
+            <div>
+              <label
+                htmlFor="type"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Type
+              </label>
+              <input
+                type="text"
+                name="type"
+                className="mt-1 block w-full border rounded-md mb-3  p-2"
+                placeholder="eg. cinema,theater,stadium"
+                {...register("type", {
+                  // required: "amenties is required",
+                })}
+              />
+            </div>
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">Website Url</label>
+                <input
+                  type="url"
+                  name="url"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder={`Enter Website Url`}
+                  {...register("url", {
+                    required: `website url is required`,
+                  })}
+                />
+                {errors.url && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.url.message}*
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="ammenities"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Ammenities*
+                </label>
+                <input
+                  type="text"
+                  name="amenities"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter Amenities"
+                  {...register("amenities", {
+                    // required: "amenties is required",
+                  })}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="NoOfseatedGuest"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  No of Seated Guest*
+                </label>
+                <input
+                  type="number"
+                  name="noOfSeatedGuest"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter no of seated guest"
+                  {...register("noOfSeatedGuest", {
+                    // required: "No of seated guest is required",
+                  })}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="noOfStandingGuest"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  No of Standing Guest*
+                </label>
+                <input
+                  type="number"
+                  name="noOfStandingGuest"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter no of standing guest"
+                  {...register("noOfStandingGuest", {
+                    // required: "No of seated guest is required",
+                  })}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="neighbourhoods"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Neighbourhoods
+                </label>
+                <input
+                  type="text"
+                  name="neighbourhoods"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter neighbourhood"
+                  {...register("neighbourhoods", {
+                    // required: "No of seated guest is required",
+                  })}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="pricing"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  pricing
+                </label>
+                <input
+                  type="text"
+                  name="pricing"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="Enter pricing"
+                  {...register("pricing", {
+                    required: "Pricing is required",
+                  })}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="foodAndBeveragesDetails"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Food and Beverages Details
+                </label>
+                <input
+                  type="text"
+                  name="foodAndBeveragesDetails"
+                  className="mt-1 block w-full border rounded-md mb-3  p-2"
+                  placeholder="enter food beverage details"
+                  {...register("foodAndBeveragesDetails", {
+                    // required: "amenties is required",
+                  })}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="Quoted Form"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Quoted Form
+                </label>
+                <input
+                  type="text"
+                  name="quotedForm"
+                  className="mt-1 block w-full border rounded-md mb-3  p-2"
+                  placeholder="enter quoted Form"
+                  {...register("quotedForm", {
+                    // required: "amenties is required",
+                  })}
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                htmlFor="availibility"
+                className="block text-sm font-medium text-gray-700"
+              >
+                availability
+              </label>
+              <input
+                type="text"
+                name="availability"
+                className="mt-1 block w-full border rounded-md mb-3  p-2"
+                placeholder="enter availability"
+                {...register("availability", {
+                  // required: "amenties is required",
+                })}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Tagkeywords Selection */}
         {/* <div className="mb-4 flex flex-col gap-1">
@@ -382,37 +597,41 @@ function CreatePage() {
             <p className="text-red-500 text-sm">{errors.tagKeywords.message}</p>
           )}
         </div> */}
-        <div className="mb-4 flex flex-col gap-1">
-          <label className="font-medium text-gray-700">
-            Select Tagkeywords*
-          </label>
-          <Controller
-            name="tagKeywords"
-            rules={{ required: "TagKeywords are required" }}
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={tagKeywordList}
-                isMulti
-                onChange={(selectedOptions) => {
-                  handleTagChange(selectedOptions);
-                  field.onChange(
-                    selectedOptions
-                      ? selectedOptions.map((option) => option.value)
-                      : []
-                  );
-                }}
-                value={tagKeywordList.filter((option) =>
-                  selectedTags.includes(option.value)
-                )}
-              />
+        {selectedCategory && selectedCategory.value !== "Venues" && (
+          <div className="mb-4 flex flex-col gap-1">
+            <label className="font-medium text-gray-700">
+              Select Tagkeywords*
+            </label>
+            <Controller
+              name="tagKeywords"
+              rules={{ required: "TagKeywords are required" }}
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={tagKeywordList}
+                  isMulti
+                  onChange={(selectedOptions) => {
+                    handleTagChange(selectedOptions);
+                    field.onChange(
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : []
+                    );
+                  }}
+                  value={tagKeywordList.filter((option) =>
+                    selectedTags.includes(option.value)
+                  )}
+                />
+              )}
+            />
+            {errors.tagKeywords && (
+              <p className="text-red-500 text-sm">
+                {errors.tagKeywords.message}
+              </p>
             )}
-          />
-          {errors.tagKeywords && (
-            <p className="text-red-500 text-sm">{errors.tagKeywords.message}</p>
-          )}
-        </div>
+          </div>
+        )}
 
         {/*Location*/}
         <div className="flex flex-col gap-1 mt-4">
@@ -623,104 +842,127 @@ function CreatePage() {
             </div>
           </div>
         </div>
+        {selectedCategory && selectedCategory.value == "Venues" && (
+          <div className="flex flex-col gap-1 mt-4">
+            <input
+              type="text"
+              {...register("zipCode", {
+                required: "ZIP code is required",
+                pattern: {
+                  value: /^[0-9]{5,6}$/,
+                  message: "Enter a valid 5 or 6-digit ZIP code",
+                },
+              })}
+              className="border p-2 rounded w-full"
+              placeholder="Enter ZIP Code"
+            />
+            {errors.zipCode && (
+              <p className="text-red-500 text-sm">{errors.zipCode.message}</p>
+            )}
+          </div>
+        )}
 
         <div className="mt-4 mb-4">
           <MapContainer location={data4.location} />
         </div>
 
         {/*Contact Information*/}
-        <div className="flex flex-col gap-1 mt-4">
-          <h1 className="text-[#ff2459] text-2xl font-semibold">
-            Contact Information
-          </h1>
-          <div className="grid lg:grid-cols-4 grid-cols-1 gap-6">
-            {/* Phone */}
-            <div className="flex flex-col gap-1">
-              <label className="text-gray-700 font-medium">Phone*</label>
-              <input
-                type="text"
-                {...register("phone", {
-                  required: "Phone number is required",
-                  pattern: {
-                    value: /^[6-9]\d{9}$/, // Starts with 6-9 and has 10 digits
-                    message: "Enter a valid 10-digit phone number",
-                  },
-                })}
-                className="border p-2 rounded"
-                placeholder="Enter phone number"
-              />
-              {errors.phone && (
-                <p className="text-red-500 text-sm">{errors.phone.message}</p>
-              )}
-            </div>
+        {selectedCategory && selectedCategory.value !== "Venues" && (
+          <div className="flex flex-col gap-1 mt-4">
+            <h1 className="text-[#ff2459] text-2xl font-semibold">
+              Contact Information
+            </h1>
+            <div className="grid lg:grid-cols-4 grid-cols-1 gap-6">
+              {/* Phone */}
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">Phone*</label>
+                <input
+                  type="text"
+                  {...register("phone", {
+                    required: "Phone number is required",
+                    pattern: {
+                      value: /^[6-9]\d{9}$/, // Starts with 6-9 and has 10 digits
+                      message: "Enter a valid 10-digit phone number",
+                    },
+                  })}
+                  className="border p-2 rounded"
+                  placeholder="Enter phone number"
+                />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                )}
+              </div>
 
-            {/*Email*/}
-            <div className="flex flex-col gap-1">
-              <label className="text-gray-700 font-medium">Email*</label>
-              <input
-                type="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                    message: "Enter a valid email address",
-                  },
-                })}
-                className="border p-2 rounded"
-                placeholder="Enter email"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
-            </div>
+              {/*Email*/}
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">Email*</label>
+                <input
+                  type="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                      message: "Enter a valid email address",
+                    },
+                  })}
+                  className="border p-2 rounded"
+                  placeholder="Enter email"
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
+              </div>
 
-            {/* Time Input Field */}
-            <div className="flex flex-col gap-1">
-              <label className="text-gray-700 font-medium">
-                Select Business Hours (9 AM - 6 PM)*
-              </label>
-              <input
-                type="time"
-                {...register("availableTime", {
-                  validate: validateBusinessHours,
-                })}
-                className="border p-2 rounded"
-              />
-              {errors.availableTime && (
-                <p className="text-red-500 text-sm">
-                  {errors.availableTime.message}
-                </p>
-              )}
-            </div>
+              {/* Time Input Field */}
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">
+                  Select Business Hours (9 AM - 6 PM)*
+                </label>
+                <input
+                  type="time"
+                  {...register("availableTime", {
+                    validate: validateBusinessHours,
+                  })}
+                  className="border p-2 rounded"
+                />
+                {errors.availableTime && (
+                  <p className="text-red-500 text-sm">
+                    {errors.availableTime.message}
+                  </p>
+                )}
+              </div>
 
-            {/*Website*/}
-            <div>
-              <label
-                htmlFor="website"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Website*
-              </label>
-              <input
-                type="url"
-                name="website"
-                className="mt-1 block w-full border rounded-md p-2"
-                placeholder="website"
-                {...register("website", {
-                  required: "website is required",
-                })}
-              />
-              {errors.website && (
-                <p className="text-red-600 text-sm px-2">
-                  {errors.website.message}*
-                </p>
-              )}
+              {/*Website*/}
+              <div>
+                <label
+                  htmlFor="website"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Website*
+                </label>
+                <input
+                  type="url"
+                  name="website"
+                  className="mt-1 block w-full border rounded-md p-2"
+                  placeholder="website"
+                  {...register("website", {
+                    required: "website is required",
+                  })}
+                />
+                {errors.website && (
+                  <p className="text-red-600 text-sm px-2">
+                    {errors.website.message}*
+                  </p>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/*FIle*/}
-        <div className="border p-2 mt-8 ">
+        <div className="border p-2 mt-8 flex flex-col gap-1 ">
+          <label className="text-xs">Upload profile Image</label>
           <input type="file" onChange={handleImageChange} accept="image/*" />
         </div>
 
@@ -728,6 +970,17 @@ function CreatePage() {
           Image size must be less than 2Mb
         </p>
         <hr />
+
+        {selectedCategory && selectedCategory.value == "Venues" && (
+          <div className="border p-2 mt-8 flex flex-col gap-1 ">
+            <label className="text-xs">Upload Cover Image</label>
+            <input type="file" onChange={handleImageChange1} accept="image/*" />
+            <p className="p-2 pt-1 pb-5 text-gray-600">
+              Image size must be less than 2Mb
+            </p>
+            <hr />
+          </div>
+        )}
 
         <div className="flex flex-col gap-1 mt-4">
           <h1 className="text-[#ff2459] text-2xl font-semibold">

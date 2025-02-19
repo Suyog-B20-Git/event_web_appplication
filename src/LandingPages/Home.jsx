@@ -197,17 +197,17 @@ function Home() {
       {data.length > 0 ? (
         <Cards data={data} heading={"TRENDING EVENTS"} />
       ) : (
-        "No Event Data"
+        setLoading(true)
       )}
       {data1.length > 0 ? (
         <Cards data={data1} heading={"UPCOMING EVENTS"} />
       ) : (
-        "No Event Data"
+        setLoading(true)
       )}
       {data2.length > 0 ? (
         <Cards data={data2} heading={"FEATURED EVENTS"} />
       ) : (
-        "No Event Data"
+        setLoading(true)
       )}
 
       <EventCategory />

@@ -19,7 +19,7 @@ const Sidebar = ({ setShowPopup }) => {
   //  const [ShowPopup,setShowPopup]=useState(false);
 
   var text_data = [
-    { name: "Home", icon: <IoMdHome />, path: "/landingPage" },
+    { name: "Home", icon: <IoMdHome />, path: "/home" },
 
     { name: "Event", path: "/eventComponent", icon: <MdEvent /> },
     { name: "Organisers", path: "/getOrganizer", icon: <GrGroup /> },

@@ -23,8 +23,8 @@ function Viewall() {
     return <Loading />;
   }
   return (
-    <div className="flex lg:justify-start  justify-center lg:relative left-[70px] items-center overflow-hidden">
-      <div className="lg:p-12 lg:pb-5 lg:pt-10 pt-5 p-5 w-full max-w-[1340px]">
+    <div className="flex lg:justify-start justify-center lg:pt-0 md:pt-4 pt-[87px] lg:relative left-[70px] items-center overflow-hidden">
+      <div className="lg:p-12 lg:pb-5  pt-5 p-5 w-full max-w-[1340px]">
         <div className="flex justify-between">
           <div className="flex gap-2 lg:pl-3">
             <BsFire className="text-2xl relative top-1" />
@@ -33,7 +33,7 @@ function Viewall() {
         </div>
 
         {/* Cards container with horizontal scrolling */}
-        <div className="  grid grid-cols-3 gap-9  lg:p-4 pt-2 relative lg:right-46   w-full">
+        <div className="  grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
           {data.map((item, index) => (
             <div
               key={index}

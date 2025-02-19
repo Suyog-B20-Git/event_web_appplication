@@ -121,6 +121,7 @@ import axios from "axios";
 
 // import axios from "axios";
 
+// const PORT = import.meta.env.VITE_API_PORT;
 export const getEventData = (setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading

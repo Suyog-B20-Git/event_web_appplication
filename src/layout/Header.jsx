@@ -1,12 +1,18 @@
-import { IoLocationSharp, IoMenu, IoSearch, IoSearchSharp } from "react-icons/io5";
+import {
+  IoLocationSharp,
+  IoMenu,
+  IoSearch,
+  IoSearchSharp,
+} from "react-icons/io5";
 
 import { useState, useEffect, useRef } from "react";
 import Button from "../Components/Button";
 // import InputField from "../ReusableComponents/InputField";
 import Sidebar from "./Sidebar";
-import { IoIosPerson, IoMdHome } from "react-icons/io";
+import { IoIosLogOut, IoIosPerson, IoMdHome } from "react-icons/io";
 import {
   MdContactPhone,
+  MdDashboard,
   MdEvent,
   MdMiscellaneousServices,
 } from "react-icons/md";
@@ -14,6 +20,8 @@ import { GrGroup } from "react-icons/gr";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode"; // Correct import
 import { CiSearch } from "react-icons/ci";
+import { CgProfile } from "react-icons/cg";
+import gsap from "gsap";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -36,19 +44,99 @@ const Header = () => {
   const handleShowAlert = () => setShowPopup(true);
   var text_data = [
     { name: "Home", icon: <IoMdHome />, path: "/home" },
-    { name: "Event", path: "#", icon: <MdEvent /> },
-    { name: "Organisers", path: "/getOrganizer", icon: <GrGroup /> },
-    { name: "Performers", path: "#", icon: <IoIosPerson /> },
+    {
+      name: "Event",
+      path: "#",
+      icon: <MdEvent />,
+      popUpMenu: [
+        { name: "Business", path: "#" },
+        { name: "Festivals", path: "#" },
+        { name: "Live Music", path: "#" },
+        { name: "Nightlife and club", path: "#" },
+        { name: "Professional", path: "#" },
+        { name: "Social", path: "#" },
+        { name: "Sport & Leisure", path: "#" },
+        { name: "Theatre & Arts", path: "#" },
+      ],
+    },
+    {
+      name: "Organisers",
+      path: "/getOrganizer",
+      icon: <GrGroup />,
+      popUpMenu: [
+        { name: "Event Planner", path: "#" },
+        { name: "Wedding Planner", path: "#" },
+        { name: "Adventure", path: "#" },
+      ],
+    },
+    {
+      name: "Performers",
+      path: "#",
+      icon: <IoIosPerson />,
+      popUpMenu: [
+        { name: "Band", path: "#" },
+        { name: "Disc Jockey", path: "#" },
+        { name: "Sound Artist", path: "#" },
+        { name: "Stand up Comedian", path: "#" },
+      ],
+    },
 
     {
       name: "Services",
       paths: "#",
       icon: <MdMiscellaneousServices />,
+      popUpMenu: [
+        { name: "Anchor", path: "#" },
+        { name: "Decor", path: "#" },
+        { name: "Entertainer", path: "#" },
+        { name: "Party Supplies", path: "#" },
+        { name: "Photography And Videography", path: "#" },
+        { name: "Promoters", path: "#" },
+        { name: "DanceStudio", path: "#" },
+      ],
     },
     { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
-    { name: "Venues", path: "/Vanue", icon: <IoLocationSharp /> },
+    {
+      name: "Venues",
+      path: "/Vanue",
+      icon: <IoLocationSharp />,
+      popUpMenu: [
+        { name: "Indoor", path: "#" },
+        { name: "Outdoor", path: "#" },
+      ],
+    },
   ];
 
+  const [isLog, setIsLog] = useState(false);
+  const [isPop, setIsPop] = useState(false);
+  const boxRef = useRef(null);
+  const dropdownRef = useRef(null); // Ref for the dropdown
+  useEffect(() => {
+    gsap.from(boxRef.current, {
+      y: 100, // Moves up from 100px
+      opacity: 0, // Starts with opacity 0
+      duration: 1, // Animation lasts for 1 second
+      ease: "power3.out",
+    });
+  }, []);
+  const [activeIndex, setActiveIndex] = useState(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsLog(false);
+        setIsPop(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  const handleLogOut = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("isLogin");
+  };
   const handleClickOutside1 = (event) => {
     if (searchRef.current && !searchRef.current.contains(event.target)) {
       setIsSearch(false);
@@ -115,9 +203,6 @@ const Header = () => {
                 <div className="lg:flex md:flex hidden  lg:flex-row flex-col items-center rounded-full bg-gray-100 shadow-md p-2 lg:w-full w-[80%]  mx-auto">
                   {/* Search Input */}
                   <div className="flex items-center  flex-1 px-4 ">
-                    <span className="text-gray-700 relative lg:left-0 text-lg font-bold">
-                      <IoSearch />
-                    </span>
                     <input
                       type="text"
                       placeholder="Search events"
@@ -146,8 +231,6 @@ const Header = () => {
                     />
                     {/* Search Button */}
                     <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
-                    
-
                       <IoSearchSharp className="text-white text-lg" />
                     </button>
                   </div>
@@ -195,22 +278,160 @@ const Header = () => {
 
           {/* Second Headding */}
           <div className="w-[100%] hidden lg:flex ">
-            <div className="hidden sm:flex justify-end gap-5 lg:relative lg:left-40 items-center  w-[70%] ">
+            {/* <div className="hidden sm:flex justify-end gap-5 lg:relative lg:left-40 items-center  w-[70%] ">
               {text_data.map((item, index) => (
                 <button
                   key={index}
                   className="font-medium  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
                   onClick={() => navigate(item.path)}
                 >
-                  <p className="relative top-1.5 "> {item.icon}</p> {item.name}
+                  <p
+                    onMouseEnter={() => setIsPop(true)}
+                    onMouseLeave={() => setIsPop(false)}
+                    className="relative top-1.5 "
+                  >
+                    {" "}
+                    {item.icon}
+                  </p>{" "}
+                  {item.name}
+                  {isPop && (
+                    <div
+                      ref={boxRef}
+                      className="bg-white rounded text-gray-900 absolute w-40  h-[120px] mt-1"
+                    >
+                      {item.popUpMenu.map((menuItem, index) => {
+                        return (
+                          <button
+                            key={index}
+                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                          >
+                            <MdDashboard className=" hover:text-white relative top-1" />
+                            {menuItem.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </button>
+              ))}
+            </div> */}
+            {/* <div className="hidden sm:flex justify-end gap-5 lg:relative lg:left-40 items-center w-[70%]">
+              {text_data.map((item, index) => (
+                <button
+                  key={index}
+                  className="font-medium lg:text-lg md:text-sm lg:mr-5 flex lg:gap-1 md:gap-0.5 relative z-60"
+                  onClick={() => navigate(item.path)}
+                  onMouseEnter={() => setActiveIndex(index)} // Set active index on hover
+                  onMouseLeave={() => setActiveIndex(null)} // Reset on mouse leave
+                >
+                  <p className="relative top-1.5">{item.icon}</p> {item.name}
+                  {activeIndex === index &&
+                    item.popUpMenu && ( // Show popup only for the active item
+                      <div
+                        ref={boxRef}
+                        className="bg-white rounded text-gray-900 absolute top-7 w-max h-max mt-1 shadow-lg"
+                      >
+                        {item.popUpMenu.map((menuItem, menuIndex) => (
+                          <button
+                            key={menuIndex}
+                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                          >
+                            <MdDashboard className="hover:text-white relative top-1" />
+                            {menuItem.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                </button>
+              ))}
+            </div> */}
+            <div className="hidden sm:flex justify-end gap-5 lg:relative lg:left-40 items-center w-[70%]">
+              {text_data.map((item, index) => (
+                <div
+                  key={index}
+                  className="relative pb-2"
+                  onMouseEnter={() => setActiveIndex(index)} // Keep active when hovering over button or dropdown
+                  onMouseLeave={() => setActiveIndex(null)} // Close dropdown only when mouse leaves both
+                >
+                  <button
+                    className="font-medium lg:text-lg md:text-sm lg:mr-5 flex lg:gap-1 md:gap-0.5 relative z-60"
+                    onClick={() => navigate(item.path)}
+                  >
+                    <p className="relative top-1.5">{item.icon}</p> {item.name}
+                  </button>
+
+                  {activeIndex === index && item.popUpMenu && (
+                    <div
+                      ref={boxRef}
+                      className="bg-white rounded text-gray-900 absolute top-7 left-0 w-max  h-max mt-1 shadow-lg"
+                    >
+                      {item.popUpMenu.map((menuItem, menuIndex) => (
+                        <button
+                          key={menuIndex}
+                          className="flex gap-2 p-2.5 font-medium hover:text-white hover:bg-[#ff2459]  w-full"
+                        >
+                          {/* <MdDashboard className="hover:text-white relative top-1" /> */}
+                          {menuItem.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
             <div className="   md:w-[30%]">
-              <div className="md:flex  relative left-20 z-60  md:justify-end hidden   md:w-[100%] w-[100%]">
+              <div
+                onMouseEnter={() => setIsLog(true)}
+                onMouseLeave={() => setIsLog(false)}
+                className="md:flex  relative left-20 z-60  md:justify-end hidden   md:w-[100%] w-[100%]"
+              >
                 <div className=" m-1 md:mr-20 lg:mr-36  w-[100%] hidden md:flex md:justify-end">
                   {userName ? (
-                    <span>Welcome, {userName}!</span> // Show user name if available
+                    <div ref={dropdownRef}>
+                      <span
+                        onClick={() => setIsLog(!isLog)}
+                        className="p-1 cursor-pointer font-medium  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
+                      >
+                        Welcome, {userName}!
+                      </span>
+                      {isLog && (
+                        <div
+                          ref={boxRef}
+                          className="bg-white rounded text-gray-900 absolute w-40  h-[120px] mt-1"
+                        >
+                          <button
+                            onClick={() => {
+                              setIsLog(false);
+                            }}
+                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                          >
+                            <MdDashboard className=" hover:text-white relative top-1" />
+                            Dashboard
+                          </button>
+                          <button
+                            onClick={() => {
+                              setIsLog(false);
+                            }}
+                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                          >
+                            <CgProfile className=" hover:text-white relative top-1" />
+                            Profile
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleLogOut();
+                              setIsLog(false);
+                              setUserName("");
+                              window.location.reload();
+                            }}
+                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                          >
+                            <IoIosLogOut className=" hover:text-white relative top-1" />
+                            Logout
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <Button
                       text={"Sign Up / Login "}

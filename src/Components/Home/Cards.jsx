@@ -103,21 +103,23 @@ function Cards({ data, heading }) {
               className="overflow-hidden flex-none  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
               // onClick={() => navigate("/featuredEvent", { state: item })}
             >
-              <div
-                style={{
-                  // backgroundImage: `url(${item.media.thumbnailImage})`,
-                  backgroundImage: `url(${
-                    item.media?.thumbnailImage || "fallback-image.jpg"
-                  })`,
+              <div className=" h-24 lg:h-52 md:h-32 w-full rounded-lg  flex justify-end overflow-hidden">
+                <div
+                  style={{
+                    // backgroundImage: `url(${item.media.thumbnailImage})`,
+                    backgroundImage: `url(${
+                      item.media?.thumbnailImage || "fallback-image.jpg"
+                    })`,
 
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-                className=" h-24 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end"
-              >
-                <div className=" text-white bg-blue-300 rounded-xl lg:text-base text-xs   font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
-                  {item.category}
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  className=" h-24 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end transition-transform duration-300 hover:scale-125"
+                >
+                  <div className=" text-white bg-blue-300 rounded-xl lg:text-base text-xs   font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
+                    {item.category}
+                  </div>
                 </div>
               </div>
               <div>

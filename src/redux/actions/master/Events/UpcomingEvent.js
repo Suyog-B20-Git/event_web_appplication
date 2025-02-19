@@ -53,7 +53,7 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
-
+// const PORT = import.meta.env.VITE_API_PORT;
 export const getUpcomingEventData = (setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
