@@ -4,13 +4,13 @@ import { Zoom, Slide } from "react-toastify";
 import { axiosInstance } from "../../../../../utility/utils";
 
 import { toast } from "react-toastify";
-
+import { Venue } from "../../../Urls";
 export const createNewVenue = (data) => {
   console.log("data.:::", data);
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
-      .post(`http://localhost:5000/api/venue`, data, {
+      .post(`${Venue.postVenue}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {

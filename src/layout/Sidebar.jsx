@@ -23,15 +23,15 @@ const Sidebar = ({ setShowPopup }) => {
 
     { name: "Event", path: "/eventComponent", icon: <MdEvent /> },
     { name: "Organisers", path: "/getOrganizer", icon: <GrGroup /> },
-    { name: "Performers", path: "#", icon: <IoIosPerson /> },
+    { name: "Performers", path: "/getPerformer", icon: <IoIosPerson /> },
 
     {
       name: "Services",
-      path: "#",
+      path: "/getService",
       icon: <MdMiscellaneousServices />,
     },
     { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
-    { name: "Venues", path: "/Vanue", icon: <IoLocationSharp /> },
+    { name: "Venues", path: "/getVenue", icon: <IoLocationSharp /> },
     { name: "Create Event", path: "/createEvent", icon: <MdEvent /> },
     { name: "Create Page", path: "/createPage", icon: <RiPagesLine /> },
     { name: "SignUp/Login", path: "/login", icon: <MdAccountCircle /> },

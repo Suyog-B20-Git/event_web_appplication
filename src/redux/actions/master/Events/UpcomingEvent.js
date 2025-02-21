@@ -53,15 +53,14 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
-// const PORT = import.meta.env.VITE_API_PORT;
+// const PORT = import.meta.env.VITE_API_PORT;]
+import { Event } from "../../../Urls";
 export const getUpcomingEventData = (setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
 
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/event/upcoming?page=1&limit=10&timezoneOffset=0"
-      );
+      const response = await axios.get(Event.upcomingEvent);
       console.log("response", response);
       dispatch({
         type: "GET_UPCOMING_EVENT",

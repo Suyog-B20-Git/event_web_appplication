@@ -71,7 +71,7 @@ const Header = () => {
     },
     {
       name: "Performers",
-      path: "#",
+      path: "/getPerformer",
       icon: <IoIosPerson />,
       popUpMenu: [
         { name: "Band", path: "#" },
@@ -83,14 +83,14 @@ const Header = () => {
 
     {
       name: "Services",
-      paths: "#",
+      paths: "/getService",
       icon: <MdMiscellaneousServices />,
       popUpMenu: [
         { name: "Anchor", path: "#" },
         { name: "Decor", path: "#" },
         { name: "Entertainer", path: "#" },
         { name: "Party Supplies", path: "#" },
-        { name: "Photography And Videography", path: "#" },
+        { name: "Photography & Videography", path: "#" },
         { name: "Promoters", path: "#" },
         { name: "DanceStudio", path: "#" },
       ],
@@ -98,7 +98,7 @@ const Header = () => {
     { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
     {
       name: "Venues",
-      path: "/Vanue",
+      path: "/getVenue",
       icon: <IoLocationSharp />,
       popUpMenu: [
         { name: "Indoor", path: "#" },
@@ -363,12 +363,12 @@ const Header = () => {
                   {activeIndex === index && item.popUpMenu && (
                     <div
                       ref={boxRef}
-                      className="bg-white rounded text-gray-900 absolute top-7 left-0 w-max  h-max mt-1 shadow-lg"
+                      className=" bg-white rounded text-gray-900 absolute top-7 left-0   h-max mt-1 shadow-lg"
                     >
                       {item.popUpMenu.map((menuItem, menuIndex) => (
                         <button
                           key={menuIndex}
-                          className="flex gap-2 p-2.5 font-medium hover:text-white hover:bg-[#ff2459]  w-full"
+                          className="flex justify-start  gap-2 p-2.5 font-medium hover:text-white whitespace-nowrap hover:bg-[#ff2459]  w-56 "
                         >
                           {/* <MdDashboard className="hover:text-white relative top-1" /> */}
                           {menuItem.name}

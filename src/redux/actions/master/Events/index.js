@@ -122,13 +122,13 @@ import axios from "axios";
 // import axios from "axios";
 
 // const PORT = import.meta.env.VITE_API_PORT;
+import { Event } from "../../../Urls";
 export const getEventData = (setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
-   
+
     try {
-      
-      const response = await axios.get("http://localhost:5000/api/event?limit=60");
+      const response = await axios.get(Event.getAllEvents);
       console.log("response", response);
       dispatch({
         type: "GET_EVENT",
@@ -142,10 +142,9 @@ export const getEventData = (setLoader) => {
       dispatch({
         type: "GET_EVENT",
         eventData: [],
-      })
-    }
-    finally {
+      });
+    } finally {
       setLoader(false); // Stop loading
-    } 
+    }
   };
 };

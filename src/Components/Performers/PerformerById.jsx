@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../Loading";
-import { getOrganizerById } from "../../redux/actions/master/Organizer/getOrganizerById";
+
 import {
   MdKeyboardDoubleArrowRight,
   MdOutlineNavigateNext,
@@ -26,54 +26,48 @@ import { BsCalendar2DateFill } from "react-icons/bs";
 
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
-import MapContainer from "./Map";
+import MapContainer from "../Organizer/Map";
 import { FcLike } from "react-icons/fc";
-import FacebookComments from "./FacebookComments";
-import EnquiryForm from "./EnquiryForm";
-import OwnerShipForm from "./OwnerShipForm";
+import FacebookComments from "../Organizer/FacebookComments";
+import EnquiryForm from "../Organizer/EnquiryForm";
+import OwnerShipForm from "../Organizer/OwnerShipForm";
+import { getPerformerById } from "../../redux/actions/master/Performers/getPerformerById";
 
-function GetOrganizerById() {
+function GetPerformerById() {
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
+
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
   const [about, setAbout] = useState(true);
   const [upcomimg, setUpcoming] = useState(false);
   const [facebook, setFacebook] = useState(false);
+  const [twitter, setTwitter] = useState(false);
+  const [soundCloud, setSoundCloud] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const organizerId = location.state;
-  console.log(organizerId);
+  const performerId = location.state;
+  console.log(performerId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const store = useSelector((state) => state.getOrganizerByIdReducer) || {
-    organizerData: [],
+  const store = useSelector((state) => state.getPerformerByIdReducer) || {
+    performerData: [],
   };
 
-  const data = store.organizerData;
-  console.log(data, "OrganizerData....");
+  const data = store.performerData;
+  console.log(data, "performerData....");
 
   useEffect(() => {
-    dispatch(getOrganizerById(organizerId, setLoading));
+    dispatch(getPerformerById(performerId, setLoading));
   }, [dispatch]);
   if (loading) {
     return <Loading />;
   }
+
  
 
-  // useEffect(() => {
-  //   if (!window.FB) {
-  //     const script = document.createElement("script");
-  //     script.src =
-  //       "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v17.0";
-  //     script.async = true;
-  //     script.defer = true;
-  //     document.body.appendChild(script);
-  //   }
-  // }, []);
-
   return (
-    <div>
+    <div className="">
       <div className="flex lg:flex-row flex-col gap-10">
         <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[80%] lg:px-4 ">
           <div className="flex justify-between font-medium">
@@ -90,15 +84,15 @@ function GetOrganizerById() {
               <p
                 className="cursor-pointer hover:text-[#ff2459]"
                 onClick={() => {
-                  navigate("/getOrganizer");
+                  navigate("/getPerformer");
                 }}
               >
-                Organizer
+                Performers
               </p>
               <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
               <p
                 className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
-                onClick={() => navigate("/getOrganizerById", { state: data })}
+                onClick={() => navigate("/getPerformerById", { state: data })}
               >
                 {data.name}
               </p>
@@ -304,6 +298,8 @@ function GetOrganizerById() {
                     setAbout(true);
                     setUpcoming(false);
                     setFacebook(false);
+                    setSoundCloud(false);
+                    setTwitter(false);
                   }}
                 >
                   ABOUT
@@ -316,6 +312,8 @@ function GetOrganizerById() {
                     setAbout(false);
                     setUpcoming(true);
                     setFacebook(false);
+                    setSoundCloud(false);
+                    setTwitter(false);
                   }}
                 >
                   UPCOMING EVENT
@@ -328,9 +326,40 @@ function GetOrganizerById() {
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(true);
+
+                    setSoundCloud(false);
+                    setTwitter(false);
                   }}
                 >
                   FACEBOOK
+                </button>
+                <button
+                  className={`${
+                    twitter ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setTwitter(true);
+                    setSoundCloud(false);
+                  }}
+                >
+                  Twitter
+                </button>
+                <button
+                  className={`${
+                    soundCloud ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setSoundCloud(true);
+                    setTwitter(false);
+                  }}
+                >
+                  SoundCloud
                 </button>
               </div>
               <div className="lg:px-10 px-2 border bg-white ">
@@ -361,47 +390,57 @@ function GetOrganizerById() {
                     ""
                   )}
                 </p>
+                <p>{twitter ? <div></div> : ""}</p>
+                <p>{soundCloud ? <div></div> : ""}</p>
               </div>
             </div>
           </div>
 
           <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
-          
             <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
               <div className="rounded p-2 shadow ">
                 <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
-                  Oragnizer Category
+                  Performer Category
                 </h1>
                 <section className="flex lg:flex-col flex-row overflow-x-scroll gap-2 pt-3 ">
                   <div className="flex gap-2 ">
                     <div
                       onClick={() => {
-                        setCategory("event planner")
-                        navigate('/getOrganizer',{state:category})
+                        setCategory("band");
+                        navigate("/getPerformer", { state: category });
                       }}
-                      className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
+                      className="cursor-pointer  bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
-                      Event Planner
+                      Band
                     </div>
                     <div
                       onClick={() => {
-                        setCategory("wedding planner")
-                        navigate('/getOrganizer',{state:category})
+                        setCategory("disc jockey");
+                        navigate("/getPerformer", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
-                      Wedding Planner
+                      Disc Jockey
                     </div>
                   </div>
                   <div className="flex gap-2 px-2">
                     <div
                       onClick={() => {
-                        setCategory("adventure")
-                        navigate('/getOrganizer',{state:category})
+                        setCategory("sound artist");
+                        navigate("/getPerformer", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
-                      Adventure
+                      Sound Artist
+                    </div>
+                    <div
+                      onClick={() => {
+                        setCategory("standup comedian");
+                        navigate("/getPerformer", { state: category });
+                      }}
+                      className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                    >
+                      Stand up comedian
                     </div>
                   </div>
                 </section>
@@ -449,10 +488,9 @@ function GetOrganizerById() {
                 </div>
               </div>
             </div>
-            
           </div>
           <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
-            Organizer Location
+            Performer Location
           </h1>
 
           <div className="pl-3">
@@ -472,7 +510,6 @@ function GetOrganizerById() {
         </div>
 
         <div className="w-[20%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
-         
           <div className="flex flex-col gap-2 px-2 shadow-md p-2">
             <div className="grid grid-cols-3 gap-2 text-xl">
               <button className="flex gap-1 shadow border p-1 rounded">
@@ -495,38 +532,53 @@ function GetOrganizerById() {
           </div>
           <div className="rounded p-2 shadow ">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
-              Organizer Category
+              Performer Category
             </h1>
             <section className="flex flex-col gap-2 pt-3 ">
               <div className="flex gap-2 ">
                 <div
                   onClick={() => {
-                    setCategory("event planner")
-                    navigate('/getOrganizer',{state:category})
+                    setCategory("band");
+                    navigate("/getPerformer", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
-                  Event Planner
+                  Band
                 </div>
                 <div
                   onClick={() => {
-                    setCategory("wedding planner")
-                    navigate('/getOrganizer',{state:category})
+                    setCategory("disc jockey");
+                    navigate("/getPerformer", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
-                  Wedding Planner
+                  Disc Jockey
                 </div>
+                <div
+                  onClick={() => {
+                    setCategory("sound artist");
+                    navigate("/getPerformer", { state: category });
+                  }}
+                  className="flex gap-2 px-2"
+                >
+                  <div className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
+                    Sound Artist
+                  </div>
+                </div>
+                
               </div>
-              <div
-                onClick={() => {
-                  setCategory("adventure")
-                  navigate('/getOrganizer',{state:category})
-                }}
-                className="flex gap-2 px-2"
-              >
-                <div className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
-                  Adventure
+              <div className="flex gap-2 ">
+               
+                <div
+                  onClick={() => {
+                    setCategory("standup comedian");
+                    navigate("/getPerformer", { state: category });
+                  }}
+                  className="flex gap-2 px-2"
+                >
+                  <div className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
+                    Stand up comedian
+                  </div>
                 </div>
               </div>
             </section>
@@ -559,14 +611,6 @@ function GetOrganizerById() {
               </div>
             </div>
           </div>
-          {/* <div className="rounded border">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
-              Popular events
-            </h1>
-            <div className="flex justify-center items-center p-3">
-              <MdOutlineNavigateNext className="text-4xl rounded-full bg-gray-100 " />
-            </div>
-          </div> */}
         </div>
       </div>
       {ownership && (
@@ -587,4 +631,4 @@ function GetOrganizerById() {
   );
 }
 
-export default GetOrganizerById;
+export default GetPerformerById;

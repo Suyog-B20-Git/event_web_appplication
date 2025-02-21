@@ -53,17 +53,19 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
-import { Location } from "../../../Urls";
-export const getState = (country,state) => {
+import { Performer } from "../../../Urls";
+export const getPerformerById= (id,setLoader) => {
   return async (dispatch) => {
+    setLoader(true); // Start loading
+
     try {
       const response = await axios.get(
-        `${Location.state}country=${country}&search=${state}`
+        `${Performer.postPerformer}/${id}`
       );
       console.log("response", response);
       dispatch({
-        type: "GET_STATE",
-        states: response.data, // Ensure the API actually returns this structure
+        type: "GET_PERFORMER_BY_ID",
+        performerData: response.data, // Ensure the API actually returns this structure
       });
     } catch (error) {
       console.error(
@@ -71,9 +73,11 @@ export const getState = (country,state) => {
         error.response ? error.response.data : error.message
       );
       dispatch({
-        type: "GET_STATE",
-        states: [],
+        type: "GET_PERFORMER_BY_ID",
+        performerData: [],
       });
+    } finally {
+      setLoader(false); // Stop loading
     }
   };
 };

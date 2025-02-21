@@ -53,15 +53,14 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
+import { Event } from "../../../Urls";
 
 export const getFeaturedEventData = (setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
 
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/event/featured?page=1&limit=10&timezoneOffset=0"
-      );
+      const response = await axios.get(Event.featuredEvent);
       console.log("response", response);
       dispatch({
         type: "GET_FEATURED_EVENT",

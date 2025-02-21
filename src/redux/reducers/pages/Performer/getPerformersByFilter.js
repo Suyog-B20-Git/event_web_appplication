@@ -3,10 +3,10 @@ const initialState = {
   total: 1,
   params: {},
   allData: [],
-  organizerData: [],
+  performerData: [],
 };
 
-const getOrganizerReducer = (state = initialState, action) => {
+const getPerformerReducer = (state = initialState, action) => {
   console.log("action..:", action);
   switch (action.type) {
     // case "GET_ORGANIZER":
@@ -14,20 +14,20 @@ const getOrganizerReducer = (state = initialState, action) => {
     //     ...state,
     //     organizerData: [...state.organizerData,...action.organizerData],
     //   };
-    case "GET_ORGANIZER":
+    case "GET_PERFORMER":
       return {
         ...state,
-        organizerData:
+        performerData:
           action.pageNo === 1
-            ? action.organizerData
-            : [...state.organizerData, ...action.organizerData],
+            ? action.performerData
+            : [...state.performerData, ...action.performerData],
       };
 
     default:
       return { ...state };
   }
 };
-export default getOrganizerReducer;
+export default getPerformerReducer;
 
 // const initialState = {
 //   organizerData: [],

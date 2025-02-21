@@ -53,17 +53,15 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
-
+import { Venue } from "../../../Urls";
 export const getVenue = (venue) => {
   return async (dispatch) => {
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/venue/suggestions?query=${venue}`
-      );
+      const response = await axios.get(`${Venue.getVenue}query=${venue}`);
       console.log("response", response);
       dispatch({
         type: "GET_VENUE",
-        venues: response.data// Ensure the API actually returns this structure
+        venues: response.data, // Ensure the API actually returns this structure
       });
     } catch (error) {
       console.error(

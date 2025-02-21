@@ -2,7 +2,7 @@ import React from "react";
 import { GiCancel } from "react-icons/gi";
 import { useForm } from "react-hook-form";
 
-function OwnerShipForm({ ownership, setOwnership,name }) {
+function OwnerShipForm({ ownership, setOwnership, name }) {
   const {
     register,
     handleSubmit,
@@ -49,12 +49,13 @@ function OwnerShipForm({ ownership, setOwnership,name }) {
   return (
     <div>
       <div className="">
-        <div className="fixed w-full inset-0 flex flex-col items-center  overflow-y-scroll  z-40 backdrop-blur-sm">
+        <div className="fixed w-full inset-0 flex flex-col items-center lg:justify-start justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
           <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
-            <div className="w-[600px]">
+            <div className="lg:w-[600px] md:w-[600px] ">
               <div className="flex justify-between border-b">
                 <h1 className=" p-2 font-medium text-gray-600">
-                  Verify Ownership of <span className="text-[#ff2459]">{name}</span>
+                  Verify Ownership of{" "}
+                  <span className="text-[#ff2459]">{name}</span>
                 </h1>
                 <button onClick={() => setOwnership(!ownership)}>
                   <GiCancel className="text-lg" />
@@ -71,7 +72,7 @@ function OwnerShipForm({ ownership, setOwnership,name }) {
                       className="flex flex-col p-1  gap-1 text-gray-700"
                     >
                       <label
-                        className="capitalize p-1 pb-0.5
+                        className="capitalize lg:text-base text-sm p-1 pb-0.5
                        "
                       >
                         {item.label}
@@ -108,11 +109,11 @@ function OwnerShipForm({ ownership, setOwnership,name }) {
                   })}
                   className="bg-gray-100 rounded-md mb-3 p-2  px-2 ml-2"
                 ></textarea>
-                 {errors.claim && (
-                        <p className="text-xs px-2 pt-1 relative bottom-3  text-red-500">
-                          {errors.claim.message}*
-                        </p>
-                      )}
+                {errors.claim && (
+                  <p className="text-xs px-2 pt-1 relative bottom-3  text-red-500">
+                    {errors.claim.message}*
+                  </p>
+                )}
 
                 <hr />
 

@@ -53,17 +53,58 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
-import { Location } from "../../../Urls";
-export const getState = (country,state) => {
+import { Venue } from "../../../Urls";
+let api = Venue.filterVenue;
+export const getVenue = (setLoader, filter, page, category) => {
+  setLoader(true); // Start loading
+  switch (filter) {
+    case "title asc":
+      if (category) {
+        api = `${Venue.filterVenue}?categories=${encodeURIComponent(
+          category
+        )}&page=${page}&limit=8&sortOrder=asc`;
+      } else {
+        api = `${Venue.filterVenue}?page=${page}&limit=8&sortOrder=asc`;
+      }
+
+      break;
+
+    case "title desc":
+      if (category) {
+        api = `${Venue.filterVenue}?categories=${encodeURIComponent(
+          category
+        )}&page=${page}&limit=8&sortOrder=desc`;
+      } else api = `${Venue.filterVenue}?page=${page}&limit=8&sortOrder=desc`;
+      break;
+
+    case "alphabetical":
+      if (category) {
+        api = `${Venue.filterVenue}?categories=${encodeURIComponent(
+          category
+        )}&page=${page}&limit=50&sortOrder=asc`;
+      } else api = `${Venue.filterVenue}?page=${page}&limit=50&sortOrder=asc`;
+      break;
+
+    default:
+      if (category) {
+        api = ` ${Venue.filterVenue}?categories=${encodeURIComponent(
+          category
+        )}&page=${page}&limit=8`;
+      } else
+        api = ` ${Venue.filterVenue}?page=${page}&limit=8`;
+      break;
+  }
+
   return async (dispatch) => {
+    setLoader(true); // Start loading
+
     try {
-      const response = await axios.get(
-        `${Location.state}country=${country}&search=${state}`
-      );
+      const response = await axios.get(`${api}`);
       console.log("response", response);
       dispatch({
-        type: "GET_STATE",
-        states: response.data, // Ensure the API actually returns this structure
+        type: "GET_VENUE",
+        venueData: response.data.venues, // Ensure the API actually returns this structure
+        pageNo: page,
       });
     } catch (error) {
       console.error(
@@ -71,9 +112,11 @@ export const getState = (country,state) => {
         error.response ? error.response.data : error.message
       );
       dispatch({
-        type: "GET_STATE",
-        states: [],
+        type: "GET_VENUE",
+        venueData: [],
       });
+    } finally {
+      setLoader(false); // Stop loading
     }
   };
 };

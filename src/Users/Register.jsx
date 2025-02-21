@@ -189,10 +189,10 @@
 // export default Register;
 
 import React, { useState } from "react";
-import InputField from "../../../src/Components/InputField";
+import InputField from "../Components/InputField";
 import { Link, useNavigate } from "react-router-dom";
 
-import Button from "../../../src/Components/Button";
+import Button from "../Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
 import { HiOutlineDeviceMobile } from "react-icons/hi";
@@ -248,7 +248,7 @@ function Register() {
   };
 
   return (
-    <div className="flex sm:flex-col-reverse lg:h-[100vh]  md:h-[80vh] flex-col md:flex-row      ">
+    <div className="flex sm:flex-col-reverse lg:h-[75vh]  md:h-[80vh] flex-col md:flex-row      ">
       {/* Left Section */}
 
       <Photo />

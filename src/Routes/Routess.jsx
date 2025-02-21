@@ -8,11 +8,16 @@ import Home from "../LandingPages/Home";
 import Viewall from "../LandingPages/Viewall";
 import CreateEvent from "../Components/CreateEvent/CreateEvent";
 import CreateEventForm from "../Components/CreateEvent/CreateEventForm";
-import Login from "../../views/pages/Users/Login";
-import Register from "../../views/pages/Users/Register";
+import Login from "../Users/Login";
+import Register from "../Users/Register";
 import CreatePage from "../Components/CreatePage/CreatePage";
 import GetOrganizer from "../Components/Organizer/GetOrganizer";
 import GetOrganizerById from "../Components/Organizer/GetOrganizerById";
+import GetPerformers from "../Components/Performers/Performers";
+import GetPerformerById from "../Components/Performers/PerformerById";
+import GetVenue from "../Components/Venue/GetVenue";
+import GetVenueById from "../Components/Venue/GetVenueById";
+import GetService from "../Components/Services/GetServices";
 
 function Routess() {
   return (
@@ -42,6 +47,12 @@ function Routess() {
           <Route path="/createPage" element={<CreatePage />} />
           <Route path="/getOrganizer" element={<GetOrganizer />} />
           <Route path="/getOrganizerById" element={<GetOrganizerById />} />
+          <Route path="/getPerformer" element={<GetPerformers />} />
+          <Route path="/getPerformerById" element={<GetPerformerById />} />
+          <Route path="/getVenue" element={<GetVenue />} />
+          <Route path="/getVenueById" element={<GetVenueById />} />
+          <Route path="/getService" element={<GetService />} />
+          
         </Route>
 
         {/* </Route> */}

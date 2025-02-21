@@ -4,7 +4,7 @@ import { axiosInstance } from "../../../../../utility/utils";
 
 import { toast } from "react-toastify";
 import { Zoom } from "react-toastify";
-
+import { Event } from "../../../Urls";
 export const createNewEvent = (
   data,
   thumbnailImage,
@@ -16,7 +16,7 @@ export const createNewEvent = (
   return () => {
     axiosInstance
       .post(
-        `http://localhost:5000/api/event`,
+        Event.createEvent,
         {
           name: data.name.trim(),
           category: data.category, // Assuming it's an array
@@ -43,14 +43,14 @@ export const createNewEvent = (
           startDate: `${data.startDate}T${data.startTime}`,
           endDate: `${data.endDate}T${data.endTime}`,
           media: {
-            // thumbnailImage: data.media.thumbnailImage,
-            // posterImage: data.media.posterImage,
-            // seatingChartImage: data.media.seatingChartImage,
             thumbnailImage: thumbnailImage,
             posterImage: posterImage,
             seatingChartImage: seatingChartImage,
             images: data.media.images,
           },
+          // thumbnailImage: data.thumbnailImage,
+          // posterImage: data.posterImage,
+          // seatingChartImage: data.seatingChartImage,
 
           seo: {
             metaTitle: data.seo.metaTitle,

@@ -17,6 +17,11 @@ import getOrganizerByIdReducer from "./pages/getOrganizerById";
 import postPerformerReducer from "./pages/Performer/PostPerformer";
 import postServiceReducer from "./pages/Services/postServiceReducer";
 import postVenueReducer from "./pages/Venue/postVenue";
+import getPerformerReducer from "./pages/Performer/getPerformersByFilter";
+import getPerformerByIdReducer from "./pages/Performer/getPerformerById";
+import getVenueReducer from "./pages/Venue/getVenue";
+import getVenueByIdReducer from "./pages/Venue/getVenueById";
+import getServiceReducer from "./pages/Services/getServiceReducer";
 
 // ** Reducers Import **//
 
@@ -37,6 +42,11 @@ const rootReducer = combineReducers({
   postPerformerReducer,
   postServiceReducer,
   postVenueReducer,
+  getPerformerReducer,
+  getPerformerByIdReducer,
+  getVenueReducer,
+  getVenueByIdReducer,
+  getServiceReducer,
 });
 
 export default rootReducer;

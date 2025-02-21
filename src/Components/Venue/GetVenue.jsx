@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getOrganizer } from "../../redux/actions/master/Organizer/getOrganiser";
+
 import Loading from "../Loading";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FcLike } from "react-icons/fc";
@@ -8,19 +8,21 @@ import { CiFacebook } from "react-icons/ci";
 import {
   FaFacebookMessenger,
   FaInstagram,
+  FaShareNodes,
   FaSquareFacebook,
   FaSquareXTwitter,
 } from "react-icons/fa6";
 import Select from "react-select";
+
 import { IoLogoWhatsapp, IoStarSharp } from "react-icons/io5";
 import { BsCalendar2DateFill } from "react-icons/bs";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
+import { FaShareAlt } from "react-icons/fa";
+import { getVenue } from "../../redux/actions/master/Venue/getVenue";
 
-function GetOrganizer() {
+function GetVenue() {
   const [category, setCategory] = useState("");
-  const location = useLocation();
-  const category1 = location.state;
   const options = [
     { value: "alphabetical", label: "Alphabetical" },
     { value: "title asc", label: "Title ascending" },
@@ -54,67 +56,77 @@ function GetOrganizer() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [pageNo, setPageNo] = useState(1);
-  
 
+  const location = useLocation;
+  const category1 = location.state;
   useEffect(() => {
-    // if (isFetching.current) return;
-    // isFetching.current = true;
+    if (isFetching.current) return;
+    isFetching.current = true;
     if (category1) {
       dispatch(
-        getOrganizer(setLoading, selectedOption?.value || "", pageNo, category1)
-      );
+        getVenue(setLoading, selectedOption?.value || "", pageNo, category1)
+      ).finally(() => {
+        isFetching.current = false;
+      });
     } else {
       dispatch(
-        getOrganizer(
+        getVenue(
           setLoading,
           selectedOption?.value || "",
           pageNo,
           category ? category : ""
         )
-      );
+      ).finally(() => {
+        isFetching.current = false;
+      });
     }
-  }, [dispatch, selectedOption, pageNo, category1, category]);
+  }, [dispatch, selectedOption, pageNo, category, category1]);
 
-  const store = useSelector((state) => state.getOrganizerReducer) || {
-    organizerData: [],
+  const store = useSelector((state) => state.getVenueReducer) || {
+    venueData: [],
   };
 
-  const data1 = store.organizerData;
+  const data1 = store.venueData;
   const data = [...new Set(data1)];
-  console.log(data, "OragnizerData....");
-  // useEffect(() => {
-  //   const handleScroll = (e) => {
-  //     const scrollHeight = e.target.documentElement.scrollHeight;
-  //     const currentHeight =
-  //       e.target.documentElement.scrollTop + window.innerHeight;
-  //     if (currentHeight + 1 >= scrollHeight*0.5) {
-  //       setPageNo(pageNo + 1);
-  //     }
-  //   };
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, [pageNo]);
+  console.log(data, "VenueData....");
+  useEffect(() => {
+    const handleScroll = (e) => {
+      const scrollHeight = e.target.documentElement.scrollHeight;
+      const currentHeight =
+        e.target.documentElement.scrollTop + window.innerHeight;
+      if (currentHeight + 1 >= scrollHeight * 0.5) {
+        setPageNo(pageNo + 1);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pageNo]);
 
   const observerRef = useRef(null); // Ref for the observer target (bottom div)
   const isFetching = useRef(false); // Prevent multiple rapid API calls
-  useEffect(() => {
-    if (!observerRef.current) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !loading) {
-          setPageNo((prevPage) => prevPage + 1);
-        }
-      },
-      { threshold: 1.0 } // Fully visible before triggering
-    );
+  //-------------------------------------------------------------------------------//
+  //   useEffect(() => {
+  //     if (!observerRef.current) return;
 
-    observer.observe(observerRef.current);
-    console.log(pageNo);
-    return () => {
-      if (observerRef.current) observer.unobserve(observerRef.current);
-    };
-  }, [loading]); // Run effect when loading state changes
+  //     const observer = new IntersectionObserver(
+  //       (entries) => {
+  //         if (entries[0].isIntersecting && !loading) {
+  //           setPageNo((prevPage) => prevPage + 1);
+  //         }
+  //       },
+  //       { threshold: 1.0 } // Fully visible before triggering
+  //     );
+
+  //     observer.observe(observerRef.current);
+  //     console.log(pageNo);
+  //     return () => {
+  //       if (observerRef.current) observer.unobserve(observerRef.current);
+  //     };
+  //   }, [loading]); // Run effect when loading state changes
+
+  //-------------------------------------------------------------------------------//
+
   // useEffect(() => {
   //   const observer = new IntersectionObserver(
   //     (entries) => {
@@ -131,97 +143,15 @@ function GetOrganizer() {
   //     if (observerRef.current) observer.unobserve(observerRef.current);
   //   };
   // }, []);
-  if (loading) {
-    return <Loading />;
-  }
+  //   if (loading) {
+  //     return <Loading />;
+  //   }
   return (
-    // <div className="p-2">
-    //   <div className="flex justify-between pt-5 border-b pb-2">
-    //     <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-9 md:px-10 ">
-    //       ORGANIZER
-    //     </h1>
-    //     <div className="md:pr-10">
-    //       <Select
-    //         options={options}
-    //         value={selectedOption}
-    //         onChange={setSelectedOption}
-    //         placeholder="Sort by..."
-    //         styles={customStyles}
-    //         className="lg:w-40"
-    //       />
-    //     </div>
-    //   </div>
-
-    //   <div className="grid lg:grid-cols-4 md:grid-cols-2 lg:gap-14 gap-10 p-10 grid-cols-1">
-    //     {data.map((item, index) => {
-    //       return (
-    //         <div
-    //           key={index}
-    //           className=" flex flex-col pb-5 shadow-md rounded   "
-    //           onClick={() => {
-    //             navigate("/getOrganizerById", { state: item._id });
-    //           }}
-    //         >
-    //           <div className="h-40 lg:w-[314px] w-full overflow-hidden">
-    //             <img
-    //               src={item.profileImage}
-    //               className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
-    //               alt={item.name}
-    //             />
-    //           </div>
-    //           <div className="p-2">
-    //             <h1 className="font-medium text-lg capitalize">{item.name}</h1>
-    //             <section className="text-sm text-gray-500 ">
-    //               {item.address}, {item.city}, {item.state}
-    //             </section>
-    //           </div>
-    //           <p className="flex gap-2 p-1 pl-0 text-lg">
-    //             {/* <button>
-    //               {" "}
-    //               <FcLike />
-    //             </button> */}
-
-    //             <button className="text-red-500">
-    //               <a href={item.facebookUrl ? item.facebookUrl : ""}>
-    //                 {item.facebookUrl ? (
-    //                   <CiFacebook className="text-red-500" />
-    //                 ) : (
-    //                   ""
-    //                 )}
-    //               </a>
-    //             </button>
-    //             <button className="text-red-500">
-    //               <a href={item.instagramUrl ? item.instagramUrl : ""}>
-    //                 {item.instagramUrl ? (
-    //                   <FaInstagram className="text-red-500" />
-    //                 ) : (
-    //                   ""
-    //                 )}
-    //               </a>
-    //             </button>
-    //             <FcLike />
-
-    //             <button className="text-red-500">
-    //               <a href={item.twitterUrl ? item.twitterUrl : ""}>
-    //                 {item.twitterUrl ? (
-    //                   <FaSquareXTwitter className="text-red-500" />
-    //                 ) : (
-    //                   ""
-    //                 )}
-    //               </a>
-    //             </button>
-    //           </p>
-    //         </div>
-    //       );
-    //     })}
-    //   </div>
-    //   <div ref={observerRef} className="h-10"></div>
-    // </div>
-    <div className="flex lg:flex-row flex-col gap-2 lg:pt-0 md:pt-0 pt-20">
+    <div className="flex lg:flex-row flex-col gap-2">
       <div className="p-2 lg:w-[80%] w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
-          <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-4 ">
-            Oraganizer
+          <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-10 ">
+            Venues
           </h1>
 
           <div className="md:pr-10">
@@ -235,44 +165,34 @@ function GetOrganizer() {
             />
           </div>
         </div>
-        <div className=" lg:hidden flex  flex-col gap-5 rounded pt-0  ">
-          <div className="rounded p-2 shadow md:flex md:gap-7 justify-between ">
+        <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
+          <div className="rounded p-2 shadow flex-row md:flex gap-10 ">
             <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
-              Oragnizer Category
+              Venues Category
             </h1>
-            <section className="flex lg:flex-col flex-row  overflow-x-scroll gap-2 pt-3 ">
+            <section className="flex lg:flex-col flex-row overflow-x-scroll gap-2  pt-3 ">
               <div className="flex gap-2 ">
                 <div
                   onClick={() => {
-                    setCategory("event planner");
+                    setCategory("indoor");
                   }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
+                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
-                  Event Planner
+                  Indoor
                 </div>
                 <div
                   onClick={() => {
-                    setCategory("wedding planner");
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Wedding Planner
-                </div>
-              </div>
-              <div className="flex gap-2 px-2">
-                <div
-                  onClick={() => {
-                    setCategory("adventure");
+                    setCategory("outdoor");
                   }}
                   className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
-                  Adventure
+                  Outdoor
                 </div>
               </div>
             </section>
           </div>
           <div className="rounded border ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex  justify-between">
+            <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
               Find Events
               <div className="flex  gap-2 text-xl">
                 <button className="flex gap-1 shadow border p-1 rounded">
@@ -290,23 +210,23 @@ function GetOrganizer() {
               </div>
             </h1>
             <div className="flex justify-center items-center ">
-              <div className="flex  gap-5 p-3  overflow-x-scroll ">
-                <div className="bg-blue-600 rounded  h-28 min-w-28   text-white font-medium flex flex-col gap-2 items-start p-4 ">
+              <div className="flex  md:gap-7 gap-5 p-3 overflow-x-scroll ">
+                <div className="bg-blue-600 rounded h-28 lg:min-w-28 md:w-36 text-white font-medium flex flex-col gap-2 items-start p-4 ">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
                   <p>Todays 0</p>
                 </div>
-                <div className="bg-orange-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+                <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
 
                   <p>Tommorrow 0</p>
                 </div>
-                <div className="bg-blue-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+                <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
                   <p className="text-sm p-1">These Weekend 0</p>
                 </div>
-                <div className="bg-green-600  rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+                <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />
                   <p>Choose Date</p>
                 </div>
@@ -315,17 +235,17 @@ function GetOrganizer() {
           </div>
         </div>
 
-        <div className="grid  lg:grid-cols-3 md:grid-cols-3 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
+        <div className="grid  lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
           {data.map((item, index) => {
             return (
               <div
                 key={index}
                 className=" flex flex-col pb-5 shadow-md rounded border  "
                 onClick={() => {
-                  navigate("/getOrganizerById", { state: item._id });
+                  navigate("/getVenueById", { state: item._id });
                 }}
               >
-                <div className="h-40 md:h-24 lg:w-[326px] w-full overflow-hidden">
+                <div className="h-40 lg:w-[326px] w-full overflow-hidden">
                   <img
                     src={item.profileImage}
                     className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
@@ -343,9 +263,9 @@ function GetOrganizer() {
                 <div className="flex justify-between">
                   <p className="flex gap-2 p-1 px-3 text-lg">
                     {/* <button>
-                {" "}
-                <FcLike />
-              </button> */}
+                  {" "}
+                  <FcLike />
+                </button> */}
 
                     <button className="text-red-500">
                       <a href={item.facebookUrl ? item.facebookUrl : ""}>
@@ -377,9 +297,9 @@ function GetOrganizer() {
                       </a>
                     </button>
                   </p>
-                  {/* <p className="flex gap-2 pr-5">
-                  5 <IoStarSharp className="relative top-1 text-yellow-400" />
-                </p> */}
+                  <p className="flex gap-2 pr-5">
+                    5 <IoStarSharp className="relative top-1 text-yellow-400" />
+                  </p>
                 </div>
               </div>
             );
@@ -411,35 +331,25 @@ function GetOrganizer() {
         <div className=" lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
           <div className="rounded p-2 shadow ">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
-              Organizer Category
+              Venue Category
             </h1>
             <section className="flex flex-col gap-2 pt-3 ">
               <div className="flex gap-2 ">
                 <div
                   onClick={() => {
-                    setCategory("event planner");
+                    setCategory("indoor");
                   }}
                   className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
-                  Event Planner
+                  Indoor
                 </div>
                 <div
                   onClick={() => {
-                    setCategory("wedding planner");
+                    setCategory("outdoor");
                   }}
                   className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
-                  Wedding Planner
-                </div>
-              </div>
-              <div
-                onClick={() => {
-                  setCategory("adventure");
-                }}
-                className="flex gap-2 px-2"
-              >
-                <div className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
-                  Adventure
+                  Outdoor
                 </div>
               </div>
             </section>
@@ -478,4 +388,4 @@ function GetOrganizer() {
   );
 }
 
-export default GetOrganizer;
+export default GetVenue;

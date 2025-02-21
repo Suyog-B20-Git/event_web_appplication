@@ -53,12 +53,12 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
-
+import { Performer } from "../../../Urls";
 export const getPerformers = (performer) => {
   return async (dispatch) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/performer/suggestions?query=${performer}`
+        `${Performer.getPerformer}?query=${performer}`
       );
       console.log("response", response);
       dispatch({

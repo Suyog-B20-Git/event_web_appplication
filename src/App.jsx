@@ -9,6 +9,7 @@ import { Provider } from "react-redux";
 import { store } from "./redux/storeConfig/store";
 import CreatePage from "./Components/CreatePage/CreatePage";
 import GetOrganizer from "./Components/Organizer/GetOrganizer";
+import GetPerformers from "./Components/Performers/Performers";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EnquiryForm from "./Components/Organizer/EnquiryForm";
@@ -19,7 +20,7 @@ function App() {
     <Provider store={store}>
       <Routess />
       <ToastContainer position="top-right" autoClose={3000} />
-      {/* <OwnerShipForm /> */}
+      {/* <GetPerformers /> */}
     </Provider>
   );
 }

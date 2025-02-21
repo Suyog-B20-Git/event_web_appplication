@@ -233,14 +233,14 @@
 // export default Login;
 
 import React, { useState } from "react";
-import InputField from "../../../src/Components/InputField";
+import InputField from "../Components/InputField";
 import { Link, useNavigate } from "react-router-dom";
 
-import Button from "../../../src/Components/Button";
+import Button from "../Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
 import { HiOutlineDeviceMobile } from "react-icons/hi";
-import Register from "./Register";
+
 import axios from "axios";
 import Photo from "./Photo";
 function Login() {
@@ -289,7 +289,7 @@ function Login() {
   };
 
   return (
-    <div className="flex sm:flex-col-reverse flex-col md:flex-row lg:h-screen md:h-max   ">
+    <div className="flex sm:flex-col-reverse flex-col md:flex-row lg:h-[75vh] md:h-max   ">
       {/* Left Section */}
 
       <Photo />

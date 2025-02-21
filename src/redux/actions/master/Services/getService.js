@@ -53,17 +53,57 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
-import { Location } from "../../../Urls";
-export const getState = (country,state) => {
+import { Service } from "../../../Urls";
+let api = Service.getFilterService;
+export const getService = (setLoader, filter, page, category) => {
+  setLoader(true); // Start loading
+  switch (filter) {
+    case "title asc":
+      if (category) {
+        api = `${Service.getFilterService}?categories=${encodeURIComponent(
+          category
+        )}&page=${page}&limit=8&sortOrder=asc`;
+      } else {
+        api = `${Service.getFilterService}?page=${page}&limit=8&sortOrder=asc`;
+      }
+
+      break;
+
+    case "title desc":
+      if (category) {
+        api = `${Service.getFilterService}?categories=${encodeURIComponent(
+          category
+        )}&page=${page}&limit=8&sortOrder=desc`;
+      } else api = `${Service.getFilterService}?page=${page}&limit=8&sortOrder=desc`;
+      break;
+
+    case "alphabetical":
+      if (category) {
+        api = `${Service.getFilterService}?categories=${encodeURIComponent(
+          category
+        )}&page=${page}&limit=50&sortOrder=asc`;
+      } else api = `${Service.getFilterService}?page=${page}&limit=50&sortOrder=asc`;
+      break;
+
+    default:
+      if (category) {
+        api = ` ${Service.getFilterService}?categories=${encodeURIComponent(
+          category
+        )}&page=${page}&limit=8`;
+      } else api = ` ${Service.getFilterService}?page=${page}&limit=8`;
+      break;
+  }
+
   return async (dispatch) => {
+    setLoader(true); // Start loading
+
     try {
-      const response = await axios.get(
-        `${Location.state}country=${country}&search=${state}`
-      );
+      const response = await axios.get(`${api}`);
       console.log("response", response);
       dispatch({
-        type: "GET_STATE",
-        states: response.data, // Ensure the API actually returns this structure
+        type: "GET_SERVICE",
+        serviceData: response.data.services, // Ensure the API actually returns this structure
+        pageNo: page,
       });
     } catch (error) {
       console.error(
@@ -71,9 +111,11 @@ export const getState = (country,state) => {
         error.response ? error.response.data : error.message
       );
       dispatch({
-        type: "GET_STATE",
-        states: [],
+        type: "GET_SERVICE",
+        serviceData: [],
       });
+    } finally {
+      setLoader(false); // Stop loading
     }
   };
 };

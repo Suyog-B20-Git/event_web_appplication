@@ -53,12 +53,13 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
+import { Location } from "../../../Urls";
 
 export const getCity = (country, state, city) => {
   return async (dispatch) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/location/citySuggestions?country=${country}&state=${state}&search=${city}`
+        `${Location.city}country=${country}&state=${state}&search=${city}`
       );
       console.log("response", response);
       dispatch({
