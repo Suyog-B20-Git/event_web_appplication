@@ -82,9 +82,9 @@ export const getOrganizer = (setLoader, filter, page, category) => {
       if (category) {
         api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=50&sortOrder=asc`;
+        )}&page=${page}&limit=8&sortOrder=asc`;
       } else
-        api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=50&sortOrder=asc`;
+        api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
       break;
 
     default:

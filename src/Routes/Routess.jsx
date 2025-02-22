@@ -18,6 +18,7 @@ import GetPerformerById from "../Components/Performers/PerformerById";
 import GetVenue from "../Components/Venue/GetVenue";
 import GetVenueById from "../Components/Venue/GetVenueById";
 import GetService from "../Components/Services/GetServices";
+import GetServiceById from "../Components/Services/GetServiceById";
 
 function Routess() {
   return (
@@ -52,6 +53,7 @@ function Routess() {
           <Route path="/getVenue" element={<GetVenue />} />
           <Route path="/getVenueById" element={<GetVenueById />} />
           <Route path="/getService" element={<GetService />} />
+          <Route path="/getServiceById" element={<GetServiceById />} />
           
         </Route>
 

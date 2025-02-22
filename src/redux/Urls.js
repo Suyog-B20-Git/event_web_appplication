@@ -36,6 +36,6 @@ export const Location = {
 
 export const Service={
     postService:`${baseUrl}services`,
-    getFilterService:`${baseUrl}service/filter`,
+    getFilterService:`${baseUrl}services/filter`,
     
 }

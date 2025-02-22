@@ -54,57 +54,18 @@ export const updateLiftType = (data, props, setisLoader) => {
 
 import axios from "axios";
 import { Service } from "../../../Urls";
-let api = Service.getFilterService;
-export const getService = (setLoader, filter, page, category) => {
-  setLoader(true); // Start loading
-  switch (filter) {
-    case "title asc":
-      if (category) {
-        api = `${Service.getFilterService}?categories=${encodeURIComponent(
-          category
-        )}&page=${page}&limit=8&sortOrder=asc`;
-      } else
-        api = `${Service.getFilterService}?page=${page}&limit=8&sortOrder=asc`;
-
-      break;
-
-    case "title desc":
-      if (category) {
-        api = `${Service.getFilterService}?categories=${encodeURIComponent(
-          category
-        )}&page=${page}&limit=8&sortOrder=desc`;
-      } else
-        api = `${Service.getFilterService}?page=${page}&limit=8&sortOrder=desc`;
-      break;
-
-    case "alphabetical":
-      if (category) {
-        api = `${Service.getFilterService}?categories=${encodeURIComponent(
-          category
-        )}&page=${page}&limit=8&sortOrder=asc`;
-      } else
-        api = `${Service.getFilterService}?page=${page}&limit=8&sortOrder=asc`;
-      break;
-
-    default:
-      if (category) {
-        api = ` ${Service.getFilterService}?categories=${encodeURIComponent(
-          category
-        )}&page=${page}&limit=8`;
-      } else api = ` ${Service.getFilterService}?page=${page}&limit=8`;
-      break;
-  }
-
+export const getServiceById= (id,setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
 
     try {
-      const response = await axios.get(`${api}`);
+      const response = await axios.get(
+        `${Service.postService}/${id}`
+      );
       console.log("response", response);
       dispatch({
-        type: "GET_SERVICE",
-        serviceData: response.data.services, // Ensure the API actually returns this structure
-        pageNo: page,
+        type: "GET_SERVICE_BY_ID",
+        serviceData: response.data, // Ensure the API actually returns this structure
       });
     } catch (error) {
       console.error(
@@ -112,8 +73,8 @@ export const getService = (setLoader, filter, page, category) => {
         error.response ? error.response.data : error.message
       );
       dispatch({
-        type: "GET_SERVICE",
-        serviceData: [],
+        type: "GET_SERVICE_BY_ID",
+        venueData: [],
       });
     } finally {
       setLoader(false); // Stop loading

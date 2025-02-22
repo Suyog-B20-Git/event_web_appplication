@@ -81,8 +81,8 @@ export const getVenue = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Venue.filterVenue}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=50&sortOrder=asc`;
-      } else api = `${Venue.filterVenue}?page=${page}&limit=50&sortOrder=asc`;
+        )}&page=${page}&limit=8&sortOrder=asc`;
+      } else api = `${Venue.filterVenue}?page=${page}&limit=8&sortOrder=asc`;
       break;
 
     default:

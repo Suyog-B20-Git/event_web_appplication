@@ -83,7 +83,7 @@ const Header = () => {
 
     {
       name: "Services",
-      paths: "/getService",
+      path: "/getService",
       icon: <MdMiscellaneousServices />,
       popUpMenu: [
         { name: "Anchor", path: "#" },

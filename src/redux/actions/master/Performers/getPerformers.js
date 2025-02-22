@@ -86,9 +86,9 @@ export const getPerformer = (setLoader, filter, page, category) => {
           Performer.getPerformerByFilter
         }?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=50&sortOrder=asc`;
+        )}&page=${page}&limit=8&sortOrder=asc`;
       } else
-        api = `${Performer.getPerformerByFilter}?page=${page}&limit=50&sortOrder=asc`;
+        api = `${Performer.getPerformerByFilter}?page=${page}&limit=8&sortOrder=asc`;
       break;
 
     default:

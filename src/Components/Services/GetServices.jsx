@@ -57,7 +57,7 @@ function GetService() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [pageNo, setPageNo] = useState(1);
-
+  const isFetching = useRef(false); // Prevent multiple rapid API calls
   const location = useLocation;
   const category1 = location.state;
   useEffect(() => {
@@ -104,7 +104,7 @@ function GetService() {
   }, [pageNo]);
 
   const observerRef = useRef(null); // Ref for the observer target (bottom div)
-  const isFetching = useRef(false); // Prevent multiple rapid API calls
+ 
 
   //-------------------------------------------------------------------------------//
   //   useEffect(() => {
