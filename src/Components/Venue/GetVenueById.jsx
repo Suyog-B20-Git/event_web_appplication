@@ -32,6 +32,9 @@ import FacebookComments from "../Organizer/FacebookComments";
 import EnquiryForm from "../Organizer/EnquiryForm";
 import OwnerShipForm from "../Organizer/OwnerShipForm";
 import { getVenueById } from "../../redux/actions/master/Venue/getVenueById";
+import YouTubeProfile from "../SocialMedia/Youtube";
+import InstagramProfile from "../SocialMedia/Instagram";
+import FacebookEmbeded from "../SocialMedia/Facebook";
 
 function GetVenueById() {
   const [isPopUp, setIsPopUp] = useState(false);
@@ -42,8 +45,9 @@ function GetVenueById() {
   const [about, setAbout] = useState(true);
   const [upcomimg, setUpcoming] = useState(false);
   const [facebook, setFacebook] = useState(false);
+  const [twitter, setTwitter] = useState(false);
   const [instagram, setInstagram] = useState(false);
-
+  const [youtube, setYoutube] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const venueId = location.state;
@@ -56,6 +60,17 @@ function GetVenueById() {
 
   const data = store.venueData;
   console.log(data, "VenueData....");
+  const currentUrl = encodeURIComponent(window.location.href); // Get the current page URL
+
+  const shareUrls = {
+    whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+    twitter: `https://twitter.com/intent/tweet?url=${currentUrl}`,
+    messenger: `https://www.messenger.com/t/?link=${currentUrl}`,
+  };
+  const handleShare = (platform) => {
+    window.open(shareUrls[platform], "_blank");
+  };
 
   useEffect(() => {
     dispatch(getVenueById(venueId, setLoading));
@@ -67,7 +82,7 @@ function GetVenueById() {
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-10">
-        <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[80%] lg:px-4 ">
+        <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
           <div className="flex justify-between font-medium">
             <p className="hidden gap-2 p-3 lg:flex ">
               <p
@@ -287,7 +302,7 @@ function GetVenueById() {
               </div>
             </div>
             <div className="lg:w-[70%]  h-[300px] overflow-scroll ">
-              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
+              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
                 <button
                   className={`px-2 ${
                     about ? "border-b-2 border-b-red-600" : ""
@@ -296,8 +311,9 @@ function GetVenueById() {
                     setAbout(true);
                     setUpcoming(false);
                     setFacebook(false);
-
+                    setTwitter(false);
                     setInstagram(false);
+                    setYoutube(false);
                   }}
                 >
                   ABOUT
@@ -310,7 +326,9 @@ function GetVenueById() {
                     setAbout(false);
                     setUpcoming(true);
                     setFacebook(false);
+                    setTwitter(false);
                     setInstagram(false);
+                    setYoutube(false);
                   }}
                 >
                   UPCOMING EVENT
@@ -323,11 +341,27 @@ function GetVenueById() {
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(true);
-
+                    setTwitter(false);
                     setInstagram(false);
+                    setYoutube(false);
                   }}
                 >
                   FACEBOOK
+                </button>
+                <button
+                  className={`${
+                    twitter ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setTwitter(true);
+                    setInstagram(false);
+                    setYoutube(false);
+                  }}
+                >
+                  TWITTER
                 </button>
                 <button
                   className={`${
@@ -337,10 +371,27 @@ function GetVenueById() {
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(false);
+                    setTwitter(false);
                     setInstagram(true);
+                    setYoutube(false);
                   }}
                 >
-                  Instagram
+                  INSTAGRAM
+                </button>
+                <button
+                  className={`${
+                    youtube ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(true);
+                  }}
+                >
+                  YOUTUBE
                 </button>
               </div>
               <div className="lg:px-10 px-2 border bg-white ">
@@ -351,27 +402,28 @@ function GetVenueById() {
                     : ""}
                 </p>
                 <p className="font-medium text-lg text-center">
-                  {upcomimg ? "" : " "}
+                  {upcomimg ? "" : <div className="  "></div>}
                 </p>
                 <p>
-                  {facebook ? (
-                    <div>
-                      <iframe
-                        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FZeenews&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=849920522233544"
-                        width="340"
-                        height="500"
-                        style={{ border: "none", overflow: "hidden" }}
-                        scrolling="no"
-                        frameBorder="0"
-                        allowfullscreen="true"
-                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                      ></iframe>
-                    </div>
+                  {facebook ? <FacebookEmbeded appId={849920522233544} /> : ""}
+                </p>
+                <p className="font-medium text-lg text-center">
+                  {instagram ? (
+                    <InstagramProfile username="cristiano" />
                   ) : (
-                    ""
+                    <div className=" "></div>
                   )}
                 </p>
-                <p>{instagram ? <div></div> : ""}</p>
+                <p className="font-medium text-lg text-center">
+                  {twitter ? "" : <div className=" "></div>}
+                </p>
+                <p className="font-medium text-lg text-center">
+                  {youtube ? (
+                    <YouTubeProfile channelId={data.youtubeId} />
+                  ) : (
+                    <div></div>
+                  )}
+                </p>
               </div>
             </div>
           </div>
@@ -409,16 +461,28 @@ function GetVenueById() {
                 <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
                   Find Events
                   <div className="flex  gap-2 text-xl">
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("facebook")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaSquareFacebook className="text-blue-700 relative " />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("whatsapp")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <IoLogoWhatsapp className="text-green-600" />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("messenger")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaFacebookMessenger className="text-red-500" />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("twitter")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaSquareXTwitter className="" />
                     </button>
                   </div>
@@ -469,22 +533,34 @@ function GetVenueById() {
           </div>
         </div>
 
-        <div className="w-[20%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
+        <div className="w-[25%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
           <div className="flex flex-col gap-2 px-2 shadow-md p-2">
             <div className="grid grid-cols-3 gap-2 text-xl">
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("facebook")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaSquareFacebook className="text-blue-700 relative " />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("whatsapp")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <IoLogoWhatsapp className="text-green-600" />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("messenger")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaFacebookMessenger className="text-red-500" />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("twitter")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaSquareXTwitter className="" />
               </button>

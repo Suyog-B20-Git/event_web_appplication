@@ -28,6 +28,7 @@ const Header = () => {
   const [location, setLocation] = useState(false);
   const [ShowPopup, setShowPopup] = useState(false);
   const [userName, setUserName] = useState(""); // State to store the name from JWT
+  const [refresh, setRefresh] = useState(0);
 
   // Get the authToken from localStorage
   const authToken = localStorage.getItem("authToken");
@@ -46,6 +47,7 @@ const Header = () => {
     { name: "Home", icon: <IoMdHome />, path: "/home" },
     {
       name: "Event",
+      filterPath: "/getEventByFilter",
       path: "#",
       icon: <MdEvent />,
       popUpMenu: [
@@ -61,6 +63,7 @@ const Header = () => {
     },
     {
       name: "Organisers",
+      filterPath: "/getOrganizer",
       path: "/getOrganizer",
       icon: <GrGroup />,
       popUpMenu: [
@@ -71,6 +74,7 @@ const Header = () => {
     },
     {
       name: "Performers",
+      filterPath:"/getPerformer",
       path: "/getPerformer",
       icon: <IoIosPerson />,
       popUpMenu: [
@@ -84,6 +88,8 @@ const Header = () => {
     {
       name: "Services",
       path: "/getService",
+      filterPath:'/getService',
+
       icon: <MdMiscellaneousServices />,
       popUpMenu: [
         { name: "Anchor", path: "#" },
@@ -99,6 +105,7 @@ const Header = () => {
     {
       name: "Venues",
       path: "/getVenue",
+      filterPath:"/getVenue",
       icon: <IoLocationSharp />,
       popUpMenu: [
         { name: "Indoor", path: "#" },
@@ -368,6 +375,12 @@ const Header = () => {
                       {item.popUpMenu.map((menuItem, menuIndex) => (
                         <button
                           key={menuIndex}
+                          onClick={() => {
+                            setRefresh((prev) => prev + 1);
+                            navigate(item.filterPath, {
+                              state: menuItem.name,
+                            });
+                          }}
                           className="flex justify-start  gap-2 p-2.5 font-medium hover:text-white whitespace-nowrap hover:bg-[#ff2459]  w-56 "
                         >
                           {/* <MdDashboard className="hover:text-white relative top-1" /> */}

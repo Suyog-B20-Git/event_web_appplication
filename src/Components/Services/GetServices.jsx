@@ -21,8 +21,14 @@ import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
 import { getService } from "../../redux/actions/master/Services/getService";
 
-
 function GetService() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const value = location.state;
+  const filterValue = value ? value.toLowerCase() : "";
+  {
+    /*header*/
+  }
   const [category, setCategory] = useState("");
   const options = [
     { value: "alphabetical", label: "Alphabetical" },
@@ -53,13 +59,14 @@ function GetService() {
       boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
     }),
   };
+
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
   const [pageNo, setPageNo] = useState(1);
   const isFetching = useRef(false); // Prevent multiple rapid API calls
-  const location = useLocation;
-  const category1 = location.state;
+
+  const category1 = "";
   useEffect(() => {
     if (isFetching.current) return;
     isFetching.current = true;
@@ -75,13 +82,13 @@ function GetService() {
           setLoading,
           selectedOption?.value || "",
           pageNo,
-          category ? category : ""
+          category ? category : filterValue
         )
       ).finally(() => {
         isFetching.current = false;
       });
     }
-  }, [dispatch, selectedOption, pageNo, category, category1]);
+  }, [dispatch, selectedOption, pageNo, category, category1, filterValue]);
 
   const store = useSelector((state) => state.getServiceReducer) || {
     serviceData: [],
@@ -90,21 +97,31 @@ function GetService() {
   const data1 = store.serviceData;
   const data = [...new Set(data1)];
   console.log(data, "serviceData....");
-  useEffect(() => {
-    const handleScroll = (e) => {
-      const scrollHeight = e.target.documentElement.scrollHeight;
-      const currentHeight =
-        e.target.documentElement.scrollTop + window.innerHeight;
-      if (currentHeight + 1 >= scrollHeight * 0.5) {
-        setPageNo(pageNo + 1);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [pageNo]);
+  // useEffect(() => {
+  //   const handleScroll = (e) => {
+  //     const scrollHeight = e.target.documentElement.scrollHeight;
+  //     const currentHeight =
+  //       e.target.documentElement.scrollTop + window.innerHeight;
+  //     if (currentHeight + 1 >= scrollHeight * 0.5) {
+  //       setPageNo(pageNo + 1);
+  //     }
+  //   };
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [pageNo]);
 
-  const observerRef = useRef(null); // Ref for the observer target (bottom div)
- 
+  const currentUrl = encodeURIComponent(window.location.href); // Get the current page URL
+  const shareUrls = {
+    whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+    twitter: `https://twitter.com/intent/tweet?url=${currentUrl}`,
+    messenger: `https://www.messenger.com/t/?link=${currentUrl}`,
+  };
+  const handleShare = (platform) => {
+    window.open(shareUrls[platform], "_blank");
+  };
+
+  // const observerRef = useRef(null); // Ref for the observer target (bottom div)
 
   //-------------------------------------------------------------------------------//
   //   useEffect(() => {
@@ -144,14 +161,15 @@ function GetService() {
   //     if (observerRef.current) observer.unobserve(observerRef.current);
   //   };
   // }, []);
-  //   if (loading) {
-  //     return <Loading />;
-  //   }
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <div className="flex lg:flex-row flex-col gap-2">
-      <div className="p-2 lg:w-[80%] w-full">
+      <div className="p-2 lg:w-[75%] w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
-          <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-10 ">
+          <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 capitalize ">
+            {/* {filterValue ? filterValue : category ? category : "Services"} */}
             Services
           </h1>
 
@@ -242,16 +260,28 @@ function GetService() {
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
               Find Events
               <div className="flex  gap-2 text-xl">
-                <button className="flex gap-1 shadow border p-1 rounded">
+                <button
+                  onClick={() => handleShare("facebook")}
+                  className="flex gap-1 shadow border p-1 rounded"
+                >
                   <FaSquareFacebook className="text-blue-700 relative " />
                 </button>
-                <button className="flex gap-1 shadow border p-1 rounded">
+                <button
+                  onClick={() => handleShare("whatsapp")}
+                  className="flex gap-1 shadow border p-1 rounded"
+                >
                   <IoLogoWhatsapp className="text-green-600" />
                 </button>
-                <button className="flex gap-1 shadow border p-1 rounded">
+                <button
+                  onClick={() => handleShare("messenger")}
+                  className="flex gap-1 shadow border p-1 rounded"
+                >
                   <FaFacebookMessenger className="text-red-500" />
                 </button>
-                <button className="flex gap-1 shadow border p-1 rounded">
+                <button
+                  onClick={() => handleShare("twitter")}
+                  className="flex gap-1 shadow border p-1 rounded"
+                >
                   <FaSquareXTwitter className="" />
                 </button>
               </div>
@@ -282,94 +312,115 @@ function GetService() {
           </div>
         </div>
 
+        
         <div className="grid  lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
-          {data.map((item, index) => {
-            return (
-              <div
-                key={index}
-                className=" flex flex-col pb-5 shadow-md rounded border  "
-                onClick={() => {
-                  navigate("/getServiceById", { state: item._id });
-                }}
-              >
-                <div className="h-40 lg:w-[326px] w-full overflow-hidden">
-                  <img
-                    src={item.profileImage}
-                    className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
-                    alt={item.name}
-                  />
-                </div>
-                <div className="p-2">
-                  <h1 className="font-medium text-lg capitalize">
-                    {item.name}
-                  </h1>
-                  <section className="text-sm text-gray-500 ">
-                    {item.address}, {item.city}, {item.state}
-                  </section>
-                </div>
-                <div className="flex justify-between">
-                  <p className="flex gap-2 p-1 px-3 text-lg">
-                    {/* <button>
+          {data.length > 0 ? (
+            data.map((item, index) => {
+              return (
+                <div
+                  key={index}
+                  className=" flex flex-col pb-5 shadow-md rounded border  "
+                  onClick={() => {
+                    navigate("/getServiceById", { state: item._id });
+                  }}
+                >
+                  <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
+                    <img
+                      src={item.profileImage}
+                      className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
+                      alt={item.name}
+                    />
+                  </div>
+                  <div className="p-2">
+                    <h1 className="font-medium text-lg capitalize">
+                      {item.name}
+                    </h1>
+                    <section className="text-sm text-gray-500 ">
+                      {item.address}, {item.city}, {item.state}
+                    </section>
+                  </div>
+                  <div className="flex justify-between">
+                    <p className="flex gap-2 p-1 px-3 text-lg">
+                      {/* <button>
                   {" "}
                   <FcLike />
                 </button> */}
 
-                    <button className="text-red-500">
-                      <a href={item.facebookUrl ? item.facebookUrl : ""}>
-                        {item.facebookUrl ? (
-                          <CiFacebook className="text-red-500" />
-                        ) : (
-                          ""
-                        )}
-                      </a>
-                    </button>
-                    <button className="text-red-500">
-                      <a href={item.instagramUrl ? item.instagramUrl : ""}>
-                        {item.instagramUrl ? (
-                          <FaInstagram className="text-red-500" />
-                        ) : (
-                          ""
-                        )}
-                      </a>
-                    </button>
-                    <FcLike />
+                      <button className="text-red-500">
+                        <a href={item.facebookUrl ? item.facebookUrl : ""}>
+                          {item.facebookUrl ? (
+                            <CiFacebook className="text-red-500" />
+                          ) : (
+                            ""
+                          )}
+                        </a>
+                      </button>
+                      <button className="text-red-500">
+                        <a href={item.instagramUrl ? item.instagramUrl : ""}>
+                          {item.instagramUrl ? (
+                            <FaInstagram className="text-red-500" />
+                          ) : (
+                            ""
+                          )}
+                        </a>
+                      </button>
+                      <FcLike />
 
-                    <button className="text-red-500">
-                      <a href={item.twitterUrl ? item.twitterUrl : ""}>
-                        {item.twitterUrl ? (
-                          <FaSquareXTwitter className="text-red-500" />
-                        ) : (
-                          ""
-                        )}
-                      </a>
-                    </button>
-                  </p>
-                  <p className="flex gap-2 pr-5">
-                    5 <IoStarSharp className="relative top-1 text-yellow-400" />
-                  </p>
+                      <button className="text-red-500">
+                        <a href={item.twitterUrl ? item.twitterUrl : ""}>
+                          {item.twitterUrl ? (
+                            <FaSquareXTwitter className="text-red-500" />
+                          ) : (
+                            ""
+                          )}
+                        </a>
+                      </button>
+                    </p>
+                    <p className="flex gap-2 pr-5">
+                      5{" "}
+                      <IoStarSharp className="relative top-1 text-yellow-400" />
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <div className="flex lg:h-[500px] md:h-[400px] h-[250px] font-medium text-3xl justify-center items-center">
+              No data found...
+            </div>
+          )}
         </div>
+
         {/* <div ref={observerRef} className="h-10"></div> */}
       </div>
-      <div className="lg:w-[20%] lg:block hidden m-2 w-full">
+      <div className="lg:w-[25%] lg:block hidden m-2 w-full">
         <div className="flex flex-col gap-2 px-2 shadow-md p-2">
           <div className="grid grid-cols-3 gap-2 text-xl">
-            <button className="flex gap-1 shadow border p-1 rounded">
+            <button
+              onClick={() => handleShare("facebook")}
+              className="flex gap-1 shadow border p-1 rounded"
+            >
               <span className="text-sm border-r px-2">SHARE </span>
               <FaSquareFacebook className="text-blue-700 relative " />
             </button>
-            <button className="flex gap-1 shadow border p-1 rounded">
+            <button
+              onClick={() => handleShare("whatsapp")}
+              className="flex gap-1 shadow border p-1 rounded"
+            >
               <span className="text-sm border-r px-2">SHARE </span>
               <IoLogoWhatsapp className="text-green-600" />
             </button>
-            <button className="flex gap-1 shadow border p-1 rounded">
+            <button
+              onClick={() => handleShare("messenger")}
+              className="flex gap-1 shadow border p-1 rounded"
+            >
               <span className="text-sm border-r px-2">SHARE </span>
               <FaFacebookMessenger className="text-red-500" />
             </button>
-            <button className="flex gap-1 shadow border p-1 rounded">
+            <button
+              onClick={() => handleShare("twitter")}
+              className="flex gap-1 shadow border p-1 rounded"
+            >
               <span className="text-sm border-r px-2">SHARE </span>
               <FaSquareXTwitter className="" />
             </button>
@@ -407,16 +458,7 @@ function GetService() {
                   Entertainer
                 </div>
               </div>
-              <div className="flex gap-2 ">
-                <div
-                  onClick={() => {
-                    setCategory("party supplies");
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Party Supplies
-                </div>
-              </div>
+
               <div className="flex gap-2 ">
                 <div
                   onClick={() => {
@@ -426,8 +468,6 @@ function GetService() {
                 >
                   Photography & Videography
                 </div>
-              </div>
-              <div className="flex gap-2 ">
                 <div
                   onClick={() => {
                     setCategory("promoters");
@@ -436,6 +476,8 @@ function GetService() {
                 >
                   Promoters
                 </div>
+              </div>
+              <div className="flex gap-2 ">
                 <div
                   onClick={() => {
                     setCategory("dance studio");
@@ -443,6 +485,14 @@ function GetService() {
                   className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
                   Dance Studio
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("party supplies");
+                  }}
+                  className="cursor-pointer whitespace-nowrap bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Party Supplies
                 </div>
               </div>
             </section>

@@ -32,6 +32,13 @@ import FacebookComments from "../Organizer/FacebookComments";
 import EnquiryForm from "../Organizer/EnquiryForm";
 import OwnerShipForm from "../Organizer/OwnerShipForm";
 import { getPerformerById } from "../../redux/actions/master/Performers/getPerformerById";
+import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
+import SoundCloudEmbed from "../SocialMedia/Soundcloud";
+import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
+import FacebookEmbeded from "../SocialMedia/Facebook";
+import InstagramProfile from "../SocialMedia/Instagram";
+import YouTubeProfile from "../SocialMedia/Youtube";
+import PerformerStats from "../SocialMedia/State";
 
 function GetPerformerById() {
   const [isPopUp, setIsPopUp] = useState(false);
@@ -43,7 +50,11 @@ function GetPerformerById() {
   const [upcomimg, setUpcoming] = useState(false);
   const [facebook, setFacebook] = useState(false);
   const [twitter, setTwitter] = useState(false);
+  const [instagram, setInstgram] = useState(false);
+  const [youtube, setYoutube] = useState(false);
   const [soundCloud, setSoundCloud] = useState(false);
+  const [stat, setStat] = useState(false);
+  const [spotify, setSpotify] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const performerId = location.state;
@@ -60,16 +71,26 @@ function GetPerformerById() {
   useEffect(() => {
     dispatch(getPerformerById(performerId, setLoading));
   }, [dispatch]);
+
   if (loading) {
     return <Loading />;
   }
 
- 
+  const currentUrl = window.location.href;
+  const shareUrls = {
+    whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+    twitter: `https://twitter.com/intent/tweet?url=${currentUrl}`,
+    messenger: `https://www.messenger.com/t/?link=${currentUrl}`,
+  };
+  const handleShare = (platform) => {
+    window.open(shareUrls[platform], "_blank");
+  };
 
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-10">
-        <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[80%] lg:px-4 ">
+        <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
           <div className="flex justify-between font-medium">
             <p className="hidden gap-2 p-3 lg:flex ">
               <p
@@ -288,8 +309,8 @@ function GetPerformerById() {
                 </button>
               </div>
             </div>
-            <div className="lg:w-[70%]  h-[300px] overflow-scroll ">
-              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
+            <div className="lg:w-[70%]  h-[300px] overflow-scroll scrollbar-hide ">
+              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
                 <button
                   className={`px-2 ${
                     about ? "border-b-2 border-b-red-600" : ""
@@ -300,6 +321,10 @@ function GetPerformerById() {
                     setFacebook(false);
                     setSoundCloud(false);
                     setTwitter(false);
+                    setInstgram(false);
+                    setSpotify(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
                   ABOUT
@@ -314,6 +339,10 @@ function GetPerformerById() {
                     setFacebook(false);
                     setSoundCloud(false);
                     setTwitter(false);
+                    setInstgram(false);
+                    setSpotify(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
                   UPCOMING EVENT
@@ -326,9 +355,12 @@ function GetPerformerById() {
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(true);
-
                     setSoundCloud(false);
                     setTwitter(false);
+                    setInstgram(false);
+                    setSpotify(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
                   FACEBOOK
@@ -341,11 +373,33 @@ function GetPerformerById() {
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(false);
-                    setTwitter(true);
                     setSoundCloud(false);
+                    setTwitter(true);
+                    setInstgram(false);
+                    setSpotify(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
-                  Twitter
+                  TWITTER
+                </button>
+                <button
+                  className={`${
+                    instagram ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setSoundCloud(false);
+                    setTwitter(false);
+                    setInstgram(true);
+                    setSpotify(false);
+                    setYoutube(false);
+                    setStat(false);
+                  }}
+                >
+                  INSTAGRAM
                 </button>
                 <button
                   className={`${
@@ -357,9 +411,67 @@ function GetPerformerById() {
                     setFacebook(false);
                     setSoundCloud(true);
                     setTwitter(false);
+                    setInstgram(false);
+                    setSpotify(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
-                  SoundCloud
+                  SOUNDCLOUD
+                </button>
+                <button
+                  className={`${
+                    spotify ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setSoundCloud(false);
+                    setTwitter(false);
+                    setInstgram(false);
+                    setSpotify(true);
+                    setYoutube(false);
+                    setStat(false);
+                  }}
+                >
+                  SPOTIFY
+                </button>
+                <button
+                  className={`${
+                    youtube ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setSoundCloud(false);
+                    setTwitter(false);
+                    setInstgram(false);
+                    setSpotify(false);
+                    setYoutube(true);
+                    setStat(false);
+                  }}
+                >
+                  YOUTUBE
+                </button>
+                <button
+                  className={`${
+                    stat ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setSoundCloud(false);
+                    setTwitter(false);
+                    setInstgram(false);
+                    setSpotify(false);
+                    setYoutube(false);
+                    setStat(true);
+                  }}
+                >
+                  STAT
                 </button>
               </div>
               <div className="lg:px-10 px-2 border bg-white ">
@@ -375,23 +487,35 @@ function GetPerformerById() {
                 <p>
                   {facebook ? (
                     <div>
-                      <iframe
-                        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FZeenews&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=849920522233544"
-                        width="340"
-                        height="500"
-                        style={{ border: "none", overflow: "hidden" }}
-                        scrolling="no"
-                        frameBorder="0"
-                        allowfullscreen="true"
-                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                      ></iframe>
+                      <FacebookEmbeded appId={849920522233544} />
                     </div>
                   ) : (
                     ""
                   )}
                 </p>
-                <p>{twitter ? <div></div> : ""}</p>
-                <p>{soundCloud ? <div></div> : ""}</p>
+                <p>
+                  {twitter ? (
+                    <div>
+                      <TwitterEmbed twitterId={data.twitterId} />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </p>
+                {/* <p>{soundCloud ? <div>
+                  <SoundCloudEmbed userName={data.soundCloudId}/>
+                </div> : ""}</p> */}
+
+                <p>
+                  {spotify ? <SpotifyEmbed artistId={data.spotifyId} /> : ""}
+                </p>
+                <p>
+                  {instagram ? <InstagramProfile username={"cristiano"} /> : ""}
+                </p>
+                <p>
+                  {youtube ? <YouTubeProfile channelId={data.youtubeId} /> : ""}
+                </p>
+                <p>{stat ? <PerformerStats data={data} /> : ""}</p>
               </div>
             </div>
           </div>
@@ -449,16 +573,28 @@ function GetPerformerById() {
                 <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
                   Find Events
                   <div className="flex  gap-2 text-xl">
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("facebook")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaSquareFacebook className="text-blue-700 relative " />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("whatsapp")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <IoLogoWhatsapp className="text-green-600" />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("messenger")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaFacebookMessenger className="text-red-500" />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("twitter")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaSquareXTwitter className="" />
                     </button>
                   </div>
@@ -509,22 +645,34 @@ function GetPerformerById() {
           </div>
         </div>
 
-        <div className="w-[20%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
+        <div className="w-[25%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
           <div className="flex flex-col gap-2 px-2 shadow-md p-2">
             <div className="grid grid-cols-3 gap-2 text-xl">
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("facebook")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaSquareFacebook className="text-blue-700 relative " />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("whatsapp")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <IoLogoWhatsapp className="text-green-600" />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("messenger")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaFacebookMessenger className="text-red-500" />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("twitter")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaSquareXTwitter className="" />
               </button>
@@ -565,10 +713,8 @@ function GetPerformerById() {
                     Sound Artist
                   </div>
                 </div>
-                
               </div>
               <div className="flex gap-2 ">
-               
                 <div
                   onClick={() => {
                     setCategory("standup comedian");

@@ -19,6 +19,8 @@ import GetVenue from "../Components/Venue/GetVenue";
 import GetVenueById from "../Components/Venue/GetVenueById";
 import GetService from "../Components/Services/GetServices";
 import GetServiceById from "../Components/Services/GetServiceById";
+import GetEventByFilter from "../Components/Events/GetEventByFilter";
+import GetOrganizerByFilter from "../Components/Organizer/GetOragnizerByFilter";
 
 function Routess() {
   return (
@@ -54,7 +56,11 @@ function Routess() {
           <Route path="/getVenueById" element={<GetVenueById />} />
           <Route path="/getService" element={<GetService />} />
           <Route path="/getServiceById" element={<GetServiceById />} />
-          
+          <Route path="/getEventByFilter" element={<GetEventByFilter />} />
+          <Route
+            path="/getOrganizerByFilter"
+            element={<GetOrganizerByFilter />}
+          />
         </Route>
 
         {/* </Route> */}

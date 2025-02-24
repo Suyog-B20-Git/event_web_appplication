@@ -23,6 +23,8 @@ import getVenueReducer from "./pages/Venue/getVenue";
 import getVenueByIdReducer from "./pages/Venue/getVenueById";
 import getServiceReducer from "./pages/Services/getServiceReducer";
 import getServiceByIdReducer from "./pages/Services/getServiceById";
+import getEventByFilterReducer from "./pages/Events/getEventByFilter";
+
 
 // ** Reducers Import **//
 
@@ -49,6 +51,8 @@ const rootReducer = combineReducers({
   getVenueByIdReducer,
   getServiceReducer,
   getServiceByIdReducer,
+  getEventByFilterReducer,
+
 });
 
 export default rootReducer;

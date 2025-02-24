@@ -31,6 +31,11 @@ import { FcLike } from "react-icons/fc";
 import FacebookComments from "./FacebookComments";
 import EnquiryForm from "./EnquiryForm";
 import OwnerShipForm from "./OwnerShipForm";
+import FacebookEmbeded from "../SocialMedia/Facebook";
+import InstagramProfile from "../SocialMedia/Instagram";
+import YouTubeProfile from "../SocialMedia/Youtube";
+import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
+import PerformerStats from "../SocialMedia/State";
 
 function GetOrganizerById() {
   const [isPopUp, setIsPopUp] = useState(false);
@@ -40,6 +45,10 @@ function GetOrganizerById() {
   const [about, setAbout] = useState(true);
   const [upcomimg, setUpcoming] = useState(false);
   const [facebook, setFacebook] = useState(false);
+  const [twitter, setTwitter] = useState(false);
+  const [instagram, setInstagram] = useState(false);
+  const [stat, setStat] = useState(false);
+  const [youtube, setYoutube] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const organizerId = location.state;
@@ -52,6 +61,16 @@ function GetOrganizerById() {
 
   const data = store.organizerData;
   console.log(data, "OrganizerData....");
+  const currentUrl = window.location.href;
+  const shareUrls = {
+    whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+    twitter: `https://twitter.com/intent/tweet?url=${currentUrl}`,
+    messenger: `https://www.messenger.com/t/?link=${currentUrl}`,
+  };
+  const handleShare = (platform) => {
+    window.open(shareUrls[platform], "_blank");
+  };
 
   useEffect(() => {
     dispatch(getOrganizerById(organizerId, setLoading));
@@ -59,7 +78,6 @@ function GetOrganizerById() {
   if (loading) {
     return <Loading />;
   }
- 
 
   // useEffect(() => {
   //   if (!window.FB) {
@@ -75,7 +93,7 @@ function GetOrganizerById() {
   return (
     <div>
       <div className="flex lg:flex-row flex-col gap-10">
-        <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[80%] lg:px-4 ">
+        <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
           <div className="flex justify-between font-medium">
             <p className="hidden gap-2 p-3 lg:flex ">
               <p
@@ -294,8 +312,8 @@ function GetOrganizerById() {
                 </button>
               </div>
             </div>
-            <div className="lg:w-[70%]  h-[300px] overflow-scroll ">
-              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
+            <div className="lg:w-[70%]  h-[300px] overflow-scroll scrollbar-hide">
+              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
                 <button
                   className={`px-2 ${
                     about ? "border-b-2 border-b-red-600" : ""
@@ -304,6 +322,10 @@ function GetOrganizerById() {
                     setAbout(true);
                     setUpcoming(false);
                     setFacebook(false);
+                    setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
                   ABOUT
@@ -316,6 +338,10 @@ function GetOrganizerById() {
                     setAbout(false);
                     setUpcoming(true);
                     setFacebook(false);
+                    setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
                   UPCOMING EVENT
@@ -328,9 +354,78 @@ function GetOrganizerById() {
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(true);
+                    setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
                   FACEBOOK
+                </button>
+                <button
+                  className={`${
+                    twitter ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setTwitter(true);
+                    setInstagram(false);
+                    setYoutube(false);
+                    setStat(false);
+                  }}
+                >
+                  TWITTER
+                </button>
+                <button
+                  className={`${
+                    instagram ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setTwitter(false);
+                    setInstagram(true);
+                    setYoutube(false);
+                    setStat(false);
+                  }}
+                >
+                  INSTAGRAM
+                </button>
+                <button
+                  className={`${
+                    youtube ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(true);
+                    setStat(false);
+                  }}
+                >
+                  YOUTUBE
+                </button>
+                <button
+                  className={`${
+                    stat ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(true);
+
+                    setStat(true);
+                  }}
+                >
+                  STAT
                 </button>
               </div>
               <div className="lg:px-10 px-2 border bg-white ">
@@ -341,32 +436,34 @@ function GetOrganizerById() {
                     : ""}
                 </p>
                 <p className="font-medium text-lg text-center">
-                  {upcomimg ? "" : " "}
+                  {upcomimg ? "" : <div className="  "></div>}
                 </p>
                 <p>
-                  {facebook ? (
-                    <div>
-                      <iframe
-                        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FZeenews&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=849920522233544"
-                        width="340"
-                        height="500"
-                        style={{ border: "none", overflow: "hidden" }}
-                        scrolling="no"
-                        frameBorder="0"
-                        allowfullscreen="true"
-                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                      ></iframe>
-                    </div>
+                  {facebook ? <FacebookEmbeded appId={849920522233544} /> : ""}
+                </p>
+                <p className="font-medium text-lg text-center">
+                  {instagram ? (
+                    <InstagramProfile username="cristiano" />
                   ) : (
-                    ""
+                    <div className=" "></div>
                   )}
                 </p>
+                <p className="font-medium text-lg text-center">
+                  {twitter ? "" : <TwitterEmbed twitterId={data.twitterId} />}
+                </p>
+                <p className="font-medium text-lg text-center">
+                  {youtube ? (
+                    <YouTubeProfile channelId={data.youtubeId} />
+                  ) : (
+                    <div></div>
+                  )}
+                </p>
+                {/* <p>{stat ? <PerformerStats data={data} /> : ""}</p> */}
               </div>
             </div>
           </div>
 
           <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
-          
             <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
               <div className="rounded p-2 shadow ">
                 <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
@@ -376,8 +473,8 @@ function GetOrganizerById() {
                   <div className="flex gap-2 ">
                     <div
                       onClick={() => {
-                        setCategory("event planner")
-                        navigate('/getOrganizer',{state:category})
+                        setCategory("event planner");
+                        navigate("/getOrganizer", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -385,8 +482,8 @@ function GetOrganizerById() {
                     </div>
                     <div
                       onClick={() => {
-                        setCategory("wedding planner")
-                        navigate('/getOrganizer',{state:category})
+                        setCategory("wedding planner");
+                        navigate("/getOrganizer", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -396,8 +493,8 @@ function GetOrganizerById() {
                   <div className="flex gap-2 px-2">
                     <div
                       onClick={() => {
-                        setCategory("adventure")
-                        navigate('/getOrganizer',{state:category})
+                        setCategory("adventure");
+                        navigate("/getOrganizer", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -410,16 +507,28 @@ function GetOrganizerById() {
                 <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
                   Find Events
                   <div className="flex  gap-2 text-xl">
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("facebook")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaSquareFacebook className="text-blue-700 relative " />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("whatsapp")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <IoLogoWhatsapp className="text-green-600" />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("messenger")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaFacebookMessenger className="text-red-500" />
                     </button>
-                    <button className="flex gap-1 shadow border p-1 rounded">
+                    <button
+                      onClick={() => handleShare("twitter")}
+                      className="flex gap-1 shadow border p-1 rounded"
+                    >
                       <FaSquareXTwitter className="" />
                     </button>
                   </div>
@@ -449,7 +558,6 @@ function GetOrganizerById() {
                 </div>
               </div>
             </div>
-            
           </div>
           <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
             Organizer Location
@@ -471,23 +579,36 @@ function GetOrganizerById() {
           </div>
         </div>
 
-        <div className="w-[20%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
-         
+        <div className="w-[25%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
           <div className="flex flex-col gap-2 px-2 shadow-md p-2">
             <div className="grid grid-cols-3 gap-2 text-xl">
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("facebook")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaSquareFacebook className="text-blue-700 relative " />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("whatsapp")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
                 <span className="text-sm border-r px-2">SHARE </span>
                 <IoLogoWhatsapp className="text-green-600" />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("messenger")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
+                {" "}
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaFacebookMessenger className="text-red-500" />
               </button>
-              <button className="flex gap-1 shadow border p-1 rounded">
+              <button
+                onClick={() => handleShare("twitter")}
+                className="flex gap-1 shadow border p-1 rounded"
+              >
+                {" "}
                 <span className="text-sm border-r px-2">SHARE </span>
                 <FaSquareXTwitter className="" />
               </button>
@@ -501,8 +622,8 @@ function GetOrganizerById() {
               <div className="flex gap-2 ">
                 <div
                   onClick={() => {
-                    setCategory("event planner")
-                    navigate('/getOrganizer',{state:category})
+                    setCategory("event planner");
+                    navigate("/getOrganizer", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -510,8 +631,8 @@ function GetOrganizerById() {
                 </div>
                 <div
                   onClick={() => {
-                    setCategory("wedding planner")
-                    navigate('/getOrganizer',{state:category})
+                    setCategory("wedding planner");
+                    navigate("/getOrganizer", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -520,8 +641,8 @@ function GetOrganizerById() {
               </div>
               <div
                 onClick={() => {
-                  setCategory("adventure")
-                  navigate('/getOrganizer',{state:category})
+                  setCategory("adventure");
+                  navigate("/getOrganizer", { state: category });
                 }}
                 className="flex gap-2 px-2"
               >

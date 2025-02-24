@@ -9,6 +9,7 @@ export const Event = {
   featuredEvent: `${baseUrl}event/featured?page=1&limit=10&timezoneOffset=0`,
   upcomingEvent: `${baseUrl}event/upcoming?page=1&limit=10&timezoneOffset=0`,
   getAllEvents: `${baseUrl}event?limit=60`,
+  getEventByFilter:`${baseUrl}event/filter?`
 };
 
 export const Performer = {
@@ -18,7 +19,8 @@ export const Performer = {
 };
 
 export const Organizer={
-    getOrganizerFilter:`${baseUrl}organizer/`
+    getOrganizerFilter:`${baseUrl}organizer/`,
+    getOrganizerByFilter:`${baseUrl}organizer/filter?`
 }
 
 export const Venue = {
