@@ -48,7 +48,7 @@ const Header = () => {
     {
       name: "Event",
       filterPath: "/getEventByFilter",
-      path: "#",
+      path: "/viewAll",
       icon: <MdEvent />,
       popUpMenu: [
         { name: "Business", path: "#" },
