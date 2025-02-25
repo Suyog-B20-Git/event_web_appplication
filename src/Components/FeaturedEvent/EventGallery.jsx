@@ -9,22 +9,7 @@ function EventGallery() {
     "EventGallery/eventg1.png",
   ];
   return (
-    // <div className="m-2 shadow-lg rounded-xl p-3">
-    //   <h1 className="font-semibold text-lg m-2">Event Gallery</h1>
-    //   <div className="grid grid-cols-3 gap-2 grid-rows-2 lg:flex md:gap-30 lg:justify-around ">
-    //     {gallery.map((item, index) => {
-    //       return (
-    //         <img
-    //           key={index}
-    //           src={item}
-    //           alt=""
-    //           width={"200px"}
-    //           height={"200px"}
-    //         />
-    //       );
-    //     })}
-    //   </div>
-    // </div>
+   
     <div className="flex lg:justify-center lg:items-center overflow-hidden">
       <div className="lg:p-12 p-3 w-full max-w-8xl">
       
@@ -42,7 +27,7 @@ function EventGallery() {
             >
               <img
                 src={item}
-                className="h-24 lg:h-52 md:h-32 w-full rounded-2xl"
+                className="h-24 lg:h-44 md:h-32 w-full rounded-2xl"
               />
             </div>
           ))}

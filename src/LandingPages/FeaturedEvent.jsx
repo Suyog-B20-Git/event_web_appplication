@@ -103,8 +103,8 @@ function FeaturedEvent() {
               <p>
                 {receivedData.startDate}
               </p>
-              <p> {receivedData.venue?.city || "Pune"} -{" "}
-              {receivedData.venue?.country || "India"}</p>
+              <p> {receivedData.venue?.city || "-"} -{" "}
+              {receivedData.venue?.country || "-"}</p>
             </div>
           </div>
           <hr />
@@ -277,7 +277,7 @@ function FeaturedEvent() {
               <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-2 pt-4">
                 <p className="flex lg:text-xs md:text-xs  text-sm break-words gap-1 lg:whitespace-nowrap">
                   <PiBuildingApartmentFill className="relative top-1" />
-                {receivedData.venue.city},{receivedData.venue.country}
+                  {receivedData.venue?.city || "-"},{receivedData.venue?.country || "-"}
                 </p>
                 <p className="flex lg:text-xs   md:text-xs  text-sm break-words gap-1 lg:whitespace-nowrap">
                   <FaPhoneAlt className="relative top-1" />

@@ -34,13 +34,14 @@ function Sponsors() {
           <h1 className="lg:text-2xl font-medium pb-4">Sponsors</h1>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           {displayedSponsors.map((item, index) => (
             <div key={index} className="p-1 flex justify-center">
               <img
                 src={item}
+                style={{aspectRatio:"3/2",objectFit:"contain",mixBlendMode:"color-burn"}}
                 alt={`Sponsor ${index + 1}`}
-                className="md:h-20 h-16 w-[120px] md:w-[150px] rounded-2xl"
+                className="md:h-20  h-16 w-[120px] md:w-[150px] rounded-2xl"
               />
             </div>
           ))}
