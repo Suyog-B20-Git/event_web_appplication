@@ -63,8 +63,6 @@ function GetOrganizer() {
   const [pageNo, setPageNo] = useState(1);
 
   useEffect(() => {
-    // if (isFetching.current) return;
-    // isFetching.current = true;
     if (category1) {
       dispatch(
         getOrganizer(setLoading, selectedOption?.value || "", pageNo, category1)
@@ -104,14 +102,16 @@ function GetOrganizer() {
   //     const scrollHeight = e.target.documentElement.scrollHeight;
   //     const currentHeight =
   //       e.target.documentElement.scrollTop + window.innerHeight;
-  //     if (currentHeight + 1 >= scrollHeight) {
-  //       setPageNo(pageNo + 1);
+  //     if (currentHeight + 1 >= scrollHeight * 0.5) {
+  //       setPageNo((prev) => prev + 1);
   //     }
   //   };
   //   window.addEventListener("scroll", handleScroll);
   //   return () => window.removeEventListener("scroll", handleScroll);
   // }, [pageNo]);
 
+
+ 
   if (loading) {
     return <Loading />;
   }
@@ -396,6 +396,7 @@ function GetOrganizer() {
           </div>
         </div>
       </div>
+     
     </div>
   );
 }

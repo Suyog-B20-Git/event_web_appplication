@@ -10,73 +10,7 @@ import { FaEye } from "react-icons/fa";
 function Cards({ data, heading }) {
   const navigate = useNavigate();
 
-  // const card1 = [
-  //   {
-  //     img: "fI1.png",
-  //     name: "Art Exhibition | India",
-  //     date: "February 12",
-  //     time: "5:00 PM",
-  //     location: "Kala Ghoda, Mumbai",
-  //     category: "Art",
-  //     start: "10 Feb 2025",
-  //     startTime: "10:00 AM",
-  //     end: "14 Feb 2025",
-  //     endTime: "6:00 PM",
-  //     organiser: "ArtWave",
-  //   },
-  //   {
-  //     img: "fI2.png",
-  //     name: "Tech Conference 2025 | USA",
-  //     date: "April 10",
-  //     time: "9:00 AM",
-  //     location: "Silicon Valley, California",
-  //     category: "Technology",
-  //     start: "8 Apr 2025",
-  //     startTime: "9:00 AM",
-  //     end: "12 Apr 2025",
-  //     endTime: "5:00 PM",
-  //     organiser: "InnovateTech",
-  //   },
-  //   {
-  //     img: "fI3.png",
-  //     name: "Food Festival | Italy",
-  //     date: "May 20",
-  //     time: "11:00 AM",
-  //     location: "Piazza Navona, Rome",
-  //     category: "Food",
-  //     start: "18 May 2025",
-  //     startTime: "11:00 AM",
-  //     end: "22 May 2025",
-  //     endTime: "8:00 PM",
-  //     organiser: "FoodiesUnited",
-  //   },
-  //   {
-  //     img: "fI1.png",
-  //     name: "Marathon 2025 | UK",
-  //     date: "June 5",
-  //     time: "7:00 AM",
-  //     location: "Hyde Park, London",
-  //     category: "Sports",
-  //     start: "4 Jun 2025",
-  //     startTime: "6:30 AM",
-  //     end: "6 Jun 2025",
-  //     endTime: "12:00 PM",
-  //     organiser: "RunLife",
-  //   },
-  //   {
-  //     img: "fI2.png",
-  //     name: "Literature Fair | France",
-  //     date: "July 15",
-  //     time: "2:00 PM",
-  //     location: "Eiffel Tower, Paris",
-  //     category: "Literature",
-  //     start: "14 Jul 2025",
-  //     startTime: "1:00 PM",
-  //     end: "18 Jul 2025",
-  //     endTime: "6:00 PM",
-  //     organiser: "BookWorld",
-  //   },
-  // ];
+ 
 
   return (
     <div className="flex lg:justify-start  justify-center lg:relative left-[70px] items-center overflow-hidden">
@@ -101,7 +35,7 @@ function Cards({ data, heading }) {
               key={index}
               // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
               className="overflow-hidden flex-none  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
-              // onClick={() => navigate("/featuredEvent", { state: item })}
+              onClick={() => navigate("/featuredEvent", { state: item })}
             >
               <div className=" h-24 lg:h-52 md:h-32 w-full rounded-lg  flex justify-end overflow-hidden">
                 <div

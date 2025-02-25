@@ -14,12 +14,16 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EnquiryForm from "./Components/Organizer/EnquiryForm";
 import OwnerShipForm from "./Components/Organizer/OwnerShipForm";
-
+import { ContextProvider } from "./Components/Util/ContextProvider";
+import FeaturedEvent from "./LandingPages/FeaturedEvent";
 
 function App() {
   return (
     <Provider store={store}>
-      <Routess />
+      <ContextProvider>
+        <Routess />
+        {/* <FeaturedEvent /> */}
+      </ContextProvider>
 
       <ToastContainer position="top-right" autoClose={3000} />
       {/* <GetPerformers /> */}

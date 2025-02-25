@@ -173,6 +173,7 @@ function Viewall() {
   }));
   // console.log(selectedCity, selectedState, selectedCountry);
   const reset = () => {
+    handleApi()
     setStartDate("");
     setEndDate("");
     setSearchEvent("");
@@ -184,7 +185,7 @@ function Viewall() {
     setCountryFilter("");
     setCityFilter("");
     setStateFilter("");
-    handleApi();
+   
   };
 
   console.log(
@@ -213,17 +214,17 @@ function Viewall() {
         <div className="flex justify-between pt-5 px-3">
           <button
             onClick={() => setFilter(!filter)}
-            className="flex gap-3 text-2xl font-medium"
+            className="flex gap-3 lg:text-2xl font-medium"
           >
-            <div className="border-2 border-[#ff2459] text-[#ff2459] flex justify-center items-center p-1 rounded-md ">
+            <div className="border-2 h-max border-[#ff2459] text-[#ff2459] flex lg:justify-center lg:items-center p-1 rounded-md ">
               <IoMenu />
             </div>
             Filters
           </button>
-          <div className="flex gap-4">
+          <div className="flex lg:text-base text-xs gap-4">
             <button
               onClick={reset}
-              className="flex gap-1 font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
+              className="flex gap-1 lg:text-base text-sm font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
             >
               <IoIosRefresh className="text-[#ff2459] relative top-1" /> Refresh
               Filters
@@ -232,18 +233,18 @@ function Viewall() {
               onClick={handleApi}
               className="flex gap-1 font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
             >
-              <VscFilterFilled className="text-[#ff2459] relative top-1 text-lg" />
+              <VscFilterFilled className="text-[#ff2459] relative top-1 lg:text-lg" />
               Apply Filter
             </button>
           </div>
         </div>
         {filter && (
-          <div className="px-5 p-5 flex flex-col gap-2">
+          <div className="px-5 lg:text-lg text-sm p-5 flex flex-col gap-2">
             <div className="grid lg:grid-cols-4 gap-3 md:grid-cols-3 grid-cols-1">
               <div className="flex flex-col gap-0.5">
                 <label
                   htmlFor="searchEvent"
-                  className="text-lg  text-gray-900 p-1"
+                  className="lg:text-lg text-sm  text-gray-900 p-1"
                 >
                   Search event
                 </label>
@@ -259,7 +260,7 @@ function Viewall() {
               <div className="flex flex-col gap-0.5">
                 <label
                   htmlFor="category"
-                  className="text-lg  text-gray-900 p-1"
+                  className="lg:text-lg text-sm   text-gray-900 p-1"
                 >
                   Category
                 </label>
@@ -271,7 +272,7 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="price" className="text-lg  text-gray-900 p-1">
+                <label htmlFor="price" className="lg:text-lg text-sm  text-gray-900 p-1">
                   Price
                 </label>
                 <Select
@@ -283,7 +284,7 @@ function Viewall() {
               </div>
 
               <div className="flex flex-col  gap-0.5">
-                <label htmlFor="date" className="text-lg  text-gray-900 p-1">
+                <label htmlFor="date" className="lg:text-lg text-sm   text-gray-900 p-1">
                   Start Date
                 </label>
                 <input
@@ -300,7 +301,7 @@ function Viewall() {
               <div className="flex flex-col gap-0.5">
                 <label
                   htmlFor="category"
-                  className="text-lg  text-gray-900 p-1"
+                  className="lg:text-lg text-sm  text-gray-900 p-1"
                 >
                   Country
                 </label>
@@ -323,7 +324,7 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="state" className="text-lg  text-gray-900 p-1">
+                <label htmlFor="state" className="lg:text-lg text-sm   text-gray-900 p-1">
                   State
                 </label>
                 <Select
@@ -345,7 +346,7 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="city" className="text-lg  text-gray-900 p-1">
+                <label htmlFor="city" className="lg:text-lg text-sm  text-gray-900 p-1">
                   City
                 </label>
                 <Select
@@ -367,7 +368,7 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col  gap-0.5">
-                <label htmlFor="date" className="text-lg  text-gray-900 p-1">
+                <label htmlFor="date" className="lg:text-lg text-sm   text-gray-900 p-1">
                   End Date
                 </label>
                 <input
@@ -404,7 +405,7 @@ function Viewall() {
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
-                  className=" h-24 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end"
+                  className=" h-28 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end"
                 >
                   <div className=" text-white bg-blue-300 rounded-xl lg:text-base text-xs   font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
                     {item.category}

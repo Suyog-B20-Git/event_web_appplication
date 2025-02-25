@@ -278,7 +278,7 @@ function GetPerformers() {
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
                   onClick={() => {
-                    navigate("/getServiceById", { state: item._id });
+                    navigate("/getPerformerById", { state: item._id });
                   }}
                 >
                   <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
@@ -392,7 +392,7 @@ function GetPerformers() {
                   onClick={() => {
                     setCategory("band");
                   }}
-                  className="bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  className="bg-gray-200 cursor-pointer hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
                   Band
                 </div>
@@ -400,7 +400,7 @@ function GetPerformers() {
                   onClick={() => {
                     setCategory("disc jockey");
                   }}
-                  className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  className="bg-gray-200 cursor-pointer whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
                   Disc Jockey
                 </div>
@@ -410,7 +410,7 @@ function GetPerformers() {
                   }}
                   className="flex gap-2 px-2"
                 >
-                  <div className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
+                  <div className="bg-gray-200 cursor-pointer whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
                     Sound Artist
                   </div>
                 </div>
@@ -422,7 +422,7 @@ function GetPerformers() {
                   }}
                   className="flex gap-2 px-2"
                 >
-                  <div className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
+                  <div className="bg-gray-200 cursor-pointer whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
                     Stand up comedian
                   </div>
                 </div>

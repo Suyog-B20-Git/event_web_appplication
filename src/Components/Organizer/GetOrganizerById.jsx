@@ -420,7 +420,7 @@ function GetOrganizerById() {
                     setFacebook(false);
                     setTwitter(false);
                     setInstagram(false);
-                    setYoutube(true);
+                    setYoutube(false);
 
                     setStat(true);
                   }}
