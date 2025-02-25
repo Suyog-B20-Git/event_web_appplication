@@ -29,11 +29,11 @@ export const Venue = {
   filterVenue:`${baseUrl}venue/filter/`
 };
 export const Location = {
-  city: `${baseUrl}location/citySuggestions?`,
-  country: `${baseUrl}location/countrySuggestions?`,
-  state: `${baseUrl}location/stateSuggestions?`,
-  location: `${baseUrl}location/mapSuggestions?`,
-  getLocationDetails: `${baseUrl}location/locationDetails?`,
+  city: `${baseUrl}location/citySuggestions`,
+  country: `${baseUrl}location/countrySuggestions`,
+  state: `${baseUrl}location/stateSuggestions`,
+  location: `${baseUrl}location/mapSuggestions`,
+  getLocationDetails: `${baseUrl}location/locationDetails`,
 };
 
 export const Service={

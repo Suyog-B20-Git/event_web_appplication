@@ -59,7 +59,7 @@ export const getCity = (country, state, city) => {
   return async (dispatch) => {
     try {
       const response = await axios.get(
-        `${Location.city}country=${country}&state=${state}&search=${city}`
+        `${Location.city}?country=${country}&state=${state}&search=${city}`
       );
       console.log("response", response);
       dispatch({

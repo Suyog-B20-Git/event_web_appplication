@@ -55,56 +55,72 @@ export const updateLiftType = (data, props, setisLoader) => {
 import axios from "axios";
 import { Event } from "../../../Urls";
 
-export const getEventByFilter = (setLoader, filter) => {
-  let api = `${Event.getEventByFilter}category=${encodeURIComponent(
-    filter
-  )}&page=1&limit=10`;
+// export const getEventByFilter = (setLoader, filter) => {
+export const getEventByFilter = (
+  setLoader,
+  category,
+  priceType,
+  searchEvent,
+  countryFilter,
+  cityFilter,
+  stateFilter,
+  startDate,
+  endDate
+) => {
+  let api = Event.getAllEvents;
   setLoader(true); // Start loading
-  //   switch (filter) {
-  //     case "titl":
-  //       if (category) {
-  //         api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
-  //           category
-  //         )}&page=${page}&limit=8&sortOrder=asc`;
-  //       } else {
-  //         api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
-  //       }
 
-  //       break;
+  // if (filter && filter != "all") {
+  //   api = `${Event.getEventByFilter}category=${encodeURIComponent(
+  //     filter
+  //   )}&page=1&limit=10`;
+  // } else if (filter == "all") {
+  //   api = Event.getAllEvents;
+  // } else {
+  //   api = Event.getAllEvents;
+  // }
+  const filters = {
+    category: category,
+    price: priceType,
+    searchEvent: searchEvent,
+    country: countryFilter,
+    city: cityFilter,
+    state: stateFilter,
+    startDate: startDate,
+    endDate: endDate,
+  };
+  const hasFilters = Object.values(filters).some(
+    (value) => value !== undefined && value !== null && value !== ""
+  );
 
-  //     case "title desc":
-  //       if (category) {
-  //         api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
-  //           category
-  //         )}&page=${page}&limit=8&sortOrder=desc`;
-  //       } else
-  //         api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=desc`;
-  //       break;
+  if (hasFilters) {
+    api = Event.getEventByFilter;
+  } else {
+    api = Event.getAllEvents;
+  }
 
-  //     case "alphabetical":
-  //       if (category) {
-  //         api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
-  //           category
-  //         )}&page=${page}&limit=8&sortOrder=asc`;
-  //       } else
-  //         api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
-  //       break;
-
-  //     default:
-  //       if (category) {
-  //         api = ` http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
-  //           category
-  //         )}&page=${page}&limit=8`;
-  //       } else
-  //         api = ` http://localhost:5000/api/organizer/filter?page=${page}&limit=8`;
-  //       break;
-  //   }
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (
+      value !== undefined &&
+      value !== null &&
+      value !== "" &&
+      value !== "all"
+    ) {
+      params.append(key, value);
+    }
+  });
 
   return async (dispatch) => {
     setLoader(true); // Start loading
 
     try {
-      const response = await axios.get(`${api}`);
+      // const response = await axios.get(`${api}${params.toString()}`);
+      const response = await axios.get(
+        `${api}${
+          hasFilters ? `${params.toString().replace(/\+/g, "%20")}` : ""
+        }`
+      );
       console.log("response", response);
       dispatch({
         type: "GET_EVENT_BY_FILTER",

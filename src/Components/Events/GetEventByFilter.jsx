@@ -23,7 +23,7 @@ function GetEventByFilter() {
 
   useEffect(() => {
     dispatch(getEventByFilter(setLoading, filterValue));
-  }, [dispatch,filterValue]);
+  }, [dispatch, filterValue]);
 
   const store = useSelector((state) => state.getEventByFilterReducer) || {
     filterEventData: [],
@@ -46,23 +46,12 @@ function GetEventByFilter() {
   }
 
   return (
-    // <div>
-    //   {data.length > 0 ? (
-    //     <EventCardData data={data} heading={value} />
-    //   ) : (
-    //     <div className="flex lg:h-[500px] md:h-[400px] h-[250px] font-medium text-3xl justify-center items-center">
-    //       No data found...
-    //     </div>
-    //   )}
-    // </div>
     <div className="flex lg:flex-row flex-col gap-2 lg:pt-0 md:pt-0 pt-20">
       <div className="p-2 lg:w-[75%] w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
           <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 ">
-       
             {/* {filterValue ? filterValue : category ? category : "  Events"} */}
             Events
-            
           </h1>
         </div>
         <div className=" lg:hidden flex  flex-col gap-5 rounded pt-0  ">
