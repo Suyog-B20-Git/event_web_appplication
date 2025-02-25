@@ -178,10 +178,13 @@ function Viewall() {
     setSearchEvent("");
     setSelectedOption("");
     setPrice("");
+    selectedCountry("")
+    selectedCity("")
+    selectedState("")
     setCountryFilter("");
     setCityFilter("");
     setStateFilter("");
-    handleApi()
+    handleApi();
   };
 
   console.log(
