@@ -13,8 +13,9 @@ import Guest from "./Guest";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import { Context } from "../Util/ContextProvider";
-const TicketForm = ({ type, price, onQuantityChange }) => {
+const TicketForm = ({ type, price, onQuantityChange, addTicket }) => {
   // const [quantity, setQuantity] = useState(0);
+
   const [formData, setFormData] = useState({
     quantity: 0,
     promoCode: "",
@@ -55,7 +56,7 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
   };
 
   // Handle form submission
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const postData = {
       ticketType: type,
       price,
@@ -64,7 +65,8 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
       totalCost: (price * formData.quantity).toFixed(2),
       attendees: formData.attendees,
     };
-    console.log(postData)
+    console.log(postData);
+    addTicket(postData); // Store data in Context
   };
 
   return (
@@ -74,7 +76,7 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
           <h3 className="font-semibold text-lg">{type}</h3>
           <p className="text-gray-600">{price} USD</p>
           <div className="flex pt-6">
-          <input
+            <input
               type="text"
               placeholder="Enter Promo code"
               value={formData.promoCode}
@@ -113,13 +115,16 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
             </select>
           </div>
         </div>
-        {/* <div className="w-full sm:w-[20%] flex justify-end">
-          <p className="text-gray-600">{(price * quantity).toFixed(2)} USD</p>
-        </div> */}
+        <div className="w-full sm:w-[20%] flex justify-end">
+          {/* <p className="text-gray-600">{(price * quantity).toFixed(2)} USD</p> */}
+          <p className="text-gray-600">
+            {(price * formData.quantity).toFixed(2)} USD
+          </p>
+        </div>
       </div>
 
-      {/* <div>
-        {[...Array(quantity)].map((_, index) => (
+      <div>
+        {/* {[...Array(quantity)].map((_, index) => (
           <div key={index} className="mt-1">
             <h4 className="text-sm font-medium">Attendee {index + 1}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
@@ -140,11 +145,53 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
               />
             </div>
           </div>
+        ))} */}
+        {[...Array(formData.quantity)].map((_, index) => (
+          <div key={index} className="mt-1">
+            <h4 className="text-sm font-medium">Attendee {index + 1}</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+              <input
+                type="text"
+                placeholder="Name"
+                className="border rounded p-2 w-full text-sm"
+                value={formData.attendees[index]?.name || ""}
+                onChange={(e) =>
+                  handleAttendeeChange(index, "name", e.target.value)
+                }
+              />
+              <input
+                type="text"
+                placeholder="Phone"
+                className="border rounded p-2 w-full text-sm"
+                value={formData.attendees[index]?.phone || ""}
+                onChange={(e) =>
+                  handleAttendeeChange(index, "phone", e.target.value)
+                }
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                className="border rounded p-2 w-full text-sm"
+                value={formData.attendees[index]?.email || ""}
+                onChange={(e) =>
+                  handleAttendeeChange(index, "email", e.target.value)
+                }
+              />
+            </div>
+          </div>
         ))}
-        <p className="text-[#ff2459] font-semibold text-sm p-2">
-          Show Ticket Info
-        </p>
-      </div> */}
+        <div className="flex gap-2 p-2 justify-between">
+          <p className="text-[#ff2459] font-semibold text-sm p-1 px-2">
+            Show Ticket Info
+          </p>
+          <button
+            onClick={handleSubmit}
+            className="capitalize text-xs px-2 p-1 rounded bg-[#ff2459] text-white font-medium"
+          >
+            Save Data
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -152,6 +199,8 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
 const MeditationForm = ({ data }) => {
   const { form, setForm, showTimer, setShowTimer, setLogin } =
     useContext(Context);
+  const { addTicket,ticket } = useContext(Context);
+  console.log(ticket)
   const [time, setTime] = useState(5 * 60); // 5 minutes in seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -209,6 +258,7 @@ const MeditationForm = ({ data }) => {
             key={ticket.type}
             type={ticket.type}
             price={ticket.price}
+            addTicket={addTicket}
             onQuantityChange={handleQuantityChange}
           />
         ))}

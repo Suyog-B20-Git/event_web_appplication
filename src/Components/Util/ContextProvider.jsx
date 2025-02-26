@@ -9,6 +9,12 @@ export const ContextProvider = ({ children }) => {
   const [account, setAccount] = useState(false);
   const [guest, setGuest] = useState(true);
   const [showTimer, setShowTimer] = useState(false); // Track timer visibility
+  const [ticket, setTicket] = useState([]); // Stores all ticket form data
+
+  // Function to add ticket data
+  const addTicket = (ticketData) => {
+    setTicket((prevTickets) => [...prevTickets, ticketData]);
+  };
   return (
     <Context.Provider
       value={{
@@ -22,6 +28,8 @@ export const ContextProvider = ({ children }) => {
         setAccount,
         login,
         setLogin,
+        ticket,
+        addTicket,
       }}
     >
       {children}

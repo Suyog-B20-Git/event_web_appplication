@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { getEventByFilter } from "../../redux/actions/master/Events/getEventByFilter";
+
 import Loading from "../Loading";
 import EventCardData from "../EventCardData";
 import { CalendarCheck } from "lucide-react";
@@ -11,24 +11,26 @@ import { FaSquareFacebook, FaSquareXTwitter } from "react-icons/fa6";
 import { FaFacebookMessenger, FaInstagram } from "react-icons/fa";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import { FcLike } from "react-icons/fc";
+import { getEventByFilter1 } from "../../redux/actions/master/Events/getEventByFilter1";
 
 function GetEventByFilter() {
   const location = useLocation();
   const value = location.state;
 
   const filterValue = value.toLowerCase();
+  console.log(filterValue)
 
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getEventByFilter(setLoading, filterValue));
+    dispatch(getEventByFilter1(setLoading, filterValue));
   }, [dispatch, filterValue]);
 
-  const store = useSelector((state) => state.getEventByFilterReducer) || {
-    filterEventData: [],
+  const store = useSelector((state) => state.getEventByFilter1Reducer) || {
+    eventData: [],
   };
-  const data = store.filterEventData;
+  const data = store.eventData;
   console.log(data, "FilterEvent Data");
   const currentUrl = window.location.href;
   const shareUrls = {
@@ -147,7 +149,7 @@ function GetEventByFilter() {
         </div>
 
         <div>
-          {data.length > 0 ? (
+          { data.length > 0 ? (
             <EventCardData data={data} heading={value} />
           ) : (
             <div className="flex lg:h-[500px] md:h-[400px] h-[250px] font-medium text-3xl justify-center items-center">
