@@ -8,7 +8,7 @@ export const Event = {
   createEvent: `${baseUrl}event`,
   featuredEvent: `${baseUrl}event/featured?page=1&limit=10&timezoneOffset=0`,
   upcomingEvent: `${baseUrl}event/upcoming?page=1&limit=10&timezoneOffset=0`,
-  getAllEvents: `${baseUrl}event?limit=60`,
+  getAllEvents: `${baseUrl}event?`,
   getEventByFilter:`${baseUrl}event/filter?`
 };
 

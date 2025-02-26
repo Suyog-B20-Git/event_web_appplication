@@ -62,9 +62,9 @@ export const getOrganizer = (setLoader, filter, page, category) => {
       if (category) {
         api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc`;
       } else {
-        api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
+        api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=9&sortOrder=asc`;
       }
 
       break;
@@ -91,9 +91,9 @@ export const getOrganizer = (setLoader, filter, page, category) => {
       if (category) {
         api = ` http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8`;
+        )}&page=${page}&limit=9`;
       } else
-        api = ` http://localhost:5000/api/organizer/filter?page=${page}&limit=8`;
+        api = ` http://localhost:5000/api/organizer/filter?page=${page}&limit=9`;
       break;
   }
 
@@ -106,7 +106,8 @@ export const getOrganizer = (setLoader, filter, page, category) => {
       dispatch({
         type: "GET_ORGANIZER",
         organizerData: response.data.organizers, // Ensure the API actually returns this structure
-        pageNo: page,
+        // pageNo: page,
+        totalPages:response.data.totalPages
       });
     } catch (error) {
       console.error(

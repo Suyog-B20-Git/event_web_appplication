@@ -62,9 +62,9 @@ export const getService = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Service.getFilterService}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc`;
       } else
-        api = `${Service.getFilterService}?page=${page}&limit=8&sortOrder=asc`;
+        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=asc`;
 
       break;
 
@@ -72,26 +72,26 @@ export const getService = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Service.getFilterService}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=desc`;
+        )}&page=${page}&limit=9&sortOrder=desc`;
       } else
-        api = `${Service.getFilterService}?page=${page}&limit=8&sortOrder=desc`;
+        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=desc`;
       break;
 
     case "alphabetical":
       if (category) {
         api = `${Service.getFilterService}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc`;
       } else
-        api = `${Service.getFilterService}?page=${page}&limit=8&sortOrder=asc`;
+        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=asc`;
       break;
 
     default:
       if (category) {
         api = ` ${Service.getFilterService}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8`;
-      } else api = ` ${Service.getFilterService}?page=${page}&limit=8`;
+        )}&page=${page}&limit=9`;
+      } else api = ` ${Service.getFilterService}?page=${page}&limit=9`;
       break;
   }
 
@@ -104,7 +104,7 @@ export const getService = (setLoader, filter, page, category) => {
       dispatch({
         type: "GET_SERVICE",
         serviceData: response.data.services, // Ensure the API actually returns this structure
-        pageNo: page,
+        totalPages:response.data.totalPages
       });
     } catch (error) {
       console.error(

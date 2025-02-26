@@ -17,6 +17,7 @@ import { getState } from "../redux/actions/master/location/State";
 import { getCity } from "../redux/actions/master/location/City";
 import { getEventByFilter } from "../redux/actions/master/Events/getEventByFilter";
 import { VscFilterFilled } from "react-icons/vsc";
+import Pagination from "../Components/Pagination";
 function Viewall() {
   const [filter, setFilter] = useState(false);
   const options = [
@@ -68,6 +69,7 @@ function Viewall() {
 
   const [searchEvent, setSearchEvent] = useState("");
   const dispatch = useDispatch();
+  const[currentPage,setCurrentPage]=useState(1)
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     dispatch(
@@ -80,10 +82,12 @@ function Viewall() {
         cityFilter,
         stateFilter,
         startDate,
-        endDate
+        endDate,
+        currentPage
       )
     ); // Call API when component mounts
-  }, [dispatch]);
+  }, [dispatch,currentPage]);
+  
 
   const handleApi = () => {
     dispatch(
@@ -96,7 +100,8 @@ function Viewall() {
         cityFilter,
         stateFilter,
         startDate,
-        endDate
+        endDate,
+        currentPage
       )
     );
   };
@@ -105,6 +110,19 @@ function Viewall() {
   };
   const data = store.filterEventData;
   // console.log(data);
+  const totalPages = store.totalPages;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   const handleStartDateChange = (e) => {
     const selectedStartDate = e.target.value;
@@ -386,7 +404,7 @@ function Viewall() {
         )}
         {/* Cards container with horizontal scrolling */}
         <div className="  grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
-          {data.length > 0 ? (
+          {data && data.length > 0 ? (
             data.map((item, index) => (
               <div
                 key={index}
@@ -447,6 +465,14 @@ function Viewall() {
           ) : (
             <div>No Date found</div>
           )}
+        </div>
+        <div className="pb-3 ">
+          <Pagination
+            handlePreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            handleNextPage={handleNextPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
     </div>

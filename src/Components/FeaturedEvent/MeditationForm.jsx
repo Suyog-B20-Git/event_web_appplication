@@ -14,12 +14,57 @@ import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import { Context } from "../Util/ContextProvider";
 const TicketForm = ({ type, price, onQuantityChange }) => {
-  const [quantity, setQuantity] = useState(0);
+  // const [quantity, setQuantity] = useState(0);
+  const [formData, setFormData] = useState({
+    quantity: 0,
+    promoCode: "",
+    attendees: [],
+  });
 
-  const handleChange = (e) => {
+  // const handleChange = (e) => {
+  //   const newQuantity = Number(e.target.value);
+  //   setQuantity(newQuantity);
+  //   onQuantityChange(newQuantity); // Notify the parent component
+  // };
+
+  const handleQuantityChange = (e) => {
     const newQuantity = Number(e.target.value);
-    setQuantity(newQuantity);
-    onQuantityChange(newQuantity); // Notify the parent component
+    setFormData((prev) => ({
+      ...prev,
+      quantity: newQuantity,
+      attendees: Array(newQuantity).fill({ name: "", phone: "", email: "" }), // Reset attendees list
+    }));
+    onQuantityChange(newQuantity);
+  };
+  // Handle promo code input
+  const handlePromoCodeChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      promoCode: e.target.value,
+    }));
+  };
+
+  // Handle attendee input change
+  const handleAttendeeChange = (index, field, value) => {
+    const updatedAttendees = [...formData.attendees];
+    updatedAttendees[index] = { ...updatedAttendees[index], [field]: value };
+    setFormData((prev) => ({
+      ...prev,
+      attendees: updatedAttendees,
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async () => {
+    const postData = {
+      ticketType: type,
+      price,
+      quantity: formData.quantity,
+      promoCode: formData.promoCode,
+      totalCost: (price * formData.quantity).toFixed(2),
+      attendees: formData.attendees,
+    };
+    console.log(postData)
   };
 
   return (
@@ -29,12 +74,14 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
           <h3 className="font-semibold text-lg">{type}</h3>
           <p className="text-gray-600">{price} USD</p>
           <div className="flex pt-6">
-            <input
+          <input
               type="text"
               placeholder="Enter Promo code"
+              value={formData.promoCode}
+              onChange={handlePromoCodeChange}
               className="p-1 text-sm rounded-lg border-2 w-full sm:w-auto"
             />
-            <button className="bg-green-200 ml-2 rounded-md z-2 relative right-10 text-xs w-20 p-1.5">
+            <button className="bg-green-200 ml-2 rounded-md text-xs w-20 p-1.5">
               Apply
             </button>
           </div>
@@ -42,7 +89,7 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
         <div className="w-full sm:w-[50%]">
           <div className="mt-2">
             <label className="block text-sm font-medium">Select Quantity</label>
-            <select
+            {/* <select
               className="border rounded p-1 w-2/3 mt-1"
               value={quantity}
               onChange={handleChange}
@@ -52,15 +99,26 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
                   {num}
                 </option>
               ))}
+            </select> */}
+            <select
+              className="border rounded p-1 w-2/3 mt-1"
+              value={formData.quantity}
+              onChange={handleQuantityChange}
+            >
+              {[...Array(6).keys()].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
             </select>
           </div>
         </div>
-        <div className="w-full sm:w-[20%] flex justify-end">
+        {/* <div className="w-full sm:w-[20%] flex justify-end">
           <p className="text-gray-600">{(price * quantity).toFixed(2)} USD</p>
-        </div>
+        </div> */}
       </div>
 
-      <div>
+      {/* <div>
         {[...Array(quantity)].map((_, index) => (
           <div key={index} className="mt-1">
             <h4 className="text-sm font-medium">Attendee {index + 1}</h4>
@@ -86,13 +144,14 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
         <p className="text-[#ff2459] font-semibold text-sm p-2">
           Show Ticket Info
         </p>
-      </div>
+      </div> */}
     </div>
   );
 };
 
 const MeditationForm = ({ data }) => {
-  const { form, setForm,showTimer,setShowTimer,setLogin } = useContext(Context);
+  const { form, setForm, showTimer, setShowTimer, setLogin } =
+    useContext(Context);
   const [time, setTime] = useState(5 * 60); // 5 minutes in seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -184,8 +243,8 @@ const MeditationForm = ({ data }) => {
                 width={"w-full"}
                 textSize={"text-lg"}
                 onClick={() => {
-                  setLogin(true)
-                  setForm(false)
+                  setLogin(true);
+                  setForm(false);
                 }}
               />
             </div>

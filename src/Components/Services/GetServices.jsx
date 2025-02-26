@@ -20,6 +20,7 @@ import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
 import { getService } from "../../redux/actions/master/Services/getService";
+import Pagination from "../Pagination";
 
 function GetService() {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ function GetService() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
-  const [pageNo, setPageNo] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const isFetching = useRef(false); // Prevent multiple rapid API calls
 
   const category1 = "";
@@ -72,7 +73,7 @@ function GetService() {
     isFetching.current = true;
     if (category1) {
       dispatch(
-        getService(setLoading, selectedOption?.value || "", pageNo, category1)
+        getService(setLoading, selectedOption?.value || "",currentPage, category1)
       ).finally(() => {
         isFetching.current = false;
       });
@@ -81,14 +82,14 @@ function GetService() {
         getService(
           setLoading,
           selectedOption?.value || "",
-          pageNo,
+          currentPage,
           category ? category : filterValue
         )
       ).finally(() => {
         isFetching.current = false;
       });
     }
-  }, [dispatch, selectedOption, pageNo, category, category1, filterValue]);
+  }, [dispatch, selectedOption, currentPage, category, category1, filterValue]);
 
   const store = useSelector((state) => state.getServiceReducer) || {
     serviceData: [],
@@ -97,6 +98,19 @@ function GetService() {
   const data1 = store.serviceData;
   const data = [...new Set(data1)];
   console.log(data, "serviceData....");
+  const totalPages = store.totalPages;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   // useEffect(() => {
   //   const handleScroll = (e) => {
   //     const scrollHeight = e.target.documentElement.scrollHeight;
@@ -389,6 +403,14 @@ function GetService() {
               No data found...
             </div>
           )}
+        </div>
+        <div className="pb-3 ">
+          <Pagination
+            handlePreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            handleNextPage={handleNextPage}
+            totalPages={totalPages}
+          />
         </div>
 
         {/* <div ref={observerRef} className="h-10"></div> */}

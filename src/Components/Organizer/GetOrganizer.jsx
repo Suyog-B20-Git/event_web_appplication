@@ -16,6 +16,7 @@ import { IoLogoWhatsapp, IoStarSharp } from "react-icons/io5";
 import { BsCalendar2DateFill } from "react-icons/bs";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
+import Pagination from "../Pagination";
 
 function GetOrganizer() {
   const navigate = useNavigate();
@@ -60,24 +61,29 @@ function GetOrganizer() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
-  const [pageNo, setPageNo] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (category1) {
       dispatch(
-        getOrganizer(setLoading, selectedOption?.value || "", pageNo, category1)
+        getOrganizer(
+          setLoading,
+          selectedOption?.value || "",
+          currentPage,
+          category1
+        )
       );
     } else {
       dispatch(
         getOrganizer(
           setLoading,
           selectedOption?.value || "",
-          pageNo,
+          currentPage,
           category ? category : filterValue
         )
       );
     }
-  }, [dispatch, selectedOption, pageNo, category1, category, filterValue]);
+  }, [dispatch, selectedOption, currentPage, category1, category, filterValue]);
 
   const store = useSelector((state) => state.getOrganizerReducer) || {
     organizerData: [],
@@ -110,8 +116,20 @@ function GetOrganizer() {
   //   return () => window.removeEventListener("scroll", handleScroll);
   // }, [pageNo]);
 
+  const totalPages = store.totalPages;
 
- 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -298,6 +316,14 @@ function GetOrganizer() {
             );
           })}
         </div>
+        <div className="pb-3">
+          <Pagination
+            handlePreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            handleNextPage={handleNextPage}
+            totalPages={totalPages}
+          />
+        </div>
       </div>
       <div className="lg:w-[25%] lg:block hidden m-2 w-full">
         <div className="flex flex-col gap-2 px-2 shadow-md p-2">
@@ -396,7 +422,6 @@ function GetOrganizer() {
           </div>
         </div>
       </div>
-     
     </div>
   );
 }
