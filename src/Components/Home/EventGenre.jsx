@@ -25,7 +25,7 @@ function EventGenre() {
     },
     {
       icon: <FaRegLaughSquint />,
-      desc: "Camping",
+      desc: "Comedy",
       no: "6 event",
     },
     {

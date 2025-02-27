@@ -192,6 +192,8 @@ export default function EventForm() {
     setValue("media.images", updatedImages);
   };
 
+  
+
   // Watching values
 
   const startDate = watch("startDate");
@@ -264,6 +266,9 @@ export default function EventForm() {
       navigate("/login");
     }
   };
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
   return (
     <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
       <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">

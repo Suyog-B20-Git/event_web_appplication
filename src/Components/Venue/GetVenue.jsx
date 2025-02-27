@@ -132,6 +132,9 @@ function GetVenue() {
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");
   };
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
 
   // const observerRef = useRef(null); // Ref for the observer target (bottom div)
   // const isFetching = useRef(false); // Prevent multiple rapid API calls

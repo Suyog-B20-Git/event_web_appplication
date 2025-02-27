@@ -231,7 +231,8 @@ const Header = () => {
                         <path d="M32 31.6c-3.5 0-6.4-2.9-6.4-6.4s2.9-6.4 6.4-6.4 6.4 2.9 6.4 6.4-2.9 6.4-6.4 6.4zm0-10.4c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"></path>
                       </g>
                     </svg>
-                    <input
+                   <div className="flex">
+                   <input
                       type="text"
                       placeholder="location"
                       className="flex-1 bg-transparent outline-none px-2 text-gray-700"
@@ -240,6 +241,7 @@ const Header = () => {
                     <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
                       <IoSearchSharp className="text-white text-lg" />
                     </button>
+                   </div>
                   </div>
                 </div>
 

@@ -69,7 +69,7 @@ function Viewall() {
 
   const [searchEvent, setSearchEvent] = useState("");
   const dispatch = useDispatch();
-  const[currentPage,setCurrentPage]=useState(1)
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     dispatch(
@@ -86,8 +86,7 @@ function Viewall() {
         currentPage
       )
     ); // Call API when component mounts
-  }, [dispatch,currentPage]);
-  
+  }, [dispatch, currentPage]);
 
   const handleApi = () => {
     dispatch(
@@ -160,7 +159,9 @@ function Viewall() {
       dispatch(getCity(country, state, city));
     }
   }, [dispatch, country, state, city]);
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const store4 = useSelector((state) => state.countriesReducer) || {
     countries: [],
   };
@@ -191,19 +192,18 @@ function Viewall() {
   }));
   // console.log(selectedCity, selectedState, selectedCountry);
   const reset = () => {
-    handleApi()
+    handleApi();
     setStartDate("");
     setEndDate("");
     setSearchEvent("");
     setSelectedOption("");
     setPrice("");
-    selectedCountry("")
-    selectedCity("")
-    selectedState("")
+    selectedCountry("");
+    selectedCity("");
+    selectedState("");
     setCountryFilter("");
     setCityFilter("");
     setStateFilter("");
-   
   };
 
   console.log(
@@ -290,7 +290,10 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="price" className="lg:text-lg text-sm  text-gray-900 p-1">
+                <label
+                  htmlFor="price"
+                  className="lg:text-lg text-sm  text-gray-900 p-1"
+                >
                   Price
                 </label>
                 <Select
@@ -302,7 +305,10 @@ function Viewall() {
               </div>
 
               <div className="flex flex-col  gap-0.5">
-                <label htmlFor="date" className="lg:text-lg text-sm   text-gray-900 p-1">
+                <label
+                  htmlFor="date"
+                  className="lg:text-lg text-sm   text-gray-900 p-1"
+                >
                   Start Date
                 </label>
                 <input
@@ -342,7 +348,10 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="state" className="lg:text-lg text-sm   text-gray-900 p-1">
+                <label
+                  htmlFor="state"
+                  className="lg:text-lg text-sm   text-gray-900 p-1"
+                >
                   State
                 </label>
                 <Select
@@ -364,7 +373,10 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="city" className="lg:text-lg text-sm  text-gray-900 p-1">
+                <label
+                  htmlFor="city"
+                  className="lg:text-lg text-sm  text-gray-900 p-1"
+                >
                   City
                 </label>
                 <Select
@@ -386,7 +398,10 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col  gap-0.5">
-                <label htmlFor="date" className="lg:text-lg text-sm   text-gray-900 p-1">
+                <label
+                  htmlFor="date"
+                  className="lg:text-lg text-sm   text-gray-900 p-1"
+                >
                   End Date
                 </label>
                 <input

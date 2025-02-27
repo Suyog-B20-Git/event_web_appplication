@@ -175,6 +175,10 @@ function GetService() {
   //     if (observerRef.current) observer.unobserve(observerRef.current);
   //   };
   // }, []);
+
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
   if (loading) {
     return <Loading />;
   }

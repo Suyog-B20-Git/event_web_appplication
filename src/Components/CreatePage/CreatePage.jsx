@@ -96,10 +96,10 @@ function CreatePage() {
   };
 
   const socialProfile = [
-    "facebookUrl",
-    "twitterUrl",
-    "youtubeUrl",
-    "instagramUrl",
+   {label:"Facebook Url",value: "facebookUrl"},
+   {label:"Twitter Url",value: "twitterUrl"},
+   {label:"Youtube Url",value: "youtubeUrl"},
+    {label:"Instagram Url",value:"instagramUrl"},
   ];
 
   const tagKeywordList = [
@@ -279,7 +279,9 @@ function CreatePage() {
 
     reset();
   };
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="bg-white p-10 shadow-md rounded-md lg:pt-10 pt-32 md:pt-28 ">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -991,19 +993,19 @@ function CreatePage() {
             {socialProfile.map((item, index) => {
               return (
                 <div key={index} className="flex flex-col gap-1">
-                  <label className="text-gray-700 font-medium">{item}</label>
+                  <label className="text-gray-700 font-medium">{item.label}</label>
                   <input
                     type="url"
-                    name={item}
+                    name={item.value}
                     className="mt-1 block w-full border rounded-md p-2"
-                    placeholder={`Enter ${item}`}
-                    {...register(item, {
-                      required: `${item} is required`,
+                    placeholder={`Enter ${item.label}`}
+                    {...register(item.value, {
+                      required: `${item.value} is required`,
                     })}
                   />
-                  {errors[item] && (
+                  {errors[item.value] && (
                     <p className="text-red-600 text-sm px-2">
-                      {errors[item].message}*
+                      {errors[item.value].message}*
                     </p>
                   )}
                 </div>

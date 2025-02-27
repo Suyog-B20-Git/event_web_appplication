@@ -618,14 +618,14 @@ function GetOrganizerById() {
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
               Organizer Category
             </h1>
-            <section className="flex flex-col gap-2 pt-3 ">
+            <section className="flex flex-col gap-2 pt-3">
               <div className="flex gap-2 ">
                 <div
                   onClick={() => {
                     setCategory("event planner");
                     navigate("/getOrganizer", { state: category });
                   }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  className="cursor-pointer whitespace-nowrap bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
                   Event Planner
                 </div>
@@ -638,8 +638,18 @@ function GetOrganizerById() {
                 >
                   Wedding Planner
                 </div>
+                <div
+                  onClick={() => {
+                    setCategory("adventure");
+                    navigate("/getOrganizer", { state: category });
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-3 text-xs "
+                >
+                  Adventure
+                </div>
+               
               </div>
-              <div
+              {/* <div
                 onClick={() => {
                   setCategory("adventure");
                   navigate("/getOrganizer", { state: category });
@@ -649,7 +659,7 @@ function GetOrganizerById() {
                 <div className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
                   Adventure
                 </div>
-              </div>
+              </div> */}
             </section>
           </div>
           <div className="rounded border">

@@ -43,6 +43,10 @@ function GetEventByFilter() {
     window.open(shareUrls[platform], "_blank");
   };
 
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
   if (loading) {
     return <Loading />;
   }

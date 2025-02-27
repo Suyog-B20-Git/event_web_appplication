@@ -349,9 +349,10 @@ function Login() {
               </div>
 
               <p className="flex gap-1 justify-center">
-                Need and account ?{" "}
-                <Link style={{ color: "#FF2459" }} to={"/register"}>
+              
+                <Link className="flex gap-1 justify-center" style={{ color: "#FF2459" }} to={"/register"}>
                   {" "}
+                  <span className="text-gray-900 ">Need and account ?{" "}</span>
                   Register
                 </Link>
               </p>

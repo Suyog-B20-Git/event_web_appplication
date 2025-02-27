@@ -49,7 +49,7 @@ function Sponsors() {
 
         <div className="flex justify-center mt-6">
           <p style={{textDecoration:'underline'}}
-            className="text-blue-500 px-4 py-2 rounded-lg  transition"
+            className="text-blue-500 cursor-pointer px-4 py-2 rounded-lg  transition"
             onClick={() => setShowAll(!showAll)}
           >
             {showAll ? "See Less" : "See All Sponsors"}

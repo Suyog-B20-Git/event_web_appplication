@@ -70,7 +70,12 @@ function GetPerformers() {
     // isFetching.current = true;
     if (category1) {
       dispatch(
-        getPerformer(setLoading, selectedOption?.value || "", currentPage, category1)
+        getPerformer(
+          setLoading,
+          selectedOption?.value || "",
+          currentPage,
+          category1
+        )
       ).finally(() => {
         // isFetching.current = false;
       });
@@ -86,7 +91,7 @@ function GetPerformers() {
         // isFetching.current = false;
       });
     }
-  }, [dispatch, selectedOption,currentPage, category, category1, filterValue]);
+  }, [dispatch, selectedOption, currentPage, category, category1, filterValue]);
 
   const store = useSelector((state) => state.getPerformerReducer) || {
     performerData: [],
@@ -131,6 +136,10 @@ function GetPerformers() {
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // const observerRef = useRef(null); // Ref for the observer target (bottom div)
   // const isFetching = useRef(false); // Prevent multiple rapid API calls
