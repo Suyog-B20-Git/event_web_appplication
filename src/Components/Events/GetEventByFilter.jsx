@@ -16,16 +16,29 @@ import { getEventByFilter1 } from "../../redux/actions/master/Events/getEventByF
 function GetEventByFilter() {
   const location = useLocation();
   const value = location.state;
+  console.log(value);
 
   const filterValue = value.toLowerCase();
-  console.log(filterValue)
 
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-
+  const [category, setCategory] = useState("");
+  const[heading,setHeading]=useState("")
+  // Fetch data when `filterValue` is available
   useEffect(() => {
-    dispatch(getEventByFilter1(setLoading, filterValue));
+    if (filterValue) {
+      dispatch(getEventByFilter1(setLoading, filterValue));
+      setHeading(filterValue)
+    }
   }, [dispatch, filterValue]);
+
+  // Fetch data when `category` is selected
+  useEffect(() => {
+    if (category) {
+      dispatch(getEventByFilter1(setLoading, category));
+      setHeading(category)
+    }
+  }, [dispatch, category]);
 
   const store = useSelector((state) => state.getEventByFilter1Reducer) || {
     eventData: [],
@@ -43,9 +56,9 @@ function GetEventByFilter() {
     window.open(shareUrls[platform], "_blank");
   };
 
-   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (loading) {
     return <Loading />;
@@ -65,36 +78,78 @@ function GetEventByFilter() {
             <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
               Events Category
             </h1>
-            {/* <section className="flex lg:flex-col flex-row  overflow-x-scroll gap-2 pt-3 ">
-            <div className="flex gap-2 ">
-              <div
-                onClick={() => {
-                  setCategory("event planner");
-                }}
-                className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
-              >
-                Event Planner
+            <section className="flex lg:flex-col flex-row  overflow-x-scroll gap-2 pt-3 ">
+              <div className="flex gap-2 ">
+                <div
+                  onClick={() => {
+                    setCategory("festival");
+                  }}
+                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Festival
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("live music");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Live Music
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("business");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Business
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("professional");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Professional
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <div
+                  onClick={() => {
+                    setCategory("nightlife & club");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Nightlife & Club
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("sport & leisure");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Sport & Leisure
+                </div>
+                <div className="flex gap-2 ">
+                  <div
+                    onClick={() => {
+                      setCategory("social");
+                    }}
+                    className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Social
+                  </div>
+                </div>
               </div>
               <div
                 onClick={() => {
-                  setCategory("wedding planner");
+                  setCategory("theatre & art");
                 }}
-                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
+                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
               >
-                Wedding Planner
+                Theatre and Art
               </div>
-            </div>
-            <div className="flex gap-2 px-2">
-              <div
-                onClick={() => {
-                  setCategory("adventure");
-                }}
-                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-              >
-                Adventure
-              </div>
-            </div>
-          </section> */}
+            </section>
           </div>
           <div className="rounded border ">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex  justify-between">
@@ -153,8 +208,8 @@ function GetEventByFilter() {
         </div>
 
         <div>
-          { data.length > 0 ? (
-            <EventCardData data={data} heading={value} />
+          {data.length > 0 ? (
+            <EventCardData data={data} heading={heading} />
           ) : (
             <div className="flex lg:h-[500px] md:h-[400px] h-[250px] font-medium text-3xl justify-center items-center">
               No data found...
@@ -200,34 +255,78 @@ function GetEventByFilter() {
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
               Event Category
             </h1>
-            {/* <section className="flex flex-col gap-2 pt-3 ">
-            <div className="flex gap-2 ">
-              <div
-                onClick={() => {
-                  setCategory("event planner");
-                }}
-                className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-              >
-                Event Planner
+            <section className="flex flex-col gap-2 pt-3 ">
+              <div className="flex gap-2 ">
+                <div
+                  onClick={() => {
+                    setCategory("festival");
+                  }}
+                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Festival
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("live music");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Live Music
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("business");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Business
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("professional");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Professional
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <div
+                  onClick={() => {
+                    setCategory("nightlife & club");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Nightlife & Club
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("sport & leisure");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                >
+                  Sport & Leisure
+                </div>
+                <div className="flex gap-2 ">
+                  <div
+                    onClick={() => {
+                      setCategory("social");
+                    }}
+                    className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Social
+                  </div>
+                </div>
               </div>
               <div
                 onClick={() => {
-                  setCategory("wedding planner");
-                }}
-                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-              >
-                Wedding Planner
-              </div>
-              <div
-                onClick={() => {
-                  setCategory("adventure");
+                  setCategory("theatre & art");
                 }}
                 className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
               >
-                Adventure
+                Theatre and Art
               </div>
-            </div>
-          </section> */}
+            </section>
           </div>
           <div className="rounded border">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b">

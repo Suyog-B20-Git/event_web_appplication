@@ -141,11 +141,16 @@ function FeaturedEvent() {
             </button> */}
             <button
               onClick={() => {
-                setModal(true);
-                sectionRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "nearest",
-                });
+                if (receivedData.isRepetitive) {
+                  setModal(true);
+                  sectionRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                  });
+                } else {
+                  setForm(!form);
+                }
+                
               }}
               className="relative lg:text-lg text-xs font-medium rounded-md p-2 px-4 bg-[#ff2459] text-white transition-all duration-300 
   before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
@@ -209,7 +214,7 @@ function FeaturedEvent() {
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
-              // by={receivedData.organiser}
+              by={receivedData.name}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
             />
@@ -250,7 +255,7 @@ function FeaturedEvent() {
                   )}
                 </div>
                 <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
+                  {receivedData.isRepetitive ? (
                     <GetTicket
                       start={receivedData.startDate}
                       // sTime={receivedData.startTime}

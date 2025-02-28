@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FaWifi } from "react-icons/fa6";
 import { LuClock3 } from "react-icons/lu";
 import { MdEvent } from "react-icons/md";
@@ -195,12 +195,16 @@ const TicketForm = ({ type, price, onQuantityChange, addTicket }) => {
     </div>
   );
 };
-
+import { useForm } from "react-hook-form";
+import "react-toastify/dist/ReactToastify.css"; // Import default styles
+import { toast } from "react-toastify";
 const MeditationForm = ({ data }) => {
+  const modalRef = useRef(null);
+
   const { form, setForm, showTimer, setShowTimer, setLogin } =
     useContext(Context);
-  const { addTicket,ticket } = useContext(Context);
-  console.log(ticket)
+  const { addTicket, ticket } = useContext(Context);
+  console.log(ticket);
   const [time, setTime] = useState(5 * 60); // 5 minutes in seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -229,8 +233,73 @@ const MeditationForm = ({ data }) => {
     setShowTimer(quantity > 0);
   };
 
+  const {
+    register, // Registers inputs for validation
+    handleSubmit,
+    reset, // Handles form submission
+    formState: { errors }, // Contains form errors
+  } = useForm();
+
+  // const [formData, setFormData] = useState(new FormData());
+
+  // const onSubmit = (data) => {
+  //   console.log("Form Data:", data);
+  //   const newFormData = new FormData();
+  //   newFormData.append("name", data.name);
+  //   newFormData.append("email", data.email);
+  //   newFormData.append("phoneNo", data.phone);
+  //   setFormData(newFormData); // Update state to persist data
+  // };
+
+  // const handleCheckout = () => {
+  //   if (formData.get("email") && formData.get("phoneNo")) {
+  //     setLogin(true);
+  //     setForm(false);
+  //     reset();
+  //   } else {
+  //     toast.error("Please enter customer details before proceeding!", {
+  //       position: "top-right",
+  //     });
+
+  //     if (modalRef.current) {
+  //       modalRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  //     }
+  //   }
+  // };
+
+  const formDataRef = useRef(new FormData());
+
+const onSubmit = (data) => {
+  console.log("Form Data:", data);
+  const newFormData = new FormData();
+  newFormData.append("name", data.name);
+  newFormData.append("email", data.email);
+  newFormData.append("phoneNo", data.phone);
+
+  formDataRef.current = newFormData; // Directly update ref, no re-render issue
+};
+
+const handleCheckout = () => {
+  if (formDataRef.current.get("email") && formDataRef.current.get("phoneNo")) {
+    setLogin(true);
+    setForm(false);
+    reset();
+  } else {
+    toast.error("Please enter customer details before proceeding!", {
+      position: "top-right",
+    });
+
+    if (modalRef.current) {
+      modalRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+};
+
   return (
-    <div className="lg:w-[50vw]  mx-auto p-4 pt-0 sm:p-6 overflow-x-auto">
+    <div
+      ref={modalRef}
+      className="lg:w-[50vw] overflow-y-auto  mx-auto p-4 pt-0 sm:p-6 overflow-x-auto"
+    >
       <h1 className="text-2xl font-bold text-center mb-2">{data.name}</h1>
       <p className="text-center flex gap-1 text-gray-600 mb-6 justify-center">
         <FaWifi className="relative top-1 text-[#ff2459]" /> Online |{" "}
@@ -250,6 +319,81 @@ const MeditationForm = ({ data }) => {
           </p>
         </div>
       )}
+
+      <div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <h1 className="p-2 px-0  font-medium text-lg">Customer Details</h1>
+          <div className="flex lg:flex-row flex-col gap-3 justify-between border p-2">
+            {/* Name Input */}
+            <div className="flex flex-col gap-1">
+              <label className="lg:text-base text-sm">Name :</label>
+              <input
+                type="text"
+                className="border p-1 rounded lg:text-base text-sm text-gray-700"
+                {...register("name", { required: "Name is required" })}
+              />
+              {errors.name && (
+                <p className="text-red-300 text-xs">{errors.name.message}*</p>
+              )}
+            </div>
+
+            {/* Email Input */}
+            <div className="flex flex-col gap-1">
+              <label className="lg:text-base text-sm">Email :</label>
+              <input
+                type="email"
+                className="border p-1 lg:text-base text-sm rounded text-gray-700"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email format",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-red-300 text-xs">{errors.email.message}*</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              {/* Phone Number Input */}
+              <label className="lg:text-base text-sm">Phone Number :</label>
+              <input
+                type="tel"
+                className="border p-1 lg:text-base text-sm rounded text-gray-700"
+                {...register("phone", {
+                  required: "Phone number is required",
+                  pattern: {
+                    value: /^[6-9]\d{9}$/, // Ensures a 10-digit number starting with 6-9
+                    message: "Invalid phone number (must be 10 digits)",
+                  },
+                  minLength: {
+                    value: 10,
+                    message: "Phone number must be 10 digits",
+                  },
+                  maxLength: {
+                    value: 10,
+                    message: "Phone number must be 10 digits",
+                  },
+                })}
+              />
+              {errors.phone && (
+                <p className="text-red-300 text-xs">{errors.phone.message}*</p>
+              )}
+            </div>
+          </div>
+          <div className="p-2 flex justify-end">
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="bg-[#ff2459] text-white rounded p-1.5 px-2 text-xs font-medium"
+            >
+              Save Data
+            </button>
+          </div>
+        </form>
+      </div>
 
       <div className=" rounded-lg w-full">
         <p className="font-semibold p-1">Tickets</p>
@@ -292,70 +436,11 @@ const MeditationForm = ({ data }) => {
                 rounded={"rounded-xl"}
                 width={"w-full"}
                 textSize={"text-lg"}
-                onClick={() => {
-                  setLogin(true);
-                  setForm(false);
-                }}
+                onClick={handleCheckout}
               />
             </div>
           </div>
         )}
-
-        {/* {login && (
-          <div className="fixed w-full lg:h-[240vh]  h-[340vh]  inset-0 flex flex-col items-center justify-center bg-transparent z-70 backdrop-blur-sm overflow-x-hidden">
-            <div className="bg-white p-6 rounded-lg shadow-lg lg:w-[full] w-[max-content]">
-              <p className="flex items-center text-lg font-medium lg:p-0 p-4">
-                {account ? "Login" : guest ? "Checkout as Guest" : "Register"}
-              </p>
-              <div className="flex justify-end lg:p-0 p-3 relative lg:bottom-3 bottom-14">
-                <Button
-                  text={"X"}
-                  variant={"primary"}
-                  rounded={"rounded-xl"}
-                  onClick={() => {
-                    setForm(true);
-                    setLogin(false);
-                  }}
-                />
-              </div>
-
-              
-              {account ? <LoginModal /> : guest ? <Guest /> : <RegisterModal />}
-
-              <div className="flex gap-2 justify-center">
-                
-                {!guest && (
-                  <p
-                    className="cursor-pointer break-words lg:text-base text-sm"
-                    onClick={() => setAccount(!account)}
-                  >
-                    {account
-                      ? "Don't have an account?"
-                      : "Already have an account/Login Now"}
-                  </p>
-                )}
-                <p
-                  className="text-[#ff2459] font-medium text-sm cursor-pointer"
-                  onClick={() => {
-                    if (guest) {
-                      setGuest(false);
-                    } else if (!account) {
-                      setGuest(true);
-                    } else {
-                      setAccount(false);
-                    }
-                  }}
-                >
-                  {account
-                    ? "Register here"
-                    : guest
-                    ? "Back to Register/Login"
-                    : "Checkout as Guest"}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}*/}
       </div>
     </div>
   );

@@ -73,7 +73,12 @@ function GetService() {
     isFetching.current = true;
     if (category1) {
       dispatch(
-        getService(setLoading, selectedOption?.value || "",currentPage, category1)
+        getService(
+          setLoading,
+          selectedOption?.value || "",
+          currentPage,
+          category1
+        )
       ).finally(() => {
         isFetching.current = false;
       });
@@ -176,15 +181,15 @@ function GetService() {
   //   };
   // }, []);
 
-   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   if (loading) {
     return <Loading />;
   }
   return (
     <div className="flex lg:flex-row flex-col gap-2">
-      <div className="p-2 lg:w-[75%] w-full">
+      <div className="p-2 lg:w-[75%]  w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
           <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 capitalize ">
             {/* {filterValue ? filterValue : category ? category : "Services"} */}
@@ -330,8 +335,7 @@ function GetService() {
           </div>
         </div>
 
-        
-        <div className="grid  lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
+        <div className="grid   lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
           {data.length > 0 ? (
             data.map((item, index) => {
               return (
