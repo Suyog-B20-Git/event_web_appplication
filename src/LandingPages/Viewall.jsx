@@ -419,7 +419,7 @@ function Viewall() {
           </div>
         )}
         {/* Cards container with horizontal scrolling */}
-        <div className="  grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
+        <div className=" grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
           {data && data.length > 0 ? (
             data.map((item, index) => (
               <div
