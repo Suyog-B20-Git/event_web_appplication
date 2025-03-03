@@ -58,7 +58,7 @@ export const createNewEvent = (
             metaDescription: data.seo.metaDescription,
           },
           // data,
-        }
+        },
         // {
         //   headers: { "Content-Type": "multipart/form-data" },
         // }

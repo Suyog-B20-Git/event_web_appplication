@@ -9,6 +9,7 @@ export const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
+    // "Content-Type": "multipart/form-data",
 
     Authorization: `${AUTH_TOKEN}`, // ✅ Hardcoded token
   },

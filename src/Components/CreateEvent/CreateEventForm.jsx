@@ -254,6 +254,7 @@ export default function EventForm() {
     if (isLogin) {
       dispatch(
         createNewEvent(data,thumbnailImage,posterImage,seatingChartImage)
+        // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
       );
 
       reset();
