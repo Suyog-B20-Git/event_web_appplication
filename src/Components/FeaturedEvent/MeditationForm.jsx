@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FaWifi } from "react-icons/fa6";
 import { LuClock3 } from "react-icons/lu";
 import { MdEvent } from "react-icons/md";
@@ -13,13 +13,60 @@ import Guest from "./Guest";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import { Context } from "../Util/ContextProvider";
-const TicketForm = ({ type, price, onQuantityChange }) => {
-  const [quantity, setQuantity] = useState(0);
+const TicketForm = ({ type, price, onQuantityChange, addTicket }) => {
+  // const [quantity, setQuantity] = useState(0);
 
-  const handleChange = (e) => {
+  const [formData, setFormData] = useState({
+    quantity: 0,
+    promoCode: "",
+    attendees: [],
+  });
+
+  // const handleChange = (e) => {
+  //   const newQuantity = Number(e.target.value);
+  //   setQuantity(newQuantity);
+  //   onQuantityChange(newQuantity); // Notify the parent component
+  // };
+
+  const handleQuantityChange = (e) => {
     const newQuantity = Number(e.target.value);
-    setQuantity(newQuantity);
-    onQuantityChange(newQuantity); // Notify the parent component
+    setFormData((prev) => ({
+      ...prev,
+      quantity: newQuantity,
+      attendees: Array(newQuantity).fill({ name: "", phone: "", email: "" }), // Reset attendees list
+    }));
+    onQuantityChange(newQuantity);
+  };
+  // Handle promo code input
+  const handlePromoCodeChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      promoCode: e.target.value,
+    }));
+  };
+
+  // Handle attendee input change
+  const handleAttendeeChange = (index, field, value) => {
+    const updatedAttendees = [...formData.attendees];
+    updatedAttendees[index] = { ...updatedAttendees[index], [field]: value };
+    setFormData((prev) => ({
+      ...prev,
+      attendees: updatedAttendees,
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    const postData = {
+      ticketType: type,
+      price,
+      quantity: formData.quantity,
+      promoCode: formData.promoCode,
+      totalCost: (price * formData.quantity).toFixed(2),
+      attendees: formData.attendees,
+    };
+    console.log(postData);
+    addTicket(postData); // Store data in Context
   };
 
   return (
@@ -32,9 +79,11 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
             <input
               type="text"
               placeholder="Enter Promo code"
+              value={formData.promoCode}
+              onChange={handlePromoCodeChange}
               className="p-1 text-sm rounded-lg border-2 w-full sm:w-auto"
             />
-            <button className="bg-green-200 ml-2 rounded-md z-2 relative right-10 text-xs w-20 p-1.5">
+            <button className="bg-green-200 ml-2 rounded-md text-xs w-20 p-1.5">
               Apply
             </button>
           </div>
@@ -42,10 +91,21 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
         <div className="w-full sm:w-[50%]">
           <div className="mt-2">
             <label className="block text-sm font-medium">Select Quantity</label>
-            <select
+            {/* <select
               className="border rounded p-1 w-2/3 mt-1"
               value={quantity}
               onChange={handleChange}
+            >
+              {[...Array(6).keys()].map((num) => (
+                <option key={num} value={num}>
+                  {num}
+                </option>
+              ))}
+            </select> */}
+            <select
+              className="border rounded p-1 w-2/3 mt-1"
+              value={formData.quantity}
+              onChange={handleQuantityChange}
             >
               {[...Array(6).keys()].map((num) => (
                 <option key={num} value={num}>
@@ -56,12 +116,15 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
           </div>
         </div>
         <div className="w-full sm:w-[20%] flex justify-end">
-          <p className="text-gray-600">{(price * quantity).toFixed(2)} USD</p>
+          {/* <p className="text-gray-600">{(price * quantity).toFixed(2)} USD</p> */}
+          <p className="text-gray-600">
+            {(price * formData.quantity).toFixed(2)} USD
+          </p>
         </div>
       </div>
 
       <div>
-        {[...Array(quantity)].map((_, index) => (
+        {/* {[...Array(quantity)].map((_, index) => (
           <div key={index} className="mt-1">
             <h4 className="text-sm font-medium">Attendee {index + 1}</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
@@ -82,17 +145,66 @@ const TicketForm = ({ type, price, onQuantityChange }) => {
               />
             </div>
           </div>
+        ))} */}
+        {[...Array(formData.quantity)].map((_, index) => (
+          <div key={index} className="mt-1">
+            <h4 className="text-sm font-medium">Attendee {index + 1}</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+              <input
+                type="text"
+                placeholder="Name"
+                className="border rounded p-2 w-full text-sm"
+                value={formData.attendees[index]?.name || ""}
+                onChange={(e) =>
+                  handleAttendeeChange(index, "name", e.target.value)
+                }
+              />
+              <input
+                type="text"
+                placeholder="Phone"
+                className="border rounded p-2 w-full text-sm"
+                value={formData.attendees[index]?.phone || ""}
+                onChange={(e) =>
+                  handleAttendeeChange(index, "phone", e.target.value)
+                }
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                className="border rounded p-2 w-full text-sm"
+                value={formData.attendees[index]?.email || ""}
+                onChange={(e) =>
+                  handleAttendeeChange(index, "email", e.target.value)
+                }
+              />
+            </div>
+          </div>
         ))}
-        <p className="text-[#ff2459] font-semibold text-sm p-2">
-          Show Ticket Info
-        </p>
+        <div className="flex gap-2 p-2 justify-between">
+          <p className="text-[#ff2459] font-semibold text-sm p-1 px-2">
+            Show Ticket Info
+          </p>
+          <button
+            onClick={handleSubmit}
+            className="capitalize text-xs px-2 p-1 rounded bg-[#ff2459] text-white font-medium"
+          >
+            Save Data
+          </button>
+        </div>
       </div>
     </div>
   );
 };
-
+import { useForm } from "react-hook-form";
+import "react-toastify/dist/ReactToastify.css"; // Import default styles
+import { toast } from "react-toastify";
 const MeditationForm = ({ data }) => {
-  const { form, setForm,showTimer,setShowTimer,setLogin } = useContext(Context);
+  const modalRef = useRef(null);
+
+  const { form, setForm, showTimer, setShowTimer, setLogin } =
+    useContext(Context);
+  const { addTicket, ticket } = useContext(Context);
+  console.log(ticket);
   const [time, setTime] = useState(5 * 60); // 5 minutes in seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -121,8 +233,73 @@ const MeditationForm = ({ data }) => {
     setShowTimer(quantity > 0);
   };
 
+  const {
+    register, // Registers inputs for validation
+    handleSubmit,
+    reset, // Handles form submission
+    formState: { errors }, // Contains form errors
+  } = useForm();
+
+  // const [formData, setFormData] = useState(new FormData());
+
+  // const onSubmit = (data) => {
+  //   console.log("Form Data:", data);
+  //   const newFormData = new FormData();
+  //   newFormData.append("name", data.name);
+  //   newFormData.append("email", data.email);
+  //   newFormData.append("phoneNo", data.phone);
+  //   setFormData(newFormData); // Update state to persist data
+  // };
+
+  // const handleCheckout = () => {
+  //   if (formData.get("email") && formData.get("phoneNo")) {
+  //     setLogin(true);
+  //     setForm(false);
+  //     reset();
+  //   } else {
+  //     toast.error("Please enter customer details before proceeding!", {
+  //       position: "top-right",
+  //     });
+
+  //     if (modalRef.current) {
+  //       modalRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  //     }
+  //   }
+  // };
+
+  const formDataRef = useRef(new FormData());
+
+const onSubmit = (data) => {
+  console.log("Form Data:", data);
+  const newFormData = new FormData();
+  newFormData.append("name", data.name);
+  newFormData.append("email", data.email);
+  newFormData.append("phoneNo", data.phone);
+
+  formDataRef.current = newFormData; // Directly update ref, no re-render issue
+};
+
+const handleCheckout = () => {
+  if (formDataRef.current.get("email") && formDataRef.current.get("phoneNo")) {
+    setLogin(true);
+    setForm(false);
+    reset();
+  } else {
+    toast.error("Please enter customer details before proceeding!", {
+      position: "top-right",
+    });
+
+    if (modalRef.current) {
+      modalRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+};
+
   return (
-    <div className="lg:w-[50vw]  mx-auto p-4 pt-0 sm:p-6 overflow-x-auto">
+    <div
+      ref={modalRef}
+      className="lg:w-[50vw] overflow-y-auto  mx-auto p-4 pt-0 sm:p-6 overflow-x-auto"
+    >
       <h1 className="text-2xl font-bold text-center mb-2">{data.name}</h1>
       <p className="text-center flex gap-1 text-gray-600 mb-6 justify-center">
         <FaWifi className="relative top-1 text-[#ff2459]" /> Online |{" "}
@@ -143,6 +320,81 @@ const MeditationForm = ({ data }) => {
         </div>
       )}
 
+      <div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <h1 className="p-2 px-0  font-medium text-lg">Customer Details</h1>
+          <div className="flex lg:flex-row flex-col gap-3 justify-between border p-2">
+            {/* Name Input */}
+            <div className="flex flex-col gap-1">
+              <label className="lg:text-base text-sm">Name :</label>
+              <input
+                type="text"
+                className="border p-1 rounded lg:text-base text-sm text-gray-700"
+                {...register("name", { required: "Name is required" })}
+              />
+              {errors.name && (
+                <p className="text-red-300 text-xs">{errors.name.message}*</p>
+              )}
+            </div>
+
+            {/* Email Input */}
+            <div className="flex flex-col gap-1">
+              <label className="lg:text-base text-sm">Email :</label>
+              <input
+                type="email"
+                className="border p-1 lg:text-base text-sm rounded text-gray-700"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email format",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-red-300 text-xs">{errors.email.message}*</p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1">
+              {/* Phone Number Input */}
+              <label className="lg:text-base text-sm">Phone Number :</label>
+              <input
+                type="tel"
+                className="border p-1 lg:text-base text-sm rounded text-gray-700"
+                {...register("phone", {
+                  required: "Phone number is required",
+                  pattern: {
+                    value: /^[6-9]\d{9}$/, // Ensures a 10-digit number starting with 6-9
+                    message: "Invalid phone number (must be 10 digits)",
+                  },
+                  minLength: {
+                    value: 10,
+                    message: "Phone number must be 10 digits",
+                  },
+                  maxLength: {
+                    value: 10,
+                    message: "Phone number must be 10 digits",
+                  },
+                })}
+              />
+              {errors.phone && (
+                <p className="text-red-300 text-xs">{errors.phone.message}*</p>
+              )}
+            </div>
+          </div>
+          <div className="p-2 flex justify-end">
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="bg-[#ff2459] text-white rounded p-1.5 px-2 text-xs font-medium"
+            >
+              Save Data
+            </button>
+          </div>
+        </form>
+      </div>
+
       <div className=" rounded-lg w-full">
         <p className="font-semibold p-1">Tickets</p>
         {tickets.map((ticket) => (
@@ -150,6 +402,7 @@ const MeditationForm = ({ data }) => {
             key={ticket.type}
             type={ticket.type}
             price={ticket.price}
+            addTicket={addTicket}
             onQuantityChange={handleQuantityChange}
           />
         ))}
@@ -183,70 +436,11 @@ const MeditationForm = ({ data }) => {
                 rounded={"rounded-xl"}
                 width={"w-full"}
                 textSize={"text-lg"}
-                onClick={() => {
-                  setLogin(true)
-                  setForm(false)
-                }}
+                onClick={handleCheckout}
               />
             </div>
           </div>
         )}
-
-        {/* {login && (
-          <div className="fixed w-full lg:h-[240vh]  h-[340vh]  inset-0 flex flex-col items-center justify-center bg-transparent z-70 backdrop-blur-sm overflow-x-hidden">
-            <div className="bg-white p-6 rounded-lg shadow-lg lg:w-[full] w-[max-content]">
-              <p className="flex items-center text-lg font-medium lg:p-0 p-4">
-                {account ? "Login" : guest ? "Checkout as Guest" : "Register"}
-              </p>
-              <div className="flex justify-end lg:p-0 p-3 relative lg:bottom-3 bottom-14">
-                <Button
-                  text={"X"}
-                  variant={"primary"}
-                  rounded={"rounded-xl"}
-                  onClick={() => {
-                    setForm(true);
-                    setLogin(false);
-                  }}
-                />
-              </div>
-
-              
-              {account ? <LoginModal /> : guest ? <Guest /> : <RegisterModal />}
-
-              <div className="flex gap-2 justify-center">
-                
-                {!guest && (
-                  <p
-                    className="cursor-pointer break-words lg:text-base text-sm"
-                    onClick={() => setAccount(!account)}
-                  >
-                    {account
-                      ? "Don't have an account?"
-                      : "Already have an account/Login Now"}
-                  </p>
-                )}
-                <p
-                  className="text-[#ff2459] font-medium text-sm cursor-pointer"
-                  onClick={() => {
-                    if (guest) {
-                      setGuest(false);
-                    } else if (!account) {
-                      setGuest(true);
-                    } else {
-                      setAccount(false);
-                    }
-                  }}
-                >
-                  {account
-                    ? "Register here"
-                    : guest
-                    ? "Back to Register/Login"
-                    : "Checkout as Guest"}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}*/}
       </div>
     </div>
   );

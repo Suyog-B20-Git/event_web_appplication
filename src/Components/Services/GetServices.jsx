@@ -20,6 +20,7 @@ import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
 import { getService } from "../../redux/actions/master/Services/getService";
+import Pagination from "../Pagination";
 
 function GetService() {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ function GetService() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
-  const [pageNo, setPageNo] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const isFetching = useRef(false); // Prevent multiple rapid API calls
 
   const category1 = "";
@@ -72,7 +73,12 @@ function GetService() {
     isFetching.current = true;
     if (category1) {
       dispatch(
-        getService(setLoading, selectedOption?.value || "", pageNo, category1)
+        getService(
+          setLoading,
+          selectedOption?.value || "",
+          currentPage,
+          category1
+        )
       ).finally(() => {
         isFetching.current = false;
       });
@@ -81,14 +87,14 @@ function GetService() {
         getService(
           setLoading,
           selectedOption?.value || "",
-          pageNo,
+          currentPage,
           category ? category : filterValue
         )
       ).finally(() => {
         isFetching.current = false;
       });
     }
-  }, [dispatch, selectedOption, pageNo, category, category1, filterValue]);
+  }, [dispatch, selectedOption, currentPage, category, category1, filterValue]);
 
   const store = useSelector((state) => state.getServiceReducer) || {
     serviceData: [],
@@ -97,6 +103,19 @@ function GetService() {
   const data1 = store.serviceData;
   const data = [...new Set(data1)];
   console.log(data, "serviceData....");
+  const totalPages = store.totalPages;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   // useEffect(() => {
   //   const handleScroll = (e) => {
   //     const scrollHeight = e.target.documentElement.scrollHeight;
@@ -161,12 +180,16 @@ function GetService() {
   //     if (observerRef.current) observer.unobserve(observerRef.current);
   //   };
   // }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   if (loading) {
     return <Loading />;
   }
   return (
     <div className="flex lg:flex-row flex-col gap-2">
-      <div className="p-2 lg:w-[75%] w-full">
+      <div className="p-2 lg:w-[75%]  w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
           <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 capitalize ">
             {/* {filterValue ? filterValue : category ? category : "Services"} */}
@@ -312,8 +335,7 @@ function GetService() {
           </div>
         </div>
 
-        
-        <div className="grid  lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
+        <div className="grid   lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
           {data.length > 0 ? (
             data.map((item, index) => {
               return (
@@ -321,7 +343,7 @@ function GetService() {
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
                   onClick={() => {
-                    navigate("/getServiceById", { state: item._id });
+                    navigate(`/getServiceById/${item._id}`, { state: item._id });
                   }}
                 >
                   <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
@@ -389,6 +411,14 @@ function GetService() {
               No data found...
             </div>
           )}
+        </div>
+        <div className="pb-3 ">
+          <Pagination
+            handlePreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            handleNextPage={handleNextPage}
+            totalPages={totalPages}
+          />
         </div>
 
         {/* <div ref={observerRef} className="h-10"></div> */}

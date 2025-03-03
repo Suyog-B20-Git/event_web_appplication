@@ -16,17 +16,17 @@ import EnquiryForm from "./Components/Organizer/EnquiryForm";
 import OwnerShipForm from "./Components/Organizer/OwnerShipForm";
 import { ContextProvider } from "./Components/Util/ContextProvider";
 import FeaturedEvent from "./LandingPages/FeaturedEvent";
+import MyBookings from "./Components/MyBookings";
 
 function App() {
   return (
+    // <MyBookings/>
     <Provider store={store}>
       <ContextProvider>
         <Routess />
-        {/* <FeaturedEvent /> */}
       </ContextProvider>
 
       <ToastContainer position="top-right" autoClose={3000} />
-      {/* <GetPerformers /> */}
     </Provider>
   );
 }

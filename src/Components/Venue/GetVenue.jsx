@@ -20,6 +20,7 @@ import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
 import { getVenue } from "../../redux/actions/master/Venue/getVenue";
+import Pagination from "../Pagination";
 
 function GetVenue() {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ function GetVenue() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
-  const [pageNo, setPageNo] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const category1 = "";
   useEffect(() => {
@@ -70,7 +71,7 @@ function GetVenue() {
     // isFetching.current = true;
     if (category1) {
       dispatch(
-        getVenue(setLoading, selectedOption?.value || "", pageNo, category1)
+        getVenue(setLoading, selectedOption?.value || "", currentPage, category1)
       ).finally(() => {
         // isFetching.current = false;
       });
@@ -79,14 +80,14 @@ function GetVenue() {
         getVenue(
           setLoading,
           selectedOption?.value || "",
-          pageNo,
+          currentPage,
           category ? category : filterValue
         )
       ).finally(() => {
         // isFetching.current = false;
       });
     }
-  }, [dispatch, selectedOption, pageNo, category, category1, filterValue]);
+  }, [dispatch, selectedOption,currentPage, category, category1, filterValue]);
 
   const store = useSelector((state) => state.getVenueReducer) || {
     venueData: [],
@@ -95,6 +96,19 @@ function GetVenue() {
   const data1 = store.venueData;
   const data = [...new Set(data1)];
   console.log(data, "VenueData....");
+  const totalPages = store.totalPages;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   // useEffect(() => {
   //   const handleScroll = (e) => {
   //     const scrollHeight = e.target.documentElement.scrollHeight;
@@ -118,6 +132,9 @@ function GetVenue() {
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");
   };
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
 
   // const observerRef = useRef(null); // Ref for the observer target (bottom div)
   // const isFetching = useRef(false); // Prevent multiple rapid API calls
@@ -272,7 +289,7 @@ function GetVenue() {
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
                   onClick={() => {
-                    navigate("/getVenueById", { state: item._id });
+                    navigate(`/getVenueById/${item._id}`, { state: item._id });
                   }}
                 >
                   <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
@@ -340,6 +357,14 @@ function GetVenue() {
               No data found...
             </div>
           )}
+        </div>
+        <div className="pb-3 ">
+          <Pagination
+            handlePreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            handleNextPage={handleNextPage}
+            totalPages={totalPages}
+          />
         </div>
         {/* <div ref={observerRef} className="h-10"></div> */}
       </div>

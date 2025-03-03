@@ -4,24 +4,26 @@ const initialState = {
   params: {},
   allData: [],
   organizerData: [],
+  totalPages:0
 };
 
 const getOrganizerReducer = (state = initialState, action) => {
   console.log("action..:", action);
   switch (action.type) {
-    // case "GET_ORGANIZER":
-    //   return {
-    //     ...state,
-    //     organizerData: [...state.organizerData,...action.organizerData],
-    //   };
     case "GET_ORGANIZER":
       return {
         ...state,
-        organizerData:
-          action.pageNo === 1
-            ? action.organizerData
-            : [...state.organizerData, ...action.organizerData],
+        organizerData: action.organizerData,
+        totalPages: action.totalPages
       };
+    // case "GET_ORGANIZER":
+    //   return {
+    //     ...state,
+    //     organizerData:
+    //       action.pageNo === 1
+    //         ? action.organizerData
+    //         : [...state.organizerData, ...action.organizerData],
+    //   };
 
     default:
       return { ...state };

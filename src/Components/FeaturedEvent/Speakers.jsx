@@ -27,7 +27,7 @@ function Speakers() {
     <div className="lg:w-full flex justify-center items-center">
       <div className="lg:p-10 p-5 w-full">
         <div>
-          <h1 className="text-base font-medium pb-1">Speakers</h1>
+          <h1 className="text-base lg:text-2xl font-medium pb-1">Speakers</h1>
         </div>
         {/* Card Container */}
         <div className="flex gap-5 overflow-x-scroll lg:overflow-visible lg:flex-wrap scrollbar-hide">

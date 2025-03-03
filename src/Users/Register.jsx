@@ -303,6 +303,7 @@ function Register() {
                 type={"password"}
                 name={"password"}
                 width={"w-full"}
+                isPasswordField={true}
                 placeholder={"Enter password"}
                 value={password}
                 onClick={togglePasswordVisibility}
@@ -322,12 +323,13 @@ function Register() {
               </div>
 
               <p className="flex justify-center pt-3">
-                Already have account ?{" "}
+                
                 <Link
                   style={{ color: "#FF2459" }}
                   className="px-2"
                   to={"/login"}
                 >
+                  <span className="text-gray-900">Already have account ?{" "}</span>
                   {" "}
                   Login
                 </Link>

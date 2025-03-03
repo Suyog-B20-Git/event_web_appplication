@@ -62,9 +62,9 @@ export const getVenue = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Venue.filterVenue}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc`;
       } else {
-        api = `${Venue.filterVenue}?page=${page}&limit=8&sortOrder=asc`;
+        api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=asc`;
       }
 
       break;
@@ -73,25 +73,25 @@ export const getVenue = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Venue.filterVenue}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=desc`;
-      } else api = `${Venue.filterVenue}?page=${page}&limit=8&sortOrder=desc`;
+        )}&page=${page}&limit=9&sortOrder=desc`;
+      } else api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=desc`;
       break;
 
     case "alphabetical":
       if (category) {
         api = `${Venue.filterVenue}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=asc`;
-      } else api = `${Venue.filterVenue}?page=${page}&limit=8&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc`;
+      } else api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=asc`;
       break;
 
     default:
       if (category) {
         api = ` ${Venue.filterVenue}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8`;
+        )}&page=${page}&limit=9`;
       } else
-        api = ` ${Venue.filterVenue}?page=${page}&limit=8`;
+        api = ` ${Venue.filterVenue}?page=${page}&limit=9`;
       break;
   }
 
@@ -104,7 +104,7 @@ export const getVenue = (setLoader, filter, page, category) => {
       dispatch({
         type: "GET_VENUE",
         venueData: response.data.venues, // Ensure the API actually returns this structure
-        pageNo: page,
+        totalPages: response.data.totalPages,
       });
     } catch (error) {
       console.error(

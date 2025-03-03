@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Loading from "../Loading";
 
 import {
@@ -35,8 +35,10 @@ import { getVenueById } from "../../redux/actions/master/Venue/getVenueById";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import InstagramProfile from "../SocialMedia/Instagram";
 import FacebookEmbeded from "../SocialMedia/Facebook";
+import VenueStats from "../SocialMedia/VenueStat";
 
 function GetVenueById() {
+  const {venueId}=useParams()
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
 
@@ -48,9 +50,10 @@ function GetVenueById() {
   const [twitter, setTwitter] = useState(false);
   const [instagram, setInstagram] = useState(false);
   const [youtube, setYoutube] = useState(false);
+  const[stat,setStat]=useState(false)
   const navigate = useNavigate();
   const location = useLocation();
-  const venueId = location.state;
+  // const venueId = location.state;
   console.log(venueId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -314,6 +317,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(false);
+                    setStat(false)
                   }}
                 >
                   ABOUT
@@ -329,6 +333,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(false);
+                    setStat(false)
                   }}
                 >
                   UPCOMING EVENT
@@ -344,6 +349,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(false);
+                    setStat(false)
                   }}
                 >
                   FACEBOOK
@@ -359,6 +365,7 @@ function GetVenueById() {
                     setTwitter(true);
                     setInstagram(false);
                     setYoutube(false);
+                    setStat(false)
                   }}
                 >
                   TWITTER
@@ -374,6 +381,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(true);
                     setYoutube(false);
+                    setStat(false)
                   }}
                 >
                   INSTAGRAM
@@ -389,9 +397,26 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(true);
+                    setStat(false)
                   }}
                 >
                   YOUTUBE
+                </button>
+                <button
+                  className={`${
+                    stat ? "border-b-2 border-b-red-600" : ""
+                  } p-2 lg:px-0 px-4`}
+                  onClick={() => {
+                    setAbout(false);
+                    setUpcoming(false);
+                    setFacebook(false);
+                    setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(false);
+                    setStat(true)
+                  }}
+                >
+                 STAT
                 </button>
               </div>
               <div className="lg:px-10 px-2 border bg-white ">
@@ -423,6 +448,11 @@ function GetVenueById() {
                   ) : (
                     <div></div>
                   )}
+                </p>
+                <p className="font-medium text-lg text-center">
+                  {stat && (
+                    <VenueStats data={data} />
+                  ) }
                 </p>
               </div>
             </div>
@@ -527,6 +557,7 @@ function GetVenueById() {
           <div className="lg:pl-0 pl-4 pb-1">
             <FacebookComments
               dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+                  // dataHref={currentUrl}
               numPosts={10}
               width="1000"
             />

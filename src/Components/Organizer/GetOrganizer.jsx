@@ -16,6 +16,7 @@ import { IoLogoWhatsapp, IoStarSharp } from "react-icons/io5";
 import { BsCalendar2DateFill } from "react-icons/bs";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
+import Pagination from "../Pagination";
 
 function GetOrganizer() {
   const navigate = useNavigate();
@@ -60,24 +61,29 @@ function GetOrganizer() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
-  const [pageNo, setPageNo] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (category1) {
       dispatch(
-        getOrganizer(setLoading, selectedOption?.value || "", pageNo, category1)
+        getOrganizer(
+          setLoading,
+          selectedOption?.value || "",
+          currentPage,
+          category1
+        )
       );
     } else {
       dispatch(
         getOrganizer(
           setLoading,
           selectedOption?.value || "",
-          pageNo,
+          currentPage,
           category ? category : filterValue
         )
       );
     }
-  }, [dispatch, selectedOption, pageNo, category1, category, filterValue]);
+  }, [dispatch, selectedOption, currentPage, category1, category, filterValue]);
 
   const store = useSelector((state) => state.getOrganizerReducer) || {
     organizerData: [],
@@ -110,8 +116,24 @@ function GetOrganizer() {
   //   return () => window.removeEventListener("scroll", handleScroll);
   // }, [pageNo]);
 
+  const totalPages = store.totalPages;
 
- 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
   if (loading) {
     return <Loading />;
   }
@@ -235,7 +257,7 @@ function GetOrganizer() {
                 key={index}
                 className=" flex flex-col pb-5 shadow-md rounded border  "
                 onClick={() => {
-                  navigate("/getOrganizerById", { state: item._id });
+                  navigate(`/getOrganizerById/${item._id}`, { state: item._id });
                 }}
               >
                 <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
@@ -297,6 +319,14 @@ function GetOrganizer() {
               </div>
             );
           })}
+        </div>
+        <div className="pb-3">
+          <Pagination
+            handlePreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            handleNextPage={handleNextPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
       <div className="lg:w-[25%] lg:block hidden m-2 w-full">
@@ -396,7 +426,6 @@ function GetOrganizer() {
           </div>
         </div>
       </div>
-     
     </div>
   );
 }

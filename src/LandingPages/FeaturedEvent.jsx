@@ -26,10 +26,24 @@ import { FaEye, FaHeart } from "react-icons/fa6";
 import { MdDateRange, MdOutlineMailOutline } from "react-icons/md";
 import { PiBuildingApartmentFill } from "react-icons/pi";
 import OrganiserContact from "../Components/FeaturedEvent/OrganiserContact";
+import { useDispatch, useSelector } from "react-redux";
+import { getEventById } from "../redux/actions/master/Events/getEventById";
 
 function FeaturedEvent() {
   const location = useLocation();
-  const receivedData = location.state;
+  const id = location.state;
+  console.log(id);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const store = useSelector((state) => state.getEventByIdReducer) || {
+    eventData: [],
+  };
+  const receivedData = store.eventData;
+  console.log(receivedData);
+  useEffect(() => {
+    dispatch(getEventById(id, setLoading));
+  }, [dispatch]);
+
   const [modal, setModal] = useState(false);
   // const [form, setForm] = useState(false);
   const {
@@ -47,10 +61,8 @@ function FeaturedEvent() {
     window.scrollTo(0, 0);
   }, []);
 
+  console.log(receivedData);
 
-  console.log(receivedData)
-
-  
   const sectionRef = useRef(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   return (
@@ -59,7 +71,9 @@ function FeaturedEvent() {
         <div
           className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px]"
           style={{
-            backgroundImage: `url(${receivedData.media?.thumbnailImage || "fallback-image.jpg"})`,
+            backgroundImage: `url(${
+              receivedData.media?.thumbnailImage || "fallback-image.jpg"
+            })`,
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
@@ -87,7 +101,7 @@ function FeaturedEvent() {
             </p>
           </div>
         </div>
-        <div className="rounded-xl lg:m-0 m-2 mt-1 lg:p-4 p-2  shadow-xl lg:w-[20%] ">
+        <div className="rounded-xl lg:m-0 m-2 mt-1 lg:p-4 p-2  shadow-lg lg:w-[20%] ">
           <h1 className="font-bold font-sans break-words text-xl p-2">
             {" "}
             {receivedData.name}
@@ -100,11 +114,12 @@ function FeaturedEvent() {
             </div>
             <div className="text-gray-600 md:text-base lg:text-base text-xs font-medium flex flex-col gap-1 ">
               <p>{receivedData.category}</p>
+              <p>{receivedData.startDate}</p>
               <p>
-                {receivedData.startDate}
+                {" "}
+                {receivedData.venue?.city || "-"} -{" "}
+                {receivedData.venue?.country || "-"}
               </p>
-              <p> {receivedData.venue?.city || "-"} -{" "}
-              {receivedData.venue?.country || "-"}</p>
             </div>
           </div>
           <hr />
@@ -126,11 +141,16 @@ function FeaturedEvent() {
             </button> */}
             <button
               onClick={() => {
-                setModal(true);
-                sectionRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "nearest",
-                });
+                if (receivedData.isRepetitive) {
+                  setModal(true);
+                  sectionRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                  });
+                } else {
+                  setForm(!form);
+                }
+                
               }}
               className="relative lg:text-lg text-xs font-medium rounded-md p-2 px-4 bg-[#ff2459] text-white transition-all duration-300 
   before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
@@ -194,7 +214,7 @@ function FeaturedEvent() {
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
-              // by={receivedData.organiser}
+              by={receivedData.name}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
             />
@@ -235,7 +255,7 @@ function FeaturedEvent() {
                   )}
                 </div>
                 <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
+                  {receivedData.isRepetitive ? (
                     <GetTicket
                       start={receivedData.startDate}
                       // sTime={receivedData.startTime}
@@ -277,7 +297,8 @@ function FeaturedEvent() {
               <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-2 pt-4">
                 <p className="flex lg:text-xs md:text-xs  text-sm break-words gap-1 lg:whitespace-nowrap">
                   <PiBuildingApartmentFill className="relative top-1" />
-                  {receivedData.venue?.city || "-"},{receivedData.venue?.country || "-"}
+                  {receivedData.venue?.city || "-"},
+                  {receivedData.venue?.country || "-"}
                 </p>
                 <p className="flex lg:text-xs   md:text-xs  text-sm break-words gap-1 lg:whitespace-nowrap">
                   <FaPhoneAlt className="relative top-1" />
@@ -329,7 +350,7 @@ function FeaturedEvent() {
       </div>
       {isFormOpen && (
         <div className="w-[60%]">
-          <div className="fixed w-full inset-0 flex flex-col items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
+          <div className="fixed w-full inset-0 flex flex-col bg-white items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
             <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
               <OrganiserContact
                 isFormOpen={isFormOpen}
@@ -342,7 +363,7 @@ function FeaturedEvent() {
       {/*show Meditation Form */}
       {form && (
         <div className="w-[45%]">
-          <div className="fixed w-full inset-0 flex flex-col items-center  overflow-y-scroll  z-40 backdrop-blur-sm">
+          <div className="fixed w-full bg-white/30 backdrop-blur-md  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
             <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
               <div className="flex justify-end relative lg:right-0 right-16  ">
                 <button
@@ -358,7 +379,7 @@ function FeaturedEvent() {
         </div>
       )}
       {login && (
-        <div className="fixed w-full lg:h-[120vh] pt-[40px] p-10  h-[100vh]  inset-0 flex flex-col items-center justify-center bg-transparent z-70 backdrop-blur-sm overflow-x-hidden">
+        <div className="fixed w-full lg:h-[120vh] pt-[40px] p-10  h-[100vh]  inset-0 flex flex-col items-center justify-center z-70 bg-white/30 overflow-x-hidden">
           <div className="bg-white p-6 rounded-lg shadow-lg  overflow-y-scroll scrollbar-hide  lg:w-[full] w-[max-content]">
             {/* <p className="flex items-center text-lg font-medium lg:p-0 p-4">
               {account ? (

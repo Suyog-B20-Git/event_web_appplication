@@ -34,14 +34,14 @@ function Sponsors() {
           <h1 className="lg:text-2xl font-medium pb-4">Sponsors</h1>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+        <div className="grid  grid-cols-3 md:grid-cols-4 lg:grid-cols-8 md:gap-4 lg:gap-4">
           {displayedSponsors.map((item, index) => (
             <div key={index} className="p-1 flex justify-center">
               <img
                 src={item}
                 style={{aspectRatio:"3/2",objectFit:"contain",mixBlendMode:"color-burn"}}
                 alt={`Sponsor ${index + 1}`}
-                className="md:h-20  h-16 w-[120px] md:w-[150px] rounded-2xl"
+                className="lg:h-20  h-16 w-[120px] lg:w-[150px] rounded-2xl"
               />
             </div>
           ))}
@@ -49,7 +49,7 @@ function Sponsors() {
 
         <div className="flex justify-center mt-6">
           <p style={{textDecoration:'underline'}}
-            className="text-blue-500 px-4 py-2 rounded-lg  transition"
+            className="text-blue-500 cursor-pointer px-4 py-2 rounded-lg  transition"
             onClick={() => setShowAll(!showAll)}
           >
             {showAll ? "See Less" : "See All Sponsors"}

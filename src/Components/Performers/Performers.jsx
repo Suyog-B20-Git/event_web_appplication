@@ -19,6 +19,7 @@ import { BsCalendar2DateFill } from "react-icons/bs";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
+import Pagination from "../Pagination";
 
 function GetPerformers() {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ function GetPerformers() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
-  const [pageNo, setPageNo] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const category1 = "";
   useEffect(() => {
@@ -69,7 +70,12 @@ function GetPerformers() {
     // isFetching.current = true;
     if (category1) {
       dispatch(
-        getPerformer(setLoading, selectedOption?.value || "", pageNo, category1)
+        getPerformer(
+          setLoading,
+          selectedOption?.value || "",
+          currentPage,
+          category1
+        )
       ).finally(() => {
         // isFetching.current = false;
       });
@@ -78,14 +84,14 @@ function GetPerformers() {
         getPerformer(
           setLoading,
           selectedOption?.value || "",
-          pageNo,
+          currentPage,
           category ? category : filterValue
         )
       ).finally(() => {
         // isFetching.current = false;
       });
     }
-  }, [dispatch, selectedOption, pageNo, category, category1, filterValue]);
+  }, [dispatch, selectedOption, currentPage, category, category1, filterValue]);
 
   const store = useSelector((state) => state.getPerformerReducer) || {
     performerData: [],
@@ -94,6 +100,19 @@ function GetPerformers() {
   const data1 = store.performerData;
   const data = [...new Set(data1)];
   console.log(data, "PerformerData....");
+  const totalPages = store.totalPages;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   // useEffect(() => {
   //   const handleScroll = (e) => {
   //     const scrollHeight = e.target.documentElement.scrollHeight;
@@ -117,6 +136,10 @@ function GetPerformers() {
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // const observerRef = useRef(null); // Ref for the observer target (bottom div)
   // const isFetching = useRef(false); // Prevent multiple rapid API calls
@@ -278,7 +301,7 @@ function GetPerformers() {
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
                   onClick={() => {
-                    navigate("/getPerformerById", { state: item._id });
+                    navigate(`/getPerformerById/${item._id}`, { state: item._id });
                   }}
                 >
                   <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
@@ -346,6 +369,14 @@ function GetPerformers() {
               No data found...
             </div>
           )}
+        </div>
+        <div className="pb-3 ">
+          <Pagination
+            handlePreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            handleNextPage={handleNextPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
       <div className="lg:w-[25%] lg:block hidden m-2 w-full">

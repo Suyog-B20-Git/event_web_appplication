@@ -1,9 +1,15 @@
 /* eslint-disable react/prop-types */
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Card2 = ({ item, customStyle }) => {
+  const navigate=useNavigate()
   return (
-    <div className="sm:w-[80%] lg:w-max   md:w-[80%]   rounded-lg border border-blue-500 ">
+    <div onClick={()=>{
+      navigate("/getEventByFilter", {
+        state:item.text,
+      });
+    }} className="sm:w-[80%] cursor-pointer lg:w-max   md:w-[80%]   rounded-lg border border-blue-500 ">
       <div
         className="relative lg:h-44 h-28 lg:w-56  w-[100%] rounded-lg overflow-hidden shadow-lg bg-cover bg-center"
         style={{

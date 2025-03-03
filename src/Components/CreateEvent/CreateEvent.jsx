@@ -64,6 +64,9 @@ function CreateEvent({ one, two, three }) {
     setSelectedRadio(storedData.selectedRadio || "");
     setFees(storedData.fees || "");
   }, []);
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
 
   return (
     <div className="h-[112vh] md:h-[57vh]  lg:h-[77vh] ">

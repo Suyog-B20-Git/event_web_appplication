@@ -4,7 +4,7 @@ import { useState } from "react";
 import { MdOutlineCategory } from "react-icons/md";
 
 const EventCategory = () => {
-  const [show, setshow] = useState(false);
+  const [show, setshow] = useState(true);
   var data = [
     { Name: "public/Ev1.png", text: "Business Events" },
     { Name: "food.jpg", text: "Food & Drinks" },
@@ -13,14 +13,14 @@ const EventCategory = () => {
     { Name: "cahrity.webp", text: "Charity & Non-profits" }
   ];
   var data1 = [
-    { Name: "public/Ev1.png", text: "Business Events"},
-    { Name: "food.jpg", text: "Food & Drinks" },
-    { Name: "music.jpeg", text: "Music & Concerts" },
-    { Name: "travell.png", text: "Travel & Trekking" },
-    { Name: "cahrity.webp", text: "Charity & Non-profits" },
-    { Name: "yoga.jpeg", text: "Yoga & Health" },
-    { Name: "sport.jpeg", text: "Sports & Fitness" },
-    { Name: "education.jpg", text: "Education & Classes" },
+    { Name: "public/Ev1.png", text: "Business "},
+    { Name: "fest.jpg", text: "Festival" },
+    { Name: "music.jpeg", text: "Live Music" },
+    { Name: "pro.jpg", text: "Professional" },
+    { Name: "cahrity.webp", text: "Social" },
+    { Name: "music.jpeg", text: "Nightlife & Club" },
+    { Name: "sport.jpeg", text: "Sports & Leisure" },
+    { Name: "education.jpg", text: "Theatre & art" },
   ];
   return (
     <>
@@ -39,15 +39,9 @@ const EventCategory = () => {
           </div>
         </div>
 
-        {/* <div className="hidden"> */}
-        {/* <div
-          className={` grid grid-cols-1 sm:flex sm:justify-center sm:flex-wrap gap-5 sm:gap-16 p-8 ${
-            show === true ? "block" : "hidden"
-          }
-          `}
-        > */}
+        
         <div
-          className={`  grid grid-cols-2 md:grid md:grid-cols-3  lg:grid-cols-5   lg:gap-5 gap-5  lg:p-24 lg:pl-20  lg:pb-12 pt-4 pl-2 lg:pt-8
+          className={`  grid grid-cols-2 md:grid md:grid-cols-3  lg:grid-cols-5   lg:gap-5 gap-5 md:gap-5  lg:p-24 lg:pl-20  lg:pb-12 pt-4 pl-2 lg:pt-8
           `}
           // className={` grid grid-cols-2 md:grid md:grid-cols-3 lg:flex lg:justify-center flex-wrap gap-5  lg:p-8 lg:px-16 pt-4 lg:pt-8
           // `}

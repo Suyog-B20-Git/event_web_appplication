@@ -65,9 +65,10 @@ export const getEventByFilter = (
   cityFilter,
   stateFilter,
   startDate,
-  endDate
+  endDate,
+  pageNo
 ) => {
-  let api = Event.getAllEvents;
+  let api = `${Event.getAllEvents}/filter?page=${pageNo}&limit=9`;
   setLoader(true); // Start loading
 
   // if (filter && filter != "all") {
@@ -94,9 +95,9 @@ export const getEventByFilter = (
   );
 
   if (hasFilters) {
-    api = Event.getEventByFilter;
+    api = `${Event.getEventByFilter}page=${pageNo}&limit=9`;
   } else {
-    api = Event.getAllEvents;
+    api = `${Event.getAllEvents}/filter?page=${pageNo}&limit=9`;
   }
 
   const params = new URLSearchParams();
@@ -126,6 +127,7 @@ export const getEventByFilter = (
         type: "GET_EVENT_BY_FILTER",
         filterEventData: response.data.events, // Ensure the API actually returns this structure
         // pageNo: page,
+        totalPages:response.data.totalPages
       });
     } catch (error) {
       console.error(

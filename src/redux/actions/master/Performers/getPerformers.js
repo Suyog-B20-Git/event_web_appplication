@@ -64,9 +64,9 @@ export const getPerformer = (setLoader, filter, page, category) => {
           Performer.getPerformerByFilter
         }?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc`;
       } else
-        api = `${Performer.getPerformerByFilter}?page=${page}&limit=8&sortOrder=asc`;
+        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=asc`;
       break;
 
     case "title desc":
@@ -75,9 +75,9 @@ export const getPerformer = (setLoader, filter, page, category) => {
           Performer.getPerformerByFilter
         }?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=desc`;
+        )}&page=${page}&limit=9&sortOrder=desc`;
       } else
-        api = `${Performer.getPerformerByFilter}?page=${page}&limit=8&sortOrder=desc`;
+        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=desc`;
       break;
 
     case "alphabetical":
@@ -86,17 +86,17 @@ export const getPerformer = (setLoader, filter, page, category) => {
           Performer.getPerformerByFilter
         }?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc`;
       } else
-        api = `${Performer.getPerformerByFilter}?page=${page}&limit=8&sortOrder=asc`;
+        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=asc`;
       break;
 
     default:
       if (category) {
         api = ` ${
           Performer.getPerformerByFilter
-        }?categories=${encodeURIComponent(category)}&page=${page}&limit=8`;
-      } else api = ` ${Performer.getPerformerByFilter}?page=${page}&limit=8`;
+        }?categories=${encodeURIComponent(category)}&page=${page}&limit=9`;
+      } else api = ` ${Performer.getPerformerByFilter}?page=${page}&limit=9`;
       break;
   }
 
@@ -109,7 +109,7 @@ export const getPerformer = (setLoader, filter, page, category) => {
       dispatch({
         type: "GET_PERFORMER",
         performerData: response.data.performers, // Ensure the API actually returns this structure
-        pageNo: page,
+        totalPages:response.data.totalPages
       });
     } catch (error) {
       console.error(

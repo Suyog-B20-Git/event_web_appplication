@@ -17,6 +17,7 @@ import { getState } from "../redux/actions/master/location/State";
 import { getCity } from "../redux/actions/master/location/City";
 import { getEventByFilter } from "../redux/actions/master/Events/getEventByFilter";
 import { VscFilterFilled } from "react-icons/vsc";
+import Pagination from "../Components/Pagination";
 function Viewall() {
   const [filter, setFilter] = useState(false);
   const options = [
@@ -68,6 +69,7 @@ function Viewall() {
 
   const [searchEvent, setSearchEvent] = useState("");
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     dispatch(
@@ -80,10 +82,11 @@ function Viewall() {
         cityFilter,
         stateFilter,
         startDate,
-        endDate
+        endDate,
+        currentPage
       )
     ); // Call API when component mounts
-  }, [dispatch]);
+  }, [dispatch, currentPage]);
 
   const handleApi = () => {
     dispatch(
@@ -96,7 +99,8 @@ function Viewall() {
         cityFilter,
         stateFilter,
         startDate,
-        endDate
+        endDate,
+        currentPage
       )
     );
   };
@@ -105,6 +109,19 @@ function Viewall() {
   };
   const data = store.filterEventData;
   // console.log(data);
+  const totalPages = store.totalPages;
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   const handleStartDateChange = (e) => {
     const selectedStartDate = e.target.value;
@@ -142,7 +159,9 @@ function Viewall() {
       dispatch(getCity(country, state, city));
     }
   }, [dispatch, country, state, city]);
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const store4 = useSelector((state) => state.countriesReducer) || {
     countries: [],
   };
@@ -173,19 +192,18 @@ function Viewall() {
   }));
   // console.log(selectedCity, selectedState, selectedCountry);
   const reset = () => {
-    handleApi()
+    handleApi();
     setStartDate("");
     setEndDate("");
     setSearchEvent("");
     setSelectedOption("");
     setPrice("");
-    selectedCountry("")
-    selectedCity("")
-    selectedState("")
+    selectedCountry("");
+    selectedCity("");
+    selectedState("");
     setCountryFilter("");
     setCityFilter("");
     setStateFilter("");
-   
   };
 
   console.log(
@@ -197,6 +215,7 @@ function Viewall() {
     stateFilter
   );
 
+  const navigate = useNavigate();
   if (loading) {
     return <Loading />;
   }
@@ -272,7 +291,10 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="price" className="lg:text-lg text-sm  text-gray-900 p-1">
+                <label
+                  htmlFor="price"
+                  className="lg:text-lg text-sm  text-gray-900 p-1"
+                >
                   Price
                 </label>
                 <Select
@@ -284,7 +306,10 @@ function Viewall() {
               </div>
 
               <div className="flex flex-col  gap-0.5">
-                <label htmlFor="date" className="lg:text-lg text-sm   text-gray-900 p-1">
+                <label
+                  htmlFor="date"
+                  className="lg:text-lg text-sm   text-gray-900 p-1"
+                >
                   Start Date
                 </label>
                 <input
@@ -324,7 +349,10 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="state" className="lg:text-lg text-sm   text-gray-900 p-1">
+                <label
+                  htmlFor="state"
+                  className="lg:text-lg text-sm   text-gray-900 p-1"
+                >
                   State
                 </label>
                 <Select
@@ -346,7 +374,10 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col gap-0.5">
-                <label htmlFor="city" className="lg:text-lg text-sm  text-gray-900 p-1">
+                <label
+                  htmlFor="city"
+                  className="lg:text-lg text-sm  text-gray-900 p-1"
+                >
                   City
                 </label>
                 <Select
@@ -368,7 +399,10 @@ function Viewall() {
                 />
               </div>
               <div className="flex flex-col  gap-0.5">
-                <label htmlFor="date" className="lg:text-lg text-sm   text-gray-900 p-1">
+                <label
+                  htmlFor="date"
+                  className="lg:text-lg text-sm   text-gray-900 p-1"
+                >
                   End Date
                 </label>
                 <input
@@ -385,30 +419,32 @@ function Viewall() {
           </div>
         )}
         {/* Cards container with horizontal scrolling */}
-        <div className="  grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
-          {data.length > 0 ? (
+        <div className=" grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
+          {data && data.length > 0 ? (
             data.map((item, index) => (
               <div
                 key={index}
                 // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
                 className="overflow-hidden flex-none  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
-                // onClick={() => navigate("/featuredEvent", { state: item })}
+                onClick={() => navigate("/featuredEvent", { state: item._id })}
               >
-                <div
-                  style={{
-                    // backgroundImage: `url(${item.media.thumbnailImage})`,
-                    backgroundImage: `url(${
-                      item.media?.thumbnailImage || "fallback-image.jpg"
-                    })`,
+                <div className=" h-24 lg:h-52 md:h-32 w-full rounded-lg  flex justify-end overflow-hidden">
+                  <div
+                    style={{
+                      // backgroundImage: `url(${item.media.thumbnailImage})`,
+                      backgroundImage: `url(${
+                        item.media?.thumbnailImage || "fallback-image.jpg"
+                      })`,
 
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                  className=" h-28 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end"
-                >
-                  <div className=" text-white bg-blue-300 rounded-xl lg:text-base text-xs   font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
-                    {item.category}
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                    className=" h-36 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end transition-transform duration-300 hover:scale-125"
+                  >
+                    <div className=" text-white bg-blue-300 rounded-xl lg:text-base text-xs   font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
+                      {item.category}
+                    </div>
                   </div>
                 </div>
                 <div>
@@ -447,6 +483,14 @@ function Viewall() {
           ) : (
             <div>No Date found</div>
           )}
+        </div>
+        <div className="pb-3 ">
+          <Pagination
+            handlePreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            handleNextPage={handleNextPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
     </div>
