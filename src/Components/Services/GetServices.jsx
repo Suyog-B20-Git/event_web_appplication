@@ -343,7 +343,7 @@ function GetService() {
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
                   onClick={() => {
-                    navigate("/getServiceById", { state: item._id });
+                    navigate(`/getServiceById/${item._id}`, { state: item._id });
                   }}
                 >
                   <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">

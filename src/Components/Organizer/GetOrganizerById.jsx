@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Loading from "../Loading";
 import { getOrganizerById } from "../../redux/actions/master/Organizer/getOrganizerById";
 import {
@@ -36,8 +36,10 @@ import InstagramProfile from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import PerformerStats from "../SocialMedia/State";
+import OrganizerStats from "../SocialMedia/OrganizerStat";
 
 function GetOrganizerById() {
+  const {organizerId}=useParams()
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
   const [enquiry, setEnquiry] = useState(false);
@@ -51,7 +53,7 @@ function GetOrganizerById() {
   const [youtube, setYoutube] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const organizerId = location.state;
+  // const organizerId = location.state;
   console.log(organizerId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -73,6 +75,7 @@ function GetOrganizerById() {
   };
 
   useEffect(() => {
+    // dispatch(getOrganizerById(organizerId, setLoading));
     dispatch(getOrganizerById(organizerId, setLoading));
   }, [dispatch]);
   if (loading) {
@@ -449,7 +452,7 @@ function GetOrganizerById() {
                   )}
                 </p>
                 <p className="font-medium text-lg text-center">
-                  {twitter ? "" : <TwitterEmbed twitterId={data.twitterId} />}
+                  {twitter ? <TwitterEmbed twitterId={data.twitterId} /> : ""}
                 </p>
                 <p className="font-medium text-lg text-center">
                   {youtube ? (
@@ -458,7 +461,7 @@ function GetOrganizerById() {
                     <div></div>
                   )}
                 </p>
-                {/* <p>{stat ? <PerformerStats data={data} /> : ""}</p> */}
+                <p>{stat ? <OrganizerStats data={data} /> : ""}</p>
               </div>
             </div>
           </div>
@@ -573,6 +576,7 @@ function GetOrganizerById() {
           <div className="lg:pl-0 pl-4 pb-1">
             <FacebookComments
               dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+                  // dataHref={currentUrl}
               numPosts={10}
               width="1000"
             />

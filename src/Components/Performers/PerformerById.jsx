@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Loading from "../Loading";
 
 import {
@@ -41,6 +41,7 @@ import YouTubeProfile from "../SocialMedia/Youtube";
 import PerformerStats from "../SocialMedia/State";
 
 function GetPerformerById() {
+  const{performerId}=useParams()
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
 
@@ -57,7 +58,7 @@ function GetPerformerById() {
   const [spotify, setSpotify] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const performerId = location.state;
+  // const performerId = location.state;
   console.log(performerId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -639,6 +640,7 @@ function GetPerformerById() {
           <div className="lg:pl-0 pl-4 pb-1">
             <FacebookComments
               dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+              // dataHref={currentUrl}
               numPosts={10}
               width="1000"
             />

@@ -278,6 +278,7 @@ function CreatePage() {
     setCoverImage(null);
 
     reset();
+    setSelectedTags([])
   };
   useEffect(() => {
     window.scrollTo(0, 0);

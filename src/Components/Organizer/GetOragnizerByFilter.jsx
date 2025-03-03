@@ -25,7 +25,7 @@ function GetOrganizerByFilter() {
   }
 
   const [category, setCategory] = useState("");
-  //   const location = useLocation();
+    // const location = useLocation();
   const category1 = "";
   const options = [
     { value: "alphabetical", label: "Alphabetical" },

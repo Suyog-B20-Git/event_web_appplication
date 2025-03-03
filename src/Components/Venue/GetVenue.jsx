@@ -289,7 +289,7 @@ function GetVenue() {
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
                   onClick={() => {
-                    navigate("/getVenueById", { state: item._id });
+                    navigate(`/getVenueById/${item._id}`, { state: item._id });
                   }}
                 >
                   <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">

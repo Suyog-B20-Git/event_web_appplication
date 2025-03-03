@@ -301,7 +301,7 @@ function GetPerformers() {
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
                   onClick={() => {
-                    navigate("/getPerformerById", { state: item._id });
+                    navigate(`/getPerformerById/${item._id}`, { state: item._id });
                   }}
                 >
                   <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">

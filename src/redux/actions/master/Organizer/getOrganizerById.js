@@ -53,6 +53,7 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
+import { Organizer } from "../../../Urls";
 
 export const getOrganizerById= (id,setLoader) => {
   return async (dispatch) => {
@@ -60,7 +61,8 @@ export const getOrganizerById= (id,setLoader) => {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/organizer/${id}`
+        `${Organizer.getOrganizerFilter}/${id}`
+        // `http://localhost:5000/api/organizer/${id}`
       );
       console.log("response", response);
       dispatch({

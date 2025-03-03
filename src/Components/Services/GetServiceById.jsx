@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Loading from "../Loading";
 
 import {
@@ -35,8 +35,10 @@ import { getServiceById } from "../../redux/actions/master/Services/getServiceBy
 import FacebookEmbeded from "../SocialMedia/Facebook";
 import InstagramProfile from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
+import ServiceStats from "../SocialMedia/ServiceStat";
 
 function GetServiceById() {
+  const {serviceId}=useParams()
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
 
@@ -48,10 +50,11 @@ function GetServiceById() {
   const [twitter, setTwitter] = useState(false);
   const [instagram, setInstagram] = useState(false);
   const [youtube, setYoutube] = useState(false);
+  const[stat,setStat]=useState(false)
 
   const navigate = useNavigate();
   const location = useLocation();
-  const serviceId = location.state;
+  // const serviceId = location.state;
   console.log(serviceId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -317,6 +320,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(false);
+                      setStat(false)
                     }}
                   >
                     ABOUT
@@ -332,6 +336,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(false);
+                      setStat(false)
                     }}
                   >
                     UPCOMING EVENT
@@ -347,6 +352,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(false);
+                      setStat(false)
                     }}
                   >
                     FACEBOOK
@@ -362,6 +368,7 @@ function GetServiceById() {
                       setTwitter(true);
                       setInstagram(false);
                       setYoutube(false);
+                      setStat(false)
                     }}
                   >
                     TWITTER
@@ -377,6 +384,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(true);
                       setYoutube(false);
+                      setStat(false)
                     }}
                   >
                     INSTAGRAM
@@ -392,9 +400,42 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(true);
+                      setStat(false)
                     }}
                   >
                     YOUTUBE
+                  </button>
+                  <button
+                    className={`${
+                      youtube ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false)
+                    }}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${
+                      stat ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true)
+                    }}
+                  >
+                    STAT
                   </button>
                 </div>
                 <div className="lg:px-10 px-2 border bg-white ">
@@ -430,6 +471,11 @@ function GetServiceById() {
                     ) : (
                       <div></div>
                     )}
+                  </p>
+                  <p className="font-medium text-lg text-center">
+                    {stat && (
+                      <ServiceStats data={data}/>
+                    ) }
                   </p>
                 </div>
               </div>
@@ -585,6 +631,7 @@ function GetServiceById() {
             <div className="lg:pl-0 pl-4 pb-1">
               <FacebookComments
                 dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+                // dataHref={currentUrl}
                 numPosts={10}
                 width="1000"
               />
