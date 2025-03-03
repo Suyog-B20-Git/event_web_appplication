@@ -440,7 +440,7 @@ function Viewall() {
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
-                    className=" h-24 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end transition-transform duration-300 hover:scale-125"
+                    className=" h-36 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end transition-transform duration-300 hover:scale-125"
                   >
                     <div className=" text-white bg-blue-300 rounded-xl lg:text-base text-xs   font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
                       {item.category}

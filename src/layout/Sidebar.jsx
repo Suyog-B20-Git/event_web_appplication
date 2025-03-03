@@ -21,7 +21,7 @@ const Sidebar = ({ setShowPopup }) => {
   var text_data = [
     { name: "Home", icon: <IoMdHome />, path: "/home" },
 
-    { name: "Event", path: "/eventComponent", icon: <MdEvent /> },
+    { name: "Event", path: "/viewAll", icon: <MdEvent /> },
     { name: "Organisers", path: "/getOrganizer", icon: <GrGroup /> },
     { name: "Performers", path: "/getPerformer", icon: <IoIosPerson /> },
 

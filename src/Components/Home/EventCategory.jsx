@@ -4,7 +4,7 @@ import { useState } from "react";
 import { MdOutlineCategory } from "react-icons/md";
 
 const EventCategory = () => {
-  const [show, setshow] = useState(false);
+  const [show, setshow] = useState(true);
   var data = [
     { Name: "public/Ev1.png", text: "Business Events" },
     { Name: "food.jpg", text: "Food & Drinks" },

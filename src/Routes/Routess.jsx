@@ -22,6 +22,8 @@ import GetServiceById from "../Components/Services/GetServiceById";
 import GetEventByFilter from "../Components/Events/GetEventByFilter";
 import GetOrganizerByFilter from "../Components/Organizer/GetOragnizerByFilter";
 import FeaturedEvent from "../LandingPages/FeaturedEvent";
+import MyBookings from "../Components/MyBookings";
+import MybookingDetail from "../Components/MybookingDetail";
 
 function Routess() {
   return (
@@ -63,6 +65,8 @@ function Routess() {
             path="/getOrganizerByFilter"
             element={<GetOrganizerByFilter />}
           />
+          <Route path="/myBookings" element={<MyBookings/>}/>
+          <Route path='/myBookingDetails'  element={<MybookingDetail/>}/>
         </Route>
 
         {/* </Route> */}
