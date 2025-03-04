@@ -220,7 +220,7 @@ function Register() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/setup",
+        "https://event-node-backend.onrender.com/api/auth/setup",
         {
           username: name,
 
