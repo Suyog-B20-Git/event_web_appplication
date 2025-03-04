@@ -2,7 +2,7 @@ import axios from "axios";
 const token = localStorage.getItem("authToken");
 
 const API_URL = import.meta.env.VITE_API_URL; // ✅ Use `import.meta.env` in Vite
-const AUTH_TOKEN = JSON.parse(token);
+const AUTH_TOKEN = token;
 console.log("t:", API_URL);
 
 
