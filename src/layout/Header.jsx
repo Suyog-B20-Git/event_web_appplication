@@ -3,13 +3,14 @@ import {
   IoMenu,
   IoSearch,
   IoSearchSharp,
+  IoTicket,
 } from "react-icons/io5";
 
 import { useState, useEffect, useRef } from "react";
 import Button from "../Components/Button";
 // import InputField from "../ReusableComponents/InputField";
 import Sidebar from "./Sidebar";
-import { IoIosLogOut, IoIosPerson, IoMdHome } from "react-icons/io";
+import { IoIosLogOut, IoIosPerson, IoMdArrowDropdown, IoMdHome } from "react-icons/io";
 import {
   MdContactPhone,
   MdDashboard,
@@ -405,14 +406,14 @@ const Header = () => {
                     <div ref={dropdownRef}>
                       <span
                         onClick={() => setIsLog(!isLog)}
-                        className="p-1 cursor-pointer font-medium  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
+                        className="p-1 gap-1 cursor-pointer font-medium  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
                       >
-                        Welcome, {userName}!
+                         {userName} <IoMdArrowDropdown className="relative top-1.5" />
                       </span>
                       {isLog && (
                         <div
                           ref={boxRef}
-                          className="bg-white rounded text-gray-900 absolute w-40  h-[120px] mt-1"
+                          className="bg-white rounded text-gray-900 absolute w-40  h-[160px] mt-1"
                         >
                           <button
                             onClick={() => {
@@ -432,6 +433,16 @@ const Header = () => {
                           >
                             <CgProfile className=" hover:text-white relative top-1" />
                             Profile
+                          </button>
+                          <button
+                            onClick={() => {
+                              setIsLog(false);
+                              navigate('/myBookings')
+                            }}
+                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                          >
+                            <IoTicket className=" hover:text-white relative top-1" />
+                            My Bookings
                           </button>
                           <button
                             onClick={() => {
