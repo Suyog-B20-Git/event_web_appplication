@@ -28,8 +28,11 @@ import { PiBuildingApartmentFill } from "react-icons/pi";
 import OrganiserContact from "../Components/FeaturedEvent/OrganiserContact";
 import { useDispatch, useSelector } from "react-redux";
 import { getEventById } from "../redux/actions/master/Events/getEventById";
+import MapContainer from "../Components/CreatePage/MapComponent";
+import EnquiryForm from "../Components/Organizer/EnquiryForm";
 
 function FeaturedEvent() {
+  const [enquiry, setEnquiry] = useState(false);
   const location = useLocation();
   const id = location.state;
   console.log(id);
@@ -59,8 +62,32 @@ function FeaturedEvent() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    receivedData.startDate && extractDateAndTime();
   }, []);
+  const [date, setDate] = useState(null);
+  const [time, setTime] = useState(null);
 
+  const extractDateAndTime = () => {
+    const date = new Date(receivedData.startDate);
+
+    // Extract date in YYYY-MM-DD format
+    const formattedDate = date.toISOString().split("T")[0];
+
+    // Extract time in 12-hour format (HH:MM AM/PM)
+    const formattedTime = date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, // Ensures 12-hour format
+    });
+
+    setDate(formattedDate);
+    setTime(formattedTime);
+  };
+
+  const loc = {
+    lat: receivedData?.venue?.googleSearchLat || 40.7127753,
+    lng: receivedData?.venue?.googleSearchLong || -74.0059728,
+  };
   console.log(receivedData);
 
   const sectionRef = useRef(null);
@@ -80,12 +107,15 @@ function FeaturedEvent() {
           }}
         >
           <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
-            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
+            <p
+              onClick={() => setEnquiry(!enquiry)}
+              className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
+            >
               {" "}
               <IoIosInformationCircleOutline className="text-lg " />
               Send Enquiry
             </p>
-            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px]  font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
+            <p className="flex  gap-1 md:text-xs lg:text-xs text-[10px]  font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
               {" "}
               <FaHeart className="text-lg " />
               Add To Favourite
@@ -97,16 +127,20 @@ function FeaturedEvent() {
             </p>
             <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
               <FaEye className="relative top-0.5 text-blue-600" />
-              <span>{receivedData.dailyVisits}</span>
+              <span>Total {receivedData.visits}</span>
+            </p>
+            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
+              <FaEye className="relative top-0.5 text-blue-600" />
+              <span>Daily {receivedData.dailyVisits}</span>
             </p>
           </div>
         </div>
         <div className="rounded-xl lg:m-0 m-2 mt-1 lg:p-4 p-2  shadow-lg lg:w-[20%] ">
-          <h1 className="font-bold font-sans break-words text-xl p-2">
+          <h1 className="font-bold flex justify-center font-sans break-words text-xl p-2">
             {" "}
             {receivedData.name}
           </h1>
-          <div className="flex gap-2 pb-3">
+          <div className="flex gap-2 pb-3 justify-center">
             <div className="relative flex flex-col gap-1 top-1 lg:text-2xl text-gray-600">
               <TiBookmark />
               <CiCalendarDate />
@@ -114,7 +148,11 @@ function FeaturedEvent() {
             </div>
             <div className="text-gray-600 md:text-base lg:text-base text-xs font-medium flex flex-col gap-1 ">
               <p>{receivedData.category}</p>
-              <p>{receivedData.startDate}</p>
+              {/* <p>{receivedData.startDate}</p> */}
+              <p>
+                {date} - {time}
+              </p>
+              <p></p>
               <p>
                 {" "}
                 {receivedData.venue?.city || "-"} -{" "}
@@ -140,17 +178,23 @@ function FeaturedEvent() {
               Get Ticket
             </button> */}
             <button
+              // onClick={() => {
+              //   if (receivedData.isRepetitive) {
+              //     setModal(true);
+              //     sectionRef.current?.scrollIntoView({
+              //       behavior: "smooth",
+              //       block: "nearest",
+              //     });
+              //   } else {
+              //     setForm(!form);
+              //   }
+              // }}
               onClick={() => {
-                if (receivedData.isRepetitive) {
-                  setModal(true);
-                  sectionRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest",
-                  });
-                } else {
-                  setForm(!form);
-                }
-                
+                setModal(true);
+                sectionRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "nearest",
+                });
               }}
               className="relative lg:text-lg text-xs font-medium rounded-md p-2 px-4 bg-[#ff2459] text-white transition-all duration-300 
   before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
@@ -255,7 +299,7 @@ function FeaturedEvent() {
                   )}
                 </div>
                 <div onClick={() => setForm(!form)}>
-                  {receivedData.isRepetitive ? (
+                  {receivedData ? (
                     <GetTicket
                       start={receivedData.startDate}
                       // sTime={receivedData.startTime}
@@ -275,12 +319,12 @@ function FeaturedEvent() {
             <div>
               <h1 className="lg:text-lg md:text-base text-xs lg:left-0 relative md:left-0 left-4   font-semibold gap-2  lg:pb-5   flex lg:flex-row flex-col">
                 Organiser
-                <p
+                {/* <p
                   className="flex text-yellow-300 relative lg:left-0 md:left-0 
                 left-4 top-1"
                 >
                   <IoMdStar /> <IoMdStar />
-                </p>
+                </p> */}
               </h1>
               <div>
                 <div className="h-20 lg:hidden md:hidden  block w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 m-2 md:m-0  rounded-full bg-gray-500"></div>
@@ -320,11 +364,11 @@ function FeaturedEvent() {
           </div>
 
           <div className="border-2 rounded-xl p-2 flex flex-col items-center">
-            <p className="font-semibold"> where</p>
+            <p className="font-semibold">Google Location</p>
             <p className="flex font-semibold ">
-              Goa <CiLocationOn className="relative top-1 text-pink-500" />
+              {/* <CiLocationOn className="relative top-1 text-pink-500" />  {receivedData.venue.googleSearchLocation ? receivedData.venue.googleSearchLocation :""} */}
             </p>
-            <p className="text-gray-400 ">Goa, india</p>
+            {/* <p className="text-gray-400 ">Goa, india</p> */}
           </div>
           <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2 items-center">
             <p className="text-gray-400">Page visited By </p>
@@ -339,18 +383,20 @@ function FeaturedEvent() {
           <h1 className="text-gray-900 font-bold pt-10 text-lg p-4 pl-0">
             Location
           </h1>
-          <div className="bg-gray-100 w-full lg:h-60 h-48"></div>
+
+          {loc && <MapContainer location={loc} />}
         </div>
-        <EventGallery />
-        <Sponsors />
+        <EventGallery data={receivedData?.media?.images || []} />
+
+        {/* <Sponsors /> */}
         <WatchTrailer />
         <Speakers />
         <Dj />
-        <RatingReview />
+        {/* <RatingReview /> */}
       </div>
       {isFormOpen && (
         <div className="w-[60%]">
-          <div className="fixed w-full inset-0 flex flex-col bg-white items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
+          <div className="fixed w-full inset-0 flex flex-col bg-white/50 items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
             <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
               <OrganiserContact
                 isFormOpen={isFormOpen}
@@ -448,6 +494,13 @@ function FeaturedEvent() {
             </div>
           </div>
         </div>
+      )}
+      {enquiry && (
+        <EnquiryForm
+          setEnquiry={setEnquiry}
+          name={receivedData.name}
+          enquiry={enquiry}
+        />
       )}
     </div>
   );
