@@ -80,6 +80,7 @@ function Home() {
   const [isTransitioning, setIsTransitioning] = useState(true);
 
   const totalSlides = slides.length;
+  const isAuth = localStorage.getItem("isLogin");
 
   const authToken = localStorage.getItem("authToken");
   const name = authToken ? jwt_decode(authToken)?.name : "Guest";
@@ -109,7 +110,9 @@ function Home() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // window.location.reload();
   }, []);
+
 
   if (loading) {
     return <Loading />;
@@ -192,7 +195,7 @@ function Home() {
         </div>
       </div>
 
-      <RecentView />
+      {isAuth && <RecentView />}
 
       {data.length > 0 ? (
         <Cards data={data} heading={"TRENDING EVENTS"} />
@@ -212,7 +215,7 @@ function Home() {
 
       <EventCategory />
       <BestVenue />
-      <EventGenre />
+      {/* <EventGenre /> */}
 
       {/* <NewExperience /> */}
       <Artist />

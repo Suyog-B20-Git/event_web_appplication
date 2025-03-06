@@ -60,10 +60,10 @@ function Artist() {
     <div className=" w-full flex justify-center items-center pt-5 ">
       <div className="lg:p-10 md:p-4 md:pb-5  p-5 ">
         <div className="flex justify-around md:justify-between lg:justify-between lg:relative lg:left-14 lg:pb-0 pb-2">
-          <h1 className="text-base md:text-lg  font-medium  pb-1 relative lg:left-0 left-10 md:left-7 md:right-8 ">
+          <h1 className="text-base md:text-lg  font-medium  pb-1 relative lg:left-0 left-14 md:left-7 md:right-8 ">
             Artist
           </h1>
-          <div className="flex gap-2 relative right-12 lg:right-32">
+          <div className="flex gap-2 relative right-8 md:-right-4 lg:right-32">
             Swipe
             <FaArrowAltCircleRight size={20} />
           </div>
@@ -71,7 +71,7 @@ function Artist() {
 
         {/* <div className="md:flex gap-10   grid grid-cols-2 grid-rows-2   md:flex-row md:gap-20 "> */}
         {/* <div className="   grid grid-cols-3   grid-rows-2 lg:grid-cols-6 md:grid-cols-4 lg:grid-rows-1 lg:gap-12 md:gap-12 gap-7 "> */}
-        <div className="flex relative lg:right-14 lg:gap-16 md:gap-10 lg:ml-[100px] md:ml-0 overflow-x-auto p-2 scrollbar-hide lg:max-w-[1200px] md:max-w-[700px] max-w-3xl whitespace-nowrap">
+        <div className="flex relative lg:right-14 left-52 lg:-left-10 md:left-2 lg:gap-16 md:gap-10 lg:ml-[100px] md:ml-0 overflow-x-auto p-2 scrollbar-hide lg:max-w-[1200px] md:max-w-[700px] max-w-3xl whitespace-nowrap">
           {card1.map((item, index) => {
             return (
               <div key={index} className="  p-1 rounded-lg">

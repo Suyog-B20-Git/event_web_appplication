@@ -5,12 +5,14 @@ import { getLocationDetails } from "./actions/master/location/locationDetail";
 // export const baseUrl = "http://localhost:5000/api/";
 export const baseUrl = "https://event-node-backend.onrender.com/api/";
 
+
 export const Event = {
   createEvent: `${baseUrl}event`,
   featuredEvent: `${baseUrl}event/featured?page=1&limit=10&timezoneOffset=0`,
   upcomingEvent: `${baseUrl}event/upcoming?page=1&limit=10&timezoneOffset=0`,
   getAllEvents: `${baseUrl}event?`,
-  getEventByFilter:`${baseUrl}event/filter?`
+  getEventByFilter:`${baseUrl}event/filter?`,
+  getRecentlyView:`${baseUrl}event/recently-viewed?page=1&limit=10`
 };
 
 export const Performer = {

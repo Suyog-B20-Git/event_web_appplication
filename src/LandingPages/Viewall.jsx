@@ -36,7 +36,7 @@ function Viewall() {
     { value: "paid", label: "Paid" },
   ];
   const [selectedOption, setSelectedOption] = useState("");
-  const category = selectedOption.value;
+  const category = selectedOption.value ? selectedOption.value : "";
 
   console.log(selectedOption);
   const [price, setPrice] = useState("");
@@ -192,18 +192,18 @@ function Viewall() {
   }));
   // console.log(selectedCity, selectedState, selectedCountry);
   const reset = () => {
-    handleApi();
     setStartDate("");
     setEndDate("");
     setSearchEvent("");
     setSelectedOption("");
     setPrice("");
-    selectedCountry("");
-    selectedCity("");
-    selectedState("");
+    setSelectedCountry(null);
+    setSelectedCity(null);
+    setSelectedState(null);
     setCountryFilter("");
     setCityFilter("");
     setStateFilter("");
+    handleApi();
   };
 
   console.log(
@@ -214,6 +214,20 @@ function Viewall() {
     cityFilter,
     stateFilter
   );
+
+  // const isDisabled = () => {
+  //   return !(
+  //     category ||
+  //     priceType ||
+  //     searchEvent ||
+  //     countryFilter ||
+  //     cityFilter ||
+  //     stateFilter ||
+  //     startDate ||
+  //     endDate ||
+  //     currentPage
+  //   );
+  // };
 
   const navigate = useNavigate();
   if (loading) {
@@ -230,31 +244,47 @@ function Viewall() {
           </div>
         </div>
 
-        <div className="flex justify-between pt-5 px-3">
+        <div className="flex justify-between pt-5 lg:px-3 ">
           <button
             onClick={() => setFilter(!filter)}
-            className="flex gap-3 lg:text-2xl font-medium"
+            className="flex gap-3 lg:text-2xl md:text-base  font-medium"
           >
             <div className="border-2 h-max border-[#ff2459] text-[#ff2459] flex lg:justify-center lg:items-center p-1 rounded-md ">
               <IoMenu />
             </div>
             Filters
           </button>
-          <div className="flex lg:text-base text-xs gap-4">
+          <div className="flex lg:text-base text-xs lg:gap-4 gap-2 ">
             <button
               onClick={reset}
-              className="flex gap-1 lg:text-base text-sm font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
+              className="flex gap-1 lg:text-base md:text-base text-xs font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
             >
               <IoIosRefresh className="text-[#ff2459] relative top-1" /> Refresh
               Filters
             </button>
             <button
               onClick={handleApi}
-              className="flex gap-1 font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
+              className={` flex gap-1 font-medium lg:text-base md:text-base text-xs text-[#ff2459] border border-[#ff2459] p-1 rounded`}
             >
-              <VscFilterFilled className="text-[#ff2459] relative top-1 lg:text-lg" />
+              <VscFilterFilled className="text-[#ff2459]  relative top-1 lg:text-lg" />
               Apply Filter
             </button>
+            {/* <button
+              onClick={handleApi}
+              // disabled={isDisabled()} // Button is disabled when all filters are empty
+              className={`flex gap-1 font-medium p-1 rounded border transition ${
+                isDisabled()
+                  ? "text-gray-400 border-gray-400 cursor-not-allowed"
+                  : "text-[#ff2459] border-[#ff2459]"
+              }`}
+            >
+              <VscFilterFilled
+                className={`relative top-1 lg:text-lg ${
+                  isDisabled() ? "text-gray-400" : "text-[#ff2459]"
+                }`}
+              />
+              Apply Filter
+            </button> */}
           </div>
         </div>
         {filter && (
@@ -428,23 +458,23 @@ function Viewall() {
                 className="overflow-hidden flex-none  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
                 onClick={() => navigate("/featuredEvent", { state: item._id })}
               >
-                <div className=" h-24 lg:h-52 md:h-32 w-full rounded-lg  flex justify-end overflow-hidden">
+                <div className="h-24 lg:h-52 md:h-32 w-full rounded-lg flex justify-end overflow-hidden relative">
+                  {/* Background Image Container */}
                   <div
                     style={{
-                      // backgroundImage: `url(${item.media.thumbnailImage})`,
                       backgroundImage: `url(${
                         item.media?.thumbnailImage || "fallback-image.jpg"
                       })`,
-
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
-                    className=" h-36 lg:h-52 md:h-32 w-full rounded-lg p-2 flex justify-end transition-transform duration-300 hover:scale-125"
-                  >
-                    <div className=" text-white bg-blue-300 rounded-xl lg:text-base text-xs   font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
-                      {item.category}
-                    </div>
+                    className="absolute inset-0 transition-transform duration-300 hover:scale-125"
+                  ></div>
+
+                  {/* Category Text (Fixed on Top) */}
+                  <div className="relative  text-white m-2 bg-blue-300 rounded-xl lg:text-base text-xs font-bold lg:px-3 lg:p-0 p-1 w-[max-content] h-[max-content]">
+                    {item.category}
                   </div>
                 </div>
                 <div>
@@ -472,8 +502,15 @@ function Viewall() {
 
                     <p className="mt-auto  flex lg:justify-between gap-4 items-center bg-[#F5FCFE] text-sm lg:text-sm p-2">
                       <span className="lg:text-sm text-xs">$1300 ONWARDS</span>
-                      <button className="rounded shadow lg:p-2 p-2 lg:m-0 mr-1 lg:text-sm text-xs bg-white">
+                      {/* <button className="rounded shadow lg:p-2 p-2 lg:m-0 mr-1 lg:text-sm text-xs bg-white">
                         BUY NOW
+                      </button> */}
+                      <button
+                        className="relative  hover:text-white rounded shadow lg:p-2 p-2 lg:m-0 mr-1 lg:text-sm text-xs bg-white transition-all duration-300 
+  before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-[#ff2459] before:transition-all before:duration-300 
+  hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
+                      >
+                        <p className="relative "> BUY NOW</p>
                       </button>
                     </p>
                   </div>

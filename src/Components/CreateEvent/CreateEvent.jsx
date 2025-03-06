@@ -91,7 +91,7 @@ function CreateEvent({ one, two, three }) {
                       <div key={index} className="">
                         <div
                           onClick={() => handleDivClick(item)}
-                          className={`h-20 flex flex-col gap-2 rounded-md justify-center items-center p-1.5  text-sm md:text-base cursor-pointer ${
+                          className={`h-20 flex flex-col gap-2 hover:scale-110 hover:border-pink-400 hover:border-2 rounded-md justify-center items-center p-1.5  text-sm md:text-base cursor-pointer ${
                             selectedEvent === item.text
                               ? "border-2 border-pink-500"
                               : ""
