@@ -24,6 +24,7 @@ import GetOrganizerByFilter from "../Components/Organizer/GetOragnizerByFilter";
 import FeaturedEvent from "../LandingPages/FeaturedEvent";
 import MyBookings from "../Components/MyBookings";
 import MybookingDetail from "../Components/MybookingDetail";
+import CreateTicket from "../Components/CreateEvent/CreateTicket";
 
 function Routess() {
   return (
@@ -52,16 +53,25 @@ function Routess() {
           <Route path="/register" element={<Register />} />
           <Route path="/createPage" element={<CreatePage />} />
           <Route path="/getOrganizer" element={<GetOrganizer />} />
-          <Route path="/getOrganizerById/:organizerId" element={<GetOrganizerById />} />
-          
+          <Route
+            path="/getOrganizerById/:organizerId"
+            element={<GetOrganizerById />}
+          />
+
           <Route path="/getPerformer" element={<GetPerformers />} />
-          <Route path="/getPerformerById/:performerId" element={<GetPerformerById />} />
-          
+          <Route
+            path="/getPerformerById/:performerId"
+            element={<GetPerformerById />}
+          />
+
           <Route path="/getVenue" element={<GetVenue />} />
           <Route path="/getVenueById/:venueId" element={<GetVenueById />} />
-      
+
           <Route path="/getService" element={<GetService />} />
-          <Route path="/getServiceById/:serviceId" element={<GetServiceById />} />
+          <Route
+            path="/getServiceById/:serviceId"
+            element={<GetServiceById />}
+          />
 
           <Route path="/getEventByFilter" element={<GetEventByFilter />} />
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
@@ -71,6 +81,7 @@ function Routess() {
           />
           <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
+          <Route path="/createTicket" element={<CreateTicket />} />
         </Route>
 
         {/* </Route> */}

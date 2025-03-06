@@ -168,14 +168,14 @@ const Header = () => {
           <div className="flex w-[100%] md:h-[100px] h-[80px]  lg:h-[100px]  inset-0 z-60 items-center justify-center bg-opacity-50 relative ">
             <div className="flex justify-between  items-center  lg:w-[60%] w-[100%] ">
               <div
-                className="md:w-[35%] w-[100%]   
-            ml-3 relative lg: p-1 rounded-md"
+                className="md:w-[35%] lg:w-[100%] w-[100%]  
+            ml-3 relative lg: p-1 rounded-md "
               >
                 {/* <div className="md:w-[35%] w-[80%]  ml-3 relative z-20 p-1 rounded-md"> */}
 
                 <img
                   src="logo.png"
-                  className="lg:block md:block hidden md:w-[17vw] relative  sm:[17vw] w-[80%] "
+                  className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
                   alt="logo"
                 />
               </div>
@@ -184,7 +184,7 @@ const Header = () => {
               {isSearch ? (
                 <div
                   ref={searchRef}
-                  className="flex relative lg:hidden md:hidden right-12 px-4 items-center rounded-full bg-gray-100 shadow-md p-2 w-[110%]   mx-auto "
+                  className="flex relative  lg:hidden md:hidden right-5 px-4 items-center rounded-full bg-gray-100 shadow-md p-2 w-[110%]    mx-auto "
                 >
                   <span className="text-gray-700 relative lg:left-0 text-lg font-bold ">
                     <IoSearch />
@@ -199,7 +199,7 @@ const Header = () => {
               ) : (
                 <img
                   src="public/Logo.png"
-                  className="relative right-24 lg:hidden md:hidden block    h-[40%]   w-[40%] "
+                  className="relative right-16 lg:hidden md:hidden block    h-[40%]   w-[40%] "
                   alt="logo"
                 />
               )}

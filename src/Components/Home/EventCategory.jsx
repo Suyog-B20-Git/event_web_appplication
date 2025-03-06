@@ -6,11 +6,11 @@ import { MdOutlineCategory } from "react-icons/md";
 const EventCategory = () => {
   const [show, setshow] = useState(true);
   var data = [
-    { Name: "public/Ev1.png", text: "Business Events" },
-    { Name: "food.jpg", text: "Food & Drinks" },
-    { Name: "music.jpeg", text: "Music & Concerts" },
-    { Name: "travell.png", text: "Travel & Trekking" },
-    { Name: "cahrity.webp", text: "Charity & Non-profits" }
+    { Name: "public/Ev1.png", text: "Business "},
+    { Name: "fest.jpg", text: "Festival" },
+    { Name: "music.jpeg", text: "Live Music" },
+    { Name: "pro.jpg", text: "Professional" },
+    { Name: "cahrity.webp", text: "Social" },
   ];
   var data1 = [
     { Name: "public/Ev1.png", text: "Business "},
@@ -26,7 +26,7 @@ const EventCategory = () => {
     <>
       <div className=" lg:p-4 lg:pb-0 p-4 pt-1 lg:pl-14  md:pl-12   ">
         <div className="flex justify-around items-center p-2 font-sans">
-          <div className="w-[95%]  lg:text-2xl text-xl font-bold  font-sans lg:px-24  relative md:right-8 lg:right-5  flex gap-2 ">
+          <div className="w-[95%]  lg:text-2xl text-xl font-bold  font-sans lg:px-24  relative md:right-1 lg:right-5  flex gap-2 ">
             <MdOutlineCategory className="relative top-1" /> Event Category
           </div>
           <div

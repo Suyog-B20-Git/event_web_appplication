@@ -212,7 +212,7 @@ function Home() {
 
       <EventCategory />
       <BestVenue />
-      <EventGenre />
+      {/* <EventGenre /> */}
 
       {/* <NewExperience /> */}
       <Artist />

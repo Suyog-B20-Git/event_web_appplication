@@ -33,8 +33,9 @@ function Cards({ data, heading }) {
           {data.map((item, index) => (
             <div
               key={index}
+              // style={{  boxShadow:" rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset"}}
               // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
-              className="overflow-hidden flex-none  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
+              className="overflow-hidden flex-none  border  p-2 rounded-lg lg:w-[372px] w-57"
               onClick={() => navigate("/featuredEvent", { state: item._id })}
             >
               <div className=" h-24 lg:h-52 md:h-32 w-full rounded-lg  flex justify-end overflow-hidden">

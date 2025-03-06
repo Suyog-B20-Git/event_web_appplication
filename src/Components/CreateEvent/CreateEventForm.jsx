@@ -192,8 +192,6 @@ export default function EventForm() {
     setValue("media.images", updatedImages);
   };
 
-  
-
   // Watching values
 
   const startDate = watch("startDate");
@@ -253,7 +251,7 @@ export default function EventForm() {
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
     if (isLogin) {
       dispatch(
-        createNewEvent(data,thumbnailImage,posterImage,seatingChartImage)
+        createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
         // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
       );
 
@@ -267,9 +265,9 @@ export default function EventForm() {
       navigate("/login");
     }
   };
-   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
       <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">
@@ -684,7 +682,23 @@ export default function EventForm() {
               {/*IsRepeititive button*/}
               <div>
                 <h1 className="font-medium text-[#ff2459]">Repeitive Status</h1>
-                <FormGroup className="mb-2 lg:ml-3">
+                <div className="flex gap-2 items-center">
+                  <div
+                    onClick={() => setValue("isRepetitive", !isRepetitive)}
+                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
+                      isRepetitive ? "bg-[#ff2459]" : "bg-gray-300"
+                    }`}
+                  >
+                    <div
+                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
+                        isRepetitive ? "translate-x-6" : ""
+                      }`}
+                    />
+                  </div>
+                  <p>Is Event Repetitive</p>
+                </div>
+
+                {/* <FormGroup className="mb-2 lg:ml-3">
                   <FormControlLabel
                     control={
                       <PinkSwitch
@@ -695,7 +709,8 @@ export default function EventForm() {
                     }
                     label=" Is Event Repetitive"
                   />
-                </FormGroup>
+                </FormGroup> */}
+
                 {isRepetitive && (
                   <div className="bg-white p-4 shadow rounded-lg gap-5 grid  lg:grid-cols-2 grid-cols-1">
                     <div className="mb-4">
@@ -1094,7 +1109,28 @@ export default function EventForm() {
 
               {/*Disabel event after sold out*/}
               <div className="mb-4 mt-4 flex justify-between">
-                <FormGroup>
+                <div className="flex gap-2 items-center">
+                  <div
+                    onClick={() =>
+                      setValue(
+                        "disableEventAfterSoldOut",
+                        !disableEventAfterSoldOut
+                      )
+                    }
+                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
+                      disableEventAfterSoldOut ? "bg-[#ff2459]" : "bg-gray-300"
+                    }`}
+                  >
+                    <div
+                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
+                        disableEventAfterSoldOut ? "translate-x-6" : ""
+                      }`}
+                    />
+                  </div>
+                  <p>Disable Event after sold out</p>
+                </div>
+
+                {/* <FormGroup>
                   <FormControlLabel
                     control={
                       <PinkSwitch
@@ -1110,7 +1146,7 @@ export default function EventForm() {
                     }
                     label="Disable Event after sold out"
                   />
-                </FormGroup>
+                </FormGroup> */}
                 {/* <FormGroup>
                   <FormControlLabel
                     control={
