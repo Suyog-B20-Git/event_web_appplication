@@ -110,12 +110,12 @@ function CreateEvent({ one, two, three }) {
                   </div>
                 </div>
 
-                <p className="p-3 font-semibold flex justify-center lg:text-base text-xs">
+                <p className="p-3 font-semibold flex justify-center lg:text-base text-xs mt-4">
                   WHAT WILL YOU BE COLLECTING FOR THIS EVENT ?*
                 </p>
 
                 {/* <div className="grid  grid-cols-2"> */}
-                <div className="flex flex-col ">
+                {/* <div className="flex flex-col ">
                   <div className="flex flex-col sm:flex-row sm:justify-center gap-4 p-2 text-gray-600">
                     <div className="flex items-center gap-2">
                       <input
@@ -196,7 +196,71 @@ function CreateEvent({ one, two, three }) {
                       </label>
                     </div>
                   </div>
+                </div> */}
+
+                
+<div className="flex flex-col">
+                  {/* Event Type Section */}
+                  <div className="flex flex-col sm:flex-row sm:justify-center gap-6 p-4 text-gray-600">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name="event"
+                        id="registrations"
+                        checked={selectedRadio === "registration"}
+                        onChange={() => handleRadioChange("registration")}
+                        className="h-4 w-4"
+                      />
+                      <label htmlFor="registrations" className="text-sm sm:text-base font-medium text-gray-800">
+                        Registrations
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name="event"
+                        id="tickets"
+                        checked={selectedRadio === "Tickets"}
+                        onChange={() => handleRadioChange("Tickets")}
+                        className="h-4 w-4"
+                      />
+                      <label htmlFor="tickets" className="text-sm sm:text-base font-medium text-gray-800">
+                        Tickets
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Event Visibility Section */}
+                  <div className="flex flex-col lg:flex-row lg:gap-16 sm:justify-center gap-6 p-4 text-gray-600">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        checked={eventType === "Private"}
+                        onChange={() => handleRadio1Change("Private")}
+                        name="eventType"
+                        id="private"
+                        className="h-4 w-4"
+                      />
+                      <label htmlFor="private" className="text-sm sm:text-base font-medium text-gray-800">
+                        Private
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name="eventType"
+                        checked={eventType === "Public"}
+                        onChange={() => handleRadio1Change("Public")}
+                        id="public"
+                        className="h-4 w-4"
+                      />
+                      <label htmlFor="public" className="text-sm sm:text-base font-medium text-gray-800">
+                        Public
+                      </label>
+                    </div>
+                  </div>
                 </div>
+
 
                 <p className="flex justify-center text-xs lg:text-base text-gray-500  font-medium lg:p-0 p-3">
                   Your Event is open for anyone to find & register for it
