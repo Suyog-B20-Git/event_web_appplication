@@ -27,6 +27,8 @@ import getEventByFilterReducer from "./pages/Events/getEventByFilter";
 import getEventByFilter1Reducer from "./pages/Events/getEventByFilter1";
 import getEventByIdReducer from "./pages/Events/getEventById";
 import getRecentlyViewReducer from "./pages/Events/getRecentlyViewReducer";
+import addFavouriteEventReducer from "./pages/Events/addFavouriteEvent";
+import getFavoriteEventReducer from "./pages/Events/getFavoriteEvent";
 
 // ** Reducers Import **//
 
@@ -57,6 +59,8 @@ const rootReducer = combineReducers({
   getEventByFilter1Reducer,
   getEventByIdReducer,
   getRecentlyViewReducer,
+  addFavouriteEventReducer,
+  getFavoriteEventReducer
 });
 
 export default rootReducer;
