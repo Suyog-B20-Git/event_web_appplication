@@ -134,7 +134,7 @@ eiusmod tempor incididunt ut labore et dolore magna aliqua.
         <div className="container mx-auto flex flex-col md:flex-row justify-between text-sm">
           <p >
             &copy; 2024 EventNode. All rights reserved. <br /> Product by <a
-              href="https://example.com" className="text-[#ff2459]"> @2Bytes Solutions</a>
+              href="https://example.com" className="text-[#ff2459]"> Masterblocks</a>
           </p>
           <ul className="flex gap-4">
             <li><Link to="#" className="hover:text-[#ff2459]">Terms</Link></li>

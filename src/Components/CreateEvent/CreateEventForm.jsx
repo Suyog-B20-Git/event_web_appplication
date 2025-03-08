@@ -1184,7 +1184,7 @@ export default function EventForm() {
                   />
                 </FormGroup> */}
               </div>
-              <div className="mb-4 mt-4">
+              {/* <div className="mb-4 mt-4">
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -1202,7 +1202,7 @@ export default function EventForm() {
                     componentsProps={{ typography: { fontSize: "12px" } }} // Reduces label size
                   />
                 </FormGroup>
-              </div>
+              </div> */}
 
               {/* Submit Button */}
 
