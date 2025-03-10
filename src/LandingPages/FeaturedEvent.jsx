@@ -30,6 +30,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getEventById } from "../redux/actions/master/Events/getEventById";
 import MapContainer from "../Components/CreatePage/MapComponent";
 import EnquiryForm from "../Components/Organizer/EnquiryForm";
+import { addFavouriteEvent } from "../redux/actions/master/Events/AddFavouriteEvent";
+import getFavoriteEventReducer from "../redux/reducers/pages/Events/getFavoriteEvent";
+import { getFavouriteEventData } from "../redux/actions/master/Events/GetFavouriteEvent";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function FeaturedEvent() {
   const [enquiry, setEnquiry] = useState(false);
@@ -43,9 +48,43 @@ function FeaturedEvent() {
   };
   const receivedData = store.eventData;
   console.log(receivedData);
+
+  const store1 = useSelector((state) => state.getFavoriteEventReducer) || {
+    favouriteEventData: [],
+  };
+  const favouriteEvent = store1.favouriteEventData;
+
+  const isFavourite = favouriteEvent.some(
+    (event) => event._id === receivedData?._id
+  );
+  const checkFavourite = () => {
+    if (isFavourite) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+
   useEffect(() => {
     dispatch(getEventById(id, setLoading));
-  }, [dispatch]);
+    dispatch(getFavouriteEventData(setLoading));
+  });
+
+  const handleFavourite = (id) => {
+    if (isFavourite) {
+      return;
+    } else {
+      dispatch(addFavouriteEvent(id));
+      dispatch(getFavouriteEventData(setLoading));
+    }
+  };
 
   const [modal, setModal] = useState(false);
   // const [form, setForm] = useState(false);
@@ -115,11 +154,19 @@ function FeaturedEvent() {
               <IoIosInformationCircleOutline className="text-lg " />
               Send Enquiry
             </p>
-            <p className="flex  gap-1 md:text-xs lg:text-xs text-[10px]  font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
-              {" "}
-              <FaHeart className="text-lg " />
-              Add To Favourite
-            </p>
+
+            <button
+              onClick={() => {
+                handleFavourite(receivedData._id);
+                checkFavourite();
+              }}
+              className={`flex gap-1 text-xs font-bold cursor-pointer ${
+                isFavourite ? "text-[#ff2459]" : "text-gray-900"
+              }`}
+            >
+              <FaHeart className="text-lg" />
+              {isFavourite ? "Added to Favourites" : "Add To Favourite"}
+            </button>
             <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
               {" "}
               <MdDateRange className="text-lg " />
@@ -223,14 +270,14 @@ function FeaturedEvent() {
                 </svg>
               </div>
               {/* Text */}
-              <div>
+              {/* <div>
                 <h3 className="text-sm font-medium text-gray-800">
                   Invite your friends
                 </h3>
                 <p className="text-xs text-gray-500">
                   and enjoy a shared experience
                 </p>
-              </div>
+              </div> */}
             </div>
             {/* Close Icon */}
             <button className="flex items-center justify-center w-8 h-8 text-gray-400 transition hover:text-gray-600">

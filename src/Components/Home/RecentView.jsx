@@ -4,6 +4,7 @@ import { IoIosTimer } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { getRecentlyViewData } from "../../redux/actions/master/Events/RecentlyView";
 import Loading from "../Loading";
+import { useNavigate } from "react-router-dom";
 
 function RecentView() {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ function RecentView() {
   //   { img: "fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
   //   { img: "fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
   // ];
+  const navigate=useNavigate()
   if (loading) {
     return <Loading />;
   }
@@ -55,7 +57,8 @@ function RecentView() {
             return (
               <div
                 key={index}
-                className="flex-none shadow-lg p-2 rounded-lg lg:w-[250px] w-56"
+                className="flex-none cursor-pointer shadow-lg p-2 rounded-lg lg:w-[250px] w-56"
+                onClick={() => navigate("/featuredEvent", { state: item._id })}
               >
                 <img
                   src={item.media.thumbnailImage}

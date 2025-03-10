@@ -2,8 +2,8 @@ import { getPerformers } from "./actions/master/Events/GetPerformer";
 import { getVenue } from "./actions/master/Events/GetVenue";
 import { getLocationDetails } from "./actions/master/location/locationDetail";
 
-// export const baseUrl = "http://localhost:5000/api/";
-export const baseUrl = "https://event-node-backend.onrender.com/api/";
+export const baseUrl = "http://localhost:5000/api/";
+// export const baseUrl = "https://event-node-backend.onrender.com/api/";
 
 
 export const Event = {
@@ -12,24 +12,28 @@ export const Event = {
   upcomingEvent: `${baseUrl}event/upcoming?page=1&limit=10&timezoneOffset=0`,
   getAllEvents: `${baseUrl}event?`,
   getEventByFilter:`${baseUrl}event/filter?`,
-  getRecentlyView:`${baseUrl}event/recently-viewed?page=1&limit=10`
+  getRecentlyView:`${baseUrl}event/recently-viewed?page=1&limit=10`,
+  addFavouriteEvent:`${baseUrl}event/favorites`
 };
 
 export const Performer = {
   getPerformer: `${baseUrl}performer/suggestions`,
   postPerformer:`${baseUrl}performer`,
-  getPerformerByFilter:`${baseUrl}performer/filter`
+  getPerformerByFilter:`${baseUrl}performer/filter`,
+  postFavouritePerformer:`${baseUrl}performer/favorites`
 };
 
 export const Organizer={
     getOrganizerFilter:`${baseUrl}organizer/`,
-    getOrganizerByFilter:`${baseUrl}organizer/filter?`
+    getOrganizerByFilter:`${baseUrl}organizer/filter?`,
+    addFavouriteOrganizer:`${baseUrl}organizer/favorites`
 }
 
 export const Venue = {
   getVenue: `${baseUrl}venue/suggestions?`,
   postVenue:`${baseUrl}venue`,
-  filterVenue:`${baseUrl}venue/filter/`
+  filterVenue:`${baseUrl}venue/filter/`,
+  getFavouriteVenue:`${baseUrl}venue/favorites`
 };
 export const Location = {
   city: `${baseUrl}location/citySuggestions`,
@@ -42,5 +46,6 @@ export const Location = {
 export const Service={
     postService:`${baseUrl}services`,
     getFilterService:`${baseUrl}services/filter`,
+    getFavouriteService:`${baseUrl}services/favorites`
     
 }
