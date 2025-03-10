@@ -29,6 +29,13 @@ import getEventByIdReducer from "./pages/Events/getEventById";
 import getRecentlyViewReducer from "./pages/Events/getRecentlyViewReducer";
 import addFavouriteEventReducer from "./pages/Events/addFavouriteEvent";
 import getFavoriteEventReducer from "./pages/Events/getFavoriteEvent";
+import addFavouriteOragnizerReducer from "./pages/postFavouriteOragnizer";
+
+import getFavoriteOrganizerReducer from "./pages/getFavouriteOrganizerReducer";
+import addFavouritePerformerReducer from "./pages/Performer/postFavouritePerformerReducer";
+import getFavoritePerformerReducer from "./pages/Performer/getFavouritePerformerReducer";
+import getFavouriteVenueReducer from "./pages/Venue/getFavouriteVenueReducer";
+import addFavouriteVenueReducer from "./pages/Venue/postFavouriteVenueReducer";
 
 // ** Reducers Import **//
 
@@ -60,7 +67,13 @@ const rootReducer = combineReducers({
   getEventByIdReducer,
   getRecentlyViewReducer,
   addFavouriteEventReducer,
-  getFavoriteEventReducer
+  getFavoriteEventReducer,
+  addFavouriteOragnizerReducer,
+  getFavoriteOrganizerReducer,
+  addFavouritePerformerReducer,
+  getFavoritePerformerReducer,
+  getFavouriteVenueReducer,
+  addFavouriteVenueReducer,
 });
 
 export default rootReducer;

@@ -19,18 +19,21 @@ export const Event = {
 export const Performer = {
   getPerformer: `${baseUrl}performer/suggestions`,
   postPerformer:`${baseUrl}performer`,
-  getPerformerByFilter:`${baseUrl}performer/filter`
+  getPerformerByFilter:`${baseUrl}performer/filter`,
+  postFavouritePerformer:`${baseUrl}performer/favorites`
 };
 
 export const Organizer={
     getOrganizerFilter:`${baseUrl}organizer/`,
-    getOrganizerByFilter:`${baseUrl}organizer/filter?`
+    getOrganizerByFilter:`${baseUrl}organizer/filter?`,
+    addFavouriteOrganizer:`${baseUrl}organizer/favorites`
 }
 
 export const Venue = {
   getVenue: `${baseUrl}venue/suggestions?`,
   postVenue:`${baseUrl}venue`,
-  filterVenue:`${baseUrl}venue/filter/`
+  filterVenue:`${baseUrl}venue/filter/`,
+  getFavouriteVenue:`${baseUrl}venue/favorites`
 };
 export const Location = {
   city: `${baseUrl}location/citySuggestions`,

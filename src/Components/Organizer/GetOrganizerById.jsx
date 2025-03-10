@@ -10,6 +10,7 @@ import {
 import {
   FaEye,
   FaFacebookMessenger,
+  FaHeart,
   FaInstagram,
   FaLocationDot,
   FaSquareFacebook,
@@ -37,9 +38,12 @@ import YouTubeProfile from "../SocialMedia/Youtube";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import PerformerStats from "../SocialMedia/State";
 import OrganizerStats from "../SocialMedia/OrganizerStat";
+import { toast } from "react-toastify";
+import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
+import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
 
 function GetOrganizerById() {
-  const {organizerId}=useParams()
+  const { organizerId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
   const [enquiry, setEnquiry] = useState(false);
@@ -63,6 +67,41 @@ function GetOrganizerById() {
 
   const data = store.organizerData;
   console.log(data, "OrganizerData....");
+  const store1 = useSelector((state) => state.getFavoriteOrganizerReducer) || {
+    favouriteOrganizerData: [],
+  };
+  const favouriteOrganizer = store1.favouriteOrganizerData;
+  const isFavourite = (id) => {
+    return favouriteOrganizer.some((fav) => fav._id === id);
+  };
+  useEffect(() => {
+    dispatch(getFavouriteOrganizerData(setLoading)); // Fetch favorites on mount
+  }, [dispatch]);
+
+  const checkFavourite = (id) => {
+    if (favouriteOrganizer.some((fav) => fav._id === id)) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      return;
+    } else {
+      dispatch(postFavouriteOrganizer(id));
+      console.log(id, "fav id");
+      dispatch(getFavouriteOrganizerData(setLoading));
+    }
+  };
   const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
@@ -75,8 +114,8 @@ function GetOrganizerById() {
   };
 
   useEffect(() => {
-    // dispatch(getOrganizerById(organizerId, setLoading));
     dispatch(getOrganizerById(organizerId, setLoading));
+    dispatch(getFavouriteOrganizerData(setLoading));
   }, [dispatch]);
   if (loading) {
     return <Loading />;
@@ -182,18 +221,28 @@ function GetOrganizerById() {
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
                   Send Inquiry
                 </p>
-                <p className="flex gap-1 bg-white text-gray-900">
-                  <CiHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  Favourite
-                </p>
+                <button
+                  onClick={() => {
+                    handleFavourite(data._id);
+                    checkFavourite(data._id);
+                  }}
+                  className={`flex gap-1 bg-white  ${
+                    isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                  }`}
+                >
+                  <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                  {isFavourite(data._id)
+                    ? "Added to Favourites"
+                    : "Add Favourite"}
+                </button>
               </div>
             </div>
           </div>
           {isPopUp && (
             <div className="lg:hidden block">
               <div className="fixed w-full inset-0 flex flex-col items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
-                <div className="bg-white rounded-lg   shadow-lg  lg:w-full">
-                  <div className="  flex flex-col gap-4  px-0 h-[170px] w-[300px] border rounded">
+                <div className="bg-white rounded-lg   shadow-lg  lg:w-full border-2">
+                  <div className="  flex flex-col gap-4  px-0 h-[170px] w-[300px]  rounded border">
                     <button
                       className="flex  gap-3 p-4  px-4 hover:text-white hover:bg-[#ff2459] "
                       onClick={() => {
@@ -216,15 +265,23 @@ function GetOrganizerById() {
                       <CiCircleInfo className="relative top-1 lg:text-base  " />
                       Send Enquiry
                     </button>
+
                     <button
-                      className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
                       onClick={() => {
+                        handleFavourite(data._id);
+                        checkFavourite(data._id);
                         setIsPopUp(!isPopUp);
                       }}
+                      className={`flex gap-3 p-4  px-4 bg-white  hover:text-white hover:bg-[#ff2459]  ${
+                        isFavourite(data._id)
+                          ? "text-[#ff2459]"
+                          : "text-gray-900"
+                      }`}
                     >
-                      {" "}
-                      <CiHeart className="relative top-1 lg:text-base " /> Add
-                      Favourite
+                      <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                      {isFavourite(data._id)
+                        ? "Added to Favourites"
+                        : "Add Favourite"}
                     </button>
                   </div>
                 </div>
@@ -576,7 +633,7 @@ function GetOrganizerById() {
           <div className="lg:pl-0 pl-4 pb-1">
             <FacebookComments
               dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-                  // dataHref={currentUrl}
+              // dataHref={currentUrl}
               numPosts={10}
               width="1000"
             />
@@ -651,7 +708,6 @@ function GetOrganizerById() {
                 >
                   Adventure
                 </div>
-               
               </div>
               {/* <div
                 onClick={() => {

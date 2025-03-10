@@ -119,7 +119,7 @@ export const getOrganizer = (setLoader, filter, page, category) => {
 
     try {
       const response = await axios.get(`${api}`);
-      console.log("response", response);
+      // console.log("response", response);
       dispatch({
         type: "GET_ORGANIZER",
         organizerData: response.data.organizers, // Ensure the API actually returns this structure

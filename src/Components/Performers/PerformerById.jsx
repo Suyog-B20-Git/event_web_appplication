@@ -10,6 +10,7 @@ import {
 import {
   FaEye,
   FaFacebookMessenger,
+  FaHeart,
   FaInstagram,
   FaLocationDot,
   FaSquareFacebook,
@@ -39,9 +40,12 @@ import FacebookEmbeded from "../SocialMedia/Facebook";
 import InstagramProfile from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import PerformerStats from "../SocialMedia/State";
+import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
+import { toast } from "react-toastify";
+import { postFavouritePerformer } from "../../redux/actions/master/Performers/postFavouritePerformer";
 
 function GetPerformerById() {
-  const{performerId}=useParams()
+  const { performerId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
 
@@ -69,8 +73,45 @@ function GetPerformerById() {
   const data = store.performerData;
   console.log(data, "performerData....");
 
+  const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
+    favouritePerformerData: [],
+  };
+  const favouritePerformer = store1.favouritePerformerData;
+  const isFavourite = (id) => {
+    return favouritePerformer.some((fav) => fav._id === id);
+  };
+  useEffect(() => {
+    dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
+  }, [dispatch]);
+
+  const checkFavourite = (id) => {
+    if (favouritePerformer.some((fav) => fav._id === id)) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      return;
+    } else {
+      dispatch(postFavouritePerformer(id));
+      console.log(id, "fav id");
+      dispatch(getFavouritePerformerData(setLoading));
+    }
+  };
+
   useEffect(() => {
     dispatch(getPerformerById(performerId, setLoading));
+    dispatch(getFavouritePerformerData(setLoading));
   }, [dispatch]);
 
   if (loading) {
@@ -177,10 +218,20 @@ function GetPerformerById() {
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
                   Send Inquiry
                 </p>
-                <p className="flex gap-1 bg-white text-gray-900">
-                  <CiHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  Favourite
-                </p>
+                <button
+                  onClick={() => {
+                    handleFavourite(data._id);
+                    checkFavourite(data._id);
+                  }}
+                  className={`flex gap-1 bg-white  ${
+                    isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                  }`}
+                >
+                  <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                  {isFavourite(data._id)
+                    ? "Added to Favourites"
+                    : "Add Favourite"}
+                </button>
               </div>
             </div>
           </div>
@@ -211,7 +262,7 @@ function GetPerformerById() {
                       <CiCircleInfo className="relative top-1 lg:text-base  " />
                       Send Enquiry
                     </button>
-                    <button
+                    {/* <button
                       className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
                       onClick={() => {
                         setIsPopUp(!isPopUp);
@@ -220,6 +271,23 @@ function GetPerformerById() {
                       {" "}
                       <CiHeart className="relative top-1 lg:text-base " /> Add
                       Favourite
+                    </button> */}
+                    <button
+                      onClick={() => {
+                        handleFavourite(data._id);
+                        checkFavourite(data._id);
+                        setIsPopUp(!isPopUp);
+                      }}
+                      className={`flex gap-3 p-4  px-4 bg-white  hover:text-white hover:bg-[#ff2459]  ${
+                        isFavourite(data._id)
+                          ? "text-[#ff2459]"
+                          : "text-gray-900"
+                      }`}
+                    >
+                      <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                      {isFavourite(data._id)
+                        ? "Added to Favourites"
+                        : "Add Favourite"}
                     </button>
                   </div>
                 </div>

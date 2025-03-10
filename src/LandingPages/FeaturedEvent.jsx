@@ -57,28 +57,33 @@ function FeaturedEvent() {
   const isFavourite = favouriteEvent.some(
     (event) => event._id === receivedData?._id
   );
- const checkFavourite=()=>{
-  if (isFavourite) {
-    toast.warning("Already added to favorites!", {
-      position: "top-right",
-      autoClose: 2000, // Closes after 2 seconds
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
-  }
- }
+  const checkFavourite = () => {
+    if (isFavourite) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
 
   useEffect(() => {
     dispatch(getEventById(id, setLoading));
     dispatch(getFavouriteEventData(setLoading));
-  }, [dispatch]);
+  });
 
   const handleFavourite = (id) => {
-    dispatch(addFavouriteEvent(id));
+    if (isFavourite) {
+      return;
+    } else {
+      dispatch(addFavouriteEvent(id));
+      dispatch(getFavouriteEventData(setLoading));
+    }
   };
 
   const [modal, setModal] = useState(false);
@@ -153,10 +158,10 @@ function FeaturedEvent() {
             <button
               onClick={() => {
                 handleFavourite(receivedData._id);
-                checkFavourite()
+                checkFavourite();
               }}
               className={`flex gap-1 text-xs font-bold cursor-pointer ${
-                isFavourite ? "text-[#ff2459]" : "text-gray-300"
+                isFavourite ? "text-[#ff2459]" : "text-gray-900"
               }`}
             >
               <FaHeart className="text-lg" />
