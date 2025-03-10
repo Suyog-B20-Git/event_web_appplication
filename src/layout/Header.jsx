@@ -174,7 +174,7 @@ const Header = () => {
                 {/* <div className="md:w-[35%] w-[80%]  ml-3 relative z-20 p-1 rounded-md"> */}
 
                 <img
-                  src="logo.png"
+                  src="/logo.png"
                   className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
                   alt="logo"
                 />
@@ -198,7 +198,7 @@ const Header = () => {
                 </div>
               ) : (
                 <img
-                  src="public/Logo.png"
+                  src="/logo.png"
                   className="relative right-16 lg:hidden md:hidden block    h-[40%]   w-[40%] "
                   alt="logo"
                 />

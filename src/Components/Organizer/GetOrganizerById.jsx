@@ -165,7 +165,7 @@ function GetOrganizerById() {
             </p>
             <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
               <FaEye className="relative top-1" />
-              {data.visit} 4133 Visit, 9 visites today
+              {data.visits} , {data.dailyVisits} visites today
             </p>
           </div>
           <div
@@ -191,7 +191,7 @@ function GetOrganizerById() {
                 </button>
               </div>
               <p className="text-sm lg:block hidden">
-                Visited 4133 times,9 visites today
+              {data.visits} , {data.dailyVisits} visites today
               </p>
             </div>
             <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">

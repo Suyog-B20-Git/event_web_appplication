@@ -37,6 +37,9 @@ import getFavoritePerformerReducer from "./pages/Performer/getFavouritePerformer
 import getFavouriteVenueReducer from "./pages/Venue/getFavouriteVenueReducer";
 import addFavouriteVenueReducer from "./pages/Venue/postFavouriteVenueReducer";
 
+import getFavouriteServiceReducer from "./pages/Services/getFavouriteServiceReducer";
+import addFavouriteServiceReducer from "./pages/Services/postFavouriteServiceReducer";
+
 // ** Reducers Import **//
 
 const rootReducer = combineReducers({
@@ -74,6 +77,8 @@ const rootReducer = combineReducers({
   getFavoritePerformerReducer,
   getFavouriteVenueReducer,
   addFavouriteVenueReducer,
+  getFavouriteServiceReducer,
+  addFavouriteServiceReducer,
 });
 
 export default rootReducer;

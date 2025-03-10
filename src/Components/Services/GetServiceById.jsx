@@ -10,6 +10,7 @@ import {
 import {
   FaEye,
   FaFacebookMessenger,
+  FaHeart,
   FaInstagram,
   FaLocationDot,
   FaSquareFacebook,
@@ -36,9 +37,12 @@ import FacebookEmbeded from "../SocialMedia/Facebook";
 import InstagramProfile from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import ServiceStats from "../SocialMedia/ServiceStat";
+import { getFavouriteServiceData } from "../../redux/actions/master/Services/getFavouriteService";
+import { toast } from "react-toastify";
+import { postFavouriteService } from "../../redux/actions/master/Services/postFavouriteService";
 
 function GetServiceById() {
-  const {serviceId}=useParams()
+  const { serviceId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
 
@@ -50,7 +54,7 @@ function GetServiceById() {
   const [twitter, setTwitter] = useState(false);
   const [instagram, setInstagram] = useState(false);
   const [youtube, setYoutube] = useState(false);
-  const[stat,setStat]=useState(false)
+  const [stat, setStat] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,6 +69,47 @@ function GetServiceById() {
   const data = store.serviceData;
   console.log(data, "serviceData....");
 
+  const store1 = useSelector((state) => state.getFavouriteServiceReducer) || {
+    favouriteServiceData: [],
+  };
+  const favouriteService = store1.favouriteServiceData;
+  const isFavourite = (id) => {
+    return favouriteService.some((fav) => fav._id === id);
+  };
+  useEffect(() => {
+    dispatch(getFavouriteServiceData(setLoading)); // Fetch favorites on mount
+  }, [dispatch]);
+
+  const checkFavourite = (id) => {
+    if (favouriteService.some((fav) => fav._id === id)) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      return;
+    } else {
+      dispatch(postFavouriteService(id));
+      console.log(id, "fav id");
+      dispatch(getFavouriteServiceData(setLoading));
+    }
+  };
+
+  useEffect(() => {
+    dispatch(getServiceById(serviceId, setLoading));
+    dispatch(getFavouriteServiceData(setLoading));
+  }, [dispatch]);
+
   const currentUrl = encodeURIComponent(window.location.href); // Get the current page URL
 
   const shareUrls = {
@@ -77,9 +122,9 @@ function GetServiceById() {
     window.open(shareUrls[platform], "_blank");
   };
 
-  useEffect(() => {
-    dispatch(getServiceById(serviceId, setLoading));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getServiceById(serviceId, setLoading));
+  // }, [dispatch]);
   if (loading) {
     return <Loading />;
   }
@@ -118,7 +163,7 @@ function GetServiceById() {
               </p>
               <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
                 <FaEye className="relative top-1" />
-                {data.visit} 4133 Visit, 9 visites today
+                {data.visits} , {data.dailyVisits} visites today
               </p>
             </div>
             <div
@@ -144,7 +189,7 @@ function GetServiceById() {
                   </button>
                 </div>
                 <p className="text-sm lg:block hidden">
-                  Visited 4133 times,9 visites today
+                  {data.visits} , {data.dailyVisits} visites today
                 </p>
               </div>
               <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">
@@ -174,10 +219,20 @@ function GetServiceById() {
                     <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
                     Send Inquiry
                   </p>
-                  <p className="flex gap-1 bg-white text-gray-900">
-                    <CiHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                    Favourite
-                  </p>
+                  <button
+                    onClick={() => {
+                      handleFavourite(data._id);
+                      checkFavourite(data._id);
+                    }}
+                    className={`flex gap-1 bg-white  ${
+                      isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                    }`}
+                  >
+                    <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                    {isFavourite(data._id)
+                      ? "Added to Favourites"
+                      : "Add Favourite"}
+                  </button>
                 </div>
               </div>
             </div>
@@ -209,14 +264,21 @@ function GetServiceById() {
                         Send Enquiry
                       </button>
                       <button
-                        className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
                         onClick={() => {
+                          handleFavourite(data._id);
+                          checkFavourite(data._id);
                           setIsPopUp(!isPopUp);
                         }}
+                        className={`flex gap-3 p-4  px-4 bg-white  hover:text-white hover:bg-[#ff2459]  ${
+                          isFavourite(data._id)
+                            ? "text-[#ff2459]"
+                            : "text-gray-900"
+                        }`}
                       >
-                        {" "}
-                        <CiHeart className="relative top-1 lg:text-base " /> Add
-                        Favourite
+                        <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                        {isFavourite(data._id)
+                          ? "Added to Favourites"
+                          : "Add Favourite"}
                       </button>
                     </div>
                   </div>
@@ -320,7 +382,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(false);
-                      setStat(false)
+                      setStat(false);
                     }}
                   >
                     ABOUT
@@ -336,7 +398,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(false);
-                      setStat(false)
+                      setStat(false);
                     }}
                   >
                     UPCOMING EVENT
@@ -352,7 +414,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(false);
-                      setStat(false)
+                      setStat(false);
                     }}
                   >
                     FACEBOOK
@@ -368,7 +430,7 @@ function GetServiceById() {
                       setTwitter(true);
                       setInstagram(false);
                       setYoutube(false);
-                      setStat(false)
+                      setStat(false);
                     }}
                   >
                     TWITTER
@@ -384,7 +446,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(true);
                       setYoutube(false);
-                      setStat(false)
+                      setStat(false);
                     }}
                   >
                     INSTAGRAM
@@ -400,7 +462,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(true);
-                      setStat(false)
+                      setStat(false);
                     }}
                   >
                     YOUTUBE
@@ -416,7 +478,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(true);
-                      setStat(false)
+                      setStat(false);
                     }}
                   >
                     YOUTUBE
@@ -432,7 +494,7 @@ function GetServiceById() {
                       setTwitter(false);
                       setInstagram(false);
                       setYoutube(false);
-                      setStat(true)
+                      setStat(true);
                     }}
                   >
                     STAT
@@ -473,9 +535,7 @@ function GetServiceById() {
                     )}
                   </p>
                   <p className="font-medium text-lg text-center">
-                    {stat && (
-                      <ServiceStats data={data}/>
-                    ) }
+                    {stat && <ServiceStats data={data} />}
                   </p>
                 </div>
               </div>
