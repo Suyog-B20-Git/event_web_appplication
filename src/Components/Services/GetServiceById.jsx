@@ -133,7 +133,7 @@ function GetServiceById() {
     <div className="">
       {data ? (
         <div className="flex lg:flex-row flex-col gap-10">
-          <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
+          <div className="lg:pt-3 md:pt-4 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
             <div className="flex justify-between font-medium">
               <p className="hidden gap-2 p-3 lg:flex ">
                 <p
