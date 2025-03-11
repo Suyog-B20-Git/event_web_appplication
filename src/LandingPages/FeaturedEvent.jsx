@@ -75,7 +75,7 @@ function FeaturedEvent() {
   useEffect(() => {
     dispatch(getEventById(id, setLoading));
     dispatch(getFavouriteEventData(setLoading));
-  });
+  },[dispatch]);
 
   const handleFavourite = (id) => {
     if (isFavourite) {
@@ -250,8 +250,8 @@ function FeaturedEvent() {
               <p className="relative "> Get Ticket</p>
             </button>
           </div>
-          <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
-            {/* Icon */}
+          {/* <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
+           
             <div className="flex items-center  space-x-3">
               <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
                 <svg
@@ -269,17 +269,17 @@ function FeaturedEvent() {
                   />
                 </svg>
               </div>
-              {/* Text */}
-              {/* <div>
+              
+              <div>
                 <h3 className="text-sm font-medium text-gray-800">
                   Invite your friends
                 </h3>
                 <p className="text-xs text-gray-500">
                   and enjoy a shared experience
                 </p>
-              </div> */}
+              </div>
             </div>
-            {/* Close Icon */}
+          
             <button className="flex items-center justify-center w-8 h-8 text-gray-400 transition hover:text-gray-600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -296,7 +296,7 @@ function FeaturedEvent() {
                 />
               </svg>
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 

@@ -10,7 +10,12 @@ import { useState, useEffect, useRef } from "react";
 import Button from "../Components/Button";
 // import InputField from "../ReusableComponents/InputField";
 import Sidebar from "./Sidebar";
-import { IoIosLogOut, IoIosPerson, IoMdArrowDropdown, IoMdHome } from "react-icons/io";
+import {
+  IoIosLogOut,
+  IoIosPerson,
+  IoMdArrowDropdown,
+  IoMdHome,
+} from "react-icons/io";
 import {
   MdContactPhone,
   MdDashboard,
@@ -75,7 +80,7 @@ const Header = () => {
     },
     {
       name: "Performers",
-      filterPath:"/getPerformer",
+      filterPath: "/getPerformer",
       path: "/getPerformer",
       icon: <IoIosPerson />,
       popUpMenu: [
@@ -89,7 +94,7 @@ const Header = () => {
     {
       name: "Services",
       path: "/getService",
-      filterPath:'/getService',
+      filterPath: "/getService",
 
       icon: <MdMiscellaneousServices />,
       popUpMenu: [
@@ -106,7 +111,7 @@ const Header = () => {
     {
       name: "Venues",
       path: "/getVenue",
-      filterPath:"/getVenue",
+      filterPath: "/getVenue",
       icon: <IoLocationSharp />,
       popUpMenu: [
         { name: "Indoor", path: "#" },
@@ -144,6 +149,8 @@ const Header = () => {
   const handleLogOut = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("isLogin");
+    localStorage.removeItem("eventData");
+    navigate('/home')
   };
   const handleClickOutside1 = (event) => {
     if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -232,17 +239,17 @@ const Header = () => {
                         <path d="M32 31.6c-3.5 0-6.4-2.9-6.4-6.4s2.9-6.4 6.4-6.4 6.4 2.9 6.4 6.4-2.9 6.4-6.4 6.4zm0-10.4c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"></path>
                       </g>
                     </svg>
-                   <div className="flex">
-                   <input
-                      type="text"
-                      placeholder="location"
-                      className="flex-1 bg-transparent outline-none px-2 text-gray-700"
-                    />
-                    {/* Search Button */}
-                    <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
-                      <IoSearchSharp className="text-white text-lg" />
-                    </button>
-                   </div>
+                    <div className="flex">
+                      <input
+                        type="text"
+                        placeholder="location"
+                        className="flex-1 bg-transparent outline-none px-2 text-gray-700"
+                      />
+                      {/* Search Button */}
+                      <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
+                        <IoSearchSharp className="text-white text-lg" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -408,7 +415,8 @@ const Header = () => {
                         onClick={() => setIsLog(!isLog)}
                         className="p-1 gap-1 cursor-pointer font-medium  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
                       >
-                         {userName} <IoMdArrowDropdown className="relative top-1.5" />
+                        {userName}{" "}
+                        <IoMdArrowDropdown className="relative top-1.5" />
                       </span>
                       {isLog && (
                         <div
@@ -418,7 +426,7 @@ const Header = () => {
                           <button
                             onClick={() => {
                               setIsLog(false);
-                              navigate('/myBookings')
+                              navigate("/myBookings");
                             }}
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >
@@ -437,7 +445,7 @@ const Header = () => {
                           <button
                             onClick={() => {
                               setIsLog(false);
-                              navigate('/myBookings')
+                              navigate("/myBookings");
                             }}
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >
@@ -450,6 +458,7 @@ const Header = () => {
                               setIsLog(false);
                               setUserName("");
                               window.location.reload();
+                              
                             }}
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >
