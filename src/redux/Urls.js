@@ -6,6 +6,9 @@ export const baseUrl = "http://localhost:5000/api/";
 // export const baseUrl = "https://event-node-backend.onrender.com/api/";
 
 
+export const Auth={
+  refreshToken:`${baseUrl}auth/refresh`
+}
 export const Event = {
   createEvent: `${baseUrl}event`,
   featuredEvent: `${baseUrl}event/featured?page=1&limit=10&timezoneOffset=0`,
