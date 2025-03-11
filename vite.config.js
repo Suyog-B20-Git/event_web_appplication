@@ -6,4 +6,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ['redux-thunk','redux-debounced'],
   },
+  server: {
+    host: '0.0.0.0', // This binds the server to all network interfaces.
+  },
 })

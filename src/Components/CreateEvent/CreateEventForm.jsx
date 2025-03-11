@@ -916,7 +916,6 @@ export default function EventForm() {
                       setPosterImage(file);
                       setValue(`media.posterImage`, file);
                       const imageUrl = URL.createObjectURL(file);
-
                       setPosterPreview(imageUrl);
                     }
                   }}

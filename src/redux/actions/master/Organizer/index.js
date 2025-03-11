@@ -204,7 +204,7 @@ export const createNewOrganizer = (data) => {
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
-      .post(`http://localhost:5000/api/organizer`, data, {
+      .post(`https://event-node-backend.onrender/api/organizer`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {

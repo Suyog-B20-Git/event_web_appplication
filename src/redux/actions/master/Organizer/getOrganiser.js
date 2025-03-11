@@ -54,7 +54,7 @@ export const updateLiftType = (data, props, setisLoader) => {
 
 import axios from "axios";
 import { Organizer } from "../../../Urls";
-let api = "http://localhost:5000/api/organizer";
+let api = "https://event-node-backend.onrender.com/api/organizer";
 
 export const getOrganizer = (setLoader, filter, page, category) => {
   setLoader(true); // Start loading
