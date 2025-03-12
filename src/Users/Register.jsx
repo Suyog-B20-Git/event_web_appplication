@@ -198,12 +198,15 @@ import { ImGoogle } from "react-icons/im";
 import { HiOutlineDeviceMobile } from "react-icons/hi";
 import axios from "axios";
 import Photo from "./Photo";
+import { Auth } from "../redux/Urls";
+import { toast } from "react-toastify";
 function Register() {
   // const navigate = useNavigate();
   const [name, setName] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -219,41 +222,56 @@ function Register() {
     setSuccess("");
 
     try {
-      const response = await axios.post(
-        "https://event-node-backend.onrender.com/api/auth/setup",
-        {
-          username: name,
+      if (password === confirmPassword) {
+        const response = await axios.post(
+          // "https://event-node-backend.onrender.com/api/auth/setup",
+          `${Auth.register}`,
+          {
+            username: name,
 
-          email,
-          password,
-          mobileNumber,
+            email,
+            password,
+            mobileNumber,
+          }
+        );
+
+        if (response.status === 201) {
+          // setSuccess("Registration successful!");
+          toast.success("Registration successful!", {
+            position: "top-right",
+          });
+          setName("");
+
+          setEmail("");
+          setPassword("");
+          setMobileNumber("");
         }
-      );
-
-      if (response.status === 201) {
-        setSuccess("Registration successful!");
-        setName("");
-
-        setEmail("");
-        setPassword("");
-        setMobileNumber("");
+      }
+      else{
+        toast.error("Wrong confirm password")
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
+        // setError(err.response.data.message);
+        toast.error(err.response.data.message, {
+          position: "top-right",
+        });
       } else {
-        setError("Something went wrong. Please try again.");
+        // setError("Something went wrong. Please try again.");
+        toast.error("Something went wrong. Please try again.", {
+          position: "top-right",
+        });
       }
     }
   };
 
   return (
-    <div className="flex sm:flex-col-reverse lg:h-[75vh]  md:h-[80vh] flex-col md:flex-row      ">
+    <div className="flex sm:flex-col-reverse lg:h-[85vh]  md:h-[85vh] lg:pt-1 md:pt-0 pt-24 flex-col md:flex-row      ">
       {/* Left Section */}
 
       <Photo />
       {/* Right Section */}
-      <div className="flex flex-col justify-center  items-center w-full md:w-1/2  px-4 md:px-8 py-3 h-full bg-gray-100 lg:pt-5  ">
+      <div className="flex flex-col justify-center  items-center w-full md:w-1/2  px-4 md:px-8 py-3 h-full bg-gray-100 lg:pt-10 lg:pb-10  ">
         <div className="flex flex-col items-center w-full max-w-sm mx-auto">
           <div className="w-full  lg:mt-0 mt-2">
             {/* Input fields */}
@@ -309,6 +327,17 @@ function Register() {
                 onClick={togglePasswordVisibility}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <InputField
+                label={"Confirm Password*"}
+                type={"password"}
+                name={"password"}
+                width={"w-full"}
+                isPasswordField={true}
+                placeholder={"Enter Confirm  password"}
+                value={confirmPassword}
+                onClick={togglePasswordVisibility}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
 
               {/* Sign in button */}
               <div className="flex flex-col justify-center mt-8 gap-5 shadow">
@@ -323,14 +352,12 @@ function Register() {
               </div>
 
               <p className="flex justify-center pt-3">
-                
                 <Link
                   style={{ color: "#FF2459" }}
                   className="px-2"
                   to={"/login"}
                 >
-                  <span className="text-gray-900">Already have account ?{" "}</span>
-                  {" "}
+                  <span className="text-gray-900">Already have account ? </span>{" "}
                   Login
                 </Link>
               </p>

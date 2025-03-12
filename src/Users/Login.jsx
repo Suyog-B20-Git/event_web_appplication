@@ -243,6 +243,8 @@ import { HiOutlineDeviceMobile } from "react-icons/hi";
 
 import axios from "axios";
 import Photo from "./Photo";
+import { Auth } from "../redux/Urls";
+import { toast } from "react-toastify";
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -259,7 +261,8 @@ function Login() {
 
     try {
       const response = await axios.post(
-        "https://event-node-backend.onrender.com/api/auth/login",
+        // "https://event-node-backend.onrender.com/api/auth/login",
+        `${Auth.login}`,
         {
           email,
           password,
@@ -267,7 +270,8 @@ function Login() {
       );
 
       if (response.status === 200) {
-        setSuccessMessage("Login successful!");
+        // setSuccessMessage("Login successful!");
+        toast.success("Login successful!", { position: "top-right" });
         // Save the token in localStorage or sessionStorage
         localStorage.setItem("authToken", response.data.token);
         localStorage.setItem("isLogin", JSON.stringify(true));
@@ -277,10 +281,16 @@ function Login() {
     } catch (error) {
       if (error.response) {
         // Server responded with a status other than 200
-        setErrorMessage(error.response.data.message || "Login failed.");
+        // setErrorMessage(error.response.data.message || "Login failed.");
+        toast.error(error.response.data.message || "Login failed.", {
+          position: "top-right",
+        });
       } else {
         // Network or other errors
-        setErrorMessage("An error occurred. Please try again.");
+        // setErrorMessage("An error occurred. Please try again.");
+        toast.error("An error occurred. Please try again.", {
+          position: "top-right",
+        });
       }
     }
   };
@@ -349,10 +359,13 @@ function Login() {
               </div>
 
               <p className="flex gap-1 justify-center">
-              
-                <Link className="flex gap-1 justify-center" style={{ color: "#FF2459" }} to={"/register"}>
+                <Link
+                  className="flex gap-1 justify-center"
+                  style={{ color: "#FF2459" }}
+                  to={"/register"}
+                >
                   {" "}
-                  <span className="text-gray-900 ">Need and account ?{" "}</span>
+                  <span className="text-gray-900 ">Need and account ? </span>
                   Register
                 </Link>
               </p>

@@ -35,6 +35,7 @@ import getFavoriteEventReducer from "../redux/reducers/pages/Events/getFavoriteE
 import { getFavouriteEventData } from "../redux/actions/master/Events/GetFavouriteEvent";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { deleteFavouriteEvent } from "../redux/actions/master/Events/deleteFavouriteEvent";
 
 function FeaturedEvent() {
   const [enquiry, setEnquiry] = useState(false);
@@ -52,30 +53,41 @@ function FeaturedEvent() {
   const store1 = useSelector((state) => state.getFavoriteEventReducer) || {
     favouriteEventData: [],
   };
-  const favouriteEvent = store1.favouriteEventData;
+  let favouriteEvent = store1.favouriteEventData;
+  const store2 = useSelector((state) => state.deleteFavoriteEventReducer) || {
+    deletedFavouriteEventData: [],
+  };
+  const deletedFavouriteEvent = store2.deletedFavouriteEventData;
 
   const isFavourite = favouriteEvent.some(
     (event) => event._id === receivedData?._id
   );
-  const checkFavourite = () => {
+  const checkFavourite = (id) => {
     if (isFavourite) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      // toast.warning("Already added to favorites!", {
+      //   position: "top-right",
+      //   autoClose: 2000, // Closes after 2 seconds
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "colored",
+      // });
+      dispatch(deleteFavouriteEvent(id));
+      dispatch(getFavouriteEventData(setLoading));
+   
+      // favouriteEvent=deletedFavouriteEvent;
+      
+      // window.location.reload();
     }
   };
 
   useEffect(() => {
     dispatch(getEventById(id, setLoading));
     dispatch(getFavouriteEventData(setLoading));
-  },[dispatch]);
+   
+  }, [dispatch]);
 
   const handleFavourite = (id) => {
     if (isFavourite) {
@@ -158,7 +170,7 @@ function FeaturedEvent() {
             <button
               onClick={() => {
                 handleFavourite(receivedData._id);
-                checkFavourite();
+                checkFavourite(receivedData._id);
               }}
               className={`flex gap-1 text-xs font-bold cursor-pointer ${
                 isFavourite ? "text-[#ff2459]" : "text-gray-900"

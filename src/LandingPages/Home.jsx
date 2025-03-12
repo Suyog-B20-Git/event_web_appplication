@@ -80,7 +80,10 @@ function Home() {
   const [isTransitioning, setIsTransitioning] = useState(true);
 
   const totalSlides = slides.length;
-  const isAuth = localStorage.getItem("isLogin");
+  const [isAuth, setIsAuth] = useState("");
+  useEffect(() => {
+    setIsAuth(localStorage.getItem("isLogin"));
+  }, [isAuth]);
 
   const authToken = localStorage.getItem("authToken");
   const name = authToken ? jwt_decode(authToken)?.name : "Guest";
@@ -112,7 +115,6 @@ function Home() {
     window.scrollTo(0, 0);
     // window.location.reload();
   }, []);
-
 
   if (loading) {
     return <Loading />;

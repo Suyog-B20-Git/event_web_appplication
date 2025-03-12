@@ -413,7 +413,7 @@ const Header = () => {
                     <div ref={dropdownRef}>
                       <span
                         onClick={() => setIsLog(!isLog)}
-                        className="p-1 gap-1 cursor-pointer font-medium  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
+                        className="p-1 gap-1 cursor-pointer font-medium break-words  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
                       >
                         {userName}{" "}
                         <IoMdArrowDropdown className="relative top-1.5" />
