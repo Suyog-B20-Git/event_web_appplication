@@ -402,7 +402,7 @@ const Header = () => {
                 </div>
               ))}
             </div>
-            <div className="   md:w-[30%]">
+            <div className=" relative bottom-1  md:w-[30%]">
               <div
                 onMouseEnter={() => setIsLog(true)}
                 onMouseLeave={() => setIsLog(false)}

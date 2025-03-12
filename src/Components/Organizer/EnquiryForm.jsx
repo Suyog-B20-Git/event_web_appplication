@@ -58,7 +58,7 @@ function EnquiryForm({ enquiry, setEnquiry, name }) {
   return (
     <div>
       <div className="">
-        <div className="fixed w-full inset-0 flex flex-col items-center lg:justify-start justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
+        <div className="fixed w-full inset-0 flex flex-col items-center   justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
           <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
             <div className="lg:w-[600px] md:w-[600px] w-[350px]">
               <div className="flex justify-between border-b">

@@ -198,6 +198,7 @@ function Home() {
       </div>
 
       {isAuth && <RecentView />}
+      <EventCategory />
 
       {data.length > 0 ? (
         <Cards data={data} heading={"TRENDING EVENTS"} />
@@ -215,7 +216,7 @@ function Home() {
         setLoading(true)
       )}
 
-      <EventCategory />
+     
       <BestVenue />
       {/* <EventGenre /> */}
 
