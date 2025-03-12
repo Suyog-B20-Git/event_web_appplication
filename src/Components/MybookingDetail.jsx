@@ -185,7 +185,7 @@ function MybookingDetail() {
               <p className="text-gray-700  font-medium lg:text-sm text-xs lg:block hidden">{data.time}</p>
             </div>
           </div>
-          <div className="flex gap-4 items-start">
+          {/* <div className="flex gap-4 items-start">
             <div className="bg-[#FCE0EB] flex items-center justify-center md:h-16 md:w-16 lg:h-16 lg:w-16 p-5 shadow rounded-md">
               <IoIosTime className="text-lg" />
             </div>
@@ -193,7 +193,7 @@ function MybookingDetail() {
               <p className="text-gray-800 font-semibold pb-1 lg:text-base text-sm">DURATION</p>
               <p className="text-gray-700 font-medium lg:text-sm text-xs">5 Hours</p>
             </div>
-          </div>
+          </div> */}
           <div className="flex gap-4 items-start">
             <div className="bg-[#FCE0EB] flex items-center justify-center md:h-16 md:w-16 lg:h-16 lg:w-16 p-5 shadow rounded-md">
               <FaLocationDot className="text-lg" />
@@ -226,17 +226,17 @@ function MybookingDetail() {
              Total : {data.orderTotal} USD
           </span>
         </p>
-        <button className="border rounded flex gap-1  p-1  px-3 justify-center bg-[#ff2459] text-white font-medium hover:bg-blue-600">
+        {/* <button className="border rounded flex gap-1  p-1  px-3 justify-center bg-[#ff2459] text-white font-medium hover:bg-blue-600">
           {" "}
           <TbLayoutDashboardFilled className="relative top-1" />
           Check In
-        </button>
+        </button> */}
       </div>
       <div className="flex flex-col gap-3 items-center pb-10">
         {[...Array(ticketQnty)].map((_, i) => (
           <div key={i} className="bg-gray-100 shadow-xl p-3 rounded lg:w-[85%] md:w-[80%] ">
           <p className="flex gap-2 font-semibold p-3"><IoTicket className="text-[#ff2459] relative top-1 text-lg"/>Ticket {i+1}</p>
-          <div className="grid lg:grid-cols-6 md:grid-cols-3 grid-cols-2  px-6 lg:gap-10 md:gap-12 gap-10">
+          <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2  px-6 lg:gap-10 md:gap-12 gap-10">
             <div className="flex flex-col gap-1">
               <p className="text-gray-500">First Name</p>
               <p className="font-medium">Amanda</p>
@@ -253,10 +253,10 @@ function MybookingDetail() {
               <p className="text-gray-500">Phone no</p>
               <p className="font-medium">8765435432</p>
             </div>
-            <div className="flex flex-col gap-1 text-[#ff2459]">
+            {/* <div className="flex flex-col gap-1 text-[#ff2459]">
               <p className="text-[#ff2459]">Code</p>
               <p className="font-medium">MRCE-934913</p>
-            </div>
+            </div> */}
             <div className="h-24 w-24 relative bottom-5 lg:left-10 bg-gray-300">
               
             </div>

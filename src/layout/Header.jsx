@@ -418,7 +418,7 @@ const Header = () => {
                           <button
                             onClick={() => {
                               setIsLog(false);
-                              navigate('/myBookings')
+                              navigate('/dashboard')
                             }}
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >
