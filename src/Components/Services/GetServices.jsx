@@ -7,6 +7,7 @@ import { FcLike } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
 import {
   FaFacebookMessenger,
+  FaHeart,
   FaInstagram,
   FaShareNodes,
   FaSquareFacebook,
@@ -21,6 +22,9 @@ import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
 import { getService } from "../../redux/actions/master/Services/getService";
 import Pagination from "../Pagination";
+import { getFavouriteServiceData } from "../../redux/actions/master/Services/getFavouriteService";
+import { toast } from "react-toastify";
+import { postFavouriteService } from "../../redux/actions/master/Services/postFavouriteService";
 
 function GetService() {
   const navigate = useNavigate();
@@ -104,6 +108,49 @@ function GetService() {
   const data = [...new Set(data1)];
   console.log(data, "serviceData....");
   const totalPages = store.totalPages;
+
+  const store1 = useSelector((state) => state.getFavouriteServiceReducer) || {
+    favouriteServiceData: [],
+  };
+  const favouriteService = store1.favouriteServiceData;
+
+  // const isFavourite = favouriteOragnizer.some((event) => event._id === oId);
+  const isFavourite = (id) => {
+    return favouriteService.some((fav) => fav._id === id);
+  };
+  useEffect(() => {
+    dispatch(getFavouriteServiceData(setLoading)); // Fetch favorites on mount
+  }, [dispatch]);
+
+  useEffect(() => {
+    favouriteService.forEach((item) => {
+      isFavourite(item._id);
+    });
+  }, [favouriteService]); // Add dependency to re-run when favorite data updates
+
+  const checkFavourite = (id) => {
+    if (favouriteService.some((fav) => fav._id === id)) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      return;
+    } else {
+      dispatch(postFavouriteService(id));
+
+      dispatch(getFavouriteServiceData(setLoading));
+    }
+  };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -342,18 +389,29 @@ function GetService() {
                 <div
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
-                  onClick={() => {
-                    navigate(`/getServiceById/${item._id}`, { state: item._id });
-                  }}
                 >
-                  <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
+                  <div
+                    onClick={() => {
+                      navigate(`/getServiceById/${item._id}`, {
+                        state: item._id,
+                      });
+                    }}
+                    className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden"
+                  >
                     <img
                       src={item.profileImage}
                       className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
                       alt={item.name}
                     />
                   </div>
-                  <div className="p-2">
+                  <div
+                    onClick={() => {
+                      navigate(`/getServiceById/${item._id}`, {
+                        state: item._id,
+                      });
+                    }}
+                    className="p-2"
+                  >
                     <h1 className="font-medium text-lg capitalize">
                       {item.name}
                     </h1>
@@ -363,11 +421,6 @@ function GetService() {
                   </div>
                   <div className="flex justify-between">
                     <p className="flex gap-2 p-1 px-3 text-lg">
-                      {/* <button>
-                  {" "}
-                  <FcLike />
-                </button> */}
-
                       <button className="text-red-500">
                         <a href={item.facebookUrl ? item.facebookUrl : ""}>
                           {item.facebookUrl ? (
@@ -386,7 +439,19 @@ function GetService() {
                           )}
                         </a>
                       </button>
-                      <FcLike />
+                      <button
+                        onClick={() => {
+                          handleFavourite(item._id);
+                          checkFavourite(item._id);
+                        }}
+                        className={`flex gap-1 text-xs font-bold cursor-pointer ${
+                          isFavourite(item._id)
+                            ? "text-[#ff2459]"
+                            : "text-gray-200"
+                        }`}
+                      >
+                        <FaHeart className="text-lg" />
+                      </button>
 
                       <button className="text-red-500">
                         <a href={item.twitterUrl ? item.twitterUrl : ""}>

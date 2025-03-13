@@ -7,6 +7,7 @@ import { FcLike } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
 import {
   FaFacebookMessenger,
+  FaHeart,
   FaInstagram,
   FaSquareFacebook,
   FaSquareXTwitter,
@@ -17,6 +18,9 @@ import { BsCalendar2DateFill } from "react-icons/bs";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import Pagination from "../Pagination";
+import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
+import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
+import { toast } from "react-toastify";
 
 function GetOrganizer() {
   const navigate = useNavigate();
@@ -91,7 +95,50 @@ function GetOrganizer() {
 
   const data1 = store.organizerData;
   const data = [...new Set(data1)];
-  console.log(data, "OragnizerData....");
+  // console.log(data, "OragnizerData....");
+  
+  const store1 = useSelector((state) => state.getFavoriteOrganizerReducer) || {
+    favouriteOrganizerData: [],
+  };
+  const favouriteOragnizer = store1.favouriteOrganizerData;
+
+  // const isFavourite = favouriteOragnizer.some((event) => event._id === oId);
+  const isFavourite = (id) => {
+    return favouriteOragnizer.some((fav) => fav._id === id);
+  };
+  useEffect(() => {
+    dispatch(getFavouriteOrganizerData(setLoading)); // Fetch favorites on mount
+  }, [dispatch]);
+
+  useEffect(() => {
+    favouriteOragnizer.forEach((item) => {
+      isFavourite(item._id);
+    });
+  }, [favouriteOragnizer]); // Add dependency to re-run when favorite data updates
+
+  const checkFavourite = (id) => {
+    if (favouriteOragnizer.some((fav) => fav._id === id)) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      return;
+    } else {
+      dispatch(postFavouriteOrganizer(id));
+
+      dispatch(getFavouriteOrganizerData(setLoading));
+    }
+  };
 
   const currentUrl = window.location.href;
   const shareUrls = {
@@ -103,18 +150,6 @@ function GetOrganizer() {
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");
   };
-  // useEffect(() => {
-  //   const handleScroll = (e) => {
-  //     const scrollHeight = e.target.documentElement.scrollHeight;
-  //     const currentHeight =
-  //       e.target.documentElement.scrollTop + window.innerHeight;
-  //     if (currentHeight + 1 >= scrollHeight * 0.5) {
-  //       setPageNo((prev) => prev + 1);
-  //     }
-  //   };
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, [pageNo]);
 
   const totalPages = store.totalPages;
 
@@ -130,9 +165,9 @@ function GetOrganizer() {
     }
   };
 
-   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (loading) {
     return <Loading />;
@@ -256,18 +291,29 @@ function GetOrganizer() {
               <div
                 key={index}
                 className=" flex flex-col pb-5 shadow-md rounded border  "
-                onClick={() => {
-                  navigate(`/getOrganizerById/${item._id}`, { state: item._id });
-                }}
               >
-                <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
+                <div
+                  onClick={() => {
+                    navigate(`/getOrganizerById/${item._id}`, {
+                      state: item._id,
+                    });
+                  }}
+                  className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden"
+                >
                   <img
                     src={item.profileImage}
                     className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
                     alt={item.name}
                   />
                 </div>
-                <div className="p-2">
+                <div
+                  onClick={() => {
+                    navigate(`/getOrganizerById/${item._id}`, {
+                      state: item._id,
+                    });
+                  }}
+                  className="p-2"
+                >
                   <h1 className="font-medium text-lg capitalize">
                     {item.name}
                   </h1>
@@ -277,11 +323,6 @@ function GetOrganizer() {
                 </div>
                 <div className="flex justify-between">
                   <p className="flex gap-2 p-1 px-3 text-lg">
-                    {/* <button>
-                {" "}
-                <FcLike />
-              </button> */}
-
                     <button className="text-red-500">
                       <a href={item.facebookUrl ? item.facebookUrl : ""}>
                         {item.facebookUrl ? (
@@ -300,7 +341,17 @@ function GetOrganizer() {
                         )}
                       </a>
                     </button>
-                    <FcLike />
+                    <button
+                      onClick={() => {
+                        handleFavourite(item._id);
+                        checkFavourite(item._id);
+                      }}
+                      className={`flex gap-1 text-xs font-bold cursor-pointer ${
+                        isFavourite(item._id) ? "text-[#ff2459]" : "text-gray-200"
+                      }`}
+                    >
+                      <FaHeart className="text-lg" />
+                    </button>
 
                     <button className="text-red-500">
                       <a href={item.twitterUrl ? item.twitterUrl : ""}>

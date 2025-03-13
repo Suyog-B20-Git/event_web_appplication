@@ -7,6 +7,7 @@ import { FcLike } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
 import {
   FaFacebookMessenger,
+  FaHeart,
   FaInstagram,
   FaShareNodes,
   FaSquareFacebook,
@@ -21,6 +22,9 @@ import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
 import { getVenue } from "../../redux/actions/master/Venue/getVenue";
 import Pagination from "../Pagination";
+import { getFavouriteVenueData } from "../../redux/actions/master/Venue/getFavouriteVenue";
+import { toast } from "react-toastify";
+import { postFavouriteVenue } from "../../redux/actions/master/Venue/postFavouriteVenueReducer";
 
 function GetVenue() {
   const navigate = useNavigate();
@@ -71,7 +75,12 @@ function GetVenue() {
     // isFetching.current = true;
     if (category1) {
       dispatch(
-        getVenue(setLoading, selectedOption?.value || "", currentPage, category1)
+        getVenue(
+          setLoading,
+          selectedOption?.value || "",
+          currentPage,
+          category1
+        )
       ).finally(() => {
         // isFetching.current = false;
       });
@@ -87,7 +96,7 @@ function GetVenue() {
         // isFetching.current = false;
       });
     }
-  }, [dispatch, selectedOption,currentPage, category, category1, filterValue]);
+  }, [dispatch, selectedOption, currentPage, category, category1, filterValue]);
 
   const store = useSelector((state) => state.getVenueReducer) || {
     venueData: [],
@@ -97,6 +106,54 @@ function GetVenue() {
   const data = [...new Set(data1)];
   console.log(data, "VenueData....");
   const totalPages = store.totalPages;
+
+  const store1 = useSelector((state) => state.getFavouriteVenueReducer) || {
+    favouriteVenueData: [],
+  };
+  const favouriteVenue = store1.favouriteVenueData;
+
+  // const isFavourite = favouriteOragnizer.some((event) => event._id === oId);
+  const isFavourite = (id) => {
+    return favouriteVenue.some((fav) => fav._id === id);
+  };
+  useEffect(() => {
+    dispatch(getFavouriteVenueData(setLoading)); // Fetch favorites on mount
+  }, [dispatch]);
+
+  useEffect(() => {
+    favouriteVenue.forEach((item) => {
+      isFavourite(item._id);
+    });
+  }, [favouriteVenue]); // Add dependency to re-run when favorite data updates
+
+  const checkFavourite = (id) => {
+    if (favouriteVenue.some((fav) => fav._id === id)) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      return;
+    } else {
+      dispatch(postFavouriteVenue(id));
+
+      dispatch(getFavouriteVenueData(setLoading));
+    }
+  };
+  useEffect(() => {
+    favouriteVenue.forEach((item) => {
+      isFavourite(item._id);
+    });
+  }, [favouriteVenue]); // Add dependency to re-run when favorite data updates
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -132,9 +189,9 @@ function GetVenue() {
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");
   };
-   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // const observerRef = useRef(null); // Ref for the observer target (bottom div)
   // const isFetching = useRef(false); // Prevent multiple rapid API calls
@@ -288,18 +345,29 @@ function GetVenue() {
                 <div
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
-                  onClick={() => {
-                    navigate(`/getVenueById/${item._id}`, { state: item._id });
-                  }}
                 >
-                  <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
+                  <div
+                    onClick={() => {
+                      navigate(`/getVenueById/${item._id}`, {
+                        state: item._id,
+                      });
+                    }}
+                    className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden"
+                  >
                     <img
                       src={item.profileImage}
                       className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
                       alt={item.name}
                     />
                   </div>
-                  <div className="p-2">
+                  <div
+                    onClick={() => {
+                      navigate(`/getVenueById/${item._id}`, {
+                        state: item._id,
+                      });
+                    }}
+                    className="p-2"
+                  >
                     <h1 className="font-medium text-lg capitalize">
                       {item.name}
                     </h1>
@@ -309,11 +377,6 @@ function GetVenue() {
                   </div>
                   <div className="flex justify-between">
                     <p className="flex gap-2 p-1 px-3 text-lg">
-                      {/* <button>
-                            {" "}
-                            <FcLike />
-                          </button> */}
-
                       <button className="text-red-500">
                         <a href={item.facebookUrl ? item.facebookUrl : ""}>
                           {item.facebookUrl ? (
@@ -332,7 +395,20 @@ function GetVenue() {
                           )}
                         </a>
                       </button>
-                      <FcLike />
+                      <button
+                        onClick={() => {
+                          handleFavourite(item._id);
+                          checkFavourite(item._id);
+                        }}
+                        className={`flex gap-1 text-xs font-bold cursor-pointer ${
+                          isFavourite(item._id)
+                            ? "text-[#ff2459]"
+                            : "text-gray-200"
+                        }`}
+                      >
+                        <FaHeart className="text-lg" />
+                      </button>
+                      {console.log(isFavourite(item._id), "-", item._id)}
 
                       <button className="text-red-500">
                         <a href={item.twitterUrl ? item.twitterUrl : ""}>
@@ -344,10 +420,10 @@ function GetVenue() {
                         </a>
                       </button>
                     </p>
-                    <p className="flex gap-2 pr-5">
+                    {/* <p className="flex gap-2 pr-5">
                       5{" "}
                       <IoStarSharp className="relative top-1 text-yellow-400" />
-                    </p>
+                    </p> */}
                   </div>
                 </div>
               );

@@ -7,6 +7,7 @@ import { FcLike } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
 import {
   FaFacebookMessenger,
+  FaHeart,
   FaInstagram,
   FaShareNodes,
   FaSquareFacebook,
@@ -20,6 +21,9 @@ import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
 import Pagination from "../Pagination";
+import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
+import { toast } from "react-toastify";
+import { postFavouritePerformer } from "../../redux/actions/master/Performers/postFavouritePerformer";
 
 function GetPerformers() {
   const navigate = useNavigate();
@@ -66,8 +70,6 @@ function GetPerformers() {
 
   const category1 = "";
   useEffect(() => {
-    // if (isFetching.current) return;
-    // isFetching.current = true;
     if (category1) {
       dispatch(
         getPerformer(
@@ -76,9 +78,7 @@ function GetPerformers() {
           currentPage,
           category1
         )
-      ).finally(() => {
-        // isFetching.current = false;
-      });
+      ).finally(() => {});
     } else {
       dispatch(
         getPerformer(
@@ -87,9 +87,7 @@ function GetPerformers() {
           currentPage,
           category ? category : filterValue
         )
-      ).finally(() => {
-        // isFetching.current = false;
-      });
+      ).finally(() => {});
     }
   }, [dispatch, selectedOption, currentPage, category, category1, filterValue]);
 
@@ -101,6 +99,49 @@ function GetPerformers() {
   const data = [...new Set(data1)];
   console.log(data, "PerformerData....");
   const totalPages = store.totalPages;
+
+  const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
+    favouritePerformerData: [],
+  };
+  const favouritePerformer = store1.favouritePerformerData;
+
+  // const isFavourite = favouriteOragnizer.some((event) => event._id === oId);
+  const isFavourite = (id) => {
+    return favouritePerformer.some((fav) => fav._id === id);
+  };
+  useEffect(() => {
+    dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
+  }, [dispatch]);
+
+  useEffect(() => {
+    favouritePerformer.forEach((item) => {
+      isFavourite(item._id);
+    });
+  }, [favouritePerformer]); // Add dependency to re-run when favorite data updates
+
+  const checkFavourite = (id) => {
+    if (favouritePerformer.some((fav) => fav._id === id)) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      return;
+    } else {
+      dispatch(postFavouritePerformer(id));
+
+      dispatch(getFavouritePerformerData(setLoading));
+    }
+  };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -300,18 +341,29 @@ function GetPerformers() {
                 <div
                   key={index}
                   className=" flex flex-col pb-5 shadow-md rounded border  "
-                  onClick={() => {
-                    navigate(`/getPerformerById/${item._id}`, { state: item._id });
-                  }}
                 >
-                  <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
+                  <div
+                    onClick={() => {
+                      navigate(`/getPerformerById/${item._id}`, {
+                        state: item._id,
+                      });
+                    }}
+                    className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden"
+                  >
                     <img
                       src={item.profileImage}
                       className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
                       alt={item.name}
                     />
                   </div>
-                  <div className="p-2">
+                  <div
+                    onClick={() => {
+                      navigate(`/getPerformerById/${item._id}`, {
+                        state: item._id,
+                      });
+                    }}
+                    className="p-2"
+                  >
                     <h1 className="font-medium text-lg capitalize">
                       {item.name}
                     </h1>
@@ -321,11 +373,6 @@ function GetPerformers() {
                   </div>
                   <div className="flex justify-between">
                     <p className="flex gap-2 p-1 px-3 text-lg">
-                      {/* <button>
-                            {" "}
-                            <FcLike />
-                          </button> */}
-
                       <button className="text-red-500">
                         <a href={item.facebookUrl ? item.facebookUrl : ""}>
                           {item.facebookUrl ? (
@@ -344,7 +391,19 @@ function GetPerformers() {
                           )}
                         </a>
                       </button>
-                      <FcLike />
+                      <button
+                        onClick={() => {
+                          handleFavourite(item._id);
+                          checkFavourite(item._id);
+                        }}
+                        className={`flex gap-1 text-xs font-bold cursor-pointer ${
+                          isFavourite(item._id)
+                            ? "text-[#ff2459]"
+                            : "text-gray-200"
+                        }`}
+                      >
+                        <FaHeart className="text-lg" />
+                      </button>
 
                       <button className="text-red-500">
                         <a href={item.twitterUrl ? item.twitterUrl : ""}>

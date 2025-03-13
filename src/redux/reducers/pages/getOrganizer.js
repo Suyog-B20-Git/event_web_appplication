@@ -8,7 +8,7 @@ const initialState = {
 };
 
 const getOrganizerReducer = (state = initialState, action) => {
-  console.log("action..:", action);
+  // console.log("action..:", action);
   switch (action.type) {
     case "GET_ORGANIZER":
       return {
@@ -16,14 +16,7 @@ const getOrganizerReducer = (state = initialState, action) => {
         organizerData: action.organizerData,
         totalPages: action.totalPages
       };
-    // case "GET_ORGANIZER":
-    //   return {
-    //     ...state,
-    //     organizerData:
-    //       action.pageNo === 1
-    //         ? action.organizerData
-    //         : [...state.organizerData, ...action.organizerData],
-    //   };
+   
 
     default:
       return { ...state };

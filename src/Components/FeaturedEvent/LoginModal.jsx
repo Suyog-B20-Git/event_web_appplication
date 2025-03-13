@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import InputField from "../InputField";
 import Button from "../Button";
 import axios from "axios";
+import { Auth } from "../../redux/Urls";
 
 function LoginModal() {
   const navigate = useNavigate();
@@ -23,7 +24,8 @@ function LoginModal() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        // "https://event-node-backend.onrender.com/api/auth/login",
+        `${Auth.login}`,
         {
           email,
           password,

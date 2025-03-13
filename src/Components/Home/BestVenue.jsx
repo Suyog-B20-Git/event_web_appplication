@@ -61,16 +61,16 @@ function BestVenue() {
         {/* Scrollable container */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scroll-smooth lg:space-x-6 md:space-x-6 pb-4 lg:ml-4 md:ml-4 pr-12" // Added `ml-12` for spacing
+          className="flex overflow-x-auto scroll-smooth lg:-space-x-2 md:space-x-6 pb-4 lg:-ml-7 md:ml-4 pr-12" // Added `ml-12` for spacing
           style={{ scrollbarWidth: "none" }} // Hide scrollbar for modern browsers
         >
           {Venues.map((venue, index) => (
             <div
               key={index}
-              className="lg:min-w-[265px] md:min-w-[160px] min-w-[150px] lg:p-5 p-2 flex flex-col items-center text-center"
+              className="lg:min-w-[250px] md:min-w-[160px] min-w-[150px] lg:p-5 p-2 flex flex-col items-center text-center"
             >
               <div
-                className="lg:w-56 w-32 h-32 lg:h-56  flex items-center rounded-xl"
+                className="lg:w-44 w-32 h-32 lg:h-48  flex items-center rounded-xl"
                 // className="lg:w-56 w-32 h-32 lg:h-56 flex items-center"
                 style={{
                   backgroundImage: `url(${venue.img})`,

@@ -10,6 +10,7 @@ import {
 import {
   FaEye,
   FaFacebookMessenger,
+  FaHeart,
   FaInstagram,
   FaLocationDot,
   FaSquareFacebook,
@@ -36,9 +37,12 @@ import YouTubeProfile from "../SocialMedia/Youtube";
 import InstagramProfile from "../SocialMedia/Instagram";
 import FacebookEmbeded from "../SocialMedia/Facebook";
 import VenueStats from "../SocialMedia/VenueStat";
+import { getFavouriteVenueData } from "../../redux/actions/master/Venue/getFavouriteVenue";
+import { toast } from "react-toastify";
+import { postFavouriteVenue } from "../../redux/actions/master/Venue/postFavouriteVenueReducer";
 
 function GetVenueById() {
-  const {venueId}=useParams()
+  const { venueId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
 
@@ -50,7 +54,7 @@ function GetVenueById() {
   const [twitter, setTwitter] = useState(false);
   const [instagram, setInstagram] = useState(false);
   const [youtube, setYoutube] = useState(false);
-  const[stat,setStat]=useState(false)
+  const [stat, setStat] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   // const venueId = location.state;
@@ -65,6 +69,48 @@ function GetVenueById() {
   console.log(data, "VenueData....");
   const currentUrl = encodeURIComponent(window.location.href); // Get the current page URL
 
+  const store1 = useSelector((state) => state.getFavouriteVenueReducer) || {
+    favouriteVenueData: [],
+  };
+  const favouriteVenue = store1.favouriteVenueData;
+  const isFavourite = (id) => {
+    
+    return favouriteVenue.some((fav) => fav._id === id);
+  };
+  useEffect(() => {
+    dispatch(getFavouriteVenueData(setLoading)); // Fetch favorites on mount
+  }, [dispatch]);
+
+  const checkFavourite = (id) => {
+    if (favouriteVenue.some((fav) => fav._id === id)) {
+      toast.warning("Already added to favorites!", {
+        position: "top-right",
+        autoClose: 2000, // Closes after 2 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  };
+
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      return;
+    } else {
+      dispatch(postFavouriteVenue(id));
+      console.log(id, "fav id");
+      dispatch(getFavouriteVenueData(setLoading));
+    }
+  };
+
+  useEffect(() => {
+    dispatch(getVenueById(venueId, setLoading));
+    dispatch(getFavouriteVenueData(setLoading));
+  }, [dispatch]);
+
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
@@ -75,9 +121,9 @@ function GetVenueById() {
     window.open(shareUrls[platform], "_blank");
   };
 
-  useEffect(() => {
-    dispatch(getVenueById(venueId, setLoading));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getVenueById(venueId, setLoading));
+  // }, [dispatch]);
   if (loading) {
     return <Loading />;
   }
@@ -85,7 +131,7 @@ function GetVenueById() {
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-10">
-        <div className="lg:pt-3 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
+        <div className="lg:pt-3 md:pt-4 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
           <div className="flex justify-between font-medium">
             <p className="hidden gap-2 p-3 lg:flex ">
               <p
@@ -115,7 +161,7 @@ function GetVenueById() {
             </p>
             <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
               <FaEye className="relative top-1" />
-              {data.visit} 4133 Visit, 9 visites today
+              {data.visits} , {data.dailyVisits} visites today
             </p>
           </div>
           <div
@@ -141,7 +187,7 @@ function GetVenueById() {
                 </button>
               </div>
               <p className="text-sm lg:block hidden">
-                Visited 4133 times,9 visites today
+              {data.visits} , {data.dailyVisits} visites today
               </p>
             </div>
             <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">
@@ -171,10 +217,21 @@ function GetVenueById() {
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
                   Send Inquiry
                 </p>
-                <p className="flex gap-1 bg-white text-gray-900">
-                  <CiHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  Favourite
-                </p>
+                <button
+                  onClick={() => {
+                    handleFavourite(data._id);
+                    checkFavourite(data._id);
+                  }}
+                  className={`flex gap-1 bg-white  ${
+                    isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                  }`}
+                >
+                  {console.log(isFavourite(data._id),"- Status")}
+                  <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                  {isFavourite(data._id)
+                    ? "Added to Favourites"
+                    : "Add Favourite"}
+                </button>
               </div>
             </div>
           </div>
@@ -206,14 +263,21 @@ function GetVenueById() {
                       Send Enquiry
                     </button>
                     <button
-                      className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
                       onClick={() => {
+                        handleFavourite(data._id);
+                        checkFavourite(data._id);
                         setIsPopUp(!isPopUp);
                       }}
+                      className={`flex gap-3 p-4  px-4 bg-white  hover:text-white hover:bg-[#ff2459]  ${
+                        isFavourite(data._id)
+                          ? "text-[#ff2459]"
+                          : "text-gray-900"
+                      }`}
                     >
-                      {" "}
-                      <CiHeart className="relative top-1 lg:text-base " /> Add
-                      Favourite
+                      <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                      {isFavourite(data._id)
+                        ? "Added to Favourites"
+                        : "Add Favourite"}
                     </button>
                   </div>
                 </div>
@@ -317,7 +381,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(false);
-                    setStat(false)
+                    setStat(false);
                   }}
                 >
                   ABOUT
@@ -333,7 +397,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(false);
-                    setStat(false)
+                    setStat(false);
                   }}
                 >
                   UPCOMING EVENT
@@ -349,7 +413,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(false);
-                    setStat(false)
+                    setStat(false);
                   }}
                 >
                   FACEBOOK
@@ -365,7 +429,7 @@ function GetVenueById() {
                     setTwitter(true);
                     setInstagram(false);
                     setYoutube(false);
-                    setStat(false)
+                    setStat(false);
                   }}
                 >
                   TWITTER
@@ -381,7 +445,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(true);
                     setYoutube(false);
-                    setStat(false)
+                    setStat(false);
                   }}
                 >
                   INSTAGRAM
@@ -397,7 +461,7 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(true);
-                    setStat(false)
+                    setStat(false);
                   }}
                 >
                   YOUTUBE
@@ -413,10 +477,10 @@ function GetVenueById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(false);
-                    setStat(true)
+                    setStat(true);
                   }}
                 >
-                 STAT
+                  STAT
                 </button>
               </div>
               <div className="lg:px-10 px-2 border bg-white ">
@@ -450,9 +514,7 @@ function GetVenueById() {
                   )}
                 </p>
                 <p className="font-medium text-lg text-center">
-                  {stat && (
-                    <VenueStats data={data} />
-                  ) }
+                  {stat && <VenueStats data={data} />}
                 </p>
               </div>
             </div>
@@ -557,7 +619,7 @@ function GetVenueById() {
           <div className="lg:pl-0 pl-4 pb-1">
             <FacebookComments
               dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-                  // dataHref={currentUrl}
+              // dataHref={currentUrl}
               numPosts={10}
               width="1000"
             />

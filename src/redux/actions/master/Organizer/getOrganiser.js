@@ -63,12 +63,12 @@ export const getOrganizer = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
         // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=9&sortOrder=asc`;
       } else {
-        api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=asc`;
+        api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=asc&sortBy=name`;
         // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=9&sortOrder=asc`;
       }
 
@@ -78,39 +78,38 @@ export const getOrganizer = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=desc`;
+        )}&page=${page}&limit=9&sortOrder=desc&sortBy=name`;
         // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=8&sortOrder=desc`;
       } else
-        api = `${Organizer.getOrganizerByFilter}page=${page}&limit=8&sortOrder=desc`;
-        // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=desc`;
+        api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=desc&sortBy=name`;
+      // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=desc`;
       break;
 
     case "alphabetical":
       if (category) {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=8&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
         // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=8&sortOrder=asc`;
       } else
-        api = `${Organizer.getOrganizerByFilter}page=${page}&limit=8&sortOrder=asc`;
-        // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
+        api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=asc&sortBy=name`;
+      // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
       break;
 
     default:
       if (category) {
-        api = ` ${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
-          category
-        )}&page=${page}&limit=9`;
+        api = ` ${
+          Organizer.getOrganizerByFilter
+        }categories=${encodeURIComponent(category)}&page=${page}&limit=9`;
         // api = ` http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=9`;
-      } else
-        api = ` ${Organizer.getOrganizerByFilter}page=${page}&limit=9`;
-        // api = ` http://localhost:5000/api/organizer/filter?page=${page}&limit=9`;
+      } else api = ` ${Organizer.getOrganizerByFilter}page=${page}&limit=9`;
+      // api = ` http://localhost:5000/api/organizer/filter?page=${page}&limit=9`;
       break;
   }
 
@@ -119,12 +118,12 @@ export const getOrganizer = (setLoader, filter, page, category) => {
 
     try {
       const response = await axios.get(`${api}`);
-      console.log("response", response);
+      // console.log("response", response);
       dispatch({
         type: "GET_ORGANIZER",
         organizerData: response.data.organizers, // Ensure the API actually returns this structure
         // pageNo: page,
-        totalPages:response.data.totalPages
+        totalPages: response.data.totalPages,
       });
     } catch (error) {
       console.error(
