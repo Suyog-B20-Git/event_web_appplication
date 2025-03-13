@@ -62,9 +62,9 @@ export const getVenue = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Venue.filterVenue}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       } else {
-        api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=asc`;
+        api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       }
 
       break;
@@ -73,16 +73,16 @@ export const getVenue = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Venue.filterVenue}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=desc`;
-      } else api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=desc`;
+        )}&page=${page}&limit=9&sortOrder=desc&sortBy=name`;
+      } else api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=desc&sortBy=name`;
       break;
 
     case "alphabetical":
       if (category) {
         api = `${Venue.filterVenue}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=asc`;
-      } else api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
+      } else api = `${Venue.filterVenue}?page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       break;
 
     default:
