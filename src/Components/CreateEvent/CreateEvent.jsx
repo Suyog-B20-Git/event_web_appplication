@@ -141,7 +141,7 @@ function CreateEvent({ one, two, three }) {
                       <label htmlFor="tickets">Tickets</label>
                     </div>
                   </div>
-                  {selectedRadio == "Tickets" && (
+                  {/* {selectedRadio == "Tickets" && (
                     <div className="justify-center items-center flex flex-row gap-4">
                       <label
                         htmlFor="fees"
@@ -162,7 +162,7 @@ function CreateEvent({ one, two, three }) {
                         }
                       />
                     </div>
-                  )}
+                  )} */}
 
                   <div className="flex flex-col lg:flex-row lg:gap-14 sm:justify-center gap-4 p-3 text-gray-600">
                     <div className="flex items-center gap-2">

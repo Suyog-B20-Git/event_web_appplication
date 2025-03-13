@@ -43,15 +43,15 @@ function RecentView() {
             <p>Pick up where you left off</p>
           </div>
         </div>
-        {data.length > 6 && (
+        {/* {data.length > 6 && (
           <div className="flex gap-2 relative lg:right-32">
             Swipe
             <FaArrowAltCircleRight size={20} />
           </div>
-        )}
+        )} */}
       </div>
       {/* <div className="flex gap-3 p-3 justify-center items-center"> */}
-      <div className="flex gap-5 lg:ml-[100px] overflow-x-auto p-2 scrollbar-hide max-w-7xl">
+      <div className="flex gap-5 lg:ml-[100px] overflow-x-auto p-2 max-w-7xl">
         {data &&
           data.slice(0, 5).map((item, index) => {
             return (

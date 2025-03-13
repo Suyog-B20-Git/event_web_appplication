@@ -6,3 +6,26 @@
 body{
     overflow-x: hidden;
 }
+
+/* Width of the vertical scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;  /* Reduced height of horizontal scrollbar */
+}
+
+/* Track (the background) */
+::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+/* Handle (the moving part) */
+::-webkit-scrollbar-thumb {
+    background: #ff2459;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(143, 37, 55);
+}

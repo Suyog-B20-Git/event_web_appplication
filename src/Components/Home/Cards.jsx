@@ -27,12 +27,12 @@ function Cards({ data, heading }) {
         </div>
 
         {/* Cards container with horizontal scrolling */}
-        <div className="  flex gap-9 overflow-x-auto lg:p-4 pt-2 relative lg:right-46  scrollbar-hide w-full">
+        <div className="  flex gap-9 overflow-x-auto lg:p-4 pt-2 relative lg:right-46   w-full">
           {data.map((item, index) => (
             <div
               key={index}
               // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
-              className="overflow-hidden transition-transform duration-300 hover:scale-105 flex-none  border  p-2 rounded-lg lg:w-[372px] w-57"
+              className="overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 flex-none  border  p-2 rounded-lg lg:w-[372px] w-57"
               onClick={() => navigate("/featuredEvent", { state: item._id })}
             >
               {/* <div className=" h-24 lg:h-52 md:h-32 w-full rounded-lg  flex justify-end overflow-hidden">
