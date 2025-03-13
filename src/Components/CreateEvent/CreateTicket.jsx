@@ -69,21 +69,21 @@ function CreateTicket() {
   const isSoldOut = watch("isSoldOut"); // Watch state
   const isDonation = watch("isDonation"); // Watch state
   return (
-    <div className="p-10 lg:pt-10 md:pt-10  pt-28 overflow-x-scroll">
+    <div className="p-6 lg:p-10 md:pt-10 pt-28 overflow-auto">
       <button
         onClick={() => setGetTicket(!getTicket)}
-        className=" flex gap-1 p-2 px-2 rounded  text-white font-medium bg-[#ff2459]"
+        className=" flex items-center gap-2 p-2 px-4 rounded-md  text-white font-medium bg-[#ff2459] hover:bg-[#e0204f] transition duration-300"
       >
         {" "}
-        <IoTicket className="relative top-1" />
+        <IoTicket className="text-lg" />
         Create Ticket
       </button>
 
-      <div className="pt-5 flex lg:w-full md:w-full  w-[500px] flex-col  ">
-        <header className="grid grid-cols-5 bg-gray-100 p-2">
+      <div className="pt-5 flex lg:w-full md:w-full  w-[500px] flex-col  overflow-x-auto  ">
+        <header className="grid grid-cols-5 bg-gray-200 p-3 font-semibold text-gray-700 border-b">
           {header.map((item, index) => {
             return (
-              <div key={index} className="font-bold p-1">
+              <div key={index} className="font-bold p-1 text-center ">
                 {item}
               </div>
             );
@@ -94,26 +94,26 @@ function CreateTicket() {
             return (
               <div
                 key={index}
-                className="p-2 grid grid-cols-5 gap-2 lg:text-base text-sm border-b-2 pb-2  "
+                className="grid grid-cols-5 items-center gap-2 lg:text-base text-sm border-b-2 py-3 "
               >
-                <div>{item.title}</div>
-                <div>{item.price}</div>
-                <div>{item.totalTicketQuantity}</div>
-                <div>{item.order}</div>
-                <div className="flex gap-3 lg:flex-row flex-col lg:text-base text-sm relative right-3">
-                  <div className="rounded p-0.5 lg:px-3 px-1 bg-green-200 whitespace-nowrap">
-                    Seating chart
+                <div className="text-center">{item.title}</div>
+                <div className="text-center">{item.price}</div>
+                <div className="text-center">{item.totalTicketQuantity}</div>
+                <div className="text-center">{item.order}</div>
+                <div className="flex flex-wrap gap-2 justify-center">
+                <div className="rounded-md px-3 py-1 bg-green-200 text-green-700 text-sm font-medium">
+                Seating chart
                   </div>
                   <div
                     onClick={() => handleEdit(index)}
-                    className="flex gap-1 rounded p-1 bg-orange-300 px-3 whitespace-nowrap"
+                    className="flex gap-1 rounded p-1 bg-orange-300 px-3 whitespace-nowrap cursor-pointer"
                   >
                     <MdModeEditOutline className="relative top-1" />
                     Edit{" "}
                   </div>
                   <div
                     onClick={() => handleDelete(index)}
-                    className="flex gap-1  rounded p-1 bg-red-400 px-3 whitespace-nowrap"
+                    className="flex gap-1  rounded p-1 bg-red-400 px-3 whitespace-nowrap cursor-pointer"
                   >
                     <MdDelete className="relative top-1" />
                     Delete
@@ -129,11 +129,11 @@ function CreateTicket() {
       {getTicket && (
         <div className="w-full">
           <div className="fixed w-full bg-white/30 backdrop-blur-md  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
-            <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
+            <div className="bg-white p-6 rounded-lg   shadow-lg  lg:w-[full]">
               <div className="flex lg:justify-between gap-48 md:gap-[550px] lg:gap-0 relative lg:right-0 right-0 mb-3 ">
-                <h1 className="text-xl font-semibold">Create Ticket</h1>
+                <h1 className="text-2xl font-semibold">Create Ticket</h1>
                 <button
-                  className="bg-[#ff2459] relative lg:left-0 left-10 w-[max-content] p-1 px-2  text-white"
+                  className="bg-[#ff2459] relative lg:left-0 left-10 w-[max-content] p-1 px-2 text-white"
                   onClick={() => setGetTicket(!getTicket)}
                 >
                   X
@@ -461,7 +461,7 @@ function CreateTicket() {
                 <div className="flex justify-end p-1 pt-5">
                   <button
                     type="submit"
-                    className="flex gap-1 text-lg font-medium bg-[#ff2459] p-1 text-white  rounded"
+                    className="flex gap-1 text-lg font-medium bg-[#ff2459] p-2 text-white  rounded"
                   >
                     <RiSimCardLine className="relative top-1 text-lg" />
                     Save

@@ -76,9 +76,9 @@ function FeaturedEvent() {
       // });
       dispatch(deleteFavouriteEvent(id));
       dispatch(getFavouriteEventData(setLoading));
-   
+
       // favouriteEvent=deletedFavouriteEvent;
-      
+
       // window.location.reload();
     }
   };
@@ -86,7 +86,7 @@ function FeaturedEvent() {
   useEffect(() => {
     dispatch(getEventById(id, setLoading));
     dispatch(getFavouriteEventData(setLoading));
-   
+
   }, [dispatch]);
 
   const handleFavourite = (id) => {
@@ -143,6 +143,32 @@ function FeaturedEvent() {
 
   const sectionRef = useRef(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const addToCalendar = () => {
+    if (!receivedData.startDate) return;
+
+    const eventTitle = encodeURIComponent(receivedData.name || "Event");
+    const eventLocation = encodeURIComponent(
+      `${receivedData.venue?.city || ""}, ${receivedData.venue?.country || ""}`
+    );
+    const eventDetails = encodeURIComponent(
+      `Join us for ${receivedData.name}! More details: ${window.location.href}`
+    );
+
+    const startDate = new Date(receivedData.startDate)
+      .toISOString()
+      .replace(/-|:|\.\d+/g, ""); // Format: YYYYMMDDTHHMMSSZ
+    const endDate = new Date(
+      new Date(receivedData.startDate).getTime() + 2 * 60 * 60 * 1000 // Assuming a 2-hour event
+    )
+      .toISOString()
+      .replace(/-|:|\.\d+/g, "");
+
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${eventDetails}&location=${eventLocation}`;
+
+    window.open(googleCalendarUrl, "_blank");
+  };
+
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-4 ">
@@ -183,6 +209,13 @@ function FeaturedEvent() {
               {" "}
               <MdDateRange className="text-lg " />
               Add to My Calender
+            </p> */}
+            <p
+              onClick={addToCalendar}
+              className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
+            >
+              <MdDateRange className="text-lg " />
+              Add to My Calendar
             </p>
             <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
               <FaEye className="relative top-0.5 text-blue-600" />
@@ -263,7 +296,7 @@ function FeaturedEvent() {
             </button>
           </div>
           {/* <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
-           
+
             <div className="flex items-center  space-x-3">
               <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
                 <svg
@@ -281,7 +314,7 @@ function FeaturedEvent() {
                   />
                 </svg>
               </div>
-              
+
               <div>
                 <h3 className="text-sm font-medium text-gray-800">
                   Invite your friends
@@ -291,7 +324,7 @@ function FeaturedEvent() {
                 </p>
               </div>
             </div>
-          
+
             <button className="flex items-center justify-center w-8 h-8 text-gray-400 transition hover:text-gray-600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

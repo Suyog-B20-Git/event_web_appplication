@@ -60,8 +60,9 @@ export default function EventForm() {
     setError,
     clearErrors,
 
-    formState: { errors },
+    formState: { errors, isValid }, 
   } = useForm({
+    mode: "onChange",
     defaultValues: {
       name: "",
       category: "",
@@ -268,6 +269,16 @@ export default function EventForm() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+
+  const handleNextClick = handleSubmit((data) => {
+    console.log("Form data:", data);
+    navigate("/createTicket");
+}, (errors) => {
+    toast.error("Please fill in all required fields.");
+});
+
+  
   return (
     <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
       <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">
@@ -1173,7 +1184,7 @@ export default function EventForm() {
                   />
                 </FormGroup> */}
               </div>
-              <div className="mb-4 mt-4">
+              {/* <div className="mb-4 mt-4">
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -1191,11 +1202,11 @@ export default function EventForm() {
                     componentsProps={{ typography: { fontSize: "12px" } }} // Reduces label size
                   />
                 </FormGroup>
-              </div>
+              </div> */}
 
               {/* Submit Button */}
 
-              <div className="flex justify-around p-4">
+              {/* <div className="flex justify-around p-4">
                 <Button
                   text={"previous"}
                   variant={"normal"}
@@ -1204,11 +1215,29 @@ export default function EventForm() {
                 />
                 <button
                   // onClick={() => navigate("/login")}
-                  className="p-1 bg-[#ff2459] px-4 rounded-lg text-white"
+                  className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
                 >
-                  Submit
+                  Next
                 </button>
+              </div> */}
+
+<div className="flex justify-around p-4">
+                <Button
+                  text={"previous"}
+                  variant={"normal"}
+                  rounded={"rounded-lg"}
+                  onClick={() => navigate("/createEvent")}
+                />
+               <button
+  type="button"
+  onClick={handleNextClick}
+  className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
+>
+  Next
+</button>
+
               </div>
+              
             </form>
           </div>
         </div>
