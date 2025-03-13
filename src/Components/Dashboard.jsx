@@ -149,7 +149,7 @@ const Dashboard = () => {
   const sections = [
     { name: "Dashboard", icon: <FaCalendarAlt />, id: "dashboard" },
     { name: "My Events", icon: <FaClipboardList />, id: "my-events" },
-    { name: "My Bookings", icon: <FaTicketAlt />, id: "my-bookings" },
+    { name: "My Orders", icon: <FaTicketAlt />, id: "my-bookings" },
     { name: "My Earnings", icon: <FaWallet />, id: "my-earnings" },
     { name: "My Venues", icon: <FaBuilding />, id: "my-venues" },
     { name: "Manage Guests", icon: <FaUserFriends />, id: "manage-guests" },
@@ -312,7 +312,7 @@ const Dashboard = () => {
 
           {activeSection === "my-bookings" &&   
           <div className="flex flex-col">
-         <h2 className="text-2xl font-semibold text-gray-900">My Bookings</h2>
+         <h2 className="text-2xl font-semibold text-gray-900">My Orders</h2>
           {ticketInfo.map((item, index) => {
             return (
               <div

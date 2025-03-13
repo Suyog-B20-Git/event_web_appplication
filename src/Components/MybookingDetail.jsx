@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BsCalendarDateFill } from "react-icons/bs";
 import { IoIosTime, IoMdDownload } from "react-icons/io";
 import { IoTicket } from "react-icons/io5";
@@ -12,6 +12,8 @@ function MybookingDetail() {
   const location = useLocation();
   const data = location.state;
   const ticketQnty = data.ticketQuantity;
+  const [isOpen, setIsOpen] = useState(false);
+
 
   return (
     // <div className="pt-5 px-4 bg-gray-100">
@@ -226,11 +228,11 @@ function MybookingDetail() {
              Total : {data.orderTotal} USD
           </span>
         </p>
-        {/* <button className="border rounded flex gap-1  p-1  px-3 justify-center bg-[#ff2459] text-white font-medium hover:bg-blue-600">
+        <button className="border rounded flex gap-1  p-1  px-3 justify-center bg-[#ff2459] text-white font-medium hover:bg-blue-600">
           {" "}
           <TbLayoutDashboardFilled className="relative top-1" />
           Check In
-        </button> */}
+        </button>
       </div>
       <div className="flex flex-col gap-3 items-center pb-10">
         {[...Array(ticketQnty)].map((_, i) => (
@@ -238,13 +240,13 @@ function MybookingDetail() {
           <p className="flex gap-2 font-semibold p-3"><IoTicket className="text-[#ff2459] relative top-1 text-lg"/>Ticket {i+1}</p>
           <div className="grid lg:grid-cols-5 md:grid-cols-3 grid-cols-2  px-6 lg:gap-10 md:gap-12 gap-10">
             <div className="flex flex-col gap-1">
-              <p className="text-gray-500">First Name</p>
-              <p className="font-medium">Amanda</p>
+              <p className="text-gray-500">User Name</p>
+              <p className="font-medium">Amanda Smith</p>
             </div>
-            <div className="flex flex-col gap-1">
+            {/* <div className="flex flex-col gap-1">
               <p className="text-gray-500">Last Name</p>
               <p className="font-medium">Smith</p>
-            </div>
+            </div> */}
             <div className="flex flex-col gap-1">
               <p className="text-gray-500">Email</p>
               <p className="font-medium break-words">Amanda@gamil.com</p>
@@ -253,13 +255,37 @@ function MybookingDetail() {
               <p className="text-gray-500">Phone no</p>
               <p className="font-medium">8765435432</p>
             </div>
-            {/* <div className="flex flex-col gap-1 text-[#ff2459]">
+            <div className="flex flex-col gap-1 text-[#ff2459]">
               <p className="text-[#ff2459]">Code</p>
               <p className="font-medium">MRCE-934913</p>
-            </div> */}
-            <div className="h-24 w-24 relative bottom-5 lg:left-10 bg-gray-300">
-              
             </div>
+            {/* <div className="h-24 w-24 relative bottom-5 lg:left-10 bg-gray-300">
+              
+            </div> */}
+             <div className="lg:pt-5 pt-24 md:pt-10 lg:px-10 md:px-10 px-5 bg-gray-100">
+      {/* Clickable Gray Box */}
+      <div
+        className="cursor-pointer bg-gray-200 h-24 w-24 relative bottom-10 rounded-md flex items-center justify-center"
+        onClick={() => setIsOpen(true)}
+      >
+        <span className="text-gray-500">Click</span>
+      </div>
+
+      {/* Popup Modal (QR Code) */}
+      {isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <img src={data.qrCodeUrl} alt="QR Code" className="w-48 h-48" />
+            <button
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md"
+              onClick={() => setIsOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
           </div>
             
           </div>
