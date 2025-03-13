@@ -6,6 +6,13 @@ import { FaFacebook } from "react-icons/fa6";
 import { IoLogoInstagram, IoLogoWhatsapp } from "react-icons/io5";
 import { CiTwitter } from "react-icons/ci";
 
+// Function to convert UTC to Local Time
+const convertUTCToLocal = (utcString) => {
+  if (!utcString) return "Invalid Date"; // Handle empty or invalid values
+  const date = new Date(utcString);
+  return date.toLocaleString(); // Convert to local time
+};
+
 function EventHeading({ heading, startDate, endDate, by }) {
   const currentUrl = window.location.href;
   const shareUrls = {
@@ -29,7 +36,8 @@ function EventHeading({ heading, startDate, endDate, by }) {
 
       <p className="font-semibold flex gap-3 lg:text-base text-sm  p-2 pb-1">
         <MdEvent className="text-[#ff2459] text-xl relative top-1" />
-        {startDate} - {endDate}
+        {/* {startDate} - {endDate} */}
+        {convertUTCToLocal(startDate)} - {convertUTCToLocal(endDate)}
       </p>
       <p className="p-2 lg:text-lg whitespace-nowrap flex md:gap-10 lg:gap-10 gap-3">
         By {by}{" "}

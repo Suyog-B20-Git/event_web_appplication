@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Button from "../Button";
 import InputField from "../InputField";
 import axios from "axios";
+import { Auth } from "../../redux/Urls";
 
 function RegisterModal() {
   // const navigate = useNavigate();
@@ -26,7 +27,8 @@ function RegisterModal() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/setup",
+        // "https://event-node-backend.onrender.com/api/auth/setup",
+        `${Auth.register}`,
         {
           username: name,
 
@@ -120,9 +122,6 @@ function RegisterModal() {
                 onClick={handleRegister}
               />
             </div>
-
-           
-          
           </div>
         </div>
       </div>

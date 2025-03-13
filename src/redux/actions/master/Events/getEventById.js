@@ -54,15 +54,19 @@ export const updateLiftType = (data, props, setisLoader) => {
 
 import axios from "axios";
 import { Event } from "../../../Urls";
+const isLogin = localStorage.getItem("isLogin");
 
-export const getEventById= (id,setLoader) => {
+export const getEventById = (id, setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
-
+    let response = null;
     try {
-      const response = await axios.get(
-        `${Event.createEvent}/${id}`
-      );
+      if (isLogin) {
+        response = await axiosInstance.get(`${Event.createEvent}/${id}`);
+      } else {
+        response = await axios.get(`${Event.createEvent}/${id}`);
+      }
+
       console.log("response", response);
       dispatch({
         type: "GET_EVENT_BY_ID",

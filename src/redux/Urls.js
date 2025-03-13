@@ -7,7 +7,9 @@ export const baseUrl = "http://localhost:5000/api/";
 
 
 export const Auth={
-  refreshToken:`${baseUrl}auth/refresh`
+  refreshToken:`${baseUrl}auth/refresh`,
+  register:`${baseUrl}auth/setup`,
+  login:`${baseUrl}auth/login`,
 }
 export const Event = {
   createEvent: `${baseUrl}event`,
@@ -16,7 +18,8 @@ export const Event = {
   getAllEvents: `${baseUrl}event?`,
   getEventByFilter:`${baseUrl}event/filter?`,
   getRecentlyView:`${baseUrl}event/recently-viewed?page=1&limit=10`,
-  addFavouriteEvent:`${baseUrl}event/favorites`
+  addFavouriteEvent:`${baseUrl}event/favorites`,
+  
 };
 
 export const Performer = {

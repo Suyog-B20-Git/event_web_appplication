@@ -94,7 +94,7 @@ const Header = () => {
     {
       name: "Services",
       path: "/getService",
-      filterPath: "/getService",
+      filterPath:'/getService',
 
       icon: <MdMiscellaneousServices />,
       popUpMenu: [
@@ -173,16 +173,21 @@ const Header = () => {
         <div className="lg:w-[100%] w-[100%]  lg:h-[160px] inset-0 z-60 items-center justify-center bg-opacity-50 relative">
           {/* first div */}
           <div className="flex w-[100%] md:h-[100px] h-[80px]  lg:h-[100px]  inset-0 z-60 items-center justify-center bg-opacity-50 relative ">
-            <div className="flex justify-between  items-center  lg:w-[60%] w-[100%] ">
-              <div
+            {/* <div className="flex justify-between  items-center  lg:w-[60%] w-[100%] "> */}
+            <div className="flex items-center justify-between w-full lg:h-[100px] px-4">
+
+              {/* <div
                 className="md:w-[35%] lg:w-[100%] w-[100%]  
             ml-3 relative lg: p-1 rounded-md "
-              >
+              > */}
+                <div className="lg:w-[30%] md:w-[25%] w-auto">
+
                 {/* <div className="md:w-[35%] w-[80%]  ml-3 relative z-20 p-1 rounded-md"> */}
 
                 <img
                   src="/logo.png"
-                  className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
+                  className="lg:w-[80%] md:w-[100%] w-auto"
+                  // className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
                   alt="logo"
                 />
               </div>
@@ -217,8 +222,8 @@ const Header = () => {
 
                 <div className="lg:flex md:flex hidden  lg:flex-row flex-col items-center rounded-full bg-gray-100 shadow-md p-2 lg:w-full w-[80%]  mx-auto">
                   {/* Search Input */}
-                  <div className="flex items-center  flex-1 px-4 ">
-                    <input
+                  <div className="hidden lg:flex md:flex flex-1 justify-center">
+                  <input
                       type="text"
                       placeholder="Search events"
                       onClick={() => setLocation(true)}
@@ -227,8 +232,8 @@ const Header = () => {
                   </div>
 
                   {/* Location */}
-                  <div className="lg:flex  hidden  items-center gap-2 px-4 border-l border-gray-300">
-                    <svg
+                  <div className="lg:flex hidden items-center gap-2 px-4 border-l border-gray-300">
+                  <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 64 64"
                       height={"20px"}
@@ -239,17 +244,17 @@ const Header = () => {
                         <path d="M32 31.6c-3.5 0-6.4-2.9-6.4-6.4s2.9-6.4 6.4-6.4 6.4 2.9 6.4 6.4-2.9 6.4-6.4 6.4zm0-10.4c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"></path>
                       </g>
                     </svg>
-                    <div className="flex">
-                      <input
-                        type="text"
-                        placeholder="location"
-                        className="flex-1 bg-transparent outline-none px-2 text-gray-700"
-                      />
-                      {/* Search Button */}
-                      <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
-                        <IoSearchSharp className="text-white text-lg" />
-                      </button>
-                    </div>
+                   <div className="flex">
+                   <input
+                      type="text"
+                      placeholder="location"
+                      className="flex-1 bg-transparent outline-none px-2 text-gray-700"
+                    />
+                    {/* Search Button */}
+                    <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
+                      <IoSearchSharp className="text-white text-xl" />
+                    </button>
+                   </div>
                   </div>
                 </div>
 
@@ -294,76 +299,10 @@ const Header = () => {
           </div>
 
           {/* Second Headding */}
-          <div className="w-[100%] hidden lg:flex ">
-            {/* <div className="hidden sm:flex justify-end gap-5 lg:relative lg:left-40 items-center  w-[70%] ">
-              {text_data.map((item, index) => (
-                <button
-                  key={index}
-                  className="font-medium  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
-                  onClick={() => navigate(item.path)}
-                >
-                  <p
-                    onMouseEnter={() => setIsPop(true)}
-                    onMouseLeave={() => setIsPop(false)}
-                    className="relative top-1.5 "
-                  >
-                    {" "}
-                    {item.icon}
-                  </p>{" "}
-                  {item.name}
-                  {isPop && (
-                    <div
-                      ref={boxRef}
-                      className="bg-white rounded text-gray-900 absolute w-40  h-[120px] mt-1"
-                    >
-                      {item.popUpMenu.map((menuItem, index) => {
-                        return (
-                          <button
-                            key={index}
-                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
-                          >
-                            <MdDashboard className=" hover:text-white relative top-1" />
-                            {menuItem.name}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div> */}
-            {/* <div className="hidden sm:flex justify-end gap-5 lg:relative lg:left-40 items-center w-[70%]">
-              {text_data.map((item, index) => (
-                <button
-                  key={index}
-                  className="font-medium lg:text-lg md:text-sm lg:mr-5 flex lg:gap-1 md:gap-0.5 relative z-60"
-                  onClick={() => navigate(item.path)}
-                  onMouseEnter={() => setActiveIndex(index)} // Set active index on hover
-                  onMouseLeave={() => setActiveIndex(null)} // Reset on mouse leave
-                >
-                  <p className="relative top-1.5">{item.icon}</p> {item.name}
-                  {activeIndex === index &&
-                    item.popUpMenu && ( // Show popup only for the active item
-                      <div
-                        ref={boxRef}
-                        className="bg-white rounded text-gray-900 absolute top-7 w-max h-max mt-1 shadow-lg"
-                      >
-                        {item.popUpMenu.map((menuItem, menuIndex) => (
-                          <button
-                            key={menuIndex}
-                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
-                          >
-                            <MdDashboard className="hover:text-white relative top-1" />
-                            {menuItem.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                </button>
-              ))}
-            </div> */}
-            <div className="hidden sm:flex justify-end gap-5 lg:relative lg:left-40 items-center w-[70%]">
-              {text_data.map((item, index) => (
+          <div className="w-full hidden lg:flex items-center justify-between">
+
+          <div className="sm:flex justify-end gap-3 lg:relative items-center w-full flex-nowrap">
+          {text_data.map((item, index) => (
                 <div
                   key={index}
                   className="relative pb-2"
@@ -402,7 +341,7 @@ const Header = () => {
                 </div>
               ))}
             </div>
-            <div className="   md:w-[30%]">
+            <div className=" relative bottom-1  md:w-[30%]">
               <div
                 onMouseEnter={() => setIsLog(true)}
                 onMouseLeave={() => setIsLog(false)}
@@ -413,7 +352,7 @@ const Header = () => {
                     <div ref={dropdownRef}>
                       <span
                         onClick={() => setIsLog(!isLog)}
-                        className="p-1 gap-1 cursor-pointer font-medium  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
+                        className="p-1 gap-1 cursor-pointer font-medium break-words  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
                       >
                         {userName}{" "}
                         <IoMdArrowDropdown className="relative top-1.5" />
@@ -426,7 +365,7 @@ const Header = () => {
                           <button
                             onClick={() => {
                               setIsLog(false);
-                              navigate("/myBookings");
+                              navigate('/dashboard')
                             }}
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >
@@ -450,7 +389,7 @@ const Header = () => {
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >
                             <IoTicket className=" hover:text-white relative top-1" />
-                            My Bookings
+                            My Orders
                           </button>
                           <button
                             onClick={() => {
@@ -458,7 +397,6 @@ const Header = () => {
                               setIsLog(false);
                               setUserName("");
                               window.location.reload();
-                              
                             }}
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >
@@ -472,7 +410,7 @@ const Header = () => {
                     <Button
                       text={"Sign Up / Login "}
                       textSize={"text-base"}
-                      width={"lg:w-[60%] "}
+                      width={"w-auto"}
                       rounded={"rounded"}
                       variant={"primary"}
                       onClick={() => navigate("/login")}

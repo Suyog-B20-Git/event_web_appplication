@@ -234,6 +234,7 @@ function Viewall() {
     return <Loading />;
   }
 
+  
   return (
     <div className="flex lg:justify-start justify-center lg:pt-0 md:pt-4 pt-[87px] lg:relative left-[70px] items-center overflow-hidden">
       <div className="lg:p-12 lg:pb-5  pt-5 p-5 w-full max-w-[1340px]">

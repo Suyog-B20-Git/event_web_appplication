@@ -6,6 +6,13 @@ import { CiLocationOn } from "react-icons/ci";
 import { MdEvent } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
+
+const convertUTCToLocal = (utcString) => {
+  if (!utcString) return "Invalid Date"; // Handle empty or invalid values
+  const date = new Date(utcString);
+  return date.toLocaleString(); // Converts UTC to local time
+};
+
 // function Cards({ heading }) {
 function Cards({ data, heading }) {
   const navigate = useNavigate();
@@ -32,7 +39,7 @@ function Cards({ data, heading }) {
             <div
               key={index}
               // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
-              className="overflow-hidden flex-none  border  p-2 rounded-lg lg:w-[372px] w-57"
+              className="overflow-hidden transition-transform duration-300 hover:scale-105 flex-none  border  p-2 rounded-lg lg:w-[372px] w-57"
               onClick={() => navigate("/featuredEvent", { state: item._id })}
             >
               {/* <div className=" h-24 lg:h-52 md:h-32 w-full rounded-lg  flex justify-end overflow-hidden">
@@ -88,8 +95,8 @@ function Cards({ data, heading }) {
                     </p>
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <MdEvent className="relative top-1" />
-                      <span>{item.startDate}</span>
-                    </p>
+                      <span>{convertUTCToLocal(item.startDate)}</span>
+                      </p>
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <CiLocationOn className="relative top-1" />
                       <span>

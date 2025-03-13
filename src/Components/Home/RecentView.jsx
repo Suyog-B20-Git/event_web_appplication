@@ -26,7 +26,7 @@ function RecentView() {
   //   { img: "fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
   //   { img: "fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
   // ];
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   if (loading) {
     return <Loading />;
   }
@@ -53,7 +53,7 @@ function RecentView() {
       {/* <div className="flex gap-3 p-3 justify-center items-center"> */}
       <div className="flex gap-5 lg:ml-[100px] overflow-x-auto p-2 scrollbar-hide max-w-7xl">
         {data &&
-          data.map((item, index) => {
+          data.slice(0, 5).map((item, index) => {
             return (
               <div
                 key={index}

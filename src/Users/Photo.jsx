@@ -6,7 +6,7 @@ function Photo() {
 
   return (
     <div
-      className={`h-[500px] ${location.path=="/login"?"md:h-[500px]":"md:h-[700px]"} lg:h-full lg:w-1/2 md:w-1/2 lg:block  md:block hidden `}
+      className={`h-[500px] ${location.path=="/login"?"md:h-[500px]":"md:h-[598px]"} lg:h-full lg:w-1/2 md:w-1/2 lg:block  md:block hidden `}
       style={{
         backgroundImage:
           "url(https://jandevents.com/wp-content/uploads/jand-party.jpg)",
