@@ -437,7 +437,7 @@ function MyBookings() {
     <div className="pt-20 lg:pt-0 md:pt-0">
       <div className="bg-gray-800 flex gap-2 text-white text-xl text-left p-4 font-medium">
         <SiBookmyshow className="relative top-1.5" />
-        Bookings
+        Orders
       </div>
       <div className="flex flex-col">
         {ticketInfo.map((item, index) => {

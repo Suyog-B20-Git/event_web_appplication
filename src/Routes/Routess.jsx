@@ -23,6 +23,7 @@ import GetEventByFilter from "../Components/Events/GetEventByFilter";
 import GetOrganizerByFilter from "../Components/Organizer/GetOragnizerByFilter";
 import FeaturedEvent from "../LandingPages/FeaturedEvent";
 import MyBookings from "../Components/MyBookings";
+import Dashboard from "../Components/Dashboard";
 import MybookingDetail from "../Components/MybookingDetail";
 import CreateTicket from "../Components/CreateEvent/CreateTicket";
 
@@ -80,6 +81,7 @@ function Routess() {
             element={<GetOrganizerByFilter />}
           />
           <Route path="/myBookings" element={<MyBookings />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
           <Route path="/createTicket" element={<CreateTicket />} />
         </Route>
