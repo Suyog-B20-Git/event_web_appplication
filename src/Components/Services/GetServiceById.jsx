@@ -154,12 +154,12 @@ function GetServiceById() {
                   Service
                 </p>
                 <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
-                <p
+                {/* <p
                   className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
-                  onClick={() => navigate("/getPerformerById", { state: data })}
+                  onClick={() => navigate("/getServiceById", { state: data })}
                 >
                   {data.name}
-                </p>
+                </p> */}
               </p>
               <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
                 <FaEye className="relative top-1" />

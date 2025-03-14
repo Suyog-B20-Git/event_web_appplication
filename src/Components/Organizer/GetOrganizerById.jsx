@@ -150,7 +150,7 @@ function GetOrganizerById() {
               <p
                 className="cursor-pointer hover:text-[#ff2459]"
                 onClick={() => {
-                  navigate("/getOrganizer");
+                  navigate("/Organizers");
                 }}
               >
                 Organizer
@@ -158,7 +158,7 @@ function GetOrganizerById() {
               <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
               <p
                 className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
-                onClick={() => navigate("/getOrganizerById", { state: data })}
+                onClick={() => navigate(`/Organizer/${data._id}`, { state: data })}
               >
                 {data.name}
               </p>
@@ -544,7 +544,7 @@ function GetOrganizerById() {
                     <div
                       onClick={() => {
                         setCategory("event planner");
-                        navigate("/getOrganizer", { state: category });
+                        navigate("/Organizers", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -553,7 +553,7 @@ function GetOrganizerById() {
                     <div
                       onClick={() => {
                         setCategory("wedding planner");
-                        navigate("/getOrganizer", { state: category });
+                        navigate("/Organizers", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -564,7 +564,7 @@ function GetOrganizerById() {
                     <div
                       onClick={() => {
                         setCategory("adventure");
-                        navigate("/getOrganizer", { state: category });
+                        navigate("/Organizers", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -694,7 +694,7 @@ function GetOrganizerById() {
                 <div
                   onClick={() => {
                     setCategory("event planner");
-                    navigate("/getOrganizer", { state: category });
+                    navigate("/Organizers", { state: category });
                   }}
                   className="cursor-pointer whitespace-nowrap bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -703,7 +703,7 @@ function GetOrganizerById() {
                 <div
                   onClick={() => {
                     setCategory("wedding planner");
-                    navigate("/getOrganizer", { state: category });
+                    navigate("/Organizers", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -712,7 +712,7 @@ function GetOrganizerById() {
                 <div
                   onClick={() => {
                     setCategory("adventure");
-                    navigate("/getOrganizer", { state: category });
+                    navigate("/Organizers", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-3 text-xs "
                 >

@@ -348,7 +348,7 @@ function GetVenue() {
                 >
                   <div
                     onClick={() => {
-                      navigate(`/getVenueById/${item._id}`, {
+                      navigate(`/Venue/${item._id}`, {
                         state: item._id,
                       });
                     }}
@@ -362,7 +362,7 @@ function GetVenue() {
                   </div>
                   <div
                     onClick={() => {
-                      navigate(`/getVenueById/${item._id}`, {
+                      navigate(`/Venue/${item._id}`, {
                         state: item._id,
                       });
                     }}

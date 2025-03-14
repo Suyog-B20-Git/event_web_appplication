@@ -69,8 +69,8 @@ const Header = () => {
     },
     {
       name: "Organisers",
-      filterPath: "/getOrganizer",
-      path: "/getOrganizer",
+      filterPath: "/Organizers",
+      path: "/Organizers",
       icon: <GrGroup />,
       popUpMenu: [
         { name: "Event Planner", path: "#" },
@@ -80,8 +80,8 @@ const Header = () => {
     },
     {
       name: "Performers",
-      filterPath: "/getPerformer",
-      path: "/getPerformer",
+      filterPath: "/Performers",
+      path: "/Performers",
       icon: <IoIosPerson />,
       popUpMenu: [
         { name: "Band", path: "#" },
@@ -110,8 +110,8 @@ const Header = () => {
     { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
     {
       name: "Venues",
-      path: "/getVenue",
-      filterPath: "/getVenue",
+      path: "/Venues",
+      filterPath: "/Venues",
       icon: <IoLocationSharp />,
       popUpMenu: [
         { name: "Indoor", path: "#" },

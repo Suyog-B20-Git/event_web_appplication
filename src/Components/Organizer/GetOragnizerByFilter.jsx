@@ -25,7 +25,7 @@ function GetOrganizerByFilter() {
   }
 
   const [category, setCategory] = useState("");
-    // const location = useLocation();
+  // const location = useLocation();
   const category1 = "";
   const options = [
     { value: "alphabetical", label: "Alphabetical" },
@@ -224,7 +224,7 @@ function GetOrganizerByFilter() {
                 key={index}
                 className=" flex flex-col pb-5 shadow-md rounded border  "
                 onClick={() => {
-                  navigate("/getOrganizerById", { state: item._id });
+                  navigate("/ById", { state: item._id });
                 }}
               >
                 <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">

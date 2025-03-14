@@ -53,20 +53,20 @@ function Routess() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/createPage" element={<CreatePage />} />
-          <Route path="/getOrganizer" element={<GetOrganizer />} />
+          <Route path="/Organizers" element={<GetOrganizer />} />
           <Route
-            path="/getOrganizerById/:organizerId"
+            path="/Organizer/:organizerId"
             element={<GetOrganizerById />}
           />
 
-          <Route path="/getPerformer" element={<GetPerformers />} />
+          <Route path="/Performers" element={<GetPerformers />} />
           <Route
-            path="/getPerformerById/:performerId"
+            path="/Performer/:performerId"
             element={<GetPerformerById />}
           />
 
-          <Route path="/getVenue" element={<GetVenue />} />
-          <Route path="/getVenueById/:venueId" element={<GetVenueById />} />
+          <Route path="/Venues" element={<GetVenue />} />
+          <Route path="/Venue/:venueId" element={<GetVenueById />} />
 
           <Route path="/getService" element={<GetService />} />
           <Route
