@@ -180,7 +180,7 @@ const Header = () => {
                 className="md:w-[35%] lg:w-[100%] w-[100%]  
             ml-3 relative lg: p-1 rounded-md "
               > */}
-                <div className="lg:w-[30%] md:w-[25%] w-auto">
+                <div className="lg:w-[30%] md:w-[25%] w-auto hidden sm:block">
 
                 {/* <div className="md:w-[35%] w-[80%]  ml-3 relative z-20 p-1 rounded-md"> */}
 
@@ -192,31 +192,32 @@ const Header = () => {
                 />
               </div>
 
-              {/*Mobile view */}
+              {/*Mobile view */}             
+              {/* Mobile Logo */}
               {isSearch ? (
                 <div
                   ref={searchRef}
-                  className="flex relative  lg:hidden md:hidden right-5 px-4 items-center rounded-full bg-gray-100 shadow-md p-2 w-[110%]    mx-auto "
+                  className="flex relative lg:hidden md:hidden px-4 items-center rounded-full bg-gray-100 shadow-md p-2 w-full mx-auto"
                 >
-                  <span className="text-gray-700 relative lg:left-0 text-lg font-bold ">
+                  <span className="text-gray-700 text-lg font-bold">
                     <IoSearch />
                   </span>
                   <input
                     type="search"
                     placeholder="Search events"
                     onClick={() => setLocation(true)}
-                    className="bg-transparent outline-none px-4 text-gray-700"
+                    className="bg-transparent outline-none px-4 text-gray-700 w-full"
                   />
                 </div>
               ) : (
                 <img
                   src="/logo.png"
-                  className="relative right-16 lg:hidden md:hidden block    h-[40%]   w-[40%] "
+                  className="lg:hidden md:hidden block h-[40%] w-[40%] mx-auto"
                   alt="logo"
                 />
               )}
 
-              <div className="relative flex  md:w-[65%] w-[96%] p-2 ">
+          <div class="relative flex items-center justify-end md:w-[65%] w-full p-2 mx-auto">
                 {/* <div className="relative z-20 md:w-[65%] w-[96%] "> */}
                 {/* search bar */}
 
