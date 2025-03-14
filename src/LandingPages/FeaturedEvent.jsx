@@ -205,11 +205,6 @@ function FeaturedEvent() {
               <FaHeart className="text-lg" />
               {isFavourite ? "Added to Favourites" : "Add To Favourite"}
             </button>
-            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
-              {" "}
-              <MdDateRange className="text-lg " />
-              Add to My Calender
-            </p> */}
             <p
               onClick={addToCalendar}
               className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
