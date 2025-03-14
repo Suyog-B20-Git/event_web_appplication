@@ -163,10 +163,20 @@ function GetOrganizerById() {
                 {data.name}
               </p>
             </p>
-            <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
+            {/* <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
               <FaEye className="relative top-1" />
               {data.visits} , {data.dailyVisits} visites today
-            </p>
+            </p> */}
+            <div className="lg:flex hidden gap-1 pt-3 p-3 pb-0">
+              <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
+                <FaEye className="relative top-0.5 text-blue-600" />
+                <span>Total {data.visits} </span>
+              </p>
+              <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
+                <FaEye className="relative top-0.5 text-blue-600" />
+                <span>Daily {data.dailyVisits} </span>
+              </p>
+            </div>
           </div>
           <div
             className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
@@ -191,7 +201,7 @@ function GetOrganizerById() {
                 </button>
               </div>
               <p className="text-sm lg:block hidden">
-              {data.visits} , {data.dailyVisits} visites today
+                {data.visits} , {data.dailyVisits} visites today
               </p>
             </div>
             <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">

@@ -64,9 +64,9 @@ export const getPerformer = (setLoader, filter, page, category) => {
           Performer.getPerformerByFilter
         }?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       } else
-        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=asc`;
+        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       break;
 
     case "title desc":
@@ -75,9 +75,9 @@ export const getPerformer = (setLoader, filter, page, category) => {
           Performer.getPerformerByFilter
         }?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=desc`;
+        )}&page=${page}&limit=9&sortOrder=desc&sortBy=name`;
       } else
-        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=desc`;
+        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=desc&sortBy=name`;
       break;
 
     case "alphabetical":
@@ -86,9 +86,9 @@ export const getPerformer = (setLoader, filter, page, category) => {
           Performer.getPerformerByFilter
         }?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       } else
-        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=asc`;
+        api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       break;
 
     default:

@@ -62,9 +62,9 @@ export const getService = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Service.getFilterService}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       } else
-        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=asc`;
+        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=asc&sortBy=name`;
 
       break;
 
@@ -72,18 +72,18 @@ export const getService = (setLoader, filter, page, category) => {
       if (category) {
         api = `${Service.getFilterService}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=desc`;
+        )}&page=${page}&limit=9&sortOrder=desc&sortBy=name`;
       } else
-        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=desc`;
+        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=desc&sortBy=name`;
       break;
 
     case "alphabetical":
       if (category) {
         api = `${Service.getFilterService}?categories=${encodeURIComponent(
           category
-        )}&page=${page}&limit=9&sortOrder=asc`;
+        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       } else
-        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=asc`;
+        api = `${Service.getFilterService}?page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       break;
 
     default:

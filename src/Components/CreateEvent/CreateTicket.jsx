@@ -68,6 +68,7 @@ function CreateTicket() {
   const header = ["Title", "Price", "Qty", "Order", "Actions"];
   const isSoldOut = watch("isSoldOut"); // Watch state
   const isDonation = watch("isDonation"); // Watch state
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
   return (
     <div className="p-6 lg:p-10 md:pt-10 pt-28 overflow-auto">
       <button
@@ -128,7 +129,7 @@ function CreateTicket() {
 
       {getTicket && (
         <div className="w-full">
-          <div className="fixed w-full bg-white/30 backdrop-blur-md  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
+          <div className="fixed w-full bg-black/50 backdrop-blur-md  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
             <div className="bg-white p-6 rounded-lg   shadow-lg  lg:w-[full]">
               <div className="flex lg:justify-between gap-48 md:gap-[550px] lg:gap-0 relative lg:right-0 right-0 mb-3 ">
                 <h1 className="text-2xl font-semibold">Create Ticket</h1>
@@ -327,18 +328,19 @@ function CreateTicket() {
                     </label>
                     <div className="relative">
                       <input
+                      min={today}
                         type="date"
                         className="block focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 w-full border rounded-md p-2 pl-4 pr-10 text-gray-700"
-                        {...register("saleStartDate", {
-                          required: "Start Date is required",
-                        })}
+                        // {...register("saleStartDate", {
+                        //   required: "Start Date is required",
+                        // })}
                       />
                     </div>
-                    {errors.saleStartDate && (
+                    {/* {errors.saleStartDate && (
                       <p className="text-red-600 text-sm px-2">
                         {errors.saleStartDate.message}*
                       </p>
-                    )}
+                    )} */}
                   </div>
 
                   {/* Sale End Date */}
@@ -351,7 +353,7 @@ function CreateTicket() {
                         type="date"
                         className="focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 block w-full border rounded-md p-2 pl-4 pr-10 text-gray-700"
                         {...register("saleEndDate", {
-                          required: "End Date is required",
+                          // required: "End Date is required",
                           validate: (value) =>
                             !startDate ||
                             value >= startDate ||
@@ -380,7 +382,7 @@ function CreateTicket() {
                       className="focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 block w-full border rounded-md p-2"
                       placeholder="0000"
                       {...register("salePrice", {
-                        required: "sale price is required",
+                        // required: "sale price is required",
                         min: {
                           value: 1,
                           message: "sale price must be greater than 0",
