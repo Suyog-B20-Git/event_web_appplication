@@ -10,14 +10,15 @@ function RecentView() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
+  const store = useSelector((state) => state.getRecentlyViewReducer) || {
+    recentEventData: [],
+  };
   useEffect(() => {
     dispatch(getRecentlyViewData(setLoading)); // Call API when component mounts
   }, [dispatch]);
 
-  const store = useSelector((state) => state.getRecentlyViewReducer) || {
-    eventData: [],
-  };
-  const data = store.eventData;
+  const data = store.recentEventData;
+  console.log("recent data",data)
   // const card1 = [
   //   { img: "fI1.png", desc: "MUSIC CONCERT AT UK| ALL GABHD..." },
   //   { img: "fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
@@ -36,19 +37,15 @@ function RecentView() {
       style={{ fontFamily: "Nunito" }}
     >
       <div className="flex justify-between items-center">
-        <div className="flex gap-4 items-center lg:pl-[105px] md:pl-4">
-          <IoIosTimer className="text-3xl" />
-          <div>
-            <p className="lg:text-2xl text-lg font-bold">RECENTLY VIEWED</p>
-            <p>Pick up where you left off</p>
+        {data && (
+          <div className="flex gap-4 items-center lg:pl-[105px] md:pl-4">
+            <IoIosTimer className="text-3xl" />
+            <div>
+              <p className="lg:text-2xl text-lg font-bold">RECENTLY VIEWED</p>
+              <p>Pick up where you left off</p>
+            </div>
           </div>
-        </div>
-        {/* {data.length > 6 && (
-          <div className="flex gap-2 relative lg:right-32">
-            Swipe
-            <FaArrowAltCircleRight size={20} />
-          </div>
-        )} */}
+        )}
       </div>
       {/* <div className="flex gap-3 p-3 justify-center items-center"> */}
       <div className="flex gap-5 lg:ml-[100px] overflow-x-auto p-2 max-w-7xl">

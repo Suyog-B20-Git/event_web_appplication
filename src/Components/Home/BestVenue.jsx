@@ -45,7 +45,7 @@ function BestVenue() {
   ];
   return (
     // <div className="max-w-7xl rounded-md  mx-auto p-6 bg-gray-100 mt-5">
-    <div className="lg:max-w-7xl lg:ml-32  w-full rounded-lg mx-auto p-4  pt-0 shadow-md ">
+    <div className="lg:max-w-7xl lg:mt-10 lg:ml-32  w-full rounded-lg mx-auto p-4  pt-0 shadow-md ">
       <h1 className="lg:text-3xl text-lg relative lg:left-3 md:left-10 left-4  font-semibold  font-sans">
         Top Best Venue
       </h1>

@@ -62,7 +62,7 @@ export const getRecentlyViewData = (setLoader) => {
       console.log("response", response);
       dispatch({
         type: "GET_RECENTLY_VIEW",
-        eventData: response.data.events, // Ensure the API actually returns this structure
+        recentEventData: response.data.events, // Ensure the API actually returns this structure
       });
     } catch (error) {
       console.error(
@@ -71,7 +71,7 @@ export const getRecentlyViewData = (setLoader) => {
       );
       dispatch({
         type: "GET_RECENTLY_VIEW",
-        eventData: [],
+        recentEventData: [],
       });
     } finally {
       setLoader(false); // Stop loading

@@ -414,6 +414,7 @@ export default function EventForm() {
                             (option) => option.value === field.value
                           ) || null
                         } // Maintain selected value
+                        noOptionsMessage={() => "Type... to see Venues"} // Show message when no options
                       />
                     )}
                   />
@@ -455,6 +456,7 @@ export default function EventForm() {
                         value={performerOptions.filter((option) =>
                           field.value?.includes(option.value)
                         )} // Ensure proper selection
+                        noOptionsMessage={() => "Type... to see performers"} // Show message when no options
                       />
                     )}
                   />

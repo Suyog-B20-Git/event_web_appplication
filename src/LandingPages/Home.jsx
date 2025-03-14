@@ -83,7 +83,7 @@ function Home() {
   const [isAuth, setIsAuth] = useState("");
   useEffect(() => {
     setIsAuth(localStorage.getItem("isLogin"));
-  }, [isAuth]);
+  }, []);
 
   const authToken = localStorage.getItem("authToken");
   const name = authToken ? jwt_decode(authToken)?.name : "Guest";
