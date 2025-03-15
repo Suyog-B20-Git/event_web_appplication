@@ -37,7 +37,7 @@ function RecentView() {
       style={{ fontFamily: "Nunito" }}
     >
       <div className="flex justify-between items-center">
-        {data && (
+        {data.length>0 && (
           <div className="flex gap-4 items-center lg:pl-[105px] md:pl-4">
             <IoIosTimer className="text-3xl" />
             <div>
@@ -49,7 +49,7 @@ function RecentView() {
       </div>
       {/* <div className="flex gap-3 p-3 justify-center items-center"> */}
       <div className="flex gap-5 lg:ml-[100px] overflow-x-auto p-2 max-w-7xl">
-        {data &&
+        {data.length>0 &&
           data.slice(0, 5).map((item, index) => {
             return (
               <div

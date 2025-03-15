@@ -148,18 +148,18 @@ function GetServiceById() {
                 <p
                   className="cursor-pointer hover:text-[#ff2459]"
                   onClick={() => {
-                    navigate("/getService");
+                    navigate("/Services");
                   }}
                 >
                   Service
                 </p>
                 <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
-                {/* <p
+                <p
                   className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
-                  onClick={() => navigate("/getServiceById", { state: data })}
+                  onClick={() => navigate(`/Service/${data._id}`, { state: data })}
                 >
                   {data.name}
-                </p> */}
+                </p>
               </p>
               <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
                 <FaEye className="relative top-1" />
@@ -552,7 +552,7 @@ function GetServiceById() {
                       <div
                         onClick={() => {
                           setCategory("anchor");
-                          navigate("/getService", { state: category });
+                          navigate("/Services", { state: category });
                         }}
                         className="bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                       >
@@ -561,7 +561,7 @@ function GetServiceById() {
                       <div
                         onClick={() => {
                           setCategory("decor");
-                          navigate("/getService", { state: category });
+                          navigate("/Services", { state: category });
                         }}
                         className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                       >
@@ -570,7 +570,7 @@ function GetServiceById() {
                       <div
                         onClick={() => {
                           setCategory("entertainer");
-                          navigate("/getService", { state: category });
+                          navigate("/Services", { state: category });
                         }}
                         className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                       >
@@ -581,7 +581,7 @@ function GetServiceById() {
                       <div
                         onClick={() => {
                           setCategory("party supplies");
-                          navigate("/getService", { state: category });
+                          navigate("/Services", { state: category });
                         }}
                         className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                       >
@@ -592,7 +592,7 @@ function GetServiceById() {
                       <div
                         onClick={() => {
                           setCategory("photography & videography");
-                          navigate("/getService", { state: category });
+                          navigate("/Services", { state: category });
                         }}
                         className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                       >
@@ -603,7 +603,7 @@ function GetServiceById() {
                       <div
                         onClick={() => {
                           setCategory("promoters");
-                          navigate("/getService", { state: category });
+                          navigate("/Services", { state: category });
                         }}
                         className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                       >
@@ -612,7 +612,7 @@ function GetServiceById() {
                       <div
                         onClick={() => {
                           setCategory("dance studio");
-                          navigate("/getService", { state: category });
+                          navigate("/Services", { state: category });
                         }}
                         className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                       >
@@ -740,7 +740,7 @@ function GetServiceById() {
                   <div
                     onClick={() => {
                       setCategory("anchor");
-                      navigate("/getService", { state: category });
+                      navigate("/Services", { state: category });
                     }}
                     className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                   >
@@ -749,7 +749,7 @@ function GetServiceById() {
                   <div
                     onClick={() => {
                       setCategory("decor");
-                      navigate("/getService", { state: category });
+                      navigate("/Services", { state: category });
                     }}
                     className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                   >
@@ -758,7 +758,7 @@ function GetServiceById() {
                   <div
                     onClick={() => {
                       setCategory("entertainer");
-                      navigate("/getService", { state: category });
+                      navigate("/Services", { state: category });
                     }}
                     className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                   >
@@ -770,7 +770,7 @@ function GetServiceById() {
                   <div
                     onClick={() => {
                       setCategory("photography & videography");
-                      navigate("/getService", { state: category });
+                      navigate("/Services", { state: category });
                     }}
                     className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                   >
@@ -779,7 +779,7 @@ function GetServiceById() {
                   <div
                     onClick={() => {
                       setCategory("promoters");
-                      navigate("/getService", { state: category });
+                      navigate("/Services", { state: category });
                     }}
                     className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                   >
@@ -790,7 +790,7 @@ function GetServiceById() {
                   <div
                     onClick={() => {
                       setCategory("dance studio");
-                      navigate("/getService", { state: category });
+                      navigate("/Services", { state: category });
                     }}
                     className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                   >
@@ -799,7 +799,7 @@ function GetServiceById() {
                   <div
                     onClick={() => {
                       setCategory("party supplies");
-                      navigate("/getService", { state: category });
+                      navigate("/Services", { state: category });
                     }}
                     className="cursor-pointer whitespace-nowrap bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                   >

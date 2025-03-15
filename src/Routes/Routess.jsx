@@ -48,7 +48,7 @@ function Routess() {
           <Route path="home" element={<Home />} />
           <Route path="viewAll" element={<Viewall />} />
           <Route path="/createEvent" element={<CreateEvent />} />
-          <Route path="/createEventForm" element={<CreateEventForm />} />
+          <Route path="/createEvent1" element={<CreateEventForm />} />
           <Route path="organiser" element={<Orgnizer />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -68,9 +68,9 @@ function Routess() {
           <Route path="/Venues" element={<GetVenue />} />
           <Route path="/Venue/:venueId" element={<GetVenueById />} />
 
-          <Route path="/getService" element={<GetService />} />
+          <Route path="/Services" element={<GetService />} />
           <Route
-            path="/getServiceById/:serviceId"
+            path="/Service/:serviceId"
             element={<GetServiceById />}
           />
 

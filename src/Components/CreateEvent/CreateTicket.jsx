@@ -5,7 +5,7 @@ import { pink } from "@mui/material/colors";
 import { IoTicket } from "react-icons/io5";
 import { RiSimCardLine } from "react-icons/ri";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
-import { MdDelete, MdModeEditOutline } from "react-icons/md";
+import { MdCancel, MdDelete, MdModeEditOutline } from "react-icons/md";
 function CreateTicket() {
   const [getTicket, setGetTicket] = useState(false);
 
@@ -25,6 +25,7 @@ function CreateTicket() {
     },
   });
   const startDate = watch("saleStartDate"); // Watch start date to validate end date
+  const endDate = watch("saleEndDate"); // Watch start date to validate end date
 
   const onSubmit = (data) => {
     if (editIndex !== null) {
@@ -102,8 +103,8 @@ function CreateTicket() {
                 <div className="text-center">{item.totalTicketQuantity}</div>
                 <div className="text-center">{item.order}</div>
                 <div className="flex flex-wrap gap-2 justify-center">
-                <div className="rounded-md px-3 py-1 bg-green-200 text-green-700 text-sm font-medium">
-                Seating chart
+                  <div className="rounded-md px-3 py-1 bg-green-200 text-green-700 text-sm font-medium">
+                    Seating chart
                   </div>
                   <div
                     onClick={() => handleEdit(index)}
@@ -322,7 +323,7 @@ function CreateTicket() {
                 {/*sales start date*/}
                 <div className="grid lg:grid-cols-3 griid-cols-1 gap-4">
                   {/* Sale Start Date */}
-                  <div className="relative w-full flex flex-col gap-1">
+                  {/* <div className="relative w-full flex flex-col gap-1">
                     <label className="block text-sm font-medium text-gray-700">
                       Sale Start Date
                     </label>
@@ -335,12 +336,37 @@ function CreateTicket() {
                         //   required: "Start Date is required",
                         // })}
                       />
-                    </div>
-                    {/* {errors.saleStartDate && (
+                    </div> */}
+
+                  {/* {errors.saleStartDate && (
                       <p className="text-red-600 text-sm px-2">
                         {errors.saleStartDate.message}*
                       </p>
                     )} */}
+                  {/* </div> */}
+                  <div className="relative w-full flex flex-col gap-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Sale Start Date
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        min={new Date().toISOString().split("T")[0]} // Min date as today
+                        {...register("saleStartDate", {
+                          // required: "Start Date is required",
+                        })}
+                        className="block focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 w-full border rounded-md p-2 pl-4 pr-10 text-gray-700"
+                      />
+                      {startDate && (
+                        <button
+                          type="button"
+                          onClick={() => setValue("saleStartDate", "")} // Clears the input
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500"
+                        >
+                          <MdCancel />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Sale End Date */}
@@ -360,7 +386,17 @@ function CreateTicket() {
                             "End Date must be after Start Date",
                         })}
                       />
+                      {endDate && (
+                        <button
+                          type="button"
+                          onClick={() => setValue("saleEndDate", "")} // Clears the input
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500"
+                        >
+                          <MdCancel />
+                        </button>
+                      )}
                     </div>
+                    
                     {errors.saleEndDate && (
                       <p className="text-red-600 text-sm px-2">
                         {errors.saleEndDate.message}*
@@ -419,7 +455,7 @@ function CreateTicket() {
                       }
                     />
                   </FormGroup> */}
-                  
+
                   <div
                     onClick={() => setValue("isSoldOut", !isSoldOut)}
                     className={`w-12 h-6  rounded-full p-1 transition-colors ${
@@ -433,7 +469,7 @@ function CreateTicket() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex justify-between p-2">
                   <div>
                     <h1 className="text-lg font-medium">Donation</h1>

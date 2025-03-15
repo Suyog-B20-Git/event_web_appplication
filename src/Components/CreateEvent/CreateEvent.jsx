@@ -205,7 +205,7 @@ function CreateEvent({ one, two, three }) {
                   <Button
                     onClick={() => {
                       if (selectedEvent && eventType && selectedRadio) {
-                        navigate("/createEventForm", {
+                        navigate("/createEvent1", {
                           state: {
                             eventType: eventType,
                             selectedEvent: selectedEvent,

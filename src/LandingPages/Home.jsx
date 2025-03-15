@@ -216,7 +216,6 @@ function Home() {
         setLoading(true)
       )}
 
-     
       <BestVenue />
       {/* <EventGenre /> */}
 

@@ -211,7 +211,7 @@ function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
+  const navigate = useNavigate();
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
@@ -240,27 +240,39 @@ function Register() {
           toast.success("Registration successful!", {
             position: "top-right",
           });
+          localStorage.setItem("authToken", response.data.token);
+
+          navigate("/home");
+
           setName("");
 
           setEmail("");
           setPassword("");
           setMobileNumber("");
         }
-      }
-      else{
-        toast.error("Wrong confirm password")
+      } else {
+        toast.error("Wrong confirm password");
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
         // setError(err.response.data.message);
+
         toast.error(err.response.data.message, {
           position: "top-right",
         });
       } else {
         // setError("Something went wrong. Please try again.");
-        toast.error("Something went wrong. Please try again.", {
-          position: "top-right",
-        });
+        // toast.error("Something went wrong. Please try again.", {
+        //   position: "top-right",
+        // });
+        if (err.response.data.errors) {
+          const errors = err.response.data.errors; // Accessing errors correctly
+          const errorMsg = errors.length > 0 ? errors.join(", ") : errors[0]; // Joining errors properly
+          errorMsg &&
+            toast.error(errorMsg, {
+              position: "top-right",
+            });
+        }
       }
     }
   };

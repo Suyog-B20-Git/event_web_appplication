@@ -392,7 +392,7 @@ function GetService() {
                 >
                   <div
                     onClick={() => {
-                      navigate(`/getServiceById/${item._id}`, {
+                      navigate(`/Service/${item._id}`, {
                         state: item._id,
                       });
                     }}
@@ -406,7 +406,7 @@ function GetService() {
                   </div>
                   <div
                     onClick={() => {
-                      navigate(`/getServiceById/${item._id}`, {
+                      navigate(`/Service/${item._id}`, {
                         state: item._id,
                       });
                     }}
