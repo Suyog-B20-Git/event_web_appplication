@@ -298,7 +298,7 @@ function GetOrganizer() {
                       state: item._id,
                     });
                   }}
-                  className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden"
+                  className="h-40 md:h-36 lg:h-40 w-full overflow-hidden"
                 >
                   <img
                     src={item.profileImage}

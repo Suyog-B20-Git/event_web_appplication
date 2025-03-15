@@ -334,7 +334,7 @@ function GetPerformers() {
           </div>
         </div>
 
-        <div className="grid  lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
+        {/* <div className="grid  lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
           {data.length > 0 ? (
             data.map((item, index) => {
               return (
@@ -428,7 +428,105 @@ function GetPerformers() {
               No data found...
             </div>
           )}
+        </div> */}
+
+<div className="grid  lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 ">
+          {data.length > 0 ? (
+            data.map((item, index) => {
+              return (
+                <div
+                  key={index}
+                  className=" flex flex-col pb-5 shadow-md rounded border  "
+                >
+                  <div
+                    onClick={() => {
+                      navigate(`/getPerformerById/${item._id}`, {
+                        state: item._id,
+                      });
+                    }}
+
+                    className="h-40 md:h-36 lg:h-40 w-full overflow-hidden flex items-center justify-center"
+                  >
+                    <img
+                      src={item.profileImage}
+                      className="h-full w-full object-cover transition-transform duration-300 hover:scale-125"
+                      alt={item.name}
+                    />
+                  </div>
+                  <div
+                    onClick={() => {
+                      navigate(`/getPerformerById/${item._id}`, {
+                        state: item._id,
+                      });
+                    }}
+                    className="p-2"
+                  >
+                    <h1 className="font-medium text-lg capitalize">
+                      {item.name}
+                    </h1>
+                    <section className="text-sm text-gray-500 ">
+                      {item.address}, {item.city}, {item.state}
+                    </section>
+                  </div>
+                  <div className="flex justify-between">
+                    <p className="flex gap-2 p-1 px-3 text-lg">
+                      <button className="text-red-500">
+                        <a href={item.facebookUrl ? item.facebookUrl : ""}>
+                          {item.facebookUrl ? (
+                            <CiFacebook className="text-red-500" />
+                          ) : (
+                            ""
+                          )}
+                        </a>
+                      </button>
+                      <button className="text-red-500">
+                        <a href={item.instagramUrl ? item.instagramUrl : ""}>
+                          {item.instagramUrl ? (
+                            <FaInstagram className="text-red-500" />
+                          ) : (
+                            ""
+                          )}
+                        </a>
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleFavourite(item._id);
+                          checkFavourite(item._id);
+                        }}
+                        className={`flex gap-1 text-xs font-bold cursor-pointer ${
+                          isFavourite(item._id)
+                            ? "text-[#ff2459]"
+                            : "text-gray-200"
+                        }`}
+                      >
+                        <FaHeart className="text-lg" />
+                      </button>
+
+                      <button className="text-red-500">
+                        <a href={item.twitterUrl ? item.twitterUrl : ""}>
+                          {item.twitterUrl ? (
+                            <FaSquareXTwitter className="text-red-500" />
+                          ) : (
+                            ""
+                          )}
+                        </a>
+                      </button>
+                    </p>
+                    <p className="flex gap-2 pr-5">
+                      5{" "}
+                      <IoStarSharp className="relative top-1 text-yellow-400" />
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="flex lg:h-[500px] md:h-[400px] h-[250px]  font-medium text-3xl justify-center items-center">
+              No data found...
+            </div>
+          )}
         </div>
+
         <div className="pb-3 ">
           <Pagination
             handlePreviousPage={handlePreviousPage}
