@@ -45,8 +45,12 @@ const Header = () => {
       if (decodedToken?.name) {
         setUserName(decodedToken.name); // Set user name if token is valid
       }
+      if (decodedToken?.role) {
+        localStorage.setItem("role", decodedToken.role);
+      }
     }
   }, [authToken]);
+  const role = localStorage.getItem("role");
   const [isSearch, setIsSearch] = useState(false);
   const handleShowAlert = () => setShowPopup(true);
   var text_data = [
@@ -69,8 +73,8 @@ const Header = () => {
     },
     {
       name: "Organisers",
-      filterPath: "/getOrganizer",
-      path: "/getOrganizer",
+      filterPath: "/Organizers",
+      path: "/Organizers",
       icon: <GrGroup />,
       popUpMenu: [
         { name: "Event Planner", path: "#" },
@@ -80,8 +84,8 @@ const Header = () => {
     },
     {
       name: "Performers",
-      filterPath: "/getPerformer",
-      path: "/getPerformer",
+      filterPath: "/Performers",
+      path: "/Performers",
       icon: <IoIosPerson />,
       popUpMenu: [
         { name: "Band", path: "#" },
@@ -93,8 +97,8 @@ const Header = () => {
 
     {
       name: "Services",
-      path: "/getService",
-      filterPath:'/getService',
+      path: "/Services",
+      filterPath: "/Services",
 
       icon: <MdMiscellaneousServices />,
       popUpMenu: [
@@ -110,8 +114,8 @@ const Header = () => {
     { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
     {
       name: "Venues",
-      path: "/getVenue",
-      filterPath: "/getVenue",
+      path: "/Venues",
+      filterPath: "/Venues",
       icon: <IoLocationSharp />,
       popUpMenu: [
         { name: "Indoor", path: "#" },
@@ -150,7 +154,7 @@ const Header = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("isLogin");
     localStorage.removeItem("eventData");
-    navigate('/home')
+    navigate("/home");
   };
   const handleClickOutside1 = (event) => {
     if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -175,12 +179,11 @@ const Header = () => {
           <div className="flex w-[100%] md:h-[80px] h-[80px]  lg:h-[80px]  inset-0 z-60 items-center justify-center bg-opacity-50 relative ">
             {/* <div className="flex justify-between  items-center  lg:w-[60%] w-[100%] "> */}
             <div className="flex items-center justify-between w-full lg:h-[100px] px-4">
-
               {/* <div
                 className="md:w-[35%] lg:w-[100%] w-[100%]  
             ml-3 relative lg: p-1 rounded-md "
               > */}
-                <div className="lg:w-[30%] md:w-[25%] w-auto hidden sm:block">
+                <div className="lg:w-[30%] md:w-[25%] w-auto">
 
                 {/* <div className="md:w-[35%] w-[80%]  ml-3 relative z-20 p-1 rounded-md"> */}
 
@@ -225,7 +228,7 @@ const Header = () => {
                 <div className="lg:flex md:flex hidden  lg:flex-row flex-col items-center rounded-full bg-gray-100 shadow-md p-2 lg:w-full w-[80%]  mx-auto">
                   {/* Search Input */}
                   <div className="hidden lg:flex md:flex flex-1 justify-center">
-                  <input
+                    <input
                       type="text"
                       placeholder="Search events"
                       onClick={() => setLocation(true)}
@@ -235,7 +238,7 @@ const Header = () => {
 
                   {/* Location */}
                   <div className="lg:flex hidden items-center gap-2 px-4 border-l border-gray-300">
-                  <svg
+                    <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 64 64"
                       height={"20px"}
@@ -246,17 +249,17 @@ const Header = () => {
                         <path d="M32 31.6c-3.5 0-6.4-2.9-6.4-6.4s2.9-6.4 6.4-6.4 6.4 2.9 6.4 6.4-2.9 6.4-6.4 6.4zm0-10.4c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"></path>
                       </g>
                     </svg>
-                   <div className="flex">
-                   <input
-                      type="text"
-                      placeholder="location"
-                      className="flex-1 bg-transparent outline-none px-2 text-gray-700"
-                    />
-                    {/* Search Button */}
-                    <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
-                      <IoSearchSharp className="text-white text-xl" />
-                    </button>
-                   </div>
+                    <div className="flex">
+                      <input
+                        type="text"
+                        placeholder="location"
+                        className="flex-1 bg-transparent outline-none px-2 text-gray-700"
+                      />
+                      {/* Search Button */}
+                      <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
+                        <IoSearchSharp className="text-white text-xl" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -302,9 +305,8 @@ const Header = () => {
 
           {/* Second Headding */}
           <div className="w-full hidden lg:flex items-center justify-between">
-
-          <div className="sm:flex justify-end gap-3 lg:relative items-center w-full flex-nowrap">
-          {text_data.map((item, index) => (
+            <div className="sm:flex justify-end gap-3 lg:relative items-center w-full flex-nowrap">
+              {text_data.map((item, index) => (
                 <div
                   key={index}
                   className="relative pb-2"
@@ -362,18 +364,20 @@ const Header = () => {
                       {isLog && (
                         <div
                           ref={boxRef}
-                          className="bg-white rounded text-gray-900 absolute w-40  h-[160px] mt-1"
+                          className="bg-white rounded text-gray-900 absolute w-40  h-max mt-1"
                         >
-                          <button
-                            onClick={() => {
-                              setIsLog(false);
-                              navigate('/dashboard')
-                            }}
-                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
-                          >
-                            <MdDashboard className=" hover:text-white relative top-1" />
-                            Dashboard
-                          </button>
+                          {role == "organizer" && (
+                            <button
+                              onClick={() => {
+                                setIsLog(false);
+                                navigate("/dashboard");
+                              }}
+                              className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                            >
+                              <MdDashboard className=" hover:text-white relative top-1" />
+                              Dashboard
+                            </button>
+                          )}
                           <button
                             onClick={() => {
                               setIsLog(false);
@@ -383,16 +387,18 @@ const Header = () => {
                             <CgProfile className=" hover:text-white relative top-1" />
                             Profile
                           </button>
-                          <button
-                            onClick={() => {
-                              setIsLog(false);
-                              navigate("/myBookings");
-                            }}
-                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
-                          >
-                            <IoTicket className=" hover:text-white relative top-1" />
-                            My Orders
-                          </button>
+                          {role == "user" && (
+                            <button
+                              onClick={() => {
+                                setIsLog(false);
+                                navigate("/myBookings");
+                              }}
+                              className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                            >
+                              <IoTicket className=" hover:text-white relative top-1" />
+                              My Orders
+                            </button>
+                          )}
                           <button
                             onClick={() => {
                               handleLogOut();

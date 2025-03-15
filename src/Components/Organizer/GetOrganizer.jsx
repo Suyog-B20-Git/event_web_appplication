@@ -294,7 +294,7 @@ function GetOrganizer() {
               >
                 <div
                   onClick={() => {
-                    navigate(`/getOrganizerById/${item._id}`, {
+                    navigate(`/Organizer/${item._id}`, {
                       state: item._id,
                     });
                   }}
@@ -308,7 +308,7 @@ function GetOrganizer() {
                 </div>
                 <div
                   onClick={() => {
-                    navigate(`/getOrganizerById/${item._id}`, {
+                    navigate(`/Organizer/${item._id}`, {
                       state: item._id,
                     });
                   }}

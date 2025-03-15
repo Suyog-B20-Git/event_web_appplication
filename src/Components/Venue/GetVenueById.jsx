@@ -146,7 +146,7 @@ function GetVenueById() {
               <p
                 className="cursor-pointer hover:text-[#ff2459]"
                 onClick={() => {
-                  navigate("/getVenue");
+                  navigate("/Venues");
                 }}
               >
                 Venue
@@ -154,7 +154,7 @@ function GetVenueById() {
               <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
               <p
                 className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
-                onClick={() => navigate("/getPerformerById", { state: data })}
+                onClick={() => navigate(`/Venue/${data._id}`, { state: data })}
               >
                 {data.name}
               </p>
@@ -531,7 +531,7 @@ function GetVenueById() {
                     <div
                       onClick={() => {
                         setCategory("indoor");
-                        navigate("/getVenue", { state: category });
+                        navigate("/Venues", { state: category });
                       }}
                       className="bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -540,7 +540,7 @@ function GetVenueById() {
                     <div
                       onClick={() => {
                         setCategory("outdoor");
-                        navigate("/getVenue", { state: category });
+                        navigate("/Venues", { state: category });
                       }}
                       className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -668,7 +668,7 @@ function GetVenueById() {
                 <div
                   onClick={() => {
                     setCategory("indoor");
-                    navigate("/getVenue", { state: category });
+                    navigate("/Venues", { state: category });
                   }}
                   className="bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -677,7 +677,7 @@ function GetVenueById() {
                 <div
                   onClick={() => {
                     setCategory("outdoor");
-                    navigate("/getVenue", { state: category });
+                    navigate("/Venues", { state: category });
                   }}
                   className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >

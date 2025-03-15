@@ -147,7 +147,7 @@ function GetPerformerById() {
               <p
                 className="cursor-pointer hover:text-[#ff2459]"
                 onClick={() => {
-                  navigate("/getPerformer");
+                  navigate("/Performers");
                 }}
               >
                 Performers
@@ -155,7 +155,7 @@ function GetPerformerById() {
               <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
               <p
                 className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
-                onClick={() => navigate("/getPerformerById", { state: data })}
+                onClick={() => navigate(`/Performer/${data._id}`, { state: data })}
               >
                 {data.name}
               </p>
@@ -609,7 +609,7 @@ function GetPerformerById() {
                     <div
                       onClick={() => {
                         setCategory("disc jockey");
-                        navigate("/getPerformer", { state: category });
+                        navigate("/Performers", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -620,7 +620,7 @@ function GetPerformerById() {
                     <div
                       onClick={() => {
                         setCategory("sound artist");
-                        navigate("/getPerformer", { state: category });
+                        navigate("/Performers", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -629,7 +629,7 @@ function GetPerformerById() {
                     <div
                       onClick={() => {
                         setCategory("standup comedian");
-                        navigate("/getPerformer", { state: category });
+                        navigate("/Performers", { state: category });
                       }}
                       className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -757,7 +757,7 @@ function GetPerformerById() {
                 <div
                   onClick={() => {
                     setCategory("band");
-                    navigate("/getPerformer", { state: category });
+                    navigate("/Performers", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -766,7 +766,7 @@ function GetPerformerById() {
                 <div
                   onClick={() => {
                     setCategory("disc jockey");
-                    navigate("/getPerformer", { state: category });
+                    navigate("/Performers", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -775,7 +775,7 @@ function GetPerformerById() {
                 <div
                   onClick={() => {
                     setCategory("sound artist");
-                    navigate("/getPerformer", { state: category });
+                    navigate("/Performers", { state: category });
                   }}
                   className="flex gap-2 px-2"
                 >
@@ -788,7 +788,7 @@ function GetPerformerById() {
                 <div
                   onClick={() => {
                     setCategory("standup comedian");
-                    navigate("/getPerformer", { state: category });
+                    navigate("/Performers", { state: category });
                   }}
                   className="flex gap-2 px-2"
                 >

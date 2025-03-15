@@ -60,7 +60,7 @@ export default function EventForm() {
     setError,
     clearErrors,
 
-    formState: { errors, isValid }, 
+    formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -72,7 +72,7 @@ export default function EventForm() {
       endDate: "",
       disableEventAfterSoldOut: false, // Default value
       isRepetitive: false,
-      isPublish: false,
+      // isPublish: false,
       enableRatingReview: false,
       isSeasonal: false,
       isOnline: false,
@@ -93,6 +93,7 @@ export default function EventForm() {
       }, // Default media object
     },
   });
+  const [ticketFormat, setTicketFormat] = useState(false);
 
   useEffect(() => {
     const storedData = localStorage.getItem("eventData");
@@ -101,12 +102,14 @@ export default function EventForm() {
       const parsedData = JSON.parse(storedData);
 
       if (parsedData.eventType == "Public") {
-        setValue("isPublish", true);
+        // setValue("isPublish", true);
+        return;
       } else {
         setValue("isPublish", false);
       }
       if (parsedData.selectedRadio == "Tickets") {
         setValue("isOnline", true);
+        setTicketFormat(true);
       } else {
         setValue("isOnline", false);
       }
@@ -114,17 +117,17 @@ export default function EventForm() {
     }
   }, [setValue]);
 
-  const PinkSwitch = styled(Switch)(({ theme }) => ({
-    "& .MuiSwitch-switchBase.Mui-checked": {
-      color: "#ff2459",
-      "&:hover": {
-        backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
-      },
-    },
-    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-      backgroundColor: pink[600],
-    },
-  }));
+  // const PinkSwitch = styled(Switch)(({ theme }) => ({
+  //   "& .MuiSwitch-switchBase.Mui-checked": {
+  //     color: "#ff2459",
+  //     "&:hover": {
+  //       backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
+  //     },
+  //   },
+  //   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+  //     backgroundColor: pink[600],
+  //   },
+  // }));
   const eventTag = watch("eventTag"); // Watch tag values
 
   // Add tag when Enter or Comma is pressed
@@ -210,7 +213,7 @@ export default function EventForm() {
   const enableRatingReview = watch("enableRatingReview"); // Watching media state
   const onSubmit = (data) => {
     console.log(data);
-    console.log(data.media.thumbnailImage);
+    // console.log(data.media.thumbnailImage);
     // const formData = new FormData();
     // formData.append("name", data.name);
     // formData.append("category", data.category);
@@ -263,22 +266,36 @@ export default function EventForm() {
       localStorage.removeItem("eventData");
       navigate("/home");
     } else {
-      navigate("/login");
+      // navigate("/login");
     }
   };
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  const handleNextClick = handleSubmit(
+    (data) => {
+      console.log("Form data:", data);
+      const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+      if (isLogin) {
+        dispatch(
+          createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
+          // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
+        );
 
-  const handleNextClick = handleSubmit((data) => {
-    console.log("Form data:", data);
-    navigate("/createTicket");
-}, (errors) => {
-    toast.error("Please fill in all required fields.");
-});
+        reset();
+        setThumnPreview(null);
+        setPosterPreview(null);
+        setSeatingChartPreview(null);
+        localStorage.removeItem("eventData");
+        navigate("/createTicket");
+      }
+    },
+    (errors) => {
+      toast.error("Please fill in all required fields.");
+    }
+  );
 
-  
   return (
     <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
       <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">
@@ -814,7 +831,7 @@ export default function EventForm() {
                       )}
                     </div>
 
-                    <div>
+                    {/* <div>
                       <FormGroup className=" ">
                         <FormControlLabel
                           control={
@@ -829,6 +846,21 @@ export default function EventForm() {
                           label="Is seasonal"
                         />
                       </FormGroup>
+                    </div> */}
+                    <div className="flex gap-2 items-center">
+                      <div
+                        onClick={() => setValue("isSeasonal", !isSeasonal)}
+                        className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
+                          isSeasonal ? "bg-[#ff2459]" : "bg-gray-300"
+                        }`}
+                      >
+                        <div
+                          className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
+                            isSeasonal ? "translate-x-6" : ""
+                          }`}
+                        />
+                      </div>
+                      <p>Is Seasonal</p>
                     </div>
                   </div>
                 )}
@@ -1223,23 +1255,30 @@ export default function EventForm() {
                 </button>
               </div> */}
 
-<div className="flex justify-around p-4">
+              <div className="flex justify-around p-4">
                 <Button
                   text={"previous"}
                   variant={"normal"}
                   rounded={"rounded-lg"}
                   onClick={() => navigate("/createEvent")}
                 />
-               <button
-  type="button"
-  onClick={handleNextClick}
-  className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
->
-  Next
-</button>
-
+                {ticketFormat ? (
+                  <button
+                    type="button"
+                    onClick={handleNextClick}
+                    className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
+                  >
+                    Create Event
+                  </button>
+                )}
               </div>
-              
             </form>
           </div>
         </div>

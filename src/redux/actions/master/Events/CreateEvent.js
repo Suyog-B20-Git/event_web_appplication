@@ -46,7 +46,7 @@ export const createNewEvent = (
             thumbnailImage: thumbnailImage,
             posterImage: posterImage,
             seatingChartImage: seatingChartImage,
-            images: data.media.images,
+            images:  data.media.images,
           },
           // thumbnailImage: data.thumbnailImage,
           // posterImage: data.posterImage,
