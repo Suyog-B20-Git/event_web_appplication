@@ -130,7 +130,7 @@ function GetVenueById() {
 
   return (
     <div className="">
-      <div className="flex lg:flex-row flex-col gap-10">
+      <div className="flex lg:flex-row flex-col gap-2">
         <div className="lg:pt-3 md:pt-4 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
           <div className="flex justify-between font-medium">
             <p className="hidden gap-2 p-3 lg:flex ">
@@ -284,7 +284,7 @@ function GetVenueById() {
               </div>
             </div>
           )}
-          <div className=" flex lg:flex-row flex-col p-3 ">
+          <div className=" flex lg:flex-row flex-col py-3 ">
             <div className="flex lg:w-[30%] justify-center items-center flex-col gap-3 lg:p-10">
               <img
                 src={data.profileImage}
@@ -368,9 +368,9 @@ function GetVenueById() {
                 </button>
               </div>
             </div>
-            <div className="lg:w-[70%]  h-[300px] overflow-scroll ">
-              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
-                <button
+            <div className="lg:w-[70%]  h-[500px] overflow-scroll  scrollbar-hide  rounded-lg">
+            <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
+            <button
                   className={`px-2 ${
                     about ? "border-b-2 border-b-red-600" : ""
                   }`}
@@ -434,7 +434,7 @@ function GetVenueById() {
                 >
                   TWITTER
                 </button>
-                <button
+                {/* <button
                   className={`${
                     instagram ? "border-b-2 border-b-red-600" : ""
                   } p-2 lg:px-0 px-4`}
@@ -449,7 +449,7 @@ function GetVenueById() {
                   }}
                 >
                   INSTAGRAM
-                </button>
+                </button> */}
                 <button
                   className={`${
                     youtube ? "border-b-2 border-b-red-600" : ""
@@ -483,8 +483,8 @@ function GetVenueById() {
                   STAT
                 </button>
               </div>
-              <div className="lg:px-10 px-2 border bg-white ">
-                <p className="pt-5 ">
+              <div className="lg:px-10 p-2 border bg-white  rounded-lg h-full overflow-auto" >
+                <p className="py-5 ">
                   {/* {about ? data.description : ""} */}
                   {about
                     ? " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Omnis amet facere modi nesciunt minima sunt maiores. Sint iure suscipit placeat error hic, itaque asperiores ipsum architecto, alias, unde porro facilis? Corrupti commodi autem beatae quos ipsum culpa animi. Voluptas eum, repellat assumenda nostrum porro dolore reprehenderit, voluptatum deleniti nam id facere suscipit, ut excepturi? Recusandae tenetur atque asperiores perferendis sed.Delectus blanditiis ea doloremque earum itaque, iste assumenda nostrum temporibus ipsum pariatur, porro ad quidem, tenetur dolores voluptatem. Voluptas pariatur itaque maxime recusandae accusamus eos blanditiis, facere aspernatur quae inventore! Consectetur et, molestias reiciendis possimus cupiditate esse a autem iure recusandae placeat molestiae commodi distinctio numquam obcaecati quam nostrum aperiam explicabo enim reprehenderit ipsa voluptatem! Numquam corrupti voluptatum deleniti voluptatem. Magnam, fugit dolorum? Maxime exercitationem distinctio officiis et? Repellat porro cum nisi assumenda quaerat distinctio ratione aliquid facere quam minus, vitae itaque architecto atque iure, tenetur ipsum aspernatur? Quaerat, in!"
@@ -494,7 +494,13 @@ function GetVenueById() {
                   {upcomimg ? "" : <div className="  "></div>}
                 </p>
                 <p>
-                  {facebook ? <FacebookEmbeded appId={849920522233544} /> : ""}
+                {facebook ? (
+                <div className="w-full flex justify-center">
+                    <div className="w-full max-w-[1200px]">
+                      <FacebookEmbeded appId={849920522233544} />
+                    </div>
+                  </div>
+                  ) :( "")}
                 </p>
                 <p className="font-medium text-lg text-center">
                   {instagram ? (
@@ -605,29 +611,12 @@ function GetVenueById() {
               </div>
             </div>
           </div>
-          <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
-            Venue Location
-          </h1>
 
-          <div className="pl-3">
-            <MapContainer data={data} />
-          </div>
-
-          {/* <div className="flex justify-between ">
-            <div className="text-sm">Visited 4133 Times , 9 Times in Day</div>
-          </div> */}
-          <div className="lg:pl-0 pl-4 pb-1">
-            <FacebookComments
-              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-              // dataHref={currentUrl}
-              numPosts={10}
-              width="1000"
-            />
-          </div>
+         
         </div>
 
-        <div className="w-[25%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
-          <div className="flex flex-col gap-2 px-2 shadow-md p-2">
+        <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">
+          <div className="flex flex-col gap-2 px-2 shadow-md p-4">
             <div className="grid grid-cols-3 gap-2 text-xl">
               <button
                 onClick={() => handleShare("facebook")}
@@ -663,7 +652,7 @@ function GetVenueById() {
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
               Venue Category
             </h1>
-            <section className="flex flex-col gap-2 pt-3 ">
+            <section className="flex flex-col gap-2 pt-3  justify-center items-center">
               <div className="flex gap-2 ">
                 <div
                   onClick={() => {
@@ -679,7 +668,7 @@ function GetVenueById() {
                     setCategory("outdoor");
                     navigate("/Venues", { state: category });
                   }}
-                  className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
                   Outdoor
                 </div>
@@ -716,6 +705,26 @@ function GetVenueById() {
           </div>
         </div>
       </div>
+
+      <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
+            Venue Location
+          </h1>
+          <div className="px-6 w-full flex justify-center">
+            <MapContainer data={data} />
+          </div>
+
+          {/* <div className="flex justify-between ">
+            <div className="text-sm">Visited 4133 Times , 9 Times in Day</div>
+          </div> */}
+          <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
+          <FacebookComments
+              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+              // dataHref={currentUrl}
+              numPosts={10}
+              width="1600"
+            />
+          </div>
+
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}

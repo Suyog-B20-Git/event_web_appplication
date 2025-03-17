@@ -6,7 +6,7 @@ const MapContainer = ({ data }) => {
   const markerRef = useRef(null);
   const GOOGLE_MAPS_API_KEY = "AIzaSyDBvQO - S7yEtX4__jyFra4HvGMz15MqGyE";
   const mapStyles = {
-    height: "200px",
+    height: "400px",
     width: "100%",
   };
 

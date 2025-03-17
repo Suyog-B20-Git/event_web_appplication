@@ -444,8 +444,8 @@ function GetVenue() {
         </div>
         {/* <div ref={observerRef} className="h-10"></div> */}
       </div>
-      <div className="lg:w-[25%] lg:block hidden m-2 w-full">
-        <div className="flex flex-col gap-2 px-2 shadow-md p-2">
+      <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
+        <div className="flex flex-col gap-2 px-2 shadow-md p-4">
           <div className="grid grid-cols-3 gap-2 text-xl">
             <button
               onClick={() => handleShare("facebook")}
@@ -477,13 +477,13 @@ function GetVenue() {
             </button>
           </div>
         </div>
-        <div className=" lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
+        <div className="lg:flex hidden flex-col gap-5 rounded pt-5 justify-center bg-white shadow-md  mx-auto ">
           <div className="rounded p-2 shadow ">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
               Venue Category
             </h1>
-            <section className="flex flex-col gap-2 pt-3 ">
-              <div className="flex gap-2 ">
+            <section className="flex flex-col gap-2 p-3 justify-center items-center">
+      <div className="flex gap-2 flex-wrap justify-center">
                 <div
                   onClick={() => {
                     setCategory("indoor");
