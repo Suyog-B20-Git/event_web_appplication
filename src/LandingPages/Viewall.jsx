@@ -235,16 +235,16 @@ function Viewall() {
   }
 
   return (
-    <div className="flex lg:justify-start justify-center lg:pt-0 md:pt-4 pt-[87px] lg:relative left-[70px] items-center overflow-hidden">
-      <div className="lg:p-12 lg:pb-5  pt-5 p-5 w-full max-w-[1340px]">
-        <div className="flex justify-between">
+    <div className="flex justify-center items-center w-full pt-[87px] sm:pt-4">
+  <div className="p-5 w-full max-w-[1340px]">
+  <div className="flex justify-between">
           <div className="flex gap-2 lg:pl-3">
             <BsFire className="text-2xl relative top-1" />
             <p className="font-bold font-sans lg:text-2xl">EVENTS</p>
           </div>
         </div>
 
-        <div className="flex justify-between pt-5 lg:px-3 ">
+        <div className="flex justify-between pt-5 px-2 lg:px-3 gap-4">
           <button
             onClick={() => setFilter(!filter)}
             className="flex gap-3 lg:text-2xl md:text-base  font-medium"
@@ -259,8 +259,7 @@ function Viewall() {
               onClick={reset}
               className="flex gap-1 lg:text-base md:text-base text-xs font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
             >
-              <IoIosRefresh className="text-[#ff2459] relative top-1" /> Refresh
-              Filters
+              <IoIosRefresh className="text-[#ff2459] relative top-1" /> Refresh Filters
             </button>
             {/* <button
               onClick={handleApi}

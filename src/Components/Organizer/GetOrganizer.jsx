@@ -290,7 +290,7 @@ function GetOrganizer() {
             return (
               <div
                 key={index}
-                className=" flex flex-col pb-5 shadow-md rounded border  "
+                className="w-68 h-78 flex flex-col pb-4 shadow-md items-center justify-between rounded border  "
               >
                 <div
                   onClick={() => {
@@ -302,7 +302,7 @@ function GetOrganizer() {
                 >
                   <img
                     src={item.profileImage}
-                    className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
+                    className="rounded-t h-40 w-full object-cover transition-transform duration-300 hover:scale-125"
                     alt={item.name}
                   />
                 </div>

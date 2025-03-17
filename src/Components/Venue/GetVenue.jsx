@@ -344,7 +344,7 @@ function GetVenue() {
               return (
                 <div
                   key={index}
-                  className=" flex flex-col pb-5 shadow-md rounded border  "
+                  className="w-68 h-78 flex flex-col pb-5 shadow-md items-center justify-between rounded border  "
                 >
                   <div
                     onClick={() => {

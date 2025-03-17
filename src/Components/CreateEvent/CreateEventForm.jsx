@@ -297,14 +297,13 @@ export default function EventForm() {
   );
 
   return (
-    <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
-      <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">
-        <Photo1 h={119} />
-        <div className="flex flex-col pb-4 overflow-y-scroll w-full lg:w-full  lg:pr-3 lg:h-[120vh]  ">
-          <div className=" flex flex-col  gap-1 lg:pr-10   "></div>
-          <div className="lg:w-[100%] max-w-4xl  p-6 pl-8  lg:pl-10 lg:pr-10  bg-gray-100 rounded-xl shadow-md">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <h2 className="text-xl font-semibold mb-6 text-[#ff2459]">
+    <div className="lg:h-auto md:mb-0 pt-20 md:pt-0 lg:pt-4">
+      <div className="flex flex-col lg:flex-row lg:h-screen w-full">
+      <div className="flex flex-col pb-4 overflow-y-scroll w-full lg:w-full lg:pr-3 lg:h-auto">
+      <div className="flex flex-col gap-1 lg:pr-10"></div>
+      <div className="w-full p-6 lg:pl-10 lg:pr-10 bg-gray-100 rounded-xl shadow-md">
+      <form onSubmit={handleSubmit(onSubmit)}>
+              <h2 className="text-2xl font-semibold mb-6 text-[#ff2459]">
                 Event Registration
               </h2>
 
@@ -319,8 +318,8 @@ export default function EventForm() {
                 <input
                   type="text"
                   className="mt-1 block w-full border rounded-md p-2"
-                  placeholder="Enter name"
-                  {...register("name", { required: "name is required" })}
+                  placeholder="Enter Name"
+                  {...register("name", { required: "Name is required" })}
                 />
                 {errors.name && (
                   <p className="text-red-600 text-sm px-2">
@@ -1255,9 +1254,9 @@ export default function EventForm() {
                 </button>
               </div> */}
 
-              <div className="flex justify-around p-4">
+              <div className="flex justify-around p-0">
                 <Button
-                  text={"previous"}
+                  text={"Previous"}
                   variant={"normal"}
                   rounded={"rounded-lg"}
                   onClick={() => navigate("/createEvent")}
@@ -1273,7 +1272,7 @@ export default function EventForm() {
                 ) : (
                   <button
                     type="submit"
-                    className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
+                    className="p-1 bg-[#ff2459] px-6 py-2 rounded-lg text-white"
                   >
                     Create Event
                   </button>

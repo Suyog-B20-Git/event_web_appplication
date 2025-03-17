@@ -38,37 +38,38 @@ function RecentView() {
     >
       <div className="flex justify-between items-center">
         {data.length>0 && (
-          <div className="flex gap-4 items-center lg:pl-[105px] md:pl-4">
+          <div className="flex gap-4 items-center p-8">
             <IoIosTimer className="text-3xl" />
             <div>
-              <p className="lg:text-2xl text-lg font-bold">RECENTLY VIEWED</p>
+              <p className="lg:text-2xl text-lg font-extrabold">RECENTLY VIEWED</p>
               <p>Pick up where you left off</p>
             </div>
           </div>
         )}
       </div>
       {/* <div className="flex gap-3 p-3 justify-center items-center"> */}
-      <div className="flex gap-5 lg:ml-[100px] overflow-x-auto p-2 max-w-7xl">
-        {data.length>0 &&
-          data.slice(0, 5).map((item, index) => {
-            return (
-              <div
-                key={index}
-                className="flex-none cursor-pointer shadow-lg p-2 rounded-lg lg:w-[250px] w-56"
-                onClick={() => navigate("/featuredEvent", { state: item._id })}
-              >
-                <img
-                  src={item.media.thumbnailImage}
-                  className="h-24 lg:h-32 md:h-32 w-full lg:pb-0   rounded-lg"
-                  alt=""
-                />
-                <p className="font-semibold text-gray-700 lg:text-sm text-xs  pt-3  lg:break-words">
-                  {item.name}
-                </p>
-              </div>
-            );
-          })}
-      </div>
+      <div className="flex gap-5 overflow-x-auto p-2 max-w-full mx-auto justify-start px-4 lg:px-10 whitespace-nowrap">
+  {data.length > 0 &&
+    data.slice(0, 5).map((item, index) => {
+      return (
+        <div
+          key={index}
+          className="flex-none cursor-pointer shadow-lg p-2 rounded-lg lg:w-[250px] w-56"
+          onClick={() => navigate("/featuredEvent", { state: item._id })}
+        >
+          <img
+            src={item.media.thumbnailImage}
+            className="h-24 lg:h-32 md:h-32 w-full lg:pb-0 rounded-lg"
+            alt=""
+          />
+          <p className="font-semibold text-gray-700 lg:text-sm text-xs pt-3 lg:break-words">
+            {item.name}
+          </p>
+        </div>
+      );
+    })}
+</div>
+
     </div>
   );
 }

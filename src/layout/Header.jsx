@@ -189,7 +189,7 @@ const Header = () => {
 
                 <img
                   src="/logo.png"
-                  className="lg:w-[80%] md:w-[100%] w-auto"
+                  className="hidden md:block lg:w-[80%] md:w-[100%] w-auto"
                   // className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
                   alt="logo"
                   onClick={() => navigate("/home")}
@@ -349,9 +349,9 @@ const Header = () => {
               <div
                 onMouseEnter={() => setIsLog(true)}
                 onMouseLeave={() => setIsLog(false)}
-                className="md:flex  relative left-20 z-60  md:justify-end hidden   md:w-[100%] w-[100%]"
+                className="md:flex  left-20 z-60  md:justify-end hidden   md:w-[100%] w-[100%]"
               >
-                <div className=" m-1 md:mr-20 lg:mr-36  w-[100%] hidden md:flex md:justify-end">
+                <div className=" m-1 md:mr-20 lg:mr-36  w-[100%] hidden md:flex md:justify-end  left-0">
                   {userName ? (
                     <div ref={dropdownRef}>
                       <span
@@ -364,7 +364,7 @@ const Header = () => {
                       {isLog && (
                         <div
                           ref={boxRef}
-                          className="bg-white rounded text-gray-900 absolute w-40  h-max mt-1"
+                          className="bg-white rounded text-gray-900 absolute w-40  h-max mt-1 "
                         >
                           {role == "organizer" && (
                             <button

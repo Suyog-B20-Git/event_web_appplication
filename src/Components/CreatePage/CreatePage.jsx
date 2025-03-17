@@ -284,10 +284,10 @@ function CreatePage() {
     window.scrollTo(0, 0);
   }, []);
   return (
-    <div className="bg-white p-10 shadow-md rounded-md lg:pt-10 pt-32 md:pt-28 ">
+    <div className="bg-white p-10 shadow-md rounded-md lg:pt-16 pt-32 md:pt-8 ">
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Category Selection */}
-        <div className="grid lg:grid-cols-3 grid-cols-1 gap-6 mb-4">
+        <div className="grid lg:grid-cols-3 grid-cols-1 gap-6 mb-6">
           <div className="flex flex-col gap-1">
             <label className="text-gray-700 font-medium">
               Select Category*
@@ -363,7 +363,7 @@ function CreatePage() {
               type="text"
               name="listingTitle"
               className=" block w-full border rounded-md p-2"
-              placeholder="Lsting Title"
+              placeholder="Listing Title"
               {...register("listingTitle", {
                 required: "Listing title is required",
               })}
@@ -637,15 +637,15 @@ function CreatePage() {
         )}
 
         {/*Location*/}
-        <div className="flex flex-col gap-1 mt-4">
-          <h1 className="text-[#ff2459] text-2xl font-semibold">
+        <div className="flex flex-col gap-1 mt-12">
+          <h1 className="text-[#ff2459] text-2xl font-semibold mb-2">
             Location and map
           </h1>
           <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
             <div>
               <label
                 htmlFor="country"
-                className="block text-sm mb-1 font-medium text-gray-700"
+                className="block text-sm mb-2 font-medium text-gray-700"
               >
                 Country*{" "}
                 {errors.country && (
@@ -693,7 +693,7 @@ function CreatePage() {
             <div>
               <label
                 htmlFor="state"
-                className="block text-sm mb-1 font-medium text-gray-700"
+                className="block text-sm mb-2 font-medium text-gray-700"
               >
                 States*{" "}
                 {errors.state && (
@@ -746,7 +746,7 @@ function CreatePage() {
             <div>
               <label
                 htmlFor="city"
-                className="block text-sm mb-1 font-medium text-gray-700"
+                className="block text-sm mb-2 font-medium text-gray-700"
               >
                 City*{" "}
                 {errors.city && (
@@ -798,7 +798,7 @@ function CreatePage() {
             <div>
               <label
                 htmlFor="location"
-                className="block text-sm mb-1 font-medium text-gray-700"
+                className="block text-sm mb-2 font-medium text-gray-700"
               >
                 Location*{" "}
                 {errors.loaction && (
@@ -865,14 +865,14 @@ function CreatePage() {
           </div>
         )}
 
-        <div className="mt-4 mb-4">
+        <div className="my-16">
           <MapContainer location={data4.location} />
         </div>
 
         {/*Contact Information*/}
         {selectedCategory && selectedCategory.value !== "Venues" && (
-          <div className="flex flex-col gap-1 mt-4">
-            <h1 className="text-[#ff2459] text-2xl font-semibold">
+          <div className="flex flex-col gap-1 mt-2">
+            <h1 className="text-[#ff2459] text-2xl font-semibold mb-2">
               Contact Information
             </h1>
             <div className="grid lg:grid-cols-4 grid-cols-1 gap-6">
@@ -940,14 +940,14 @@ function CreatePage() {
               <div>
                 <label
                   htmlFor="website"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block font-medium text-gray-700"
                 >
                   Website*
                 </label>
                 <input
                   type="url"
                   name="website"
-                  className="mt-1 block w-full border rounded-md p-2"
+                  className="mt-2 block w-full border rounded-md p-2"
                   placeholder="website"
                   {...register("website", {
                     required: "website is required",
@@ -964,98 +964,52 @@ function CreatePage() {
         )}
 
         {/*FIle*/}
-        <div className="border p-2 mt-8 flex flex-col gap-1 ">
-          <label className="text-xs">Upload profile Image</label>
+        <div className=" mt-8 mb-1 font-semibold">
+        <label className="text-sm">Upload profile Image</label>
+        </div>
+        <div className="border p-2 flex flex-col gap-1 ">
           <input type="file" onChange={handleImageChange} accept="image/*" />
         </div>
 
-        <p className="p-2 pt-1 pb-5 text-gray-600">
+        <p className="p-2 pt-1 pb-5 text-gray-500">
           Image size must be less than 2Mb
         </p>
         <hr />
 
-        {selectedCategory && selectedCategory.value == "Venues" && (
-          <div className="border p-2 mt-8 flex flex-col gap-1 ">
-            <label className="text-xs">Upload Cover Image</label>
-            <input type="file" onChange={handleImageChange1} accept="image/*" />
-            <p className="p-2 pt-1 pb-5 text-gray-600">
-              Image size must be less than 2Mb
-            </p>
-            <hr />
-          </div>
-        )}
+        <div className="flex flex-col gap-6 mt-6">
+            <h1 className="text-[#ff2459] text-2xl font-semibold">Social Profiles</h1>
 
-        <div className="flex flex-col gap-1 mt-4">
-          <h1 className="text-[#ff2459] text-2xl font-semibold">
-            Social Profiles
-          </h1>
-          <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
-            {/* Phone */}
-            {socialProfile.map((item, index) => {
-              return (
-                <div key={index} className="flex flex-col gap-1">
-                  <label className="text-gray-700 font-medium">{item.label}</label>
-                  <input
-                    type="url"
-                    name={item.value}
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder={`Enter ${item.label}`}
-                    {...register(item.value, {
-                      required: `${item.value} is required`,
-                    })}
-                  />
-                  {errors[item.value] && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors[item.value].message}*
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          {selectedCategory && selectedCategory.value == "Performers" && (
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mt-4">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
               <div className="flex flex-col gap-1">
-                <label className="text-gray-700 font-medium">Spotify Url</label>
-                <input
-                  type="url"
-                  name="spotifyUrl"
-                  className="mt-1 block w-full border rounded-md p-2"
-                  placeholder={`Enter SpotifyUrl`}
-                  {...register("spotifyUrl", {
-                    required: `spotify url is required`,
-                  })}
-                />
-                {errors.spotifyUrl && (
-                  <p className="text-red-600 text-sm px-2">
-                    {errors.spotifyUrl.message}*
-                  </p>
-                )}
+                <label className="text-gray-700 font-medium">Facebook</label>
+                <input type="url" className="mt-1 block w-full border rounded-md p-2" placeholder="Enter Facebook URL" />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-gray-700 font-medium">
-                  SoundCloud Url
-                </label>
-                <input
-                  type="url"
-                  name="soundCloudUrl"
-                  className="mt-1 block w-full border rounded-md p-2"
-                  placeholder={`Enter SoundCloud Url`}
-                  {...register("soundCloudUrl", {
-                    required: `soundCloudUrl url is required`,
-                  })}
-                />
-                {errors.soundCloudUrl && (
-                  <p className="text-red-600 text-sm px-2">
-                    {errors.soundCloudUrl.message}*
-                  </p>
-                )}
+                <label className="text-gray-700 font-medium">Twitter</label>
+                <input type="url" className="mt-1 block w-full border rounded-md p-2" placeholder="Enter Twitter URL" />
               </div>
             </div>
-          )}
-        </div>
 
-        <div className="flex gap-2 mt-4">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">LinkedIn</label>
+                <input type="url" className="mt-1 block w-full border rounded-md p-2" placeholder="Enter LinkedIn URL" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">YouTube</label>
+                <input type="url" className="mt-1 block w-full border rounded-md p-2" placeholder="Enter YouTube URL" />
+              </div>
+            </div>
+
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+            <div className="flex flex-col gap-1">
+              <label className="text-gray-700 font-medium">Website</label>
+              <input type="url" className="mt-1 block w-full border rounded-md p-2" placeholder="Enter Website URL" />
+            </div>
+          </div>
+          </div>
+
+        <div className="flex gap-2 mt-8">
           <input
             type="checkbox"
             name="terms"
@@ -1072,12 +1026,16 @@ function CreatePage() {
         </div>
 
         {/* Submit Button */}
-        <button
-          type="submit"
-          className="mt-4 bg-blue-500 text-white p-2 rounded"
-        >
-          Submit
-        </button>
+        <div className="flex justify-center md:justify-end mr-0 sm:mr-6 mt-4">
+          <button
+            type="submit"
+            className="bg-[#ff2459] text-white p-3 px-6 rounded-lg 
+                      shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            Submit
+          </button>
+        </div>
+
       </form>
     </div>
   );
