@@ -133,9 +133,9 @@ function GetServiceById() {
     <div className="">
       {data ? (
         <div className="flex lg:flex-row flex-col gap-2">
-          <div className="lg:pt-3 md:pt-4 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
+          <div className="lg:pt-6 md:pt-0 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
             <div className="flex justify-between font-medium">
-              <p className="hidden gap-2 p-3 lg:flex ">
+              <p className="hidden gap-2 p-3 lg:flex mb-2">
                 <p
                   className="cursor-pointer hover:text-[#ff2459]"
                   onClick={() => navigate("/home")}
@@ -286,17 +286,17 @@ function GetServiceById() {
               </div>
             )}
             <div className=" flex lg:flex-row flex-col py-3 ">
-              <div className="flex lg:w-[30%] justify-center items-center flex-col gap-3 lg:p-10">
+              <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
                 <img
                   src={data.profileImage}
                   className="h-32 lg:h-56 lg:w-56 w-full border-2 "
                   alt=""
                 />
                 <div className=" lg:flex gap-2 hidden justify-center">
-                  <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
+                  {/* <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
                     <CiCircleCheck className="relative top-1 lg:text-lg" />
                     Follow
-                  </button>
+                  </button> */}
                   <div className="flex   gap-5 ">
                     <button className="text-red-500 text-2xl">
                       <a
@@ -332,10 +332,10 @@ function GetServiceById() {
                 </div>
               </div>
               <div className="flex lg:hidden gap-4 p-1">
-                <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
+                {/* <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
                   <CiCircleCheck className="relative top-1 lg:text-lg" />
                   Follow
-                </button>
+                </button> */}
                 <div className="flex   gap-5 ">
                   <button className="text-red-500 text-2xl">
                     <a

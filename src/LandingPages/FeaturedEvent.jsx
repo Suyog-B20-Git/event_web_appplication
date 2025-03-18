@@ -496,7 +496,7 @@ function FeaturedEvent() {
       {/*show Meditation Form */}
       {form && (
         <div className="w-[45%]">
-          <div className="fixed w-full bg-white/30 backdrop-blur-md  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
+          <div className="fixed w-full backdrop-blur-md bg-black/50  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
             <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
               <div className="flex justify-end relative lg:right-0 right-16  ">
                 <button
