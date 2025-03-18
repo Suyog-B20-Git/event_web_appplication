@@ -69,12 +69,12 @@ function CreateEvent({ one, two, three }) {
     }, []);
 
   return (
-    <div className="h-[112vh] md:h-[57vh]  lg:h-[77vh] ">
+    <div className="h-[90vh] md:h-[57vh]  lg:h-[77vh] ">
       <div className="flex   lg:flex-row h-screen">
         <Photo1 h={77} />
-        <div className="p-3   lg:w-1/2 w-full ">
+        <div className="p-1   lg:w-1/2 w-full ">
           <div className="w-full">
-            <div className="pb-1 lg:pb-6 flex flex-col gap-1 "></div>
+            <div className="pb-1 lg:pb-0 flex flex-col gap-1 p-8 md:p-2 xl:p-6"></div>
             <div>
               <div
                 className="p-3 rounded-md"
@@ -82,7 +82,7 @@ function CreateEvent({ one, two, three }) {
                   height: "max-content",
                 }}
               >
-                <p className="font-bold text-gray-700 text-lg  flex justify-center p-2 lg:pb-10 pb-4">
+                <p className="font-bold text-gray-700 text-lg  flex justify-center pb-8 md:pb-4 xl:pb-8 pt-20 md:pt-0">
                   WHAT KIND OF EVENT ARE YOU ORGANIZING ?
                 </p>
                 <div className="flex flex-col">
@@ -110,13 +110,13 @@ function CreateEvent({ one, two, three }) {
                   </div>
                 </div>
 
-                <p className="p-3 font-semibold flex justify-center lg:text-base text-xs">
+                <p className="pt-8 sm:pt-6 xl:pt-10 font-semibold flex justify-center lg:text-base text-xs">
                   WHAT WILL YOU BE COLLECTING FOR THIS EVENT ?*
                 </p>
 
                 {/* <div className="grid  grid-cols-2"> */}
                 <div className="flex flex-col ">
-                  <div className="flex flex-col sm:flex-row sm:justify-center gap-4 p-2 text-gray-600">
+                  <div className="flex flex-row sm:flex-row justify-center items-center gap-4 p-2 xl:p-4 text-gray-600">
                     <div className="flex items-center gap-2">
                       <input
                         type="radio"
@@ -164,7 +164,7 @@ function CreateEvent({ one, two, three }) {
                     </div>
                   )} */}
 
-                  <div className="flex flex-col lg:flex-row lg:gap-14 sm:justify-center gap-4 p-3 text-gray-600">
+                  <div className="flex flex-row lg:flex-row lg:gap-14 justify-center gap-4 p-2 text-gray-600">
                     <div className="flex items-center gap-2">
                       <input
                         type="radio"
@@ -198,7 +198,7 @@ function CreateEvent({ one, two, three }) {
                   </div>
                 </div>
 
-                <p className="flex justify-center text-xs lg:text-base text-gray-500  font-medium lg:p-0 p-3">
+                <p className="flex justify-center text-xs text-gray-500  font-medium lg:p-0 xl:p-2 p-3">
                   Your Event is open for anyone to find & register for it
                 </p>
                 <p className="flex justify-center  lg:pt-5 pt-3">

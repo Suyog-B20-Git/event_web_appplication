@@ -43,6 +43,7 @@ import PerformerStats from "../SocialMedia/State";
 import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
 import { toast } from "react-toastify";
 import { postFavouritePerformer } from "../../redux/actions/master/Performers/postFavouritePerformer";
+import { getUpcomingEventData } from "../../redux/actions/master/Events/UpcomingEvent";
 
 function GetPerformerById() {
   const { performerId } = useParams();
@@ -52,7 +53,7 @@ function GetPerformerById() {
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
   const [about, setAbout] = useState(true);
-  const [upcomimg, setUpcoming] = useState(false);
+  const [upcoming, setUpcoming] = useState(false);
   const [facebook, setFacebook] = useState(false);
   const [twitter, setTwitter] = useState(false);
   const [instagram, setInstgram] = useState(false);
@@ -62,10 +63,32 @@ function GetPerformerById() {
   const [spotify, setSpotify] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [eventData, setEventData] = useState(null);
+
   // const performerId = location.state;
   console.log(performerId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+
+ // get Upcoming Event Data
+  useEffect(() => {
+    dispatch(getUpcomingEventData(setLoading));  
+  }, [dispatch]);
+
+  // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
+  //   upcomingEventData: [],
+  // }
+
+  const upcomingEventData = useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
+
+  if (!upcomingEventData) {
+    return <div>Loading...</div>;
+  }
+
+  const data1 = upcomingEventData; 
+  console.log("Upcoming Event Data:", data1);
+
+
   const store = useSelector((state) => state.getPerformerByIdReducer) || {
     performerData: [],
   };
@@ -83,6 +106,7 @@ function GetPerformerById() {
   useEffect(() => {
     dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
   }, [dispatch]);
+
 
   const checkFavourite = (id) => {
     if (favouritePerformer.some((fav) => fav._id === id)) {
@@ -133,38 +157,43 @@ function GetPerformerById() {
     <div className="">
       <div className="flex lg:flex-row flex-col gap-2">
         <div className="lg:pt-6 md:pt-0 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
-          <div className="flex justify-between font-medium">
-            <p className="hidden gap-2 p-3 lg:flex mb-2">
-              <p
-                className="cursor-pointer hover:text-[#ff2459]"
-                onClick={() => navigate("/home")}
-              >
-                Home
-              </p>
-              <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
-              <p className="hover:text-[#ff2459]">{data.city}</p>
-              <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
-              <p
-                className="cursor-pointer hover:text-[#ff2459]"
-                onClick={() => {
-                  navigate("/Performers");
-                }}
-              >
-                Performers
-              </p>
-              <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
-              <p
-                className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
-                onClick={() => navigate(`/Performer/${data._id}`, { state: data })}
-              >
-                {data.name}
-              </p>
+        <div className="flex flex-row justify-between items-center font-medium flex-wrap">
+          <div className="flex flex-row gap-2 p-3 flex-wrap">
+            <p
+              className="cursor-pointer hover:text-[#ff2459]"
+              onClick={() => navigate("/home")}
+            >
+              Home
             </p>
-            <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
-              <FaEye className="relative top-1" />
-              {data.visits} , {data.dailyVisits} visites today
+            <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
+            <p className="hover:text-[#ff2459]">{data.city}</p>
+            <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
+            <p
+              className="cursor-pointer hover:text-[#ff2459]"
+              onClick={() => {
+                navigate("/Performers");
+              }}
+            >
+              Performers
+            </p>
+            <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
+            <p
+              className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
+              onClick={() => navigate(`/Performer/${data._id}`, { state: data })}
+            >
+              {data.name}
             </p>
           </div>
+
+          {/* Visit Counts */}
+          <div className="flex items-center gap-1 p-3 text-blue-400 text-xs sm:text-sm">
+            <FaEye className="relative top-1" />
+            <p>
+              {data.visits}, {data.dailyVisits} visits today
+            </p>
+          </div>
+        </div>
+
           <div
             className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
             style={{
@@ -236,72 +265,66 @@ function GetPerformerById() {
             </div>
           </div>
           {isPopUp && (
-            <div className="lg:hidden block">
-              <div className="fixed w-full inset-0 flex flex-col items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
-                <div className="bg-white rounded-lg   shadow-lg  lg:w-full">
-                  <div className="  flex flex-col gap-4  px-0 h-[170px] w-[300px] border rounded">
-                    <button
-                      className="flex  gap-3 p-4  px-4 hover:text-white hover:bg-[#ff2459] "
-                      onClick={() => {
-                        setOwnership(!ownership);
-                        setIsPopUp(!isPopUp);
-                      }}
-                    >
-                      {" "}
-                      <IoFlagSharp className="relative top-1 lg:text-base " />
-                      Claim Ownership
-                    </button>
-                    <button
-                      className="flex gap-3 p-4  px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
-                      onClick={() => {
-                        setEnquiry(!enquiry);
-                        setIsPopUp(!isPopUp);
-                      }}
-                    >
-                      {" "}
-                      <CiCircleInfo className="relative top-1 lg:text-base  " />
-                      Send Enquiry
-                    </button>
-                    {/* <button
-                      className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
-                      onClick={() => {
-                        setIsPopUp(!isPopUp);
-                      }}
-                    >
-                      {" "}
-                      <CiHeart className="relative top-1 lg:text-base " /> Add
-                      Favourite
-                    </button> */}
-                    <button
-                      onClick={() => {
-                        handleFavourite(data._id);
-                        checkFavourite(data._id);
-                        setIsPopUp(!isPopUp);
-                      }}
-                      className={`flex gap-3 p-4  px-4 bg-white  hover:text-white hover:bg-[#ff2459]  ${
-                        isFavourite(data._id)
-                          ? "text-[#ff2459]"
-                          : "text-gray-900"
-                      }`}
-                    >
-                      <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                      {isFavourite(data._id)
-                        ? "Added to Favourites"
-                        : "Add Favourite"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+  <div className="lg:hidden block">
+        {/* <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-36 md:pt-32 md:pr-8 overflow-y-scroll z-40 backdrop-blur-md bg-black/50"> */}
+    <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-36 md:pt-32 md:pr-8 overflow-y-scroll z-40 ">
+      <div className="bg-white rounded-lg shadow-lg lg:w-full relative">
+        {/* Close Button */}
+        <button
+          className="absolute top-1 right-4 text-gray-900 hover:text-red-500 text-3xl"
+          onClick={() => setIsPopUp(false)}
+        >
+          &times;
+        </button>
+
+        <div className="flex flex-col gap-0 px-0 h-[170px] w-[300px] border rounded ">
+          <button
+            className="flex gap-3 p-4 px-4 hover:text-white hover:bg-[#ff2459]"
+            onClick={() => {
+              setOwnership(!ownership);
+              setIsPopUp(!isPopUp);
+            }}
+          >
+            <IoFlagSharp className="relative top-1 lg:text-base" />
+            Claim Ownership
+          </button>
+          <button
+            className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
+            onClick={() => {
+              setEnquiry(!enquiry);
+              setIsPopUp(!isPopUp);
+            }}
+          >
+            <CiCircleInfo className="relative top-1 lg:text-base" />
+            Send Enquiry
+          </button>
+          <button
+            onClick={() => {
+              handleFavourite(data._id);
+              checkFavourite(data._id);
+              setIsPopUp(!isPopUp);
+            }}
+            className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
+              isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+            }`}
+          >
+            <FaHeart className="relative top-1 lg:text-base text-xs" />
+            {isFavourite(data._id) ? "Added to Favourites" : "Add Favourite"}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
           <div className=" flex lg:flex-row flex-col py-3 ">
             <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
               <img
                 src={data.profileImage}
-                className="h-32 lg:h-56 lg:w-56 w-full border-2 "
+                className="h-32  md:w-64 md:h-56 lg:h-56 lg:w-56 w-full border-2 "
                 alt=""
               />
-              <div className=" lg:flex gap-2 hidden justify-center">
+              <div className=" lg:flex gap-2 hidden justify-center ">
                 {/* <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
                   <CiCircleCheck className="relative top-1 lg:text-lg" />
                   Follow
@@ -340,7 +363,7 @@ function GetPerformerById() {
                 </div>
               </div>
             </div>
-            <div className="flex lg:hidden gap-4 p-1 ">
+            <div className="flex lg:hidden gap-4 p-2 justify-center ">
               {/* <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
                 <CiCircleCheck className="relative top-1 lg:text-lg" />
                 Follow
@@ -400,8 +423,9 @@ function GetPerformerById() {
                 </button>
                 <button
                   className={`${
-                    upcomimg ? "border-b-2 border-b-red-600" : ""
+                    upcoming ? "border-b-2 border-b-red-600" : ""
                   } p-2`}
+                  
                   onClick={() => {
                     setAbout(false);
                     setUpcoming(true);
@@ -550,9 +574,56 @@ function GetPerformerById() {
                     ? " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Omnis amet facere modi nesciunt minima sunt maiores. Sint iure suscipit placeat error hic, itaque asperiores ipsum architecto, alias, unde porro facilis? Corrupti commodi autem beatae quos ipsum culpa animi. Voluptas eum, repellat assumenda nostrum porro dolore reprehenderit, voluptatum deleniti nam id facere suscipit, ut excepturi? Recusandae tenetur atque asperiores perferendis sed.Delectus blanditiis ea doloremque earum itaque, iste assumenda nostrum temporibus ipsum pariatur, porro ad quidem, tenetur dolores voluptatem. Voluptas pariatur itaque maxime recusandae accusamus eos blanditiis, facere aspernatur quae inventore! Consectetur et, molestias reiciendis possimus cupiditate esse a autem iure recusandae placeat molestiae commodi distinctio numquam obcaecati quam nostrum aperiam explicabo enim reprehenderit ipsa voluptatem! Numquam corrupti voluptatum deleniti voluptatem. Magnam, fugit dolorum? Maxime exercitationem distinctio officiis et? Repellat porro cum nisi assumenda quaerat distinctio ratione aliquid facere quam minus, vitae itaque architecto atque iure, tenetur ipsum aspernatur? Quaerat, in!"
                     : ""}
                 </p>
-                <p className="font-medium text-lg text-center">
+                {/* <p className="font-medium text-lg text-center">
                   {upcomimg ? "" : " "}
-                </p>
+                </p> */}
+
+                {/*Event Data Section*/}               
+                
+                {upcoming && (
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6">
+                    {upcomingEventData.length > 0 ? (
+                      upcomingEventData.map((event, index) => (
+                        <div
+                          key={index}
+                          className="bg-white shadow-lg rounded-lg border border-red-400 hover:shadow-xl transition-all duration-300 w-full max-w-[260px] h-[300px] flex flex-col mx-auto"
+                        >
+                          {/* Image */}
+                          <div className="w-full h-[160px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
+                            <img
+                              src={event.media?.thumbnailImage || "https://via.placeholder.com/250x160?text=No+Image"}
+                              alt={event.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                          {/* Event Details */}
+                          <div className="p-3 text-center flex-grow flex flex-col justify-between">
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-800">{event.name}</h3>
+                              <p className="text-sm text-gray-500 mt-1">{event.category || "Music Festival"}</p>
+
+                              {/* Date */}
+                              <p className="text-xs text-gray-400 mt-1">
+                                {new Date(event.startDate).toDateString()} - {new Date(event.endDate).toDateString()}
+                              </p>
+                            </div>
+
+                            {/* Venue */}
+                            {event.venue && (
+                              <p className="text-sm text-gray-600 font-medium mt-2">
+                                📍 {event.venue.city}, {event.venue.state}, {event.venue.country}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center text-gray-500 col-span-full">No Upcoming Events Found</p>
+                    )}
+                  </div>
+                )}
+
                 <p>
                   {facebook ? (
                    <div className="w-full flex justify-center">
@@ -597,7 +668,7 @@ function GetPerformerById() {
                 <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
                   Performer Category
                 </h1>
-                <section className="flex lg:flex-col flex-row overflow-x-scroll gap-2 pt-3 ">
+                <section className="flex lg:flex-col flex-col md:flex-row overflow-x-scroll gap-2 pt-3 ">
                   <div className="flex gap-2 ">
                     <div
                       onClick={() => {

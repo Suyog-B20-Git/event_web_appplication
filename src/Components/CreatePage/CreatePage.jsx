@@ -100,6 +100,9 @@ function CreatePage() {
    {label:"Twitter Url",value: "twitterUrl"},
    {label:"Youtube Url",value: "youtubeUrl"},
     {label:"Instagram Url",value:"instagramUrl"},
+    {label:"Spotify Url",value:"spotifyUrl"},
+    {label:"SoundCloud Url",value:"soundCloudUrl"},
+
   ];
 
   const tagKeywordList = [
@@ -284,8 +287,11 @@ function CreatePage() {
     window.scrollTo(0, 0);
   }, []);
   return (
-    <div className="bg-white p-10 shadow-md rounded-md lg:pt-16 pt-32 md:pt-8 ">
+    <div className="bg-white p-10 shadow-md rounded-md lg:pt-12 pt-28 md:pt-8 ">
       <form onSubmit={handleSubmit(onSubmit)}>
+      <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
+               Create a Page
+              </h2>
         {/* Category Selection */}
         <div className="grid lg:grid-cols-3 grid-cols-1 gap-6 mb-6">
           <div className="flex flex-col gap-1">

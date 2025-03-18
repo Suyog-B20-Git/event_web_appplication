@@ -278,12 +278,12 @@ function Register() {
   };
 
   return (
-    <div className="flex sm:flex-col-reverse lg:h-[85vh]  md:h-[85vh] lg:pt-1 md:pt-0 pt-24 flex-col md:flex-row      ">
+    <div className="flex sm:flex-col-reverse lg:h-[110vh] xl:h-[86vh] md:h-[64vh] lg:pt-1 md:pt-0 pt-20 flex-col md:flex-row      ">
       {/* Left Section */}
 
       <Photo />
       {/* Right Section */}
-      <div className="flex flex-col justify-center  items-center w-full md:w-1/2  px-4 md:px-8 py-3 h-full bg-gray-100 lg:pt-10 lg:pb-10  ">
+      <div className="flex flex-col justify-center  items-center w-full md:w-1/2  px-4 md:px-8 py-3 h-full md:h-[65vh] lg:h-full  bg-gray-100  ">
         <div className="flex flex-col items-center w-full max-w-sm mx-auto">
           <div className="w-full  lg:mt-0 mt-2">
             {/* Input fields */}

@@ -303,7 +303,7 @@ export default function EventForm() {
       <div className="flex flex-col gap-1 lg:pr-10"></div>
       <div className="w-full p-6 lg:pl-10 lg:pr-10 bg-gray-100 rounded-xl shadow-md">
       <form onSubmit={handleSubmit(onSubmit)}>
-              <h2 className="text-2xl font-semibold mb-6 text-[#ff2459]">
+              <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
                 Event Registration
               </h2>
 
