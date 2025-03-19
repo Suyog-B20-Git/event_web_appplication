@@ -330,7 +330,7 @@ function GetOrganizerById() {
             <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
               <img
                 src={data.profileImage}
-                className="h-32 md:w-64 md:h-56 lg:h-56 lg:w-56 w-full border-2 "
+                className="h-40 w-72 md:w-64 md:h-56 lg:h-56 lg:w-56  border-2 "
                 alt=""
               />
               <div className=" lg:flex gap-2 hidden justify-center">
