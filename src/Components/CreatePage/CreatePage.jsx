@@ -1069,6 +1069,8 @@
 
 
 
+
+
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { MdCancel } from "react-icons/md";
@@ -1278,19 +1280,26 @@ function CreatePage() {
     }
   };
 
+  const [imageError, setImageError] = useState("");
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      setCoverImage(file);
-      // setPreview(URL.createObjectURL(file)); // Show image preview
+  
+    if (!file) {
+      setImageError("Profile image is required");
+      return;
     }
+  
     if (file.size > 2 * 1024 * 1024) {
       setImageError("File size must be less than 2MB");
       return;
     }
-    setImageError("");
-
+  
+    setImage(file);
+    setImageError(""); // Clear previous error if valid image is selected
   };
+  
+
   console.log(image);
 
   // const onSubmit = (data) => {
@@ -1370,6 +1379,7 @@ function CreatePage() {
 
   const onSubmit = async (data) => {
     const formData = new FormData();
+    
     formData.append("profileImage", image);
     selectedSubCategory.forEach((subCategory) => formData.append("categories[]", subCategory));
     formData.append("country", data.country);
@@ -1744,7 +1754,7 @@ function CreatePage() {
         {selectedCategory && selectedCategory.value !== "Venues" && (
           <div className="mb-4 flex flex-col gap-1">
             <label className="font-medium text-gray-700">
-              Select Tagkeywords*
+              Select Tag keywords*
             </label>
             <Controller
               name="tagKeywords"
@@ -2110,8 +2120,9 @@ function CreatePage() {
         </div>
         <div className="border p-2 flex flex-col gap-1 ">
           <input type="file" onChange={handleImageChange} accept="image/*" />
+
         </div>
-        {error && <span className="text-red-500 text-sm">{error.message}</span>} {/* Error message in red */}
+          {imageError && <p className="text-red-500">{imageError}</p>}
 
         <p className="p-2 pt-1 pb-5 text-gray-500">
           Image size must be less than 2Mb
@@ -2191,7 +2202,6 @@ function CreatePage() {
           )}
         </div>
       
-
         <div className="flex gap-2 mt-8">
           <input
             type="checkbox"
@@ -2207,6 +2217,7 @@ function CreatePage() {
             <span className="text-[#ff2459]">TERMS AND CONDITIONS.</span>
           </p>
         </div>
+        {!check && <p className="text-red-500 text-sm">You must accept the terms.</p>}
 
         {/* Submit Button */}
         <div className="flex justify-center md:justify-end mr-0 sm:mr-6 mt-4">

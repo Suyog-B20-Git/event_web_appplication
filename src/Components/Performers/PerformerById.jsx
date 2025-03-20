@@ -319,11 +319,15 @@ function GetPerformerById() {
 
           <div className=" flex lg:flex-row flex-col py-3 ">
             <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
+            <div className="h-56 w-56 md:h-56 md:w-64 lg:h-52 lg:w-56 border-2 overflow-hidden">
+
               <img
                 src={data.profileImage}
-                className="h-40 w-72  md:w-64 md:h-56 lg:h-56 lg:w-56  border-2 "
+                className="w-full h-full object-cover"
                 alt=""
               />
+              </div>
+
               <div className=" lg:flex gap-2 hidden justify-center ">
                 {/* <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
                   <CiCircleCheck className="relative top-1 lg:text-lg" />

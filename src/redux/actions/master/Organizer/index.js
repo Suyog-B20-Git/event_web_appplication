@@ -221,7 +221,7 @@ import { Zoom } from "react-toastify";
               const token=   localStorage.getItem("authToken");
               axiosInstance
                 .post(`http://localhost:5000/api/organizer`, data, {
-                  headers: { "Content-Type": "multipart/form-data" ,'Authorization': `${token}`},
+                  headers: { "Content-Type": "multipart/form-data" ,'Authorization': `Bearer ${token}`},
                 })
                 .then((response) => {
                   if (!response.data.status) {
