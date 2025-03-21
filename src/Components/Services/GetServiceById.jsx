@@ -594,8 +594,6 @@ function GetServiceById() {
                       <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                     </div>
                   </div>
-                    </div>
-                  </div>
                   ) : (
                     ""
                   )}
