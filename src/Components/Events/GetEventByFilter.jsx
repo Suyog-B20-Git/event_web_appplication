@@ -217,8 +217,8 @@ function GetEventByFilter() {
           )}
         </div>
       </div>
-      <div className="lg:w-[25%] lg:block hidden m-2 w-full">
-        <div className="flex flex-col gap-2 px-2 shadow-md p-2">
+      <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
+      <div className="flex flex-col gap-2 px-2 shadow-md p-4">
           <div className="grid grid-cols-3 gap-2 text-xl">
             <button
               onClick={() => handleShare("facebook")}
@@ -250,113 +250,111 @@ function GetEventByFilter() {
             </button>
           </div>
         </div>
-        <div className=" lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 ">
-          <div className="rounded p-2 shadow ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
-              Event Category
-            </h1>
-            <section className="flex flex-col gap-2 pt-3 ">
-              <div className="flex gap-2 ">
-                <div
-                  onClick={() => {
-                    setCategory("festival");
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Festival
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("live music");
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Live Music
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("business");
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Business
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("professional");
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Professional
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <div
-                  onClick={() => {
-                    setCategory("nightlife & club");
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Nightlife & Club
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("sport & leisure");
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Sport & Leisure
-                </div>
-                <div className="flex gap-2 ">
-                  <div
-                    onClick={() => {
-                      setCategory("social");
-                    }}
-                    className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
-                  >
-                    Social
-                  </div>
-                </div>
-              </div>
-              <div
-                onClick={() => {
-                  setCategory("theatre & art");
-                }}
-                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
-              >
-                Theatre and Art
-              </div>
-            </section>
-          </div>
-          <div className="rounded border">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
-              Find Events
-            </h1>
-            <div className="flex justify-center items-center ">
-              <div className="grid grid-cols-2 gap-4 p-3 ">
-                <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Todays 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
+        <div className="lg:flex hidden flex-col gap-5 rounded pt-5 justify-center bg-white shadow-md  mx-auto ">
+  <div className="rounded p-2 shadow">
+    <h1 className="text-lg font-medium text-gray-900 p-4 border-b">
+      Event Category
+    </h1>
+    <section className="flex flex-col gap-2 p-3 justify-center items-center">
+      <div className="flex gap-2 flex-wrap justify-center">
+        <div
+          onClick={() => {
+            setCategory("festival");
+          }}
+          className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+        >
+          Festival
+        </div>
+        <div
+          onClick={() => {
+            setCategory("live music");
+          }}
+          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+        >
+          Live Music
+        </div>
+        <div
+          onClick={() => {
+            setCategory("business");
+          }}
+          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+        >
+          Business
+        </div>
+        <div
+          onClick={() => {
+            setCategory("professional");
+          }}
+          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+        >
+          Professional
+        </div>
+      </div>
+      <div className="flex gap-2 flex-wrap justify-center">
+        <div
+          onClick={() => {
+            setCategory("nightlife & club");
+          }}
+          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+        >
+          Nightlife & Club
+        </div>
+        <div
+          onClick={() => {
+            setCategory("sport & leisure");
+          }}
+          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+        >
+          Sport & Leisure
+        </div>
+        <div className="flex gap-2">
+          <div
+            onClick={() => {
+              setCategory("social");
+            }}
+            className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+          >
+            Social
           </div>
         </div>
+      </div>
+      <div
+        onClick={() => {
+          setCategory("theatre & art");
+        }}
+        className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+      >
+        Theatre and Art
+      </div>
+    </section>
+  </div>
+  <div className="rounded border">
+    <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
+      Find Events
+    </h1>
+    <div className="flex justify-center items-center">
+      <div className="grid grid-cols-2 gap-4 p-3">
+        <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
+          <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
+          <p>Todays 0</p>
+        </div>
+        <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+          <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
+          <p>Tommorrow 0</p>
+        </div>
+        <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+          <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
+          <p className="text-sm p-1">These Weekend 0</p>
+        </div>
+        <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+          <CalendarCheck className="text-2xl text-white font-medium" />
+          <p>Choose Date</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
       </div>
     </div>
   );

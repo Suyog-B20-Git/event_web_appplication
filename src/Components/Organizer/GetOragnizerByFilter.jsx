@@ -25,7 +25,7 @@ function GetOrganizerByFilter() {
   }
 
   const [category, setCategory] = useState("");
-    // const location = useLocation();
+  // const location = useLocation();
   const category1 = "";
   const options = [
     { value: "alphabetical", label: "Alphabetical" },
@@ -222,12 +222,14 @@ function GetOrganizerByFilter() {
             return (
               <div
                 key={index}
-                className=" flex flex-col pb-5 shadow-md rounded border  "
+                className="w-68 h-78  flex flex-col pb-5 shadow-md items-center justify-between rounded border  "
                 onClick={() => {
-                  navigate("/getOrganizerById", { state: item._id });
+                  navigate("/ById", { state: item._id });
                 }}
               >
-                <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
+              {/* <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden"> */}
+
+                <div className="h-40 md:h-36 lg:h-40 w-full overflow-hidden">
                   <img
                     src={item.profileImage}
                     className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"

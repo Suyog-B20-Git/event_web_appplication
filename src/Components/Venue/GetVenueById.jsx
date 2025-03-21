@@ -66,22 +66,22 @@ function GetVenueById() {
 
   // get Upcoming Event Data
       useEffect(() => {
-        dispatch(getUpcomingEventData(setLoading));  
+        dispatch(getUpcomingEventData(setLoading));
       }, [dispatch]);
-    
+
       // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
       //   upcomingEventData: [],
       // }
-    
+
       const upcomingEventData = useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
-    
+
       if (!upcomingEventData) {
         return <div>Loading...</div>;
       }
-    
-      const data1 = upcomingEventData; 
+
+      const data1 = upcomingEventData;
       console.log("Upcoming Event Data:", data1);
-    
+
   const store = useSelector((state) => state.getVenueByIdReducer) || {
     venueData: [],
   };
@@ -688,7 +688,7 @@ function GetVenueById() {
             </div>
           </div>
 
-         
+
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">

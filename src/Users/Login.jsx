@@ -243,6 +243,8 @@ import { HiOutlineDeviceMobile } from "react-icons/hi";
 
 import axios from "axios";
 import Photo from "./Photo";
+import { Auth } from "../redux/Urls";
+import { toast } from "react-toastify";
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -259,7 +261,8 @@ function Login() {
 
     try {
       const response = await axios.post(
-        "https://event-node-backend.onrender.com/api/auth/login",
+        // "https://event-node-backend.onrender.com/api/auth/login",
+        `${Auth.login}`,
         {
           email,
           password,
@@ -267,7 +270,8 @@ function Login() {
       );
 
       if (response.status === 200) {
-        setSuccessMessage("Login successful!");
+        // setSuccessMessage("Login successful!");
+        toast.success("Login successful!", { position: "top-right" });
         // Save the token in localStorage or sessionStorage
         localStorage.setItem("authToken", response.data.token);
         localStorage.setItem("isLogin", JSON.stringify(true));
@@ -277,10 +281,16 @@ function Login() {
     } catch (error) {
       if (error.response) {
         // Server responded with a status other than 200
-        setErrorMessage(error.response.data.message || "Login failed.");
+        // setErrorMessage(error.response.data.message || "Login failed.");
+        toast.error(error.response.data.message || "Login failed.", {
+          position: "top-right",
+        });
       } else {
         // Network or other errors
-        setErrorMessage("An error occurred. Please try again.");
+        // setErrorMessage("An error occurred. Please try again.");
+        toast.error("An error occurred. Please try again.", {
+          position: "top-right",
+        });
       }
     }
   };
@@ -294,9 +304,9 @@ function Login() {
 
       <Photo />
       {/* Right Section */}
-      <div className="flex flex-col  justify-center items-center w-full md:w-1/2 px-4 md:px-6  h-full bg-gray-100 p-4">
+      <div className="flex flex-col  justify-center items-center w-full md:w-1/2 px-4 md:px-6  h-full  md:h-[64vh] lg:h-full bg-gray-100 p-4">
         <div className="flex flex-col items-center w-full max-w-sm mx-auto">
-          <div className="w-full mt-2">
+          <div className="w-full mt-20 sm:mt-0">
             {/* Input fields */}
             <div className="mx-auto flex flex-col gap-4">
               <h2
@@ -337,7 +347,7 @@ function Login() {
                 <div className="text-green-500 text-sm">{successMessage}</div>
               )}
               {/* Sign in button */}
-              <div className="flex flex-col justify-center mt-4 gap-3 shadow">
+              <div className="flex flex-col justify-center mt-3  shadow">
                 <Button
                   variant={"primary"}
                   text={"login"}
@@ -349,15 +359,18 @@ function Login() {
               </div>
 
               <p className="flex gap-1 justify-center">
-              
-                <Link className="flex gap-1 justify-center" style={{ color: "#FF2459" }} to={"/register"}>
+                <Link
+                  className="flex gap-1 justify-center"
+                  style={{ color: "#FF2459" }}
+                  to={"/register"}
+                >
                   {" "}
-                  <span className="text-gray-900 ">Need and account ?{" "}</span>
+                  <span className="text-gray-900 ">Need and account ? </span>
                   Register
                 </Link>
               </p>
-              <p className="p-2 flex justify-center ">Login with</p>
-              <div className="flex justify-center gap-3 p-2">
+              <p className="flex justify-center ">Login with</p>
+              <div className="flex justify-center gap-3 p-0">
                 <Link>
                   {" "}
                   <FaFacebookSquare

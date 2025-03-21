@@ -5,7 +5,7 @@ import { pink } from "@mui/material/colors";
 import { IoTicket } from "react-icons/io5";
 import { RiSimCardLine } from "react-icons/ri";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
-import { MdDelete, MdModeEditOutline } from "react-icons/md";
+import { MdCancel, MdDelete, MdModeEditOutline } from "react-icons/md";
 function CreateTicket() {
   const [getTicket, setGetTicket] = useState(false);
 
@@ -25,6 +25,7 @@ function CreateTicket() {
     },
   });
   const startDate = watch("saleStartDate"); // Watch start date to validate end date
+  const endDate = watch("saleEndDate"); // Watch start date to validate end date
 
   const onSubmit = (data) => {
     if (editIndex !== null) {
@@ -68,22 +69,23 @@ function CreateTicket() {
   const header = ["Title", "Price", "Qty", "Order", "Actions"];
   const isSoldOut = watch("isSoldOut"); // Watch state
   const isDonation = watch("isDonation"); // Watch state
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
   return (
-    <div className="p-10 lg:pt-10 md:pt-10  pt-28 overflow-x-scroll">
+    <div className="p-6 lg:p-10 md:pt-10 pt-28 overflow-auto">
       <button
         onClick={() => setGetTicket(!getTicket)}
-        className=" flex gap-1 p-2 px-2 rounded  text-white font-medium bg-[#ff2459]"
+        className=" flex items-center gap-2 p-2 px-4 rounded-md  text-white font-medium bg-[#ff2459] hover:bg-[#e0204f] transition duration-300"
       >
         {" "}
-        <IoTicket className="relative top-1" />
+        <IoTicket className="text-lg" />
         Create Ticket
       </button>
 
-      <div className="pt-5 flex lg:w-full md:w-full  w-[500px] flex-col  ">
-        <header className="grid grid-cols-5 bg-gray-100 p-2">
+      <div className="pt-5 flex lg:w-full md:w-full  w-[500px] flex-col  overflow-x-auto  ">
+        <header className="grid grid-cols-5 bg-gray-200 p-3 font-semibold text-gray-700 border-b">
           {header.map((item, index) => {
             return (
-              <div key={index} className="font-bold p-1">
+              <div key={index} className="font-bold p-1 text-center ">
                 {item}
               </div>
             );
@@ -94,26 +96,26 @@ function CreateTicket() {
             return (
               <div
                 key={index}
-                className="p-2 grid grid-cols-5 gap-2 lg:text-base text-sm border-b-2 pb-2  "
+                className="grid grid-cols-5 items-center gap-2 lg:text-base text-sm border-b-2 py-3 "
               >
-                <div>{item.title}</div>
-                <div>{item.price}</div>
-                <div>{item.totalTicketQuantity}</div>
-                <div>{item.order}</div>
-                <div className="flex gap-3 lg:flex-row flex-col lg:text-base text-sm relative right-3">
-                  <div className="rounded p-0.5 lg:px-3 px-1 bg-green-200 whitespace-nowrap">
+                <div className="text-center">{item.title}</div>
+                <div className="text-center">{item.price}</div>
+                <div className="text-center">{item.totalTicketQuantity}</div>
+                <div className="text-center">{item.order}</div>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <div className="rounded-md px-3 py-1 bg-green-200 text-green-700 text-sm font-medium">
                     Seating chart
                   </div>
                   <div
                     onClick={() => handleEdit(index)}
-                    className="flex gap-1 rounded p-1 bg-orange-300 px-3 whitespace-nowrap"
+                    className="flex gap-1 rounded p-1 bg-orange-300 px-3 whitespace-nowrap cursor-pointer"
                   >
                     <MdModeEditOutline className="relative top-1" />
                     Edit{" "}
                   </div>
                   <div
                     onClick={() => handleDelete(index)}
-                    className="flex gap-1  rounded p-1 bg-red-400 px-3 whitespace-nowrap"
+                    className="flex gap-1  rounded p-1 bg-red-400 px-3 whitespace-nowrap cursor-pointer"
                   >
                     <MdDelete className="relative top-1" />
                     Delete
@@ -128,12 +130,12 @@ function CreateTicket() {
 
       {getTicket && (
         <div className="w-full">
-          <div className="fixed w-full bg-white/30 backdrop-blur-md  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
-            <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
+          <div className="fixed w-full bg-black/50 backdrop-blur-md  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
+            <div className="bg-white p-6 rounded-lg   shadow-lg  lg:w-[full]">
               <div className="flex lg:justify-between gap-48 md:gap-[550px] lg:gap-0 relative lg:right-0 right-0 mb-3 ">
-                <h1 className="text-xl font-semibold">Create Ticket</h1>
+                <h1 className="text-2xl font-semibold">Create Ticket</h1>
                 <button
-                  className="bg-[#ff2459] relative lg:left-0 left-10 w-[max-content] p-1 px-2  text-white"
+                  className="bg-[#ff2459] relative lg:left-0 left-10 w-[max-content] p-1 px-2 text-white"
                   onClick={() => setGetTicket(!getTicket)}
                 >
                   X
@@ -321,6 +323,27 @@ function CreateTicket() {
                 {/*sales start date*/}
                 <div className="grid lg:grid-cols-3 griid-cols-1 gap-4">
                   {/* Sale Start Date */}
+                  {/* <div className="relative w-full flex flex-col gap-1">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Sale Start Date
+                    </label>
+                    <div className="relative">
+                      <input
+                      min={today}
+                        type="date"
+                        className="block focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 w-full border rounded-md p-2 pl-4 pr-10 text-gray-700"
+                        // {...register("saleStartDate", {
+                        //   required: "Start Date is required",
+                        // })}
+                      />
+                    </div> */}
+
+                  {/* {errors.saleStartDate && (
+                      <p className="text-red-600 text-sm px-2">
+                        {errors.saleStartDate.message}*
+                      </p>
+                    )} */}
+                  {/* </div> */}
                   <div className="relative w-full flex flex-col gap-1">
                     <label className="block text-sm font-medium text-gray-700">
                       Sale Start Date
@@ -328,17 +351,22 @@ function CreateTicket() {
                     <div className="relative">
                       <input
                         type="date"
-                        className="block focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 w-full border rounded-md p-2 pl-4 pr-10 text-gray-700"
+                        min={new Date().toISOString().split("T")[0]} // Min date as today
                         {...register("saleStartDate", {
-                          required: "Start Date is required",
+                          // required: "Start Date is required",
                         })}
+                        className="block focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 w-full border rounded-md p-2 pl-4 pr-10 text-gray-700"
                       />
+                      {startDate && (
+                        <button
+                          type="button"
+                          onClick={() => setValue("saleStartDate", "")} // Clears the input
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500"
+                        >
+                          <MdCancel />
+                        </button>
+                      )}
                     </div>
-                    {errors.saleStartDate && (
-                      <p className="text-red-600 text-sm px-2">
-                        {errors.saleStartDate.message}*
-                      </p>
-                    )}
                   </div>
 
                   {/* Sale End Date */}
@@ -351,14 +379,24 @@ function CreateTicket() {
                         type="date"
                         className="focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 block w-full border rounded-md p-2 pl-4 pr-10 text-gray-700"
                         {...register("saleEndDate", {
-                          required: "End Date is required",
+                          // required: "End Date is required",
                           validate: (value) =>
                             !startDate ||
                             value >= startDate ||
                             "End Date must be after Start Date",
                         })}
                       />
+                      {endDate && (
+                        <button
+                          type="button"
+                          onClick={() => setValue("saleEndDate", "")} // Clears the input
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500"
+                        >
+                          <MdCancel />
+                        </button>
+                      )}
                     </div>
+                    
                     {errors.saleEndDate && (
                       <p className="text-red-600 text-sm px-2">
                         {errors.saleEndDate.message}*
@@ -380,7 +418,7 @@ function CreateTicket() {
                       className="focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 block w-full border rounded-md p-2"
                       placeholder="0000"
                       {...register("salePrice", {
-                        required: "sale price is required",
+                        // required: "sale price is required",
                         min: {
                           value: 1,
                           message: "sale price must be greater than 0",
@@ -417,7 +455,7 @@ function CreateTicket() {
                       }
                     />
                   </FormGroup> */}
-                  
+
                   <div
                     onClick={() => setValue("isSoldOut", !isSoldOut)}
                     className={`w-12 h-6  rounded-full p-1 transition-colors ${
@@ -431,7 +469,7 @@ function CreateTicket() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex justify-between p-2">
                   <div>
                     <h1 className="text-lg font-medium">Donation</h1>
@@ -461,7 +499,7 @@ function CreateTicket() {
                 <div className="flex justify-end p-1 pt-5">
                   <button
                     type="submit"
-                    className="flex gap-1 text-lg font-medium bg-[#ff2459] p-1 text-white  rounded"
+                    className="flex gap-1 text-lg font-medium bg-[#ff2459] p-2 text-white  rounded"
                   >
                     <RiSimCardLine className="relative top-1 text-lg" />
                     Save

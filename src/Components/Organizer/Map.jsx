@@ -6,9 +6,10 @@ const MapContainer = ({ data }) => {
   const markerRef = useRef(null);
   const GOOGLE_MAPS_API_KEY = "AIzaSyDBvQO - S7yEtX4__jyFra4HvGMz15MqGyE";
   const mapStyles = {
-    height: "200px",
+    height: window.innerWidth <= 768 ? "200px" : "400px",
     width: "100%",
   };
+  
 
   const defaultCenter = {
     lat: data ? Number(data.googleSearchLat) : 40.7127753,

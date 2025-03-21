@@ -235,16 +235,16 @@ function Viewall() {
   }
 
   return (
-    <div className="flex lg:justify-start justify-center lg:pt-0 md:pt-4 pt-[87px] lg:relative left-[70px] items-center overflow-hidden">
-      <div className="lg:p-12 lg:pb-5  pt-5 p-5 w-full max-w-[1340px]">
-        <div className="flex justify-between">
+    <div className="flex justify-center items-center w-full pt-[87px] sm:pt-4">
+  <div className="p-5 w-full max-w-[1340px]">
+  <div className="flex justify-between">
           <div className="flex gap-2 lg:pl-3">
             <BsFire className="text-2xl relative top-1" />
             <p className="font-bold font-sans lg:text-2xl">EVENTS</p>
           </div>
         </div>
 
-        <div className="flex justify-between pt-5 lg:px-3 ">
+        <div className="flex justify-between pt-5 px-2 lg:px-3 gap-4">
           <button
             onClick={() => setFilter(!filter)}
             className="flex gap-3 lg:text-2xl md:text-base  font-medium"
@@ -259,32 +259,47 @@ function Viewall() {
               onClick={reset}
               className="flex gap-1 lg:text-base md:text-base text-xs font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
             >
-              <IoIosRefresh className="text-[#ff2459] relative top-1" /> Refresh
-              Filters
+              <IoIosRefresh className="text-[#ff2459] relative top-1" /> Refresh Filters
             </button>
-            <button
+            {/* <button
               onClick={handleApi}
               className={` flex gap-1 font-medium lg:text-base md:text-base text-xs text-[#ff2459] border border-[#ff2459] p-1 rounded`}
             >
               <VscFilterFilled className="text-[#ff2459]  relative top-1 lg:text-lg" />
               Apply Filter
-            </button>
-            {/* <button
-              onClick={handleApi}
-              // disabled={isDisabled()} // Button is disabled when all filters are empty
-              className={`flex gap-1 font-medium p-1 rounded border transition ${
-                isDisabled()
-                  ? "text-gray-400 border-gray-400 cursor-not-allowed"
-                  : "text-[#ff2459] border-[#ff2459]"
-              }`}
-            >
-              <VscFilterFilled
-                className={`relative top-1 lg:text-lg ${
-                  isDisabled() ? "text-gray-400" : "text-[#ff2459]"
-                }`}
-              />
-              Apply Filter
             </button> */}
+            <button
+              onClick={handleApi}
+              disabled={
+                !(
+                  category ||
+                  priceType ||
+                  searchEvent ||
+                  countryFilter ||
+                  cityFilter ||
+                  stateFilter ||
+                  startDate ||
+                  endDate
+                )
+              }
+              className={`flex gap-1 font-medium lg:text-base md:text-base text-xs 
+    ${
+      category ||
+      priceType ||
+      searchEvent ||
+      countryFilter ||
+      cityFilter ||
+      stateFilter ||
+      startDate ||
+      endDate
+        ? "text-[#ff2459] border border-[#ff2459]"
+        : "text-gray-400 border border-gray-400 cursor-not-allowed"
+    }
+    p-1 rounded`}
+            >
+              <VscFilterFilled className="relative top-1 lg:text-lg" />
+              Apply Filter
+            </button>
           </div>
         </div>
         {filter && (
@@ -455,7 +470,7 @@ function Viewall() {
               <div
                 key={index}
                 // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
-                className="overflow-hidden flex-none  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
+                className="overflow-hidden flex-none transition-transform duration-300 hover:scale-105  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
                 onClick={() => navigate("/featuredEvent", { state: item._id })}
               >
                 <div className="h-24 lg:h-52 md:h-32 w-full rounded-lg flex justify-end overflow-hidden relative">

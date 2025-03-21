@@ -68,23 +68,23 @@ function GetServiceById() {
 
     // get Upcoming Event Data
       useEffect(() => {
-        dispatch(getUpcomingEventData(setLoading));  
+        dispatch(getUpcomingEventData(setLoading));
       }, [dispatch]);
-    
+
       // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
       //   upcomingEventData: [],
       // }
-    
+
       const upcomingEventData = useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
-    
+
       if (!upcomingEventData) {
         return <div>Loading...</div>;
       }
-    
-      const data1 = upcomingEventData; 
+
+      const data1 = upcomingEventData;
       console.log("Upcoming Event Data:", data1);
-    
-  
+
+
   const store = useSelector((state) => state.getServiceByIdReducer) || {
     serviceData: [],
   };
@@ -594,6 +594,8 @@ function GetServiceById() {
                       <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                     </div>
                   </div>
+                    </div>
+                  </div>
                   ) : (
                     ""
                   )}
@@ -758,7 +760,7 @@ function GetServiceById() {
                 </div>
               </div>
             </div>
-       
+
           </div>
 
           <div className="w-[25%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 mt-2">
@@ -920,7 +922,7 @@ function GetServiceById() {
               />
             </div>
         </div>
-        
+
       ) : (
         ""
       )}

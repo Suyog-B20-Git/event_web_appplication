@@ -35,6 +35,7 @@ import getFavoriteEventReducer from "../redux/reducers/pages/Events/getFavoriteE
 import { getFavouriteEventData } from "../redux/actions/master/Events/GetFavouriteEvent";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { deleteFavouriteEvent } from "../redux/actions/master/Events/deleteFavouriteEvent";
 
 function FeaturedEvent() {
   const [enquiry, setEnquiry] = useState(false);
@@ -52,30 +53,41 @@ function FeaturedEvent() {
   const store1 = useSelector((state) => state.getFavoriteEventReducer) || {
     favouriteEventData: [],
   };
-  const favouriteEvent = store1.favouriteEventData;
+  let favouriteEvent = store1.favouriteEventData;
+  const store2 = useSelector((state) => state.deleteFavoriteEventReducer) || {
+    deletedFavouriteEventData: [],
+  };
+  const deletedFavouriteEvent = store2.deletedFavouriteEventData;
 
   const isFavourite = favouriteEvent.some(
     (event) => event._id === receivedData?._id
   );
-  const checkFavourite = () => {
+  const checkFavourite = (id) => {
     if (isFavourite) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+      // toast.warning("Already added to favorites!", {
+      //   position: "top-right",
+      //   autoClose: 2000, // Closes after 2 seconds
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      //   theme: "colored",
+      // });
+      dispatch(deleteFavouriteEvent(id));
+      dispatch(getFavouriteEventData(setLoading));
+
+      // favouriteEvent=deletedFavouriteEvent;
+
+      // window.location.reload();
     }
   };
 
   useEffect(() => {
     dispatch(getEventById(id, setLoading));
     dispatch(getFavouriteEventData(setLoading));
-  });
+
+  }, [dispatch]);
 
   const handleFavourite = (id) => {
     if (isFavourite) {
@@ -131,6 +143,32 @@ function FeaturedEvent() {
 
   const sectionRef = useRef(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const addToCalendar = () => {
+    if (!receivedData.startDate) return;
+
+    const eventTitle = encodeURIComponent(receivedData.name || "Event");
+    const eventLocation = encodeURIComponent(
+      `${receivedData.venue?.city || ""}, ${receivedData.venue?.country || ""}`
+    );
+    const eventDetails = encodeURIComponent(
+      `Join us for ${receivedData.name}! More details: ${window.location.href}`
+    );
+
+    const startDate = new Date(receivedData.startDate)
+      .toISOString()
+      .replace(/-|:|\.\d+/g, ""); // Format: YYYYMMDDTHHMMSSZ
+    const endDate = new Date(
+      new Date(receivedData.startDate).getTime() + 2 * 60 * 60 * 1000 // Assuming a 2-hour event
+    )
+      .toISOString()
+      .replace(/-|:|\.\d+/g, "");
+
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${eventDetails}&location=${eventLocation}`;
+
+    window.open(googleCalendarUrl, "_blank");
+  };
+
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-4 ">
@@ -158,7 +196,7 @@ function FeaturedEvent() {
             <button
               onClick={() => {
                 handleFavourite(receivedData._id);
-                checkFavourite();
+                checkFavourite(receivedData._id);
               }}
               className={`flex gap-1 text-xs font-bold cursor-pointer ${
                 isFavourite ? "text-[#ff2459]" : "text-gray-900"
@@ -167,10 +205,12 @@ function FeaturedEvent() {
               <FaHeart className="text-lg" />
               {isFavourite ? "Added to Favourites" : "Add To Favourite"}
             </button>
-            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]">
-              {" "}
+            <p
+              onClick={addToCalendar}
+              className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
+            >
               <MdDateRange className="text-lg " />
-              Add to My Calender
+              Add to My Calendar
             </p>
             <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
               <FaEye className="relative top-0.5 text-blue-600" />
@@ -250,8 +290,8 @@ function FeaturedEvent() {
               <p className="relative "> Get Ticket</p>
             </button>
           </div>
-          <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
-            {/* Icon */}
+          {/* <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
+
             <div className="flex items-center  space-x-3">
               <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
                 <svg
@@ -269,17 +309,17 @@ function FeaturedEvent() {
                   />
                 </svg>
               </div>
-              {/* Text */}
-              {/* <div>
+
+              <div>
                 <h3 className="text-sm font-medium text-gray-800">
                   Invite your friends
                 </h3>
                 <p className="text-xs text-gray-500">
                   and enjoy a shared experience
                 </p>
-              </div> */}
+              </div>
             </div>
-            {/* Close Icon */}
+
             <button className="flex items-center justify-center w-8 h-8 text-gray-400 transition hover:text-gray-600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -296,7 +336,7 @@ function FeaturedEvent() {
                 />
               </svg>
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -456,7 +496,7 @@ function FeaturedEvent() {
       {/*show Meditation Form */}
       {form && (
         <div className="w-[45%]">
-          <div className="fixed w-full bg-white/30 backdrop-blur-md  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
+          <div className="fixed w-full backdrop-blur-md bg-black/50  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
             <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
               <div className="flex justify-end relative lg:right-0 right-16  ">
                 <button

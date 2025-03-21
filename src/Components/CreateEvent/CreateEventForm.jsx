@@ -18,6 +18,7 @@ import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
 import { toast } from "react-toastify";
 export default function EventForm() {
   const [tagInput, setTagInput] = useState("");
+
   const [query, setQuery] = useState("");
   const [performer, setPerformer] = useState("");
   const dispatch = useDispatch();
@@ -60,8 +61,9 @@ export default function EventForm() {
     setError,
     clearErrors,
 
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
+    mode: "onChange",
     defaultValues: {
       name: "",
       category: "",
@@ -82,6 +84,7 @@ export default function EventForm() {
       },
 
       eventTag: [],
+      repeatExcept: [],
 
       media: {
         thumbnailImage: null,
@@ -93,6 +96,29 @@ export default function EventForm() {
     },
   });
 
+  const [eventTags, setEventTags] = useState([]); // Local state to manage tags
+  const eventTag = watch("eventTag") || []; // ✅ Prevents `undefined` error
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      e.preventDefault();
+
+      const updatedTags = [...eventTags, tagInput.trim()];
+      setEventTags(updatedTags);
+      setValue("eventTag", updatedTags); // ✅ Updates React Hook Form state
+      clearErrors("eventTag"); // ✅ Clears validation errors (if any)
+      setTagInput(""); // ✅ Reset input field
+    }
+  };
+
+  const removeTag = (index) => {
+    const updatedTags = eventTags.filter((_, i) => i !== index);
+    setEventTags(updatedTags);
+    setValue("eventTag", updatedTags); // ✅ Updates form state
+  };
+
+  const [ticketFormat, setTicketFormat] = useState(false);
+
   useEffect(() => {
     const storedData = localStorage.getItem("eventData");
 
@@ -101,51 +127,36 @@ export default function EventForm() {
 
       if (parsedData.eventType == "Public") {
         setValue("isPublish", true);
+        // return;
       } else {
         setValue("isPublish", false);
       }
       if (parsedData.selectedRadio == "Tickets") {
         setValue("isOnline", true);
+        setTicketFormat(true);
       } else {
         setValue("isOnline", false);
       }
-      setValue("category", parsedData.selectedEvent);
+
+      // ✅ Ensure `category` is always set
+      if (parsedData.selectedEvent) {
+        setValue("category", parsedData.selectedEvent);
+        console.log("Setting category:", parsedData.selectedEvent);
+      }
     }
   }, [setValue]);
 
-  const PinkSwitch = styled(Switch)(({ theme }) => ({
-    "& .MuiSwitch-switchBase.Mui-checked": {
-      color: "#ff2459",
-      "&:hover": {
-        backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
-      },
-    },
-    "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-      backgroundColor: pink[600],
-    },
-  }));
-  const eventTag = watch("eventTag"); // Watch tag values
-
-  // Add tag when Enter or Comma is pressed
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      const newTag = tagInput.trim();
-
-      if (newTag && !eventTag.includes(newTag)) {
-        setValue("eventTag", [...eventTag, newTag]); // Update tags array
-      }
-      setTagInput(""); // Clear input
-    }
-  };
-
-  // Remove tag function
-  const removeTag = (index) => {
-    setValue(
-      "eventTag",
-      eventTag.filter((_, i) => i !== index)
-    );
-  };
+  // const PinkSwitch = styled(Switch)(({ theme }) => ({
+  //   "& .MuiSwitch-switchBase.Mui-checked": {
+  //     color: "#ff2459",
+  //     "&:hover": {
+  //       backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
+  //     },
+  //   },
+  //   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+  //     backgroundColor: pink[600],
+  //   },
+  // }));
 
   // image input
   const [thumbnailImage, setThumbnailImage] = useState(null);
@@ -154,25 +165,6 @@ export default function EventForm() {
   const [thumnPreview, setThumnPreview] = useState(null);
   const [posterPreview, setPosterPreview] = useState(null);
   const [seatingChartPreview, setSeatingChartPreview] = useState(null);
-  // const handleImageChange = (e, type) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     setValue(`media.${type}`, file);
-  //     const imageUrl = URL.createObjectURL(file);
-  //     if (type === "thumbnailImage") {
-  //       setThumnPreview(imageUrl);
-  //     }
-  //     if (type === "posterImage") {
-  //       setPosterPreview(imageUrl);
-  //     }
-  //     if (type === "seatingChartImage") {
-  //       setSeatingChartPreview(imageUrl);
-  //     }
-  //   }
-  // };
-  // const removeImage = (type) => {
-  //   setValue(`media.${type}`, null);
-  // };
 
   const handleImagesChange1 = (e) => {
     const files = Array.from(e.target.files);
@@ -192,6 +184,28 @@ export default function EventForm() {
     setValue("media.images", updatedImages);
   };
 
+  const [repeatExceptList, setRepeatExceptList] = useState([]);
+  const handleAddRepeatExcept = (e) => {
+    if (e.key === "Enter" && e.target.value.trim() !== "") {
+      e.preventDefault();
+
+      const newValue = Number(e.target.value.trim());
+      if (!repeatExceptList.includes(newValue)) {
+        const updatedList = [...repeatExceptList, newValue];
+        setRepeatExceptList(updatedList);
+        setValue("repeatExcept", updatedList); // ✅ Update form state
+      }
+      e.target.value = ""; // Clear input after adding
+    }
+  };
+
+  // Remove value from array
+  const handleRemoveRepeatExcept = (index) => {
+    const updatedList = repeatExceptList.filter((_, i) => i !== index);
+    setRepeatExceptList(updatedList);
+    setValue("repeatExcept", updatedList); // ✅ Update form state
+  };
+
   // Watching values
 
   const startDate = watch("startDate");
@@ -207,51 +221,70 @@ export default function EventForm() {
   const isSeasonal = watch("isSeasonal"); // Watch state
   const media = watch("media"); // Watching media state
   const enableRatingReview = watch("enableRatingReview"); // Watching media state
+  const repetitiveType = watch("repetitiveType");
   const onSubmit = (data) => {
     console.log(data);
-    console.log(data.media.thumbnailImage);
-    // const formData = new FormData();
-    // formData.append("name", data.name);
-    // formData.append("category", data.category);
-    // formData.append("eventUrl", data.eventUrl);
-    // formData.append("shortUrl", data.shortUrl);
-    // formData.append("excerpt", data.excerpt);
-    // formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut);
-    // formData.append("enableRatingReview", data.enableRatingReview);
-    // formData.append("isRepetitive", data.isRepetitive);
-    // formData.append("isPublish", data.isPublish);
-    // formData.append("isSeasonal", data.isSeasonal);
-    // formData.append("isOnline", data.isOnline);
-    // formData.append("venue", data.venue);
-    // formData.append("repeatExcept", data.repeatExcept);
-    // formData.append("repeatStartTime", data.repeatStartTime);
-    // formData.append("repeatEndTime", data.repeatEndTime);
-    // formData.append("facebookLink", data.facebookLink);
-    // formData.append("startDate", `${data.startDate}T${data.startTime}`);
-    // formData.append("endDate", `${data.endDate}T${data.endTime}`);
-    // formData.append("description", data.description);
+    // console.log(data.media.thumbnailImage);
+    const formData = new FormData();
+    console.log("category", data.category);
+    console.log("eventTags", data.eventTags);
 
-    // // 🔹 Append Individual Images from Media Object
-    // if (data.media?.thumbnailImage) {
-    //   formData.append("media[thumbnailImage]", data.media.thumbnailImage);
-    // }
-    // if (data.media?.posterImage) {
-    //   formData.append("media[posterImage]", data.media.posterImage);
-    // }
-    // if (data.media?.seatingChartImage) {
-    //   formData.append("media[seatingChartImage]", data.media.seatingChartImage);
-    // }
+    formData.append("name", data.name);
+    formData.append("category", data.category ? data.category : "");
 
-    // // 🔹 Append Images Array (Multiple Images)
-    // if (data.media?.images?.length > 0) {
-    //   data.media.images.forEach((image, index) => {
-    //     formData.append(`media[images][${index}]`, image.file);
-    //   });
-    // }
+    formData.append("eventUrl", data.eventUrl);
+    formData.append("shortUrl", data.shortUrl);
+    formData.append("excerpt", data.excerpt);
+    formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut);
+    formData.append("enableRatingReview", data.enableRatingReview);
+    formData.append("isRepetitive", data.isRepetitive);
+    formData.append("repetitiveType", data.repetitiveType);
+    formData.append("isPublish", data.isPublish);
+    formData.append("isSeasonal", data.isSeasonal);
+    formData.append("isOnline", data.isOnline);
+    formData.append("venue", data.venue);
+    formData.append("repeatExcept", data.repeatExcept);
+    formData.append("performers", data.performers);
+    formData.append("performerLink", data.performerLink);
+    formData.append(
+      "repeatStartTime",
+      data.repeatStartTime ? data.repeatStartTime : ""
+    );
+    formData.append("repeatEndTime", data.repeatEndTime);
+    formData.append("facebookLink", data.facebookLink);
+    formData.append("youtubeLink", data.youtubeLink);
+    formData.append("startDate", `${data.startDate}T${data.startTime}`);
+    formData.append("endDate", `${data.endDate}T${data.endTime}`);
+    formData.append("description", data.description);
+    formData.append(
+      "offlinePaymentInstructions",
+      data.offlinePaymentInstructions
+    );
+    formData.append("eventTags", data.eventTag); // ✅ Fix key name
+    formData.append("seo", JSON.stringify(data.seo));
+
+    if (data.media?.thumbnailImage) {
+      formData.append("thumbnailImage", data.media.thumbnailImage);
+    }
+    if (data.media?.posterImage) {
+      formData.append("posterImage", data.media.posterImage);
+    }
+    if (data.media?.seatingChartImage) {
+      formData.append("seatingChartImage", data.media.seatingChartImage);
+    }
+
+    // 🔹 Append Images Array (Multiple Images)
+    if (data.media?.images?.length > 0) {
+      data.media.images.forEach((image) => {
+        formData.append("images", image.file); // ✅ Correct field name
+      });
+    }
+
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
     if (isLogin) {
       dispatch(
-        createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
+        createNewEvent(formData, thumbnailImage, posterImage, seatingChartImage)
+        // createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
         // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
       );
 
@@ -262,21 +295,44 @@ export default function EventForm() {
       localStorage.removeItem("eventData");
       navigate("/home");
     } else {
-      navigate("/login");
+      // navigate("/login");
     }
   };
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleNextClick = handleSubmit(
+    (data) => {
+      console.log("Form data:", data);
+      const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+      if (isLogin) {
+        dispatch(
+          createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
+          // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
+        );
+
+        reset();
+        setThumnPreview(null);
+        setPosterPreview(null);
+        setSeatingChartPreview(null);
+        localStorage.removeItem("eventData");
+        navigate("/createTicket");
+      }
+    },
+    (errors) => {
+      toast.error("Please fill in all required fields.");
+    }
+  );
+
   return (
-    <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
-      <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">
-        <Photo1 h={119} />
-        <div className="flex flex-col pb-4 overflow-y-scroll w-full lg:w-full  lg:pr-3 lg:h-[120vh]  ">
-          <div className=" flex flex-col  gap-1 lg:pr-10   "></div>
-          <div className="lg:w-[100%] max-w-4xl  p-6 pl-8  lg:pl-10 lg:pr-10  bg-gray-100 rounded-xl shadow-md">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <h2 className="text-xl font-semibold mb-6 text-[#ff2459]">
+    <div className="lg:h-auto md:mb-0 pt-20 md:pt-0 lg:pt-4">
+      <div className="flex flex-col lg:flex-row lg:h-screen w-full">
+      <div className="flex flex-col pb-4 overflow-y-scroll w-full lg:w-full lg:pr-3 lg:h-auto">
+      <div className="flex flex-col gap-1 lg:pr-10"></div>
+      <div className="w-full p-6 lg:pl-10 lg:pr-10 bg-gray-100 rounded-xl shadow-md">
+      <form onSubmit={handleSubmit(onSubmit)}>
+              <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
                 Event Registration
               </h2>
 
@@ -291,8 +347,8 @@ export default function EventForm() {
                 <input
                   type="text"
                   className="mt-1 block w-full border rounded-md p-2"
-                  placeholder="Enter name"
-                  {...register("name", { required: "name is required" })}
+                  placeholder="Enter Name"
+                  {...register("name", { required: "Name is required" })}
                 />
                 {errors.name && (
                   <p className="text-red-600 text-sm px-2">
@@ -403,6 +459,7 @@ export default function EventForm() {
                             (option) => option.value === field.value
                           ) || null
                         } // Maintain selected value
+                        noOptionsMessage={() => "Type... to see Venues"} // Show message when no options
                       />
                     )}
                   />
@@ -444,6 +501,7 @@ export default function EventForm() {
                         value={performerOptions.filter((option) =>
                           field.value?.includes(option.value)
                         )} // Ensure proper selection
+                        noOptionsMessage={() => "Type... to see performers"} // Show message when no options
                       />
                     )}
                   />
@@ -470,7 +528,7 @@ export default function EventForm() {
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder="Enter your Facebook link"
                     {...register("facebookLink", {
-                      required: "Email is required",
+                      required: "facebook link is required",
                     })}
                   />
                   {errors.facebookLink && (
@@ -491,8 +549,15 @@ export default function EventForm() {
                     type="url"
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder="Enter your Youtube url"
-                    {...register("media.youtubeUrl")}
+                    {...register("youtubeLink", {
+                      required: "youtube link is required",
+                    })}
                   />
+                  {errors.youtubeLink && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.youtubeLink.message}*
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -739,7 +804,7 @@ export default function EventForm() {
                       )}
                     </div>
 
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700">
                         Repetitive Except
                       </label>
@@ -756,6 +821,43 @@ export default function EventForm() {
                           {errors.repeatExcept.message}*
                         </p>
                       )}
+                    </div> */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Repetitive Except
+                      </label>
+
+                      <input
+                        type="number"
+                        className="mt-1 block w-full border rounded-md p-2"
+                        placeholder="Enter repeat except and press Enter"
+                        onKeyDown={handleAddRepeatExcept} // ✅ Add values on Enter
+                      />
+
+                      {errors.repeatExcept && (
+                        <p className="text-red-600 text-sm px-2">
+                          {errors.repeatExcept.message}*
+                        </p>
+                      )}
+
+                      {/* Display Array Values */}
+                      <div className="flex flex-wrap mt-2">
+                        {repeatExceptList.map((value, index) => (
+                          <div
+                            key={index}
+                            className="bg-blue-500 text-white px-2 py-1 rounded flex items-center m-1"
+                          >
+                            {value}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveRepeatExcept(index)}
+                              className="ml-2 text-gray-800 hover:text-red-500"
+                            >
+                              <MdCancel />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                     <div>
                       <label
@@ -801,7 +903,7 @@ export default function EventForm() {
                       )}
                     </div>
 
-                    <div>
+                    {/* <div>
                       <FormGroup className=" ">
                         <FormControlLabel
                           control={
@@ -816,13 +918,30 @@ export default function EventForm() {
                           label="Is seasonal"
                         />
                       </FormGroup>
-                    </div>
+                    </div> */}
+                    {/* {repetitiveType != "Daily" && (
+                      <div className="flex gap-2 items-center">
+                        <div
+                          onClick={() => setValue("isSeasonal", !isSeasonal)}
+                          className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
+                            isSeasonal ? "bg-[#ff2459]" : "bg-gray-300"
+                          }`}
+                        >
+                          <div
+                            className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
+                              isSeasonal ? "translate-x-6" : ""
+                            }`}
+                          />
+                        </div>
+                        <p>Is Seasonal</p>
+                      </div>
+                    )} */}
                   </div>
                 )}
               </div>
 
               {/* Input Field for Tags */}
-              <div className="mt-4">
+              {/* <div className="mt-4">
                 <label
                   htmlFor="EventTag"
                   className="block text-sm font-medium text-gray-700"
@@ -838,8 +957,43 @@ export default function EventForm() {
                   className=" mt-1 block w-full border rounded-md p-2"
                 />
 
-                {/* Hidden input field to store tags */}
+              
                 <input type="hidden" {...register("eventTag")} />
+
+           
+                <div className="flex flex-wrap mt-2">
+                  {eventTag.map((tag, index) => (
+                    <div
+                      key={index}
+                      className="bg-blue-500 text-white px-2 py-1 rounded flex items-center m-1"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(index)}
+                        className="ml-2 text-gray-800 hover:text-red-500"
+                      >
+                        <MdCancel />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div> */}
+              <div className="mt-4">
+                <label
+                  htmlFor="EventTag"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  EventTag
+                </label>
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type a tag and press Enter"
+                  className="mt-1 block w-full border rounded-md p-2"
+                />
 
                 {/* Display Tags as List */}
                 <div className="flex flex-wrap mt-2">
@@ -1128,51 +1282,8 @@ export default function EventForm() {
                   </div>
                   <p>Disable Event after sold out</p>
                 </div>
-
-                {/* <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <PinkSwitch
-                        checked={disableEventAfterSoldOut}
-                        size="small"
-                        onClick={() =>
-                          setValue(
-                            "disableEventAfterSoldOut",
-                            !disableEventAfterSoldOut
-                          )
-                        }
-                      />
-                    }
-                    label="Disable Event after sold out"
-                  />
-                </FormGroup> */}
-                {/* <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <PinkSwitch
-                        checked={isOnline}
-                        size="small"
-                        onClick={() => setValue("isOnline", !isOnline)}
-                      />
-                    }
-                    label="Is Payment Online"
-                  />
-                </FormGroup> */}
-
-                {/* <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <PinkSwitch
-                        checked={isPublish}
-                        size="small"
-                        onClick={() => setValue("isPublish", !isPublish)}
-                      />
-                    }
-                    label="Publish Event.."
-                  />
-                </FormGroup> */}
               </div>
-              <div className="mb-4 mt-4">
+              {/* <div className="mb-4 mt-4">
                 <FormGroup>
                   <FormControlLabel
                     control={
@@ -1190,11 +1301,11 @@ export default function EventForm() {
                     componentsProps={{ typography: { fontSize: "12px" } }} // Reduces label size
                   />
                 </FormGroup>
-              </div>
+              </div> */}
 
               {/* Submit Button */}
 
-              <div className="flex justify-around p-4">
+              {/* <div className="flex justify-around p-4">
                 <Button
                   text={"previous"}
                   variant={"normal"}
@@ -1203,10 +1314,35 @@ export default function EventForm() {
                 />
                 <button
                   // onClick={() => navigate("/login")}
-                  className="p-1 bg-[#ff2459] px-4 rounded-lg text-white"
+                  className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
                 >
-                  Submit
+                  Next
                 </button>
+              </div> */}
+
+              <div className="flex justify-around p-0">
+                <Button
+                  text={"Previous"}
+                  variant={"normal"}
+                  rounded={"rounded-lg"}
+                  onClick={() => navigate("/createEvent")}
+                />
+                {ticketFormat ? (
+                  <button
+                    type="button"
+                    onClick={handleNextClick}
+                    className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="p-1 bg-[#ff2459] px-6 py-2 rounded-lg text-white"
+                  >
+                    Create Event
+                  </button>
+                )}
               </div>
             </form>
           </div>

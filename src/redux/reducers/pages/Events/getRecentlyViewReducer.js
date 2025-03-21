@@ -3,7 +3,7 @@ const initialState = {
   total: 1,
   params: {},
   allData: [],
-  eventData: [],
+  recentEventData: [],
 };
 
 const getRecentlyViewReducer = (state = initialState, action) => {
@@ -12,7 +12,7 @@ const getRecentlyViewReducer = (state = initialState, action) => {
     case "GET_RECENTLY_VIEW":
       return {
         ...state,
-        eventData: action.eventData,
+        recentEventData: action.recentEventData,
       };
 
     default:

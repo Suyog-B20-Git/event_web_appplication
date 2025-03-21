@@ -298,7 +298,7 @@ const handleCheckout = () => {
   return (
     <div
       ref={modalRef}
-      className="lg:w-[50vw] overflow-y-auto  mx-auto p-4 pt-0 sm:p-6 overflow-x-auto"
+      className="lg:w-[50vw] overflow-y-auto  mx-auto p-4 pt-0 sm:p-6 overflow-x-auto  "
     >
       <h1 className="text-2xl font-bold text-center mb-2">{data.name}</h1>
       <p className="text-center flex gap-1 text-gray-600 mb-6 justify-center">
@@ -322,7 +322,7 @@ const handleCheckout = () => {
 
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="p-2 px-0  font-medium text-lg">Customer Details</h1>
+          <h1 className="p-2 px-0  font-medium text-lg ">Customer Details</h1>
           <div className="flex lg:flex-row flex-col gap-3 justify-between border p-2">
             {/* Name Input */}
             <div className="flex flex-col gap-1">

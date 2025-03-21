@@ -23,6 +23,7 @@ import GetEventByFilter from "../Components/Events/GetEventByFilter";
 import GetOrganizerByFilter from "../Components/Organizer/GetOragnizerByFilter";
 import FeaturedEvent from "../LandingPages/FeaturedEvent";
 import MyBookings from "../Components/MyBookings";
+import Dashboard from "../Components/Dashboard";
 import MybookingDetail from "../Components/MybookingDetail";
 import CreateTicket from "../Components/CreateEvent/CreateTicket";
 
@@ -47,29 +48,29 @@ function Routess() {
           <Route path="home" element={<Home />} />
           <Route path="viewAll" element={<Viewall />} />
           <Route path="/createEvent" element={<CreateEvent />} />
-          <Route path="/createEventForm" element={<CreateEventForm />} />
+          <Route path="/createEvent1" element={<CreateEventForm />} />
           <Route path="organiser" element={<Orgnizer />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/createPage" element={<CreatePage />} />
-          <Route path="/getOrganizer" element={<GetOrganizer />} />
+          <Route path="/Organizers" element={<GetOrganizer />} />
           <Route
-            path="/getOrganizerById/:organizerId"
+            path="/Organizer/:organizerId"
             element={<GetOrganizerById />}
           />
 
-          <Route path="/getPerformer" element={<GetPerformers />} />
+          <Route path="/Performers" element={<GetPerformers />} />
           <Route
-            path="/getPerformerById/:performerId"
+            path="/Performer/:performerId"
             element={<GetPerformerById />}
           />
 
-          <Route path="/getVenue" element={<GetVenue />} />
-          <Route path="/getVenueById/:venueId" element={<GetVenueById />} />
+          <Route path="/Venues" element={<GetVenue />} />
+          <Route path="/Venue/:venueId" element={<GetVenueById />} />
 
-          <Route path="/getService" element={<GetService />} />
+          <Route path="/Services" element={<GetService />} />
           <Route
-            path="/getServiceById/:serviceId"
+            path="/Service/:serviceId"
             element={<GetServiceById />}
           />
 
@@ -80,6 +81,7 @@ function Routess() {
             element={<GetOrganizerByFilter />}
           />
           <Route path="/myBookings" element={<MyBookings />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
           <Route path="/createTicket" element={<CreateTicket />} />
         </Route>

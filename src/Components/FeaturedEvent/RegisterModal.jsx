@@ -26,7 +26,8 @@ function RegisterModal() {
 
     try {
       const response = await axios.post(
-        "https://event-node-backend.onrender.com/api/auth/setup",
+        // "https://event-node-backend.onrender.com/api/auth/setup",
+        `${Auth.register}`,
         {
           username: name,
 
@@ -120,9 +121,6 @@ function RegisterModal() {
                 onClick={handleRegister}
               />
             </div>
-
-           
-          
           </div>
         </div>
       </div>

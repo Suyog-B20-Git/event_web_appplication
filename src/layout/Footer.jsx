@@ -18,7 +18,7 @@ function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 ">
       {/* Footer CTA Section */}
-      <div className="border-b border-gray-700 py-6">
+      <div className="border-b border-gray-700 py-4">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
           <div className="flex items-center gap-4">
             <i className="fas fa-map-marker-alt text-orange-500 text-2xl"></i>
@@ -45,7 +45,7 @@ function Footer() {
       </div>
 
       {/* Footer Content Section */}
-      <div className="py-10 px-4">
+      <div className="py-8 px-4">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* About Section */}
           <div>
@@ -79,7 +79,7 @@ eiusmod tempor incididunt ut labore et dolore magna aliqua.
 
           {/* Useful Links Section */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Useful Links</h3>
+            <h3 className="font-semibold text-lg mb-3">Useful Links</h3>
             <ul className="grid grid-cols-2 gap-2 text-sm">
               <li><Link to="/" className="">Home</Link></li>
               <li><Link to="/about" className="hover:text-[#ff2459]">About</Link></li>
@@ -104,7 +104,7 @@ eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 placeholder="Email Address"
                 className="flex-1 p-2 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-l-md focus:outline-none"
               />
-              <button className="bg-[#ff2459] text-white px-4 py-2 rounded-r-md">
+              <button className="bg-[#ff2459] text-white px-4 md:px-2 lg:px-4 py-2 rounded-r-md">
                 <i className="fab fa-telegram-plane"></i>Subscribe
               </button>
             </form>
@@ -113,9 +113,9 @@ eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </div>
 
       {/* Cities Section */}
-      <div className="bg-gray-800 py-4 ">
+      <div className="bg-gray-800 py-3 ">
         <div className="container mx-auto">
-          <h3 className="text-center font-semibold mb-4">All Cities</h3>
+          <h3 className="text-center font-semibold mb-3">All Cities</h3>
           <div className="flex flex-wrap justify-center gap-4">
             {cities.map((city, index) => (
               <div
@@ -130,11 +130,11 @@ eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </div>
 
       {/* Copyright Section */}
-      <div className="bg-gray-800 py-4 p-5 ">
+      <div className="bg-gray-800 py-3 p-3 ">
         <div className="container mx-auto flex flex-col md:flex-row justify-between text-sm">
           <p >
-            &copy; 2024 EventNode. All rights reserved. <br /> Product by <a
-              href="https://example.com" className="text-[#ff2459]"> @2Bytes Solutions</a>
+            &copy; 2025 EventsNode. All rights reserved. <br /> Product by <a
+              href="https://example.com" className="text-[#ff2459]"> MasterBlocks </a>
           </p>
           <ul className="flex gap-4">
             <li><Link to="#" className="hover:text-[#ff2459]">Terms</Link></li>

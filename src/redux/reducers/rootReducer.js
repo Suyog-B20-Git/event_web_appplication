@@ -39,6 +39,7 @@ import addFavouriteVenueReducer from "./pages/Venue/postFavouriteVenueReducer";
 
 import getFavouriteServiceReducer from "./pages/Services/getFavouriteServiceReducer";
 import addFavouriteServiceReducer from "./pages/Services/postFavouriteServiceReducer";
+import deleteFavouriteEventReducer from "./pages/Events/deleteFavouriteEvent";
 
 // ** Reducers Import **//
 
@@ -79,6 +80,7 @@ const rootReducer = combineReducers({
   addFavouriteVenueReducer,
   getFavouriteServiceReducer,
   addFavouriteServiceReducer,
+  deleteFavouriteEventReducer,
 });
 
 export default rootReducer;

@@ -14,7 +14,7 @@ const getServiceReducer = (state = initialState, action) => {
       return {
         ...state,
         serviceData: action.serviceData,
-        totalPages:action.totalPages
+        totalPages: action.totalPages,
       };
 
     // case "GET_SERVICE":

@@ -65,22 +65,22 @@ function GetOrganizerById() {
 
   // get Upcoming Event Data
     useEffect(() => {
-      dispatch(getUpcomingEventData(setLoading));  
+      dispatch(getUpcomingEventData(setLoading));
     }, [dispatch]);
-  
+
     // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
     //   upcomingEventData: [],
     // }
-  
+
     const upcomingEventData = useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
-  
+
     if (!upcomingEventData) {
       return <div>Loading...</div>;
     }
-  
-    const data1 = upcomingEventData; 
+
+    const data1 = upcomingEventData;
     console.log("Upcoming Event Data:", data1);
-  
+
 
   const store = useSelector((state) => state.getOrganizerByIdReducer) || {
     organizerData: [],
@@ -540,8 +540,8 @@ function GetOrganizerById() {
                 {/* <p className="font-medium text-lg text-center">
                   {upcomimg ? "" : <div className="  "></div>}
                 </p> */}
-                  {/*Event Data Section*/}               
-                
+                  {/*Event Data Section*/}
+
                   {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6">
                     {upcomingEventData.length > 0 ? (
@@ -715,7 +715,7 @@ function GetOrganizerById() {
               </div>
             </div>
           </div>
-          
+
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">

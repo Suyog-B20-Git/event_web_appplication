@@ -7,6 +7,7 @@ import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
 import { HiOutlineDeviceMobile } from "react-icons/hi";
 import axios from "axios";
+import { Auth } from "../../redux/Urls";
 import Photo from "../../Users/Photo";
 function Register() {
   // const navigate = useNavigate();
@@ -30,7 +31,9 @@ function Register() {
 
     try {
       const response = await axios.post(
-        "https://event-node-backend.onrender.com/api/auth/setup",
+        `${Auth.register}`,
+
+        //  "https://event-node-backend.onrender.com/api/auth/setup",
         {
           username: name,
 
