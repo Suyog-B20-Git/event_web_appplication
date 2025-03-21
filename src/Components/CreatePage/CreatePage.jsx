@@ -2226,7 +2226,7 @@ function CreatePage() {
             className="bg-[#ff2459] text-white p-3 px-6 rounded-lg 
                       shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105"
           >
-            Enter
+            Submit
           </button>
         </div>
 

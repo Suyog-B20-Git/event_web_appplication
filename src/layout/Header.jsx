@@ -50,9 +50,11 @@ const Header = () => {
       }
     }
   }, [authToken]);
+  
   const role = localStorage.getItem("role");
   const [isSearch, setIsSearch] = useState(false);
   const handleShowAlert = () => setShowPopup(true);
+
   var text_data = [
     { name: "Home", icon: <IoMdHome />, path: "/home" },
     {
@@ -128,6 +130,7 @@ const Header = () => {
   const [isPop, setIsPop] = useState(false);
   const boxRef = useRef(null);
   const dropdownRef = useRef(null); // Ref for the dropdown
+
   useEffect(() => {
     gsap.from(boxRef.current, {
       y: 100, // Moves up from 100px
@@ -136,7 +139,9 @@ const Header = () => {
       ease: "power3.out",
     });
   }, []);
+
   const [activeIndex, setActiveIndex] = useState(null);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -150,18 +155,22 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   const handleLogOut = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("isLogin");
     localStorage.removeItem("eventData");
     navigate("/home");
   };
+
   const handleClickOutside1 = (event) => {
     if (searchRef.current && !searchRef.current.contains(event.target)) {
       setIsSearch(false);
     }
   };
+
   const searchRef = useRef(null);
+
   useEffect(() => {
     if (isSearch) {
       document.addEventListener("mousedown", handleClickOutside1);
@@ -218,6 +227,8 @@ const Header = () => {
                   src="/logo.png"
                   className="lg:hidden md:hidden block h-[40%] w-[40%] mx-auto"
                   alt="logo"
+                  onClick={() => navigate("/home")}
+
                 />
               )}
 
