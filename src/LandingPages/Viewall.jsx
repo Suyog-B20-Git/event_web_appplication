@@ -18,6 +18,15 @@ import { getCity } from "../redux/actions/master/location/City";
 import { getEventByFilter } from "../redux/actions/master/Events/getEventByFilter";
 import { VscFilterFilled } from "react-icons/vsc";
 import Pagination from "../Components/Pagination";
+
+// Function to convert UTC to local time
+const convertUTCToLocal = (utcString) => {
+  if (!utcString) return "Invalid Date";
+  const date = new Date(utcString);
+  return date.toLocaleString();
+};
+
+
 function Viewall() {
   const [filter, setFilter] = useState(false);
   const options = [
@@ -505,7 +514,7 @@ function Viewall() {
                       </p>
                       <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                         <MdEvent className="relative top-1" />
-                        <span>{item.startDate}</span>
+                        <span>{convertUTCToLocal(item.startDate)}</span>
                       </p>
                       <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                         <CiLocationOn className="relative top-1" />

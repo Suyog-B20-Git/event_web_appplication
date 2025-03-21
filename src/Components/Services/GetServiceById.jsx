@@ -54,7 +54,7 @@ function GetServiceById() {
   const [upcoming, setUpcoming] = useState(false);
   const [facebook, setFacebook] = useState(false);
   const [twitter, setTwitter] = useState(false);
-  const [instagram, setInstagram] = useState(false);
+  // const [instagram, setInstagram] = useState(false);
   const [youtube, setYoutube] = useState(false);
   const [stat, setStat] = useState(false);
 
@@ -468,7 +468,7 @@ function GetServiceById() {
                   >
                     TWITTER
                   </button>
-                  <button
+                  {/* <button
                     className={`${
                       instagram ? "border-b-2 border-b-red-600" : ""
                     } p-2 lg:px-0 px-4`}
@@ -483,8 +483,8 @@ function GetServiceById() {
                     }}
                   >
                     INSTAGRAM
-                  </button>
-                  <button
+                  </button> */}
+                  {/* <button
                     className={`${
                       youtube ? "border-b-2 border-b-red-600" : ""
                     } p-2 lg:px-0 px-4`}
@@ -499,7 +499,7 @@ function GetServiceById() {
                     }}
                   >
                     YOUTUBE
-                  </button>
+                  </button> */}
                   <button
                     className={`${
                       youtube ? "border-b-2 border-b-red-600" : ""
@@ -598,13 +598,13 @@ function GetServiceById() {
                     ""
                   )}
                   </p>
-                  <p className="font-medium text-lg text-center">
+                  {/* <p className="font-medium text-lg text-center">
                     {instagram ? (
                       <InstagramProfile username="cristiano" />
                     ) : (
                       <div className=" "></div>
                     )}
-                  </p>
+                  </p> */}
                   <p className="font-medium text-lg text-center">
                     {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                   </p>
