@@ -556,7 +556,7 @@ function GetPerformerById() {
                 <p>
                   {facebook ? (
                     <div>
-                      <FacebookEmbeded appId={849920522233544} />
+                      <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                     </div>
                   ) : (
                     ""
@@ -565,7 +565,7 @@ function GetPerformerById() {
                 <p>
                   {twitter ? (
                     <div>
-                      <TwitterEmbed twitterId={data.twitterId} />
+                      {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                     </div>
                   ) : (
                     ""
