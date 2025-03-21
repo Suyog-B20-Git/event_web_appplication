@@ -1121,7 +1121,7 @@ function GetPerformers() {
                   </div>
                   <div
                     onClick={() => {
-                      navigate(`/getPerformerById/${item._id}`, {
+                      navigate(`/Performer/${item._id}`, {
                         state: item._id,
                       });
                     }}

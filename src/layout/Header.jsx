@@ -113,7 +113,6 @@ const Header = () => {
         { name: "DanceStudio", path: "#" },
       ],
     },
-    { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
     {
       name: "Venues",
       path: "/Venues",
@@ -124,6 +123,8 @@ const Header = () => {
         { name: "Outdoor", path: "#" },
       ],
     },
+    { name: "Contact Us", path: "#", icon: <MdContactPhone /> },
+
   ];
 
   const [isLog, setIsLog] = useState(false);
@@ -392,6 +393,8 @@ const Header = () => {
                           <button
                             onClick={() => {
                               setIsLog(false);
+                              navigate("/profile");
+
                             }}
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >

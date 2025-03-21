@@ -1101,8 +1101,8 @@ function CreatePage() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
 
-  const notifySuccess = (person) =>
-    toast.success(`${person} Page created created successfully!`);
+  // const notifySuccess = (person) =>
+  //   toast.success(`${person} Page created created successfully!`);
 
   const handleTagChange = (selectedOptions) => {
     const newTags = selectedOptions
@@ -1182,7 +1182,7 @@ function CreatePage() {
     { value: "Wedding Planner", label: "Wedding Planner" },
   ];
   const subCategoryList = selectedCategory
-  ? subCategoryOptions[selectedCategory.value]
+  ? subCategoryOptions[selectedCategory?.value] || []
   : [];
 
 
@@ -1272,13 +1272,13 @@ function CreatePage() {
   const [image, setImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
 
-  const handleImageChange1 = (event) => {
-    const file = event.target.files[0];
-    if (!file) {
-      setImageError("Profile image is required");
-      return;
-    }
-  };
+  // const handleImageChange1 = (event) => {
+  //   const file = event.target.files[0];
+  //   if (!file) {
+  //     setImageError("Profile image is required");
+  //     return;
+  //   }
+  // };
 
   const [imageError, setImageError] = useState("");
 
@@ -1302,87 +1302,16 @@ function CreatePage() {
 
   console.log(image);
 
-  // const onSubmit = (data) => {
-  //   const formData = new FormData();
-  //   formData.append("profileImage", image); // Append file
-
-  //   selectedSubCategory.forEach((subCategory) =>
-  //     formData.append("categories[]", subCategory)
-  //   );
-
-  //   formData.append("country", data.country);
-
-  //   formData.append("state", data.state);
-  //   formData.append("city", data.city);
-  //   formData.append("location", data.location);
-  //   formData.append("name", data.listingTitle);
-  //   formData.append("description", data.listingDescription);
-  //   formData.append("address", data4.address);
-  //   formData.append("googleSearchLocation", data.location);
-  //   formData.append("googleSearchLat", data4.location.lat);
-  //   formData.append("googleSearchLong", data4.location.lng);
-
-  //   selectedTags.forEach((tag) => formData.append("tags[]", tag));
-
-  //   if (data.phone) formData.append("phoneNumber", data.phone);
-  //   if (data.email) formData.append("email", data.email);
-  //   if (data.availableTime)
-  //     formData.append("availableTime", data.availableTime);
-  //   if (data.website) formData.append("website", data.website);
-  //   formData.append("facebookUrl", data.facebookUrl);
-  //   // formData.append("instagramUrl", data.instagramUrl);
-  //   formData.append("youtubeUrl", data.youtubeUrl);
-  //   formData.append("twitterUrl", data.twitterUrl);
-
-  //   if (selectedCategory.value === "Performers") {
-  //     formData.append("cloudSoundUrl", data.cloudSoundUrl);
-  //     formData.append("spotifyUrl", data.spotifyUrl);
-  //     dispatch(createNewPerformer(formData));
-  //   }
-
-  //   if (selectedCategory.value === "Organiser") {
-  //     dispatch(createNewOrganizer(formData));
-  //   }
-  //   if (selectedCategory.value === "Services") {
-  //     dispatch(createNewService(formData));
-  //     // notifySuccess(data.listingTitle);
-  //   }
-  //   if (selectedCategory.value === "Venues") {
-  //     formData.append("coverImage", coverImage); // Append file
-  //     formData.append("url", data.url);
-  //     formData.append("zipcode", data.zipcode);
-  //     formData.append("quotedForm", data.quotedForm);
-  //     formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
-  //     formData.append("availability", data.availability);
-  //     formData.append("pricing", data.pricing);
-  //     formData.append("neighbourhoods", data.neighbourhoods);
-  //     formData.append("noOfStandingGuest", data.noOfStandingGuest);
-  //     formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
-  //     formData.append("amenities", data.amenities);
-  //     formData.append("type", data.type);
-
-  //     dispatch(createNewVenue(formData));
-  //     // notifySuccess(data.listingTitle);
-  //     toast.success(`${selectedCategory.value} Page created successfully!`);
-
-  //   }
-
-  //   console.log("Form Data:", data);
-
-  //   setImage(null);
-  //   setCoverImage(null);
-
-  //   reset();
-  //   setSelectedTags([])
-  // };
-
-
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     const formData = new FormData();
-    
-    formData.append("profileImage", image);
-    selectedSubCategory.forEach((subCategory) => formData.append("categories[]", subCategory));
+    formData.append("profileImage", image); // Append file
+
+    selectedSubCategory.forEach((subCategory) =>
+      formData.append("categories[]", subCategory)
+    );
+
     formData.append("country", data.country);
+
     formData.append("state", data.state);
     formData.append("city", data.city);
     formData.append("location", data.location);
@@ -1392,67 +1321,183 @@ function CreatePage() {
     formData.append("googleSearchLocation", data.location);
     formData.append("googleSearchLat", data4.location.lat);
     formData.append("googleSearchLong", data4.location.lng);
+
     selectedTags.forEach((tag) => formData.append("tags[]", tag));
-  
+
     if (data.phone) formData.append("phoneNumber", data.phone);
     if (data.email) formData.append("email", data.email);
-    if (data.availableTime) formData.append("availableTime", data.availableTime);
+    if (data.availableTime)
+      formData.append("availableTime", data.availableTime);
     if (data.website) formData.append("website", data.website);
     formData.append("facebookUrl", data.facebookUrl);
+    // formData.append("instagramUrl", data.instagramUrl);
     formData.append("youtubeUrl", data.youtubeUrl);
     formData.append("twitterUrl", data.twitterUrl);
-  
-    try {
-      let response;
-  
-      if (selectedCategory.value === "Performers") {
-        formData.append("cloudSoundUrl", data.cloudSoundUrl);
-        formData.append("spotifyUrl", data.spotifyUrl);
-        response = await dispatch(createNewPerformer(formData));
-      }
-  
-      if (selectedCategory.value === "Organiser") {
-        response = await dispatch(createNewOrganizer(formData));
-      }
-  
-      if (selectedCategory.value === "Services") {
-        response = await dispatch(createNewService(formData));
-      }
-  
-      if (selectedCategory.value === "Venues") {
-        formData.append("coverImage", coverImage);
-        formData.append("url", data.url);
-        formData.append("zipcode", data.zipcode);
-        formData.append("quotedForm", data.quotedForm);
-        formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
-        formData.append("availability", data.availability);
-        formData.append("pricing", data.pricing);
-        formData.append("neighbourhoods", data.neighbourhoods);
-        formData.append("noOfStandingGuest", data.noOfStandingGuest);
-        formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
-        formData.append("amenities", data.amenities);
-        formData.append("type", data.type);
-        response = await dispatch(createNewVenue(formData));
-      }
-  
-      if (response?.error) {
-        console.error("Error in form submission:", response.error);
-        toast.error("Submission failed! Please try again.");
-      } else {
-        toast.success(`${selectedCategory.value} Page created successfully!`);
-      }
-    } catch (error) {
-      console.error("Unexpected error:", error);
-      toast.error("Something went wrong! Please check your data.");
+
+    if (selectedCategory.value === "Performers") {
+      formData.append("cloudSoundUrl", data.cloudSoundUrl);
+      formData.append("spotifyUrl", data.spotifyUrl);
+      dispatch(createNewPerformer(formData));
     }
-  
-    console.log("Form Data:", formData);
-  
-    reset();
-    setImage(null);
-    setCoverImage(null);
-    setSelectedTags([]);
+
+    if (selectedCategory.value === "Organiser") {
+      dispatch(createNewOrganizer(formData));
+    }
+    if (selectedCategory.value === "Services") {
+      dispatch(createNewService(formData));
+      // notifySuccess(data.listingTitle);
+    }
+    if (selectedCategory.value === "Venues") {
+      formData.append("coverImage", coverImage); // Append file
+      formData.append("url", data.url);
+      formData.append("zipcode", data.zipcode);
+      formData.append("quotedForm", data.quotedForm);
+      formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
+      formData.append("availability", data.availability);
+      formData.append("pricing", data.pricing);
+      formData.append("neighbourhoods", data.neighbourhoods);
+      formData.append("noOfStandingGuest", data.noOfStandingGuest);
+      formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
+      formData.append("amenities", data.amenities);
+      formData.append("type", data.type);
+
+      dispatch(createNewVenue(formData));
+      // notifySuccess(data.listingTitle);
+      toast.success(`${selectedCategory.value} Page created successfully!`);
+
+    }
+
+    console.log("Form Data:", data);
+
+    // setImage(null);
+    // setCoverImage(null);
+
+    // reset();
+    // setSelectedTags([])
   };
+
+  // const onSubmit = async (data) => {
+  //   const formData = new FormData();
+  //   formData.append("profileImage", image);
+  //   selectedSubCategory.forEach((subCategory) => formData.append("categories[]", subCategory));
+  //   formData.append("country", data.country);
+  //   formData.append("state", data.state);
+  //   formData.append("city", data.city);
+  //   formData.append("location", data.location);
+  //   formData.append("name", data.listingTitle);
+  //   formData.append("description", data.listingDescription);
+  
+  //   try {
+  //     let response = null;
+  
+  //     if (selectedCategory?.value === "Performers") {
+  //       response = await dispatch(createNewPerformer(formData));
+  //     } else if (selectedCategory?.value === "Organiser") {
+  //       response = await dispatch(createNewOrganizer(formData));
+  //     } else if (selectedCategory?.value === "Services") {
+  //       response = await dispatch(createNewService(formData));
+  //     } else if (selectedCategory?.value === "Venues") {
+  //       response = await dispatch(createNewVenue(formData));
+  //     }
+  
+  //     console.log("API Response:", response);
+  
+  //     // Check if API response contains an error and show only ONE toast
+  //     if (!response || response?.error || response?.statusCode === 500 || !response?.status) {
+  //       console.error("Error in form submission:", response?.message || "Unknown error");
+  
+  //       // Avoid duplicate messages by exiting before the catch block
+  //       toast.error(response?.message || "Something went wrong! Please try again.");
+  //       return; 
+  //     }
+  
+  //     // Show success message only if no errors
+  //     toast.success(`${selectedCategory.value} Page created successfully!`);
+  
+  //   } catch (error) {
+  //     console.error("Unexpected error:", error);
+  
+  //     // Show generic error message only if no previous error message was shown
+  //     toast.error("Something went wrong! Please check your data.");
+  //   }
+  // };
+  
+  // const onSubmit = async (data) => {
+  //   const formData = new FormData();
+    
+  //   formData.append("profileImage", image);
+  //   selectedSubCategory.forEach((subCategory) => formData.append("categories[]", subCategory));
+  //   formData.append("country", data.country);
+  //   formData.append("state", data.state);
+  //   formData.append("city", data.city);
+  //   formData.append("location", data.location);
+  //   formData.append("name", data.listingTitle);
+  //   formData.append("description", data.listingDescription);
+  //   formData.append("address", data4.address);
+  //   formData.append("googleSearchLocation", data.location);
+  //   formData.append("googleSearchLat", data4.location.lat);
+  //   formData.append("googleSearchLong", data4.location.lng);
+  //   selectedTags.forEach((tag) => formData.append("tags[]", tag));
+  
+  //   if (data.phone) formData.append("phoneNumber", data.phone);
+  //   if (data.email) formData.append("email", data.email);
+  //   if (data.availableTime) formData.append("availableTime", data.availableTime);
+  //   if (data.website) formData.append("website", data.website);
+  //   formData.append("facebookUrl", data.facebookUrl);
+  //   formData.append("youtubeUrl", data.youtubeUrl);
+  //   formData.append("twitterUrl", data.twitterUrl);
+  
+  //   try {
+  //     let response;
+  
+  //     if (selectedCategory.value === "Performers") {
+  //       formData.append("cloudSoundUrl", data.cloudSoundUrl);
+  //       formData.append("spotifyUrl", data.spotifyUrl);
+  //       response = await dispatch(createNewPerformer(formData));
+  //     }
+  
+  //     if (selectedCategory.value === "Organiser") {
+  //       response = await dispatch(createNewOrganizer(formData));
+  //     }
+  
+  //     if (selectedCategory.value === "Services") {
+  //       response = await dispatch(createNewService(formData));
+  //     }
+  
+  //     if (selectedCategory.value === "Venues") {
+  //       formData.append("coverImage", coverImage);
+  //       formData.append("url", data.url);
+  //       formData.append("zipcode", data.zipcode);
+  //       formData.append("quotedForm", data.quotedForm);
+  //       formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
+  //       formData.append("availability", data.availability);
+  //       formData.append("pricing", data.pricing);
+  //       formData.append("neighbourhoods", data.neighbourhoods);
+  //       formData.append("noOfStandingGuest", data.noOfStandingGuest);
+  //       formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
+  //       formData.append("amenities", data.amenities);
+  //       formData.append("type", data.type);
+  //       response = await dispatch(createNewVenue(formData));
+  //     }
+  
+  //     if (response?.error) {
+  //       console.error("Error in form submission:", response.error);
+  //       toast.error("Submission failed! Please try again.");
+  //     } else {
+  //       toast.success(`${selectedCategory.value} Page created successfully!`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Unexpected error:", error);
+  //     toast.error("Something went wrong! Please check your data.");
+  //   }
+  
+  //   console.log("Form Data:", formData);
+  
+  //   // reset();
+  //   // setImage(null);
+  //   // setCoverImage(null);
+  //   // setSelectedTags([]);
+  // };
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -1496,33 +1541,35 @@ function CreatePage() {
               Select Subcategory*
             </label>
             <Controller
-              name="subCategory"
-              control={control}
-              rules={{ required: "Subcategory is required" }} // Required validation added
-              render={({ field, fieldState: { error } }) => (
-                <>            
-                <Select
-                  {...field}
-                  options={subCategoryList}
-                  isMulti={selectedCategory?.value !== "Venues"} // Allow multiple for all categories except "Venues"
-                  isDisabled={!selectedCategory}
-                  onChange={(selectedOptions) => {
-                    handleSubcategoryChange(selectedOptions);
-                    // field.onChange(selectedOptions);
-                    field.onChange(
-                      selectedOptions
-                        ? selectedOptions.map((option) => option.value)
-                        : []
-                    );
-                  }}
-                  value={subCategoryList.filter((option) =>
-                    selectedSubCategory.includes(option.value)
-                  )}
-                />
-                {error && <span className="text-red-500 text-sm">{error.message}</span>}
-                </>
-              )}
-            />
+  name="subCategory"
+  control={control}
+  rules={{ required: "Subcategory is required" }}
+  render={({ field, fieldState: { error } }) => (
+    <>
+      <Select
+        {...field}
+        options={subCategoryList}
+        isMulti={selectedCategory?.value !== "Venues"} // Multiple selection except for Venues
+        isDisabled={!selectedCategory}
+        onChange={(selectedOptions) => {
+          const values = Array.isArray(selectedOptions)
+            ? selectedOptions.map((option) => option.value)
+            : selectedOptions
+            ? [selectedOptions.value]
+            : [];
+          field.onChange(values);
+          setSelectedSubCategory(values);
+        }}
+        value={subCategoryList.filter((option) =>
+          (field.value || []).includes(option.value) // Ensure field.value is always an array
+        )}
+      />
+      {error && <span className="text-red-500 text-sm">{error.message}</span>}
+    </>
+  )}
+/>
+
+
           </div>
           {/*Listing Title*/}
           <div className="flex flex-col gap-1">

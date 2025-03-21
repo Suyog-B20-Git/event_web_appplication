@@ -115,6 +115,11 @@ function FeaturedEvent() {
     window.scrollTo(0, 0);
     receivedData.startDate && extractDateAndTime();
   }, []);
+
+  console.log("Received Data:", receivedData);
+console.log("Organizer Data:", receivedData.organizer);
+console.log("Phone:", receivedData.organizer?.mobileNumber);
+
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(null);
 
@@ -420,35 +425,37 @@ function FeaturedEvent() {
                 </p>
               </div>
             </div>
-            <div className="flex  flex-col lg:items-center  lg:p-2">
-              <div className="h-14 lg:block md:block hidden w-14 lg:h-32 lg:w-32 md:w-20 md:h-20 m-2 md:m-0  rounded-full bg-gray-500"></div>
-              <p className="font-semibold lg:block md:block hidden  lg:text-base text-sm pt-2">
-                Name
-              </p>
-              <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-2 pt-4">
-                <p className="flex lg:text-xs md:text-xs  text-sm break-words gap-1 lg:whitespace-nowrap">
-                  <PiBuildingApartmentFill className="relative top-1" />
-                  {receivedData.venue?.city || "-"},
-                  {receivedData.venue?.country || "-"}
-                </p>
-                <p className="flex lg:text-xs   md:text-xs  text-sm break-words gap-1 lg:whitespace-nowrap">
-                  <FaPhoneAlt className="relative top-1" />
-                  +91 8456789032
-                </p>
-                <p className="flex lg:text-xs  md:text-xs   text-sm break-words gap-1 lg:whitespace-nowrap">
-                  <MdOutlineMailOutline className="relative top-1" />{" "}
-                  xyz@gmail.com
-                </p>
-              </div>
-              <button
-                onClick={() => setIsFormOpen(true)}
-                className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
-              >
-                <IoIosContact className="relative top-1 text-xl" />
-                Contact Organiser
-              </button>
-            </div>
-          </div>
+            <div className="flex flex-col lg:items-center lg:p-2">
+  <div className="h-14 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
+    {receivedData.organizer?.name?.charAt(0) || "N"}
+  </div>
+  <p className="font-semibold lg:text-base text-sm pt-2">
+    {receivedData.organizer?.name || "Organizer Name"}
+  </p>
+  <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-2 pt-4">
+    <p className="flex lg:text-xs md:text-xs text-sm gap-1">
+      <PiBuildingApartmentFill className="relative top-1" />
+      {receivedData.venue?.city || "-"}, {receivedData.venue?.country || "-"}
+    </p>
+    <p className="flex lg:text-xs md:text-xs text-sm gap-1">
+      <FaPhoneAlt className="relative top-1" />
+      {receivedData.organizer?.mobileNumber || "Not available"}
+      </p>
+    <p className="flex lg:text-xs md:text-xs text-sm gap-1">
+      <MdOutlineMailOutline className="relative top-1" />
+      {receivedData.organizer?.email || "Not available"}
+    </p>
+  </div>
+  <button
+    onClick={() => setIsFormOpen(true)}
+    className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
+  >
+    <IoIosContact className="relative top-1 text-xl" />
+    Contact Organizer
+  </button>
+</div>
+
+        </div>
 
           <div className="border-2 rounded-xl p-2 flex flex-col items-center">
             <p className="font-semibold">Google Location</p>
@@ -464,9 +471,14 @@ function FeaturedEvent() {
         </div>
       </div>
       <div className="p-5 lg:p-10 md:p-10">
-        <Overview />
-        <EventInfo />
+        {/* <Overview />
+        <EventInfo /> */}
+        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+        <h2 className="text-2xl sm:text-xl font-bold text-gray-800 mb-3">Event Description</h2>
+          <p className="text-lg text-gray-600 mt-2">{receivedData.description || "Description not available."}</p>
+        </div>
         <div>
+          
           <h1 className="text-gray-900 font-bold pt-10 text-lg p-4 pl-0">
             Location
           </h1>
@@ -477,8 +489,8 @@ function FeaturedEvent() {
 
         {/* <Sponsors /> */}
         <WatchTrailer />
-        <Speakers />
-        <Dj />
+        {/* <Speakers />
+        <Dj /> */}
         {/* <RatingReview /> */}
       </div>
       {isFormOpen && (

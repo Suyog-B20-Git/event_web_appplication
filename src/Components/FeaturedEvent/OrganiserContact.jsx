@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MdCancel } from "react-icons/md";
 import Button from "../Button";
 
-function OrganiserContact({ isFormOpen, setIsFormOpen }) {
+function OrganiserContact({ isFormOpen, setIsFormOpen, name }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -61,11 +61,14 @@ function OrganiserContact({ isFormOpen, setIsFormOpen }) {
     });
   };
   return (
-    <div className="lg:max-w-[650px] md:max-w-[500px] lg:max-h-[600px]">
-      <p className="flex justify-between gap-3 p-2">
-        <h1 className="font-semibold">
+    <div className="fixed w-full inset-0 flex flex-col items-center   justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
+      <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
+      
+    <div className="lg:max-w-[650px] md:max-w-[500px] lg:max-h-[600px] ">
+      <p className="flex justify-between gap-3 p-2 ">
+        <h1 className="font-semibold  text-2xl">
           Inquiry for{" "}
-          <span className="text-[#ff2459] text-sm">
+          <span className="text-[#ff2459]  text-sm">
             Event Name - Event Location -Event Header - date
             Event Name - Event Location -Event Header - date
           </span>
@@ -78,7 +81,7 @@ function OrganiserContact({ isFormOpen, setIsFormOpen }) {
         <hr />
         {inputfield.map((item, index) => {
           return (
-            <div key={index} className="flex flex-col gap-2">
+            <div key={index} className="flex flex-col gap-2 ">
               <label
                 className="block font-medium text-gray-700"
                 htmlFor={item.name}
@@ -137,6 +140,8 @@ function OrganiserContact({ isFormOpen, setIsFormOpen }) {
         </div>
       </form>
     </div>
+    </div>
+      </div>
   );
 }
 
