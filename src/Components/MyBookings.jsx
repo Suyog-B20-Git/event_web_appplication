@@ -7,7 +7,7 @@
 //   const ticketInfo = [
 //     {
 //       eventName: "Concert XYZ",
-//       img: "music.jpeg",
+//       img: "staticAssets/music.jpeg",
 //       date: "2025-03-15",
 //       time: "19:00",
 //       orderId: "ORD123456",
@@ -22,7 +22,7 @@
 //     },
 //     {
 //       eventName: "Theater Play ABC",
-//       img: "music.jpeg",
+//       img: "staticAssets/music.jpeg",
 //       date: "2025-04-10",
 //       time: "18:30",
 //       orderId: "ORD123457",
@@ -37,7 +37,7 @@
 //     },
 //     {
 //       eventName: "Football Match DEF",
-//       img: "music.jpeg",
+//       img: "staticAssets/music.jpeg",
 //       date: "2025-03-20",
 //       time: "16:00",
 //       orderId: "ORD123458",
@@ -52,7 +52,7 @@
 //     },
 //     {
 //       eventName: "Music Festival GHI",
-//       img: "music.jpeg",
+//       img: "staticAssets/music.jpeg",
 //       date: "2025-05-05",
 //       time: "14:00",
 //       orderId: "ORD123459",
@@ -133,7 +133,7 @@
 //   const ticketInfo = [
 //     {
 //       eventName: "Concert XYZ",
-//       img: "music.jpeg",
+//       img: "staticAssets/music.jpeg",
 //       date: "2025-03-15",
 //       time: "19:00",
 //       orderId: "ORD123456",
@@ -148,7 +148,7 @@
 //     },
 //     {
 //       eventName: "Theater Play ABC",
-//       img: "music.jpeg",
+//       img: "staticAssets/music.jpeg",
 //       date: "2025-04-10",
 //       time: "18:30",
 //       orderId: "ORD123457",
@@ -163,7 +163,7 @@
 //     },
 //     {
 //       eventName: "Football Match DEF",
-//       img: "music.jpeg",
+//       img: "staticAssets/music.jpeg",
 //       date: "2025-03-20",
 //       time: "16:00",
 //       orderId: "ORD123458",
@@ -178,7 +178,7 @@
 //     },
 //     {
 //       eventName: "Music Festival GHI",
-//       img: "music.jpeg",
+//       img: "staticAssets/music.jpeg",
 //       date: "2025-05-05",
 //       time: "14:00",
 //       orderId: "ORD123459",
@@ -272,7 +272,7 @@ function MyBookings() {
   const ticketInfo = [
     {
       eventName: "Concert XYZ",
-      img: "music.jpeg",
+      img: "staticAssets/music.jpeg",
       date: "2025-03-15",
       time: "19:00",
       orderId: "ORD123456",
@@ -287,7 +287,7 @@ function MyBookings() {
     },
     {
       eventName: "Theater Play ABC",
-      img: "music.jpeg",
+      img: "staticAssets/music.jpeg",
       date: "2025-04-10",
       time: "18:30",
       orderId: "ORD123457",
@@ -302,7 +302,7 @@ function MyBookings() {
     },
     {
       eventName: "Football Match DEF",
-      img: "music.jpeg",
+      img: "staticAssets/music.jpeg",
       date: "2025-03-20",
       time: "16:00",
       orderId: "ORD123458",
@@ -317,7 +317,7 @@ function MyBookings() {
     },
     {
       eventName: "Music Festival GHI",
-      img: "music.jpeg",
+      img: "staticAssets/music.jpeg",
       date: "2025-05-05",
       time: "14:00",
       orderId: "ORD123459",

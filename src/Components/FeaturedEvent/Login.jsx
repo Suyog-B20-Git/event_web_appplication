@@ -368,7 +368,7 @@
 //     <div className=" lg:pt-[180px] pt-[30px]  ">
 //       <div
 //         style={{
-//           backgroundImage: "url(/createEvent.png)",
+//           backgroundImage: "url(/staticAssets/createEvent.png)",
 //           backgroundPosition: "center",
 //           backgroundSize: "cover",
 //           backgroundRepeat: "no-repeat",
