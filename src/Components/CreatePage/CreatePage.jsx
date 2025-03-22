@@ -1303,6 +1303,13 @@ function CreatePage() {
   console.log(image);
 
   const onSubmit = (data) => {
+    if (!check) {
+      setError("You must accept the terms.");
+      return; // Prevent form submission
+    }
+  
+    setError(""); // Clear error if checkbox is checked
+  
     const formData = new FormData();
     formData.append("profileImage", image); // Append file
 
@@ -2264,7 +2271,7 @@ function CreatePage() {
             <span className="text-[#ff2459]">TERMS AND CONDITIONS.</span>
           </p>
         </div>
-        {!check && <p className="text-red-500 text-sm">You must accept the terms.</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         {/* Submit Button */}
         <div className="flex justify-center md:justify-end mr-0 sm:mr-6 mt-4">
