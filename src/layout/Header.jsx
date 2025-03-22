@@ -198,7 +198,7 @@ const Header = () => {
                 {/* <div className="md:w-[35%] w-[80%]  ml-3 relative z-20 p-1 rounded-md"> */}
 
                 <img
-                  src="staticAssets/logo.png"
+                  src="/staticAssets/logo.png"
                   className="hidden md:block lg:w-[80%] md:w-[100%] w-auto"
                   // className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
                   alt="logo"

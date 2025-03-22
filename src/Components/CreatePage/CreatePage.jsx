@@ -1363,7 +1363,7 @@ function CreatePage() {
 
       dispatch(createNewVenue(formData));
       // notifySuccess(data.listingTitle);
-      toast.success(`${selectedCategory.value} Page created successfully!`);
+      // toast.success(`${selectedCategory.value} Page created successfully!`);
 
     }
 
@@ -2191,7 +2191,7 @@ function CreatePage() {
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder={`Enter ${item.label}`}
                     {...register(item.value, {
-                      required: `${item.value} is required`,
+                      // required: `${item.value} is required`,
                     })}
                   />
                   {errors[item.value] && (
@@ -2213,7 +2213,7 @@ function CreatePage() {
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter Spotify Url"
                   {...register("spotifyUrl", {
-                    required: `Spotify URL is required`,
+                    // required: `Spotify URL is required`,
                   })}
                 />
                 {errors.spotifyUrl && (
@@ -2236,7 +2236,7 @@ function CreatePage() {
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter SoundCloud Url"
                   {...register("soundCloudUrl", {
-                    required: `SoundCloud URL is required`,
+                    // required: `SoundCloud URL is required`,
                   })}
                 />
                 {errors.soundCloudUrl && (

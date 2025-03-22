@@ -194,7 +194,7 @@ function Artist() {
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
-    { img: "staticAssets/Speaker2png", name: "Jordyn Bryn", desc: "CEO & Founder" },
+    { img: "staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
     {
       img: "staticAssets/Speaker1.png",
       name: "Decon Duffy",
@@ -205,7 +205,7 @@ function Artist() {
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
-    { img: "staticAssets/Speaker2png", name: "Jordyn Bryn", desc: "CEO & Founder" },
+    { img: "staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
     {
       img: "staticAssets/Speaker1.png",
       name: "Decon Duffy",
@@ -216,7 +216,7 @@ function Artist() {
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
-    { img: "staticAssets/Speaker2png", name: "Jordyn Bryn", desc: "CEO & Founder" },
+    { img: "staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
     {
       img: "staticAssets/Speaker1.png",
       name: "Decon Duffy",
@@ -227,7 +227,7 @@ function Artist() {
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
-    { img: "staticAssets/Speaker2png", name: "Jordyn Bryn", desc: "CEO & Founder" },
+    { img: "staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
     {
       img: "staticAssets/Speaker1.png",
       name: "Decon Duffy",

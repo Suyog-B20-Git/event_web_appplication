@@ -18,14 +18,14 @@
 //   };
 
 //   var data = [
-//     { Name: "public/Ev1.png", text: "Business " },
+//     { Name: "public/staticAssets/Ev1.png", text: "Business " },
 //     { Name: "fest.jpg", text: "Festival" },
 //     { Name: "music.jpeg", text: "Live Music" },
 //     { Name: "pro.jpg", text: "Professional" },
 //     { Name: "cahrity.webp", text: "Social" },
 //   ];
 //   var data1 = [
-//     { Name: "public/Ev1.png", text: "Business " },
+//     { Name: "public/staticAssets/Ev1.png", text: "Business " },
 //     { Name: "fest.jpg", text: "Festival" },
 //     { Name: "music.jpeg", text: "Live Music" },
 //     { Name: "pro.jpg", text: "Professional" },
@@ -153,14 +153,14 @@ const EventCategory = () => {
   };
 
   var data = [
-    { Name: "Ev1.png", text: "Business " },
+    { Name: "staticAssets/Ev1.png", text: "Business " },
     { Name: "staticAssets/fest.jpg", text: "Festival" },
     { Name: "staticAssets/music.jpeg", text: "Live Music" },
     { Name: "staticAssets/pro.jpg", text: "Professional" },
     { Name: "staticAssets/cahrity.webp", text: "Social" },
   ];
   var data1 = [
-    { Name: "Ev1.png", text: "Business " },
+    { Name: "staticAssets/Ev1.png", text: "Business " },
     { Name: "staticAssets/fest.jpg", text: "Festival" },
     { Name: "staticAssets/music.jpeg", text: "Live Music" },
     { Name: "staticAssets/pro.jpg", text: "Professional" },

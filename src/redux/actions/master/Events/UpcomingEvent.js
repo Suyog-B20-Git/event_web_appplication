@@ -80,3 +80,57 @@ export const getUpcomingEventData = (setLoader) => {
     }
   };
 };
+
+export const getUpcomingEventsDataForProfile = ({
+                                    page = 1,
+                                    limit = 10,
+                                    timezoneOffset = 0,
+                                    sortBy = "startDate",
+                                    sortOrder = "asc",
+                                    performer,
+                                    organizer,
+                                    venue,
+                                    setLoader, // A function to control loader visibility
+                                  }) => {
+  return async (dispatch) => {
+    setLoader(true); // Start loading
+
+    try {
+      // Build query parameters based on the input values
+      const params = {
+        page,
+        limit,
+        timezoneOffset,
+        sortBy,
+        sortOrder,
+      };
+
+      // Include filters if provided
+      if (performer) params.performer = performer;
+      if (organizer) params.organizer = organizer;
+      if (venue) params.venue = venue;
+
+      // Make the API request using the provided query parameters
+      const response = await axios.get(Event.upcomingEvent, { params });
+      console.log("Upcoming events response", response.data);
+
+      // Dispatch the fetched data; you can adjust the payload structure if needed
+      dispatch({
+        type: "GET_UPCOMING_EVENT",
+        eventData: response.data.events, // expecting an object with total, page, limit, totalPages, events
+      });
+    } catch (error) {
+      console.error(
+          "API Error:",
+          error.response ? error.response.data : error.message
+      );
+      // Dispatch an empty payload or an error-specific payload as required
+      dispatch({
+        type: "GET_UPCOMING_EVENT",
+        eventData:[],
+      });
+    } finally {
+      setLoader(false); // Stop loading
+    }
+  };
+};

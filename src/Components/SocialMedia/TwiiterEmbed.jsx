@@ -17,12 +17,12 @@ const TwitterEmbed = ({ twitterUrl }) => {
     return (
         <div>
             {/* Replace 'elonmusk' with your Twitter username */}
-            <a
+            {twitterId!==null&&twitterId!==undefined&&twitterId!==""?<a
                 className="twitter-timeline"
                 href={`https://twitter.com/${twitterId.toString()}`} // ✅ Use curly braces for dynamic value
             >
                 {twitterId ? ` Tweets by ${twitterId}` : ""}
-            </a>
+            </a>:""}
         </div>
     );
 };

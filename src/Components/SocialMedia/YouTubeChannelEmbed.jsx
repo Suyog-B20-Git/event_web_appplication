@@ -1,7 +1,7 @@
 import React from "react";
 
-const YouTubeProfile = ({ youtubeEmbedUrl }) => {
-    if (!youtubeEmbedUrl) {
+const YouTubeChannelEmbed = ({ youtubeUrl }) => {
+    if (!youtubeUrl) {
         return <p>No YouTube URL provided.</p>;
     }
 
@@ -10,7 +10,7 @@ const YouTubeProfile = ({ youtubeEmbedUrl }) => {
             <iframe
                 width="560"
                 height="315"
-                src={youtubeEmbedUrl}
+                src={youtubeUrl}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -19,4 +19,5 @@ const YouTubeProfile = ({ youtubeEmbedUrl }) => {
         </div>
     );
 };
-export default YouTubeProfile
+
+export default YouTubeChannelEmbed;

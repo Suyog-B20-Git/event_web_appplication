@@ -24,7 +24,8 @@
 
 import React from "react";
 
-function FacebookEmbeded({ appId }) {
+function FacebookEmbeded({ appId ,fbId}) {
+    var pgName = convertToFacebookEmbedUrlAndPageId(fbId);;
   return (
     <div className="flex justify-center items-center w-full">
       {/* Scrollable container without visible scrollbar */}
@@ -48,7 +49,7 @@ function FacebookEmbeded({ appId }) {
         </style>
 
         <iframe
-          src={`https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FZeenews&tabs=timeline&width=500&height=700&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=${appId}`}
+          src={`https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2F${pgName}&tabs=timeline&width=500&height=700&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=${appId}`}
           className="w-full h-full scroll-container"
           style={{
             border: "none",

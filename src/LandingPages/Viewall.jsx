@@ -487,7 +487,7 @@ function Viewall() {
                   <div
                     style={{
                       backgroundImage: `url(${
-                        item.media?.thumbnailImage || "fallback-image.jpg"
+                        item.media?.thumbnailImage || "staticAssets/fallback-image.jpg"
                       })`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "cover",

@@ -15,7 +15,7 @@ function Dj() {
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
-    { img: "staticAssets/Speaker2png", name: "Jordyn Bryn", desc: "CEO & Founder" },
+    { img: "staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
    
   ];
   return (

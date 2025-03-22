@@ -52,7 +52,7 @@ function Footer() {
             <div className="mb-6">
               <Link to="/" className="inline-block">
                 <img
-                  src="staticAssets/logo.png"
+                  src="/staticAssets/logo.png"
                   alt="Logo"
                   className="h-10"
                 />

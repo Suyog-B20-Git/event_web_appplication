@@ -40,7 +40,7 @@ import ServiceStats from "../SocialMedia/ServiceStat";
 import { getFavouriteServiceData } from "../../redux/actions/master/Services/getFavouriteService";
 import { toast } from "react-toastify";
 import { postFavouriteService } from "../../redux/actions/master/Services/postFavouriteService";
-import { getUpcomingEventData } from "../../redux/actions/master/Events/UpcomingEvent";
+import {getUpcomingEventData, getUpcomingEventsDataForProfile} from "../../redux/actions/master/Events/UpcomingEvent";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
 
 function GetServiceById() {
@@ -67,9 +67,19 @@ function GetServiceById() {
 
 
     // get Upcoming Event Data
-      useEffect(() => {
-        dispatch(getUpcomingEventData(setLoading));
-      }, [dispatch]);
+  useEffect(() => {
+    dispatch(
+        getUpcomingEventsDataForProfile({
+          service: serviceId, // Pass the service filter here
+          setLoader: setLoading,
+          page: 1,
+          limit: 10,
+          timezoneOffset: 0,
+          sortBy: "startDate",
+          sortOrder: "asc",
+        })
+    );
+  }, [dispatch, serviceId]);
 
       // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
       //   upcomingEventData: [],
@@ -537,8 +547,8 @@ function GetServiceById() {
                 <p className="py-5 ">
                     {/* {about ? data.description : ""} */}
                     {about
-                      ? " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Omnis amet facere modi nesciunt minima sunt maiores. Sint iure suscipit placeat error hic, itaque asperiores ipsum architecto, alias, unde porro facilis? Corrupti commodi autem beatae quos ipsum culpa animi. Voluptas eum, repellat assumenda nostrum porro dolore reprehenderit, voluptatum deleniti nam id facere suscipit, ut excepturi? Recusandae tenetur atque asperiores perferendis sed.Delectus blanditiis ea doloremque earum itaque, iste assumenda nostrum temporibus ipsum pariatur, porro ad quidem, tenetur dolores voluptatem. Voluptas pariatur itaque maxime recusandae accusamus eos blanditiis, facere aspernatur quae inventore! Consectetur et, molestias reiciendis possimus cupiditate esse a autem iure recusandae placeat molestiae commodi distinctio numquam obcaecati quam nostrum aperiam explicabo enim reprehenderit ipsa voluptatem! Numquam corrupti voluptatum deleniti voluptatem. Magnam, fugit dolorum? Maxime exercitationem distinctio officiis et? Repellat porro cum nisi assumenda quaerat distinctio ratione aliquid facere quam minus, vitae itaque architecto atque iure, tenetur ipsum aspernatur? Quaerat, in!"
-                      : ""}
+                      ? data.description
+                        : ""}
                   </p>
                   {/* <p className="font-medium text-lg text-center">
                     {upcomimg ? "" : <div className="  "></div>}
@@ -610,7 +620,7 @@ function GetServiceById() {
                   </p>
                   <p className="font-medium text-lg text-center">
                     {youtube ? (
-                      <YouTubeProfile channelId={data.youtubeId} />
+                        <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
                     ) : (
                       <div></div>
                     )}

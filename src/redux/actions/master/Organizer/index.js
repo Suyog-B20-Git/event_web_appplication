@@ -225,6 +225,7 @@ import { Zoom } from "react-toastify";
                 })
                 .then((response) => {
                   if (!response.data.status) {
+                    console.log("error in !response.data.status")
                     toast.error(response.data.message, {
                       transition: Zoom,
                       hideProgressBar: true,
@@ -236,17 +237,19 @@ import { Zoom } from "react-toastify";
                       hideProgressBar: true,
                       autoClose: 2000,
                     });
-                    if (isLogin) {
-                      dispatch({
-                        type: "CREATE_ORGANIZER",
-                        payload: response.data,
-                      });
-                    }
+                    //fixme use "CREATE_ORGANIZER" action or dispatch() when it is necessary and complete for now it works properly when commented
+                    // if (isLogin) {
+                    //   dispatch({
+                    //     type: "CREATE_ORGANIZER",
+                    //     payload: response.data,
+                    //   });
+                    // }
                     console.log(response);
                   }
                 })
 
                 .catch((error) => {
+                  console.log("error in catch creatnewOrganizer");
                   toast.error(
                     error.response && error.response.data
                       ? error.response.data.message
