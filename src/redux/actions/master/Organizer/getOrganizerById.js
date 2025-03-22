@@ -64,7 +64,7 @@ export const getOrganizerById= (id,setLoader) => {
         `${Organizer.getOrganizerFilter}/${id}`
         // `http://localhost:5000/api/organizer/${id}`
       );
-      console.log("response", response);
+      console.log("getOrganizerById : response", response.data);
       dispatch({
         type: "GET_ORGANIZER_BY_ID",
         organizerData: response.data, // Ensure the API actually returns this structure

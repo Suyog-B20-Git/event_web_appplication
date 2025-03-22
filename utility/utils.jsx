@@ -45,7 +45,7 @@ console.log("t:", axiosInstance);
 //   async (error) => {
 //     console.log("refresh")
 //     const originalRequest = error.config;
-  
+
 //     if (error.response?.status === 401 && !originalRequest._retry) {
 //       originalRequest._retry = true; // Prevent infinite loop
 
@@ -66,7 +66,7 @@ console.log("t:", axiosInstance);
 //       } catch (refreshError) {
 //         console.error("Refresh token expired. Logging out...");
 //         console.log(refreshError)
-    
+
 //         localStorage.removeItem("authToken");
 //         window.location.href = "/login"; // Redirect to login
 //       }
@@ -142,9 +142,9 @@ console.log("t:", axiosInstance);
 //     });
 
 //     const originalRequest = error.config;
-    
+
 //     if (
-//       (error.response?.status === 401 || error.response?.status === 403) && 
+//       (error.response?.status === 401 || error.response?.status === 403) &&
 //       !originalRequest._retry
 //     ) {
 //       console.log("Attempting token refresh...");
@@ -154,7 +154,7 @@ console.log("t:", axiosInstance);
 //         const refreshResponse = await axios.post(
 //           `${API_URL}${Auth.refreshToken}`,
 //           {},
-//           { 
+//           {
 //             withCredentials: true,
 //             headers: {
 //               "Content-Type": "application/json",
@@ -169,7 +169,7 @@ console.log("t:", axiosInstance);
 //         if (refreshResponse.status >= 200 && refreshResponse.status < 300) {
 //           const newToken = refreshResponse.data.token;
 //           console.log("New token received");
-          
+
 //           localStorage.setItem("authToken", newToken);
 
 //           // Update token in axios defaults and original request

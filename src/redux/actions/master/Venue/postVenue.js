@@ -26,12 +26,13 @@ export const createNewVenue = (data) => {
             hideProgressBar: true,
             autoClose: 2000,
           });
-          if (isLogin) {
-            dispatch({
-              type: "CREATE_VENUE",
-              payload: response.data,
-            });
-          }
+          //fixme use "CREATE_VENUE" action when it is necessary and complete
+          // if (isLogin) {
+          //   dispatch({
+          //     type: "CREATE_VENUE",
+          //     payload: response.data,
+          //   });
+          // }
           console.log(response);
         }
       })

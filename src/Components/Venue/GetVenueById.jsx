@@ -40,7 +40,8 @@ import VenueStats from "../SocialMedia/VenueStat";
 import { getFavouriteVenueData } from "../../redux/actions/master/Venue/getFavouriteVenue";
 import { toast } from "react-toastify";
 import { postFavouriteVenue } from "../../redux/actions/master/Venue/postFavouriteVenueReducer";
-import { getUpcomingEventData } from "../../redux/actions/master/Events/UpcomingEvent";
+import {getUpcomingEventData, getUpcomingEventsDataForProfile} from "../../redux/actions/master/Events/UpcomingEvent";
+import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
 
 function GetVenueById() {
   const { venueId } = useParams();
@@ -64,23 +65,33 @@ function GetVenueById() {
   const [loading, setLoading] = useState(false);
 
   // get Upcoming Event Data
-      useEffect(() => {
-        dispatch(getUpcomingEventData(setLoading));  
-      }, [dispatch]);
-    
+  useEffect(() => {
+    dispatch(
+        getUpcomingEventsDataForProfile({
+          venue: venueId,
+          setLoader: setLoading,
+          page: 1,
+          limit: 10,
+          timezoneOffset: new Date().getTimezoneOffset(),
+          sortBy: "startDate",
+          sortOrder: "asc",
+        })
+    );
+  }, [dispatch, venueId]);
+
       // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
       //   upcomingEventData: [],
       // }
-    
+
       const upcomingEventData = useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
-    
+
       if (!upcomingEventData) {
         return <div>Loading...</div>;
       }
-    
-      const data1 = upcomingEventData; 
+
+      const data1 = upcomingEventData;
       console.log("Upcoming Event Data:", data1);
-    
+
   const store = useSelector((state) => state.getVenueByIdReducer) || {
     venueData: [],
   };
@@ -518,8 +529,8 @@ function GetVenueById() {
                 <p className="py-5 ">
                   {/* {about ? data.description : ""} */}
                   {about
-                    ? " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Omnis amet facere modi nesciunt minima sunt maiores. Sint iure suscipit placeat error hic, itaque asperiores ipsum architecto, alias, unde porro facilis? Corrupti commodi autem beatae quos ipsum culpa animi. Voluptas eum, repellat assumenda nostrum porro dolore reprehenderit, voluptatum deleniti nam id facere suscipit, ut excepturi? Recusandae tenetur atque asperiores perferendis sed.Delectus blanditiis ea doloremque earum itaque, iste assumenda nostrum temporibus ipsum pariatur, porro ad quidem, tenetur dolores voluptatem. Voluptas pariatur itaque maxime recusandae accusamus eos blanditiis, facere aspernatur quae inventore! Consectetur et, molestias reiciendis possimus cupiditate esse a autem iure recusandae placeat molestiae commodi distinctio numquam obcaecati quam nostrum aperiam explicabo enim reprehenderit ipsa voluptatem! Numquam corrupti voluptatum deleniti voluptatem. Magnam, fugit dolorum? Maxime exercitationem distinctio officiis et? Repellat porro cum nisi assumenda quaerat distinctio ratione aliquid facere quam minus, vitae itaque architecto atque iure, tenetur ipsum aspernatur? Quaerat, in!"
-                    : ""}
+                    ? data.description
+                      : ""}
                 </p>
                 {/* <p className="font-medium text-lg text-center">
                   {upcomimg ? "" : <div className="  "></div>}
@@ -572,7 +583,7 @@ function GetVenueById() {
                 {facebook ? (
                 <div className="w-full flex justify-center">
                     <div className="w-full max-w-[1200px]">
-                      <FacebookEmbeded appId={849920522233544} />
+                      <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                     </div>
                   </div>
                   ) :( "")}
@@ -585,11 +596,11 @@ function GetVenueById() {
                   )}
                 </p>
                 <p className="font-medium text-lg text-center">
-                  {twitter ? "" : <div className=" "></div>}
+                  {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                 </p>
                 <p className="font-medium text-lg text-center">
                   {youtube ? (
-                    <YouTubeProfile channelId={data.youtubeId} />
+                      <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
                   ) : (
                     <div></div>
                   )}
@@ -687,7 +698,7 @@ function GetVenueById() {
             </div>
           </div>
 
-         
+
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">

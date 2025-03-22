@@ -181,7 +181,7 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
           className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px]"
           style={{
             backgroundImage: `url(${
-              receivedData.media?.thumbnailImage || "fallback-image.jpg"
+              receivedData.media?.thumbnailImage || "staticAssets/fallback-image.jpg"
             })`,
             backgroundPosition: "center",
             backgroundSize: "cover",

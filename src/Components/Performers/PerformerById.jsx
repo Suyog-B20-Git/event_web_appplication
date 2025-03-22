@@ -43,7 +43,7 @@ import PerformerStats from "../SocialMedia/State";
 import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
 import { toast } from "react-toastify";
 import { postFavouritePerformer } from "../../redux/actions/master/Performers/postFavouritePerformer";
-import { getUpcomingEventData } from "../../redux/actions/master/Events/UpcomingEvent";
+import {getUpcomingEventData, getUpcomingEventsDataForProfile} from "../../redux/actions/master/Events/UpcomingEvent";
 
 function GetPerformerById() {
   const { performerId } = useParams();
@@ -72,9 +72,18 @@ function GetPerformerById() {
 
  // get Upcoming Event Data
   useEffect(() => {
-    dispatch(getUpcomingEventData(setLoading));  
-  }, [dispatch]);
-
+    dispatch(
+        getUpcomingEventsDataForProfile({
+          performer: performerId,
+          setLoader: setLoading,
+          page: 1,
+          limit: 10,
+          timezoneOffset: new Date().getTimezoneOffset(),
+          sortBy: "startDate",
+          sortOrder: "asc",
+        })
+    );
+  }, [dispatch, performerId]);
   // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
   //   upcomingEventData: [],
   // }
@@ -85,7 +94,7 @@ function GetPerformerById() {
     return <div>Loading...</div>;
   }
 
-  const data1 = upcomingEventData; 
+  const data1 = upcomingEventData;
   console.log("Upcoming Event Data:", data1);
 
 
@@ -429,7 +438,7 @@ function GetPerformerById() {
                   className={`${
                     upcoming ? "border-b-2 border-b-red-600" : ""
                   } p-2`}
-                  
+
                   onClick={() => {
                     setAbout(false);
                     setUpcoming(true);
@@ -575,15 +584,15 @@ function GetPerformerById() {
                 <p className="py-5">
                   {/* {about ? data.description : ""} */}
                   {about
-                    ? " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Omnis amet facere modi nesciunt minima sunt maiores. Sint iure suscipit placeat error hic, itaque asperiores ipsum architecto, alias, unde porro facilis? Corrupti commodi autem beatae quos ipsum culpa animi. Voluptas eum, repellat assumenda nostrum porro dolore reprehenderit, voluptatum deleniti nam id facere suscipit, ut excepturi? Recusandae tenetur atque asperiores perferendis sed.Delectus blanditiis ea doloremque earum itaque, iste assumenda nostrum temporibus ipsum pariatur, porro ad quidem, tenetur dolores voluptatem. Voluptas pariatur itaque maxime recusandae accusamus eos blanditiis, facere aspernatur quae inventore! Consectetur et, molestias reiciendis possimus cupiditate esse a autem iure recusandae placeat molestiae commodi distinctio numquam obcaecati quam nostrum aperiam explicabo enim reprehenderit ipsa voluptatem! Numquam corrupti voluptatum deleniti voluptatem. Magnam, fugit dolorum? Maxime exercitationem distinctio officiis et? Repellat porro cum nisi assumenda quaerat distinctio ratione aliquid facere quam minus, vitae itaque architecto atque iure, tenetur ipsum aspernatur? Quaerat, in!"
-                    : ""}
+                    ?data.description
+                      : ""}
                 </p>
                 {/* <p className="font-medium text-lg text-center">
                   {upcomimg ? "" : " "}
                 </p> */}
 
-                {/*Event Data Section*/}               
-                
+                {/*Event Data Section*/}
+
                 {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6">
                     {upcomingEventData.length > 0 ? (
@@ -632,7 +641,7 @@ function GetPerformerById() {
                   {facebook ? (
                    <div className="w-full flex justify-center">
                     <div className="w-full max-w-[1200px]">
-                      <FacebookEmbeded appId={849920522233544} />
+                      <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                     </div>
                   </div>
                   ) : (
@@ -642,16 +651,15 @@ function GetPerformerById() {
                 <p>
                   {twitter ? (
                     <div>
-                      <TwitterEmbed twitterId={data.twitterId} />
+                      {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                     </div>
                   ) : (
                     ""
                   )}
                 </p>
-                {/* <p>{soundCloud ? <div>
-                  <SoundCloudEmbed userName={data.soundCloudId}/>
-                </div> : ""}</p> */}
-
+                {<p>{soundCloud ? <div>
+                  <SoundCloudEmbed soundCloudUrl={data.soundCloudUrl}/>
+                </div> : ""}</p> }
                 <p>
                   {spotify ? <SpotifyEmbed artistId={data.spotifyId} /> : ""}
                 </p>
@@ -659,7 +667,7 @@ function GetPerformerById() {
                   {instagram ? <InstagramProfile username={"cristiano"} /> : ""}
                 </p>
                 <p>
-                  {youtube ? <YouTubeProfile channelId={data.youtubeId} /> : ""}
+                  {youtube? < YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl}/>:""}
                 </p>
                 <p>{stat ? <PerformerStats data={data} /> : ""}</p>
               </div>
@@ -771,7 +779,7 @@ function GetPerformerById() {
               </div>
             </div>
           </div>
-         
+
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
@@ -931,9 +939,3 @@ function GetPerformerById() {
 }
 
 export default GetPerformerById;
-
-
-
-
-
-

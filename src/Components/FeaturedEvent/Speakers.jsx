@@ -5,22 +5,22 @@ import { TbWorld } from "react-icons/tb";
 function Speakers() {
   const card1 = [
     {
-      img: "Speaker1.png",
+      img: "staticAssets/Speaker1.png",
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
-    { img: "Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
+    { img: "staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
     {
-      img: "Speaker1.png",
+      img: "staticAssets/Speaker1.png",
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
     {
-      img: "Speaker1.png",
+      img: "staticAssets/Speaker1.png",
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
-    { img: "Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
+    { img: "staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
   ];
 
   return (

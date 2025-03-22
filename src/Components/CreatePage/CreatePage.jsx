@@ -1303,6 +1303,13 @@ function CreatePage() {
   console.log(image);
 
   const onSubmit = (data) => {
+    if (!check) {
+      setError("You must accept the terms.");
+      return; // Prevent form submission
+    }
+  
+    setError(""); // Clear error if checkbox is checked
+  
     const formData = new FormData();
     formData.append("profileImage", image); // Append file
 
@@ -1363,7 +1370,7 @@ function CreatePage() {
 
       dispatch(createNewVenue(formData));
       // notifySuccess(data.listingTitle);
-      toast.success(`${selectedCategory.value} Page created successfully!`);
+      // toast.success(`${selectedCategory.value} Page created successfully!`);
 
     }
 
@@ -2191,7 +2198,7 @@ function CreatePage() {
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder={`Enter ${item.label}`}
                     {...register(item.value, {
-                      required: `${item.value} is required`,
+                      // required: `${item.value} is required`,
                     })}
                   />
                   {errors[item.value] && (
@@ -2213,7 +2220,7 @@ function CreatePage() {
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter Spotify Url"
                   {...register("spotifyUrl", {
-                    required: `Spotify URL is required`,
+                    // required: `Spotify URL is required`,
                   })}
                 />
                 {errors.spotifyUrl && (
@@ -2236,7 +2243,7 @@ function CreatePage() {
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter SoundCloud Url"
                   {...register("soundCloudUrl", {
-                    required: `SoundCloud URL is required`,
+                    // required: `SoundCloud URL is required`,
                   })}
                 />
                 {errors.soundCloudUrl && (
@@ -2264,7 +2271,7 @@ function CreatePage() {
             <span className="text-[#ff2459]">TERMS AND CONDITIONS.</span>
           </p>
         </div>
-        {!check && <p className="text-red-500 text-sm">You must accept the terms.</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         {/* Submit Button */}
         <div className="flex justify-center md:justify-end mr-0 sm:mr-6 mt-4">

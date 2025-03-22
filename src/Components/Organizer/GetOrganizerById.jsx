@@ -41,7 +41,7 @@ import OrganizerStats from "../SocialMedia/OrganizerStat";
 import { toast } from "react-toastify";
 import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
 import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
-import { getUpcomingEventData } from "../../redux/actions/master/Events/UpcomingEvent";
+import {getUpcomingEventData, getUpcomingEventsDataForProfile} from "../../redux/actions/master/Events/UpcomingEvent";
 
 function GetOrganizerById() {
   const { organizerId } = useParams();
@@ -64,23 +64,33 @@ function GetOrganizerById() {
   const [loading, setLoading] = useState(false);
 
   // get Upcoming Event Data
-    useEffect(() => {
-      dispatch(getUpcomingEventData(setLoading));  
-    }, [dispatch]);
-  
+  useEffect(() => {
+    dispatch(
+        getUpcomingEventsDataForProfile({
+          organizer: organizerId,
+          setLoader: setLoading,
+          // Optionally pass additional query params:
+          page: 1,
+          limit: 10,
+          timezoneOffset: new Date().getTimezoneOffset(),
+          sortBy: "startDate",
+          sortOrder: "asc",
+        })
+    );
+  }, [dispatch, organizerId]);
     // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
     //   upcomingEventData: [],
     // }
-  
+
     const upcomingEventData = useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
-  
+
     if (!upcomingEventData) {
       return <div>Loading...</div>;
     }
-  
-    const data1 = upcomingEventData; 
+
+    const data1 = upcomingEventData;
     console.log("Upcoming Event Data:", data1);
-  
+
 
   const store = useSelector((state) => state.getOrganizerByIdReducer) || {
     organizerData: [],
@@ -534,14 +544,14 @@ function GetOrganizerById() {
                 <p className="py-5 ">
                   {/* {about ? data.description : ""} */}
                   {about
-                    ? " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Omnis amet facere modi nesciunt minima sunt maiores. Sint iure suscipit placeat error hic, itaque asperiores ipsum architecto, alias, unde porro facilis? Corrupti commodi autem beatae quos ipsum culpa animi. Voluptas eum, repellat assumenda nostrum porro dolore reprehenderit, voluptatum deleniti nam id facere suscipit, ut excepturi? Recusandae tenetur atque asperiores perferendis sed.Delectus blanditiis ea doloremque earum itaque, iste assumenda nostrum temporibus ipsum pariatur, porro ad quidem, tenetur dolores voluptatem. Voluptas pariatur itaque maxime recusandae accusamus eos blanditiis, facere aspernatur quae inventore! Consectetur et, molestias reiciendis possimus cupiditate esse a autem iure recusandae placeat molestiae commodi distinctio numquam obcaecati quam nostrum aperiam explicabo enim reprehenderit ipsa voluptatem! Numquam corrupti voluptatum deleniti voluptatem. Magnam, fugit dolorum? Maxime exercitationem distinctio officiis et? Repellat porro cum nisi assumenda quaerat distinctio ratione aliquid facere quam minus, vitae itaque architecto atque iure, tenetur ipsum aspernatur? Quaerat, in!"
+                    ? data.description
                     : ""}
                 </p>
                 {/* <p className="font-medium text-lg text-center">
                   {upcomimg ? "" : <div className="  "></div>}
                 </p> */}
-                  {/*Event Data Section*/}               
-                
+                  {/*Event Data Section*/}
+
                   {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6">
                     {upcomingEventData.length > 0 ? (
@@ -590,7 +600,7 @@ function GetOrganizerById() {
                 {facebook ? (
                    <div className="w-full flex justify-center">
                     <div className="w-full max-w-[1200px]">
-                      <FacebookEmbeded appId={849920522233544} />
+                      <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl}  />
                     </div>
                   </div>
                 ):( ""
@@ -605,11 +615,11 @@ function GetOrganizerById() {
                   )}
                 </p>
                 <p className="font-medium text-lg text-center">
-                  {twitter ? <TwitterEmbed twitterId={data.twitterId} /> : ""}
+                  {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                 </p>
                 <p className="font-medium text-lg text-center">
                   {youtube ? (
-                    <YouTubeProfile channelId={data.youtubeId} />
+                    <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
                   ) : (
                     <div></div>
                   )}
@@ -715,7 +725,7 @@ function GetOrganizerById() {
               </div>
             </div>
           </div>
-          
+
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">

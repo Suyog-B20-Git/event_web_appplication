@@ -27,12 +27,13 @@ export const createNewService = (data) => {
             hideProgressBar: true,
             autoClose: 2000,
           });
-          if (isLogin) {
-            dispatch({
-              type: "CREATE_SERVICE",
-              payload: response.data,
-            });
-          }
+          //fixme use "CREATE_SERVICE" action or dispatch() when it is necessary and complete for now it works properly when commented
+          // if (isLogin) {
+          //   dispatch({
+          //     type: "CREATE_SERVICE",
+          //     payload: response.data,
+          //   });
+          // }
           console.log(response);
         }
       })

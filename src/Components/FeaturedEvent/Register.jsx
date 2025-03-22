@@ -33,7 +33,7 @@ function Register() {
       const response = await axios.post(
         `${Auth.register}`,
 
-        //  "https://event-node-backend.onrender.com/api/auth/setup",
+        //  "http://localhost:5000/api/auth/setup",
         {
           username: name,
 
