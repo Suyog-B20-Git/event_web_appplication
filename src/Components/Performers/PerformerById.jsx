@@ -78,7 +78,7 @@ function GetPerformerById() {
           setLoader: setLoading,
           page: 1,
           limit: 10,
-          timezoneOffset: 0,
+          timezoneOffset: new Date().getTimezoneOffset(),
           sortBy: "startDate",
           sortOrder: "asc",
         })

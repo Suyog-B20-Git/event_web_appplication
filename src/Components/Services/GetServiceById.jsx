@@ -74,7 +74,7 @@ function GetServiceById() {
           setLoader: setLoading,
           page: 1,
           limit: 10,
-          timezoneOffset: 0,
+          timezoneOffset: Date().time,
           sortBy: "startDate",
           sortOrder: "asc",
         })
