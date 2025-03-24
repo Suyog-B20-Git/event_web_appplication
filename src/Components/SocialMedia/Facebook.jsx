@@ -21,6 +21,7 @@
 
 
 
+// https://graph.facebook.com/v17.0/somepage/picture?type=large
 
 import React from "react";
 

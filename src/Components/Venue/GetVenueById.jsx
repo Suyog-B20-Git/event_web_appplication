@@ -526,7 +526,7 @@ function GetVenueById() {
                 </button>
               </div>
               
-              <div className="lg:px-10 p-2 border bg-white  rounded-lg h-full overflow-auto" >
+              <div className="lg:px-4 border bg-white  rounded-lg h-full overflow-auto" >
               {about && data ? (
                 <div className="py-5 space-y-6 bg-white shadow-md rounded-lg p-6">
                  <h2 className="text-2xl font-semibold text-gray-800">About the Venue</h2>
@@ -601,15 +601,15 @@ function GetVenueById() {
                   {upcomimg ? "" : <div className="  "></div>}
                 </p> */}
                    {upcoming && (
-                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6">
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-4">
                     {upcomingEventData.length > 0 ? (
                       upcomingEventData.map((event, index) => (
                         <div
                           key={index}
-                          className="bg-white shadow-lg rounded-lg border border-red-400 hover:shadow-xl transition-all duration-300 w-full max-w-[260px] h-[300px] flex flex-col mx-auto"
+                          className="bg-white shadow-lg rounded-lg  hover:shadow-xl transition-all duration-300 w-full max-w-[280px] h-[260px] flex flex-col"
                         >
                           {/* Image */}
-                          <div className="w-full h-[160px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
+                          <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
                             <img
                               src={event.media?.thumbnailImage || "https://via.placeholder.com/250x160?text=No+Image"}
                               alt={event.name}
@@ -618,9 +618,9 @@ function GetVenueById() {
                           </div>
 
                           {/* Event Details */}
-                          <div className="p-3 text-center flex-grow flex flex-col justify-between">
+                          <div className="p-2 text-center flex flex-col justify-between">
                             <div>
-                              <h3 className="text-lg font-semibold text-gray-800">{event.name}</h3>
+                              <h3 className="text-xl font-semibold text-gray-800">{event.name}</h3>
                               <p className="text-sm text-gray-500 mt-1">{event.category || "Music Festival"}</p>
 
                               {/* Date */}
@@ -630,11 +630,17 @@ function GetVenueById() {
                             </div>
 
                             {/* Venue */}
-                            {event.venue && (
-                              <p className="text-sm text-gray-600 font-medium mt-2">
-                                📍 {event.venue.city}, {event.venue.state}, {event.venue.country}
+                            {event.venue ? (
+                            event.venue.city || event.venue.state || event.venue.country ? (
+                              <p className="text-sm text-gray-600 font-medium mt-1">
+                                📍 {event.venue.city || ""}, {event.venue.state || ""}, {event.venue.country || ""}
                               </p>
-                            )}
+                            ) : (
+                              <p className="text-sm text-gray-600 font-medium mt-1">📍 Not Available</p>
+                            )
+                          ) : (
+                            <p className="text-sm text-gray-600 font-medium mt-1">📍 Not Available</p>
+                          )}
                           </div>
                         </div>
                       ))

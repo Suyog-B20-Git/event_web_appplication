@@ -107,89 +107,76 @@
 
 
 /* eslint-disable react/prop-types */
-import React, { Component } from "react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import React from "react";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
+const COLORS = ["#FF0000", "#1DA1F2"];
 
 const OrganizerStats = ({ data }) => {
-  console.log("stat", data);
+  console.log("Stat Data:", data);
 
-  const hasYoutubeData = data.youtubeData && data.youtubeStats;
-  const hasTwitterData = data.twitterData && data.twitterStats;
+  const hasYoutubeData = data.youtubeStats && data.youtubeStats.subscribers;
+  const hasTwitterData = data.twitterStats && data.twitterStats.followers;
 
   if (!hasYoutubeData && !hasTwitterData) {
-    return (
-      <div className="h-44 lg:text-lg flex justify-center items-center text-gray-500">
-        No Stat Data Available
-      </div>
-    );
+    return <div className="h-44 lg:text-lg flex justify-center items-center">No Stat Data</div>;
   }
 
-  const statsData = [];
-  const COLORS = ["#FF0000", "#00A86B", "#0000FF", "#1DA1F2", "#FFD700"];
+  let chartData = [];
 
   if (hasYoutubeData) {
-    statsData.push({ name: "YouTube Subscribers", value: data.youtubeStats.subscribers || 0 });
-    statsData.push({ name: "YouTube Views", value: data.youtubeStats.views || 0 });
-    statsData.push({ name: "YouTube Videos", value: data.youtubeStats.videos || 0 });
+    chartData.push({ name: "YouTube Subscribers", value: data.youtubeStats.subscribers });
+  }
+  if (hasTwitterData) {
+    chartData.push({ name: "Twitter Followers", value: data.twitterStats.followers });
   }
 
-  if (hasTwitterData) {
-    statsData.push({ name: "Twitter Followers", value: data.twitterStats.followers || 0 });
-    statsData.push({ name: "Twitter Tweets", value: data.twitterStats.tweets || 0 });
-  }
+  const total = chartData.reduce((sum, entry) => sum + entry.value, 0);
 
   return (
-    <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-100 to-green-100 shadow-xl rounded-xl p-6">
-      {/* Pie Chart Section */}
-      <div className="mt-6">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Popularity on Social Sites</h2>
-        <ResponsiveContainer width="100%" height={350}>
-          <PieChart>
-            <Pie 
-              data={statsData} 
-              dataKey="value" 
-              nameKey="name" 
-              cx="50%" 
-              cy="50%" 
-              innerRadius={0}  // Smaller inner radius for a filled look
-              outerRadius={120}  // Larger outer radius for visibility
-              labelLine={false} 
-              paddingAngle={5} 
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-            >
-              {statsData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend verticalAlign="bottom" layout="horizontal" align="center" />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="max-w-4xl mx-auto bg-white p-2">
+      <h2 className="text-xl font-semibold text-center mb-4">Subscriber & Follower Stats (%)</h2>
+
+      <ResponsiveContainer width="100%" height={350}>
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius="30%"
+            outerRadius="70%"
+            fill="#8884d8"
+            dataKey="value"
+            label={({ cx, cy, midAngle, outerRadius, percent, index }) => {
+              const RADIAN = Math.PI / 180;
+              const x = cx + (outerRadius + 0) * Math.cos(-midAngle * RADIAN);
+              const y = cy + (outerRadius + 60) * Math.sin(-midAngle * RADIAN);
+
+              return (
+                <text
+                  x={x}
+                  y={y}
+                  fill={COLORS[index % COLORS.length]}
+                  textAnchor={x > cx ? "start" : "end"}
+                  dominantBaseline="central"
+                  fontSize="14px"
+                  fontWeight="bold"
+                >
+                  {chartData[index].name}: {(percent * 100).toFixed(1)}%
+                </text>
+              );
+            }}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(value) => `${((value / total) * 100).toFixed(1)}%`} />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
     </div>
   );
 };
 
 export default OrganizerStats;
-
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an error", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback || <div className="text-red-600 text-center p-4">Something went wrong, please try again later.</div>;
-    }
-    return this.props.children;
-  }
-}

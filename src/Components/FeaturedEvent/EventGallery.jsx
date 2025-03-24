@@ -13,7 +13,7 @@ function EventGallery({ data }) {
     <div>
       {data && (
         <div className="flex lg:justify-center lg:items-center overflow-hidden">
-          <div className="lg:p-12 p-3 w-full max-w-8xl">
+          <div className="lg:p-2 p-2 w-full max-w-8xl">
             <div className="flex ">
               <p className="font-bold font-sans lg:text-2xl">{data.length>0 ?"Event Gallery":""}</p>
             </div>

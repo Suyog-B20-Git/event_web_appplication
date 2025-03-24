@@ -163,11 +163,10 @@ function GetServiceById() {
   }
 
   return (
-    <div className="">
-      {data ? (
+    <div>
         <div className="flex lg:flex-row flex-col gap-2">
           <div className="lg:pt-6 md:pt-0 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
-          <div className="flex flex-row justify-between items-center font-medium flex-wrap">
+          <div className="flex justify-between font-medium">
           <div className="flex flex-row gap-2 p-3 flex-wrap">
                 <p
                   className="cursor-pointer hover:text-[#ff2459]"
@@ -194,10 +193,20 @@ function GetServiceById() {
                   {data.name}
                 </p>
               </div>
-              <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
+              {/* <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
                 <FaEye className="relative top-1" />
-                {data.visits} , {data.dailyVisits} visites today
-              </p>
+                {data.visits} , {data.dailyVisits} visits today
+              </p> */}
+               <div className="lg:flex hidden gap-1 pt-3 p-3 pb-0">
+                            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
+                              <FaEye className="relative top-0.5 text-blue-600" />
+                              <span>Total {data.visits} </span>
+                            </p>
+                            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
+                              <FaEye className="relative top-0.5 text-blue-600" />
+                              <span>Daily {data.dailyVisits} </span>
+                            </p>
+                          </div>
             </div>
             <div
               className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
@@ -222,7 +231,7 @@ function GetServiceById() {
                   </button>
                 </div>
                 <p className="text-sm lg:block hidden">
-                  {data.visits} , {data.dailyVisits} visites today
+                  {data.visits} , {data.dailyVisits} visits today
                 </p>
               </div>
               <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">
@@ -271,16 +280,16 @@ function GetServiceById() {
             </div>
             {isPopUp && (
               <div className="lg:hidden block">
-    <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-36 md:pt-32 md:pr-8 overflow-y-scroll z-40 ">
-    <div className="bg-white rounded-lg shadow-lg lg:w-full relative">
-     {/* Close Button */}
-     <button
-          className="absolute top-1 right-4 text-gray-900 hover:text-red-500 text-3xl"
-          onClick={() => setIsPopUp(false)}
-        >
-          &times;
-        </button>
-    <div className="  flex flex-col gap-0  px-0 h-[170px] w-[300px] border rounded">
+                  <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-56 md:pt-42 md:pr-10 overflow-y-scroll z-40 ">
+                  <div className="bg-white rounded-lg shadow-lg lg:w-full relative">
+                  {/* Close Button */}
+                  <button
+                        className="absolute top-1 right-4 text-gray-900 hover:text-red-500 text-3xl"
+                        onClick={() => setIsPopUp(false)}
+                      >
+                        &times;
+                      </button>
+                  <div className="  flex flex-col gap-0  px-0 h-[170px] w-[300px] border rounded">
                       <button
                         className="flex  gap-3 p-4  px-4 hover:text-white hover:bg-[#ff2459] "
                         onClick={() => {
@@ -494,75 +503,61 @@ function GetServiceById() {
                   >
                     INSTAGRAM
                   </button> */}
-                  {/* <button
-                    className={`${
-                      youtube ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
-                    onClick={() => {
-                      setAbout(false);
-                      setUpcoming(false);
-                      setFacebook(false);
-                      setTwitter(false);
-                      setInstagram(false);
-                      setYoutube(true);
-                      setStat(false);
-                    }}
-                  >
-                    YOUTUBE
-                  </button> */}
+                 
                   <button
-                    className={`${
-                      youtube ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${youtube ? "border-b-2 border-b-red-600" : ""} p-2 lg:px-0 px-4`}
                     onClick={() => {
+                      setYoutube((prev) => !prev);
+                      setStat(false);
                       setAbout(false);
                       setUpcoming(false);
                       setFacebook(false);
                       setTwitter(false);
                       setInstagram(false);
-                      setYoutube(true);
-                      setStat(false);
                     }}
                   >
                     YOUTUBE
                   </button>
                   <button
-                    className={`${
-                      stat ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${stat ? "border-b-2 border-b-red-600" : ""} p-2 lg:px-0 px-4`}
                     onClick={() => {
+                      setStat((prev) => !prev);
+                      setYoutube(false);
                       setAbout(false);
                       setUpcoming(false);
                       setFacebook(false);
                       setTwitter(false);
                       setInstagram(false);
-                      setYoutube(false);
-                      setStat(true);
                     }}
                   >
                     STAT
                   </button>
+
                 </div>
-                <div className="lg:px-10 p-2 border bg-white  rounded-lg h-full overflow-auto" >
+                <div className="lg:px-4 px-2 border bg-white  rounded-lg h-full overflow-auto" >
+                {about && data ? (
                 <p className="py-5 ">
+                <h2 className="text-2xl font-semibold text-gray-800 py-4">About the Organisers</h2>
+
                     {/* {about ? data.description : ""} */}
-                    {about
-                      ? data.description
-                        : ""}
-                  </p>
+                    {data?.description || "No description available"}
+                    </p>
+
+              ) : null}
+
                   {/* <p className="font-medium text-lg text-center">
                     {upcomimg ? "" : <div className="  "></div>}
                   </p> */}
                        {upcoming && (
-                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6">
+                  <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-4">
                     {upcomingEventData.length > 0 ? (
                       upcomingEventData.map((event, index) => (
                         <div
                           key={index}
-                          className="bg-white shadow-lg rounded-lg border border-red-400 hover:shadow-xl transition-all duration-300 w-full max-w-[260px] h-[300px] flex flex-col mx-auto"
+                          className="bg-white shadow-lg rounded-lg  hover:shadow-xl transition-all duration-300 w-full max-w-[280px] h-[280px] flex flex-col"
                         >
                           {/* Image */}
-                          <div className="w-full h-[160px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
+                          <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
                             <img
                               src={event.media?.thumbnailImage || "https://via.placeholder.com/250x160?text=No+Image"}
                               alt={event.name}
@@ -571,9 +566,9 @@ function GetServiceById() {
                           </div>
 
                           {/* Event Details */}
-                          <div className="p-3 text-center flex-grow flex flex-col justify-between">
+                          <div className="p-3 text-center  flex flex-col justify-between">
                             <div>
-                              <h3 className="text-lg font-semibold text-gray-800">{event.name}</h3>
+                              <h3 className="text-xl font-semibold text-gray-800">{event.name}</h3>
                               <p className="text-sm text-gray-500 mt-1">{event.category || "Music Festival"}</p>
 
                               {/* Date */}
@@ -583,23 +578,29 @@ function GetServiceById() {
                             </div>
 
                             {/* Venue */}
-                            {event.venue && (
-                              <p className="text-sm text-gray-600 font-medium mt-2">
-                                📍 {event.venue.city}, {event.venue.state}, {event.venue.country}
+                            {event.venue ? (
+                            event.venue.city || event.venue.state || event.venue.country ? (
+                              <p className="text-sm text-gray-600 font-medium mt-1">
+                                📍 {event.venue.city || ""}, {event.venue.state || ""}, {event.venue.country || ""}
                               </p>
-                            )}
+                            ) : (
+                              <p className="text-sm text-gray-600 font-medium mt-1">📍 Not Available</p>
+                            )
+                          ) : (
+                            <p className="text-sm text-gray-600 font-medium mt-1">📍 Not Available</p>
+                          )}
                           </div>
                         </div>
                       ))
                     ) : (
-                      <p className="text-center text-gray-500 col-span-full">No Upcoming Events Found</p>
+                      <p className="text-center text-gray-500 col-span-full mt-12">No Upcoming Events Found</p>
                     )}
                   </div>
                 )}
 
                   <p>
                   {facebook ? (
-                   <div className="w-full flex justify-center">
+                   <div className="w-full flex justify-center py-6">
                     <div className="w-full max-w-[1200px]">
                       <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                     </div>
@@ -615,19 +616,18 @@ function GetServiceById() {
                       <div className=" "></div>
                     )}
                   </p> */}
-                  <p className="font-medium text-lg text-center">
+                  <p className="font-medium text-lg text-center py-6">
                     {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                   </p>
                   <p className="font-medium text-lg text-center">
-                    {youtube ? (
-                        <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
-                    ) : (
-                      <div></div>
-                    )}
+                  {youtube && data?.youtubeEmbedUrl && (
+                    <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
+                  )}
+
+                  {stat && <ServiceStats data={data} />}
+
                   </p>
-                  <p className="font-medium text-lg text-center">
-                    {stat && <ServiceStats data={data} />}
-                  </p>
+
                 </div>
               </div>
             </div>
@@ -771,7 +771,7 @@ function GetServiceById() {
 
           </div>
 
-          <div className="w-[25%] lg:flex hidden flex-col gap-5 rounded pt-5 pr-3 mt-2">
+          <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">
             <div className="flex flex-col gap-2 px-2 shadow-md p-4">
               <div className="grid grid-cols-3 gap-2 text-xl">
                 <button
@@ -808,8 +808,8 @@ function GetServiceById() {
               <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
                 Service Category
               </h1>
-              <section className="flex flex-col gap-2 p-3 justify-center items-center">
-              <div className="flex gap-2 ">
+              <section className="flex flex-col gap-2 pt-3 justify-center items-center">
+              <div className="flex flex-wrap gap-2 justify-center ">
                   <div
                     onClick={() => {
                       setCategory("anchor");
@@ -910,6 +910,8 @@ function GetServiceById() {
               </div>
             </div>
           </div>
+          </div>
+
           <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
               Service Location
             </h1>
@@ -929,11 +931,8 @@ function GetServiceById() {
                 width="1600"
               />
             </div>
-        </div>
 
-      ) : (
-        ""
-      )}
+     
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}

@@ -232,7 +232,7 @@ function GetOrganizerById() {
                 </button>
               </div>
               <p className="text-sm lg:block hidden">
-                {data.visits} , {data.dailyVisits} visites today
+                {data.visits} , {data.dailyVisits} visits today
               </p>
             </div>
             <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">
@@ -540,28 +540,30 @@ function GetOrganizerById() {
                   STAT
                 </button>
               </div>
-              <div className="lg:px-10 px-2 border bg-white rounded-lg h-full overflow-auto">
+              <div className="lg:px-4 px-2 border bg-white rounded-lg h-full overflow-auto">
+              {about && data ? (
                 <p className="py-5 ">
+                <h2 className="text-2xl font-semibold text-gray-800 py-4">About the Organisers</h2>
+
                   {/* {about ? data.description : ""} */}
-                  {about
-                    ? data.description
-                    : ""}
+                  {data?.description || "No description available"}
                 </p>
+              ) : null}
                 {/* <p className="font-medium text-lg text-center">
                   {upcomimg ? "" : <div className="  "></div>}
                 </p> */}
                   {/*Event Data Section*/}
 
                   {upcoming && (
-                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-6">
+                  <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-4">
                     {upcomingEventData.length > 0 ? (
                       upcomingEventData.map((event, index) => (
                         <div
                           key={index}
-                          className="bg-white shadow-lg rounded-lg border border-red-400 hover:shadow-xl transition-all duration-300 w-full max-w-[260px] h-[300px] flex flex-col mx-auto"
+                          className="bg-white shadow-lg rounded-lg hover:shadow-xl transition-all duration-300 w-full max-w-[280px] h-[280px] flex flex-col"
                         >
                           {/* Image */}
-                          <div className="w-full h-[160px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
+                          <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
                             <img
                               src={event.media?.thumbnailImage || "https://via.placeholder.com/250x160?text=No+Image"}
                               alt={event.name}
@@ -570,9 +572,9 @@ function GetOrganizerById() {
                           </div>
 
                           {/* Event Details */}
-                          <div className="p-3 text-center flex-grow flex flex-col justify-between">
+                          <div className="p-3 text-center flex flex-col justify-between">
                             <div>
-                              <h3 className="text-lg font-semibold text-gray-800">{event.name}</h3>
+                              <h3 className="text-xl font-semibold text-gray-800">{event.name}</h3>
                               <p className="text-sm text-gray-500 mt-1">{event.category || "Music Festival"}</p>
 
                               {/* Date */}
@@ -582,23 +584,29 @@ function GetOrganizerById() {
                             </div>
 
                             {/* Venue */}
-                            {event.venue && (
-                              <p className="text-sm text-gray-600 font-medium mt-2">
-                                📍 {event.venue.city}, {event.venue.state}, {event.venue.country}
+                            {event.venue ? (
+                            event.venue.city || event.venue.state || event.venue.country ? (
+                              <p className="text-sm text-gray-600 font-medium mt-1">
+                                📍 {event.venue.city || ""}, {event.venue.state || ""}, {event.venue.country || ""}
                               </p>
-                            )}
+                            ) : (
+                              <p className="text-sm text-gray-600 font-medium mt-1">📍 Not Available</p>
+                            )
+                          ) : (
+                            <p className="text-sm text-gray-600 font-medium mt-1">📍 Not Available</p>
+                          )}
                           </div>
                         </div>
                       ))
                     ) : (
-                      <p className="text-center text-gray-500 col-span-full">No Upcoming Events Found</p>
+                      <p className="text-center text-gray-500 col-span-full mt-12">No Upcoming Events Found</p>
                     )}
                   </div>
                 )}
 
                 <p>
                 {facebook ? (
-                   <div className="w-full flex justify-center">
+                   <div className="w-full flex justify-center py-6">
                     <div className="w-full max-w-[1200px]">
                       <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl}  />
                     </div>
@@ -607,17 +615,17 @@ function GetOrganizerById() {
                 )}
                   {/* {facebook ? <FacebookEmbeded appId={849920522233544} /> : ""} */}
                 </p>
-                <p className="font-medium text-lg text-center">
+                <p className="font-medium text-lg text-center ">
                   {instagram ? (
                     <InstagramProfile username="cristiano" />
                   ) : (
                     <div className=" "></div>
                   )}
                 </p>
-                <p className="font-medium text-lg text-center">
+                <p className="font-medium text-lg text-center py-6">
                   {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                 </p>
-                <p className="font-medium text-lg text-center">
+                <p className="font-medium text-lg text-center ">
                   {youtube ? (
                     <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
                   ) : (

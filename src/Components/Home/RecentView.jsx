@@ -38,10 +38,10 @@ function RecentView() {
     >
       <div className="flex justify-between items-center">
         {data.length>0 && (
-          <div className="flex gap-4 items-center p-8">
+          <div className="flex gap-2 items-center p-4 sm:p-8">
             <IoIosTimer className="text-3xl" />
             <div>
-              <p className="lg:text-2xl text-lg font-extrabold">RECENTLY VIEWED</p>
+              <p className="font-bold font-sans lg:text-2xl">RECENTLY VIEWED</p>
               <p>Pick up where you left off</p>
             </div>
           </div>

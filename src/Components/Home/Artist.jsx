@@ -239,8 +239,8 @@ function Artist() {
       <div className="lg:p-10 md:p-4 md:pb-5  p-5 w-full max-w-7xl">
       <div className="flex justify-between items-center pb-2">
         {/* <div className="flex justify-around md:justify-between lg:justify-between lg:relative lg:left-14 lg:pb-0 pb-2"> */}
-          <h1 className="text-base md:text-lg  font-medium  pb-1 relative lg:left-0 left-14 md:left-7 md:right-8 ">
-            Artist
+          <h1 className="ml-2 smLml-6 font-bold font-sans lg:text-2xl">
+            ARTIST
           </h1>
           {/* <div className="flex gap-2 relative right-8 md:-right-4 lg:right-32">
             Swipe

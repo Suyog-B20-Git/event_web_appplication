@@ -105,64 +105,72 @@
 //   }
 // }
 
-
 /* eslint-disable react/prop-types */
-import React, { Component } from "react";
+import React from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF"];
+const COLORS = ["#FF0000", "#1DA1F2"]; 
 
 const VenueStats = ({ data }) => {
   console.log("Stat Data:", data);
 
-  const hasYoutubeData = data.youtubeData && data.youtubeStats;
-  const hasTwitterData = data.twitterData && data.twitterStats;
+  const hasYoutubeData = data.youtubeStats && data.youtubeStats.subscribers;
+  const hasTwitterData = data.twitterStats && data.twitterStats.followers;
 
   if (!hasYoutubeData && !hasTwitterData) {
     return <div className="h-44 lg:text-lg flex justify-center items-center">No Stat Data</div>;
   }
 
-  // Combine data for a single pie chart
   let chartData = [];
 
   if (hasYoutubeData) {
-    chartData.push(
-      { name: "YouTube Subscribers", value: data.youtubeStats.subscribers },
-      { name: "YouTube Views", value: data.youtubeStats.views },
-      { name: "YouTube Videos", value: data.youtubeStats.videos }
-    );
+    chartData.push({ name: "YouTube Subscribers", value: data.youtubeStats.subscribers });
   }
-
   if (hasTwitterData) {
-    chartData.push(
-      { name: "Twitter Followers", value: data.twitterStats.followers },
-      { name: "Twitter Tweets", value: data.twitterStats.tweets }
-    );
+    chartData.push({ name: "Twitter Followers", value: data.twitterStats.followers });
   }
 
-  // Calculate total value
   const total = chartData.reduce((sum, entry) => sum + entry.value, 0);
 
-  // Format labels as percentages
   const renderLabel = ({ name, value }) => {
-    const percentage = ((value / total) * 100).toFixed(1); // Convert to percentage
+    const percentage = ((value / total) * 100).toFixed(1);
     return `${name}: ${percentage}%`;
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
-      <h2 className="text-xl font-semibold text-center mb-4">Social Media Stats (%)</h2>
-      
+    <div className="max-w-4xl mx-auto bg-white  p-2">
+      <h2 className="text-xl font-semibold text-center mb-4">Subscriber & Follower Stats (%)</h2>
+
       <ResponsiveContainer width="100%" height={350}>
         <PieChart>
           <Pie
             data={chartData}
             cx="50%"
             cy="50%"
-            outerRadius={120}
+            innerRadius="30%"
+            outerRadius="70%"
             fill="#8884d8"
             dataKey="value"
-            label={renderLabel} // Show % labels
+            labelLine={true} 
+            label={({ cx, cy, midAngle, outerRadius, percent, index }) => {
+              const RADIAN = Math.PI / 180;
+              const x = cx + (outerRadius + 0) * Math.cos(-midAngle * RADIAN);
+              const y = cy + (outerRadius + 60) * Math.sin(-midAngle * RADIAN);
+
+              return (
+                <text
+                  x={x}
+                  y={y}
+                  fill={COLORS[index % COLORS.length]}
+                  textAnchor={x > cx ? "start" : "end"}
+                  dominantBaseline="central"
+                  fontSize="14px"
+                  fontWeight="bold"
+                >
+                  {chartData[index].name}: {(percent * 100).toFixed(1)}%
+                </text>
+              );
+            }}
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -177,26 +185,3 @@ const VenueStats = ({ data }) => {
 };
 
 export default VenueStats;
-
-// Error Boundary Component
-class ErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an error", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback || <div>Something went wrong.</div>;
-    }
-    return this.props.children;
-  }
-}

@@ -153,8 +153,8 @@ function BestVenue() {
     
 <div className="w-full flex flex-col items-center justify-center pt-5">
 <div className="w-full max-w-6xl bg-white rounded-lg p-6 shadow-md">     
-   <h1 className="lg:text-3xl text-lg relative lg:left-3 md:left-10 left-4  font-semibold  font-sans">
-        Top Best Venue
+   <h1 className="font-bold font-sans lg:text-2xl">
+        TOP BEST VENUES
       </h1>
 
         <div className="relative flex items-center justify-center">
