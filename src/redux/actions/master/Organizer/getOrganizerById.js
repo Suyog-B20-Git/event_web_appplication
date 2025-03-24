@@ -62,7 +62,7 @@ export const getOrganizerById= (id,setLoader) => {
     try {
       const response = await axios.get(
         `${Organizer.getOrganizerFilter}/${id}`
-        // `http://localhost:5000/api/organizer/${id}`
+        // `http://dev.eventsnode.com:3000/api/organizer/${id}`
       );
       console.log("getOrganizerById : response", response.data);
       dispatch({

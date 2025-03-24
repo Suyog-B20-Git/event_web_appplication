@@ -91,7 +91,7 @@
 //     setSuccess("");
 
 //     try {
-//       const response = await axios.post("http://localhost:5000/api/auth/setup", {
+//       const response = await axios.post("http://dev.eventsnode.com:3000/api/auth/setup", {
 //         username: firstName,
 //         lastName,
 //         email,
@@ -224,7 +224,7 @@ function Register() {
     try {
       if (password === confirmPassword) {
         const response = await axios.post(
-          // "http://localhost:5000/api/auth/setup",
+          // "http://dev.eventsnode.com:3000/api/auth/setup",
           `${Auth.register}`,
           {
             username: name,

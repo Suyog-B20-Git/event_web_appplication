@@ -138,7 +138,7 @@ import { axiosInstance } from "../../../../../utility/utils";
 //   console.log("data.:::",data);
 //   return () => {
 //     axiosInstance
-//       .post(`http://localhost:5000/api/organizer`,{
+//       .post(`http://dev.eventsnode.com:3000/api/organizer`,{
 //         name: data.name.trim(),
 //         categories: data.categories, // Assuming it's an array
 //         description: data.description.trim(),
@@ -220,7 +220,7 @@ import { Zoom } from "react-toastify";
             return () => {
               const token=   localStorage.getItem("authToken");
               axiosInstance
-                .post(`http://localhost:5000/api/organizer`, data, {
+                .post(`http://dev.eventsnode.com:3000/api/organizer`, data, {
                   headers: { "Content-Type": "multipart/form-data" ,'Authorization': ` ${token}`},
                 })
                 .then((response) => {

@@ -54,7 +54,7 @@ export const updateLiftType = (data, props, setisLoader) => {
 
 import axios from "axios";
 import { Organizer } from "../../../Urls";
-let api = "http://localhost:5000/api/organizer";
+let api = "http://dev.eventsnode.com:3000/api/organizer";
 
 export const getOrganizer = (setLoader, filter, page, category) => {
   setLoader(true); // Start loading
@@ -64,12 +64,12 @@ export const getOrganizer = (setLoader, filter, page, category) => {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
         )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
-        // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
+        // api = `http://dev.eventsnode.com:3000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=9&sortOrder=asc`;
       } else {
         api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=asc&sortBy=name`;
-        // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=9&sortOrder=asc`;
+        // api = `http://dev.eventsnode.com:3000/api/organizer/filter?page=${page}&limit=9&sortOrder=asc`;
       }
 
       break;
@@ -79,12 +79,12 @@ export const getOrganizer = (setLoader, filter, page, category) => {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
         )}&page=${page}&limit=9&sortOrder=desc&sortBy=name`;
-        // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
+        // api = `http://dev.eventsnode.com:3000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=8&sortOrder=desc`;
       } else
         api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=desc&sortBy=name`;
-      // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=desc`;
+      // api = `http://dev.eventsnode.com:3000/api/organizer/filter?page=${page}&limit=8&sortOrder=desc`;
       break;
 
     case "alphabetical":
@@ -92,12 +92,12 @@ export const getOrganizer = (setLoader, filter, page, category) => {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
         )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
-        // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
+        // api = `http://dev.eventsnode.com:3000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=8&sortOrder=asc`;
       } else
         api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=asc&sortBy=name`;
-      // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
+      // api = `http://dev.eventsnode.com:3000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
       break;
 
     default:
@@ -105,11 +105,11 @@ export const getOrganizer = (setLoader, filter, page, category) => {
         api = ` ${
           Organizer.getOrganizerByFilter
         }categories=${encodeURIComponent(category)}&page=${page}&limit=9`;
-        // api = ` http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
+        // api = ` http://dev.eventsnode.com:3000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=9`;
       } else api = ` ${Organizer.getOrganizerByFilter}page=${page}&limit=9`;
-      // api = ` http://localhost:5000/api/organizer/filter?page=${page}&limit=9`;
+      // api = ` http://dev.eventsnode.com:3000/api/organizer/filter?page=${page}&limit=9`;
       break;
   }
 

@@ -50,7 +50,7 @@
 //                   style={{
 //                     // backgroundImage: `url(${item.media.thumbnailImage})`,
 //                     backgroundImage: `url(${
-//                       item.media?.thumbnailImage || "staticAssets/fallback-image.jpg"
+//                       item.media?.thumbnailImage || "assets/staticAssets/fallback-image.jpg"
 //                     })`,
 
 //                     backgroundRepeat: "no-repeat",
@@ -163,7 +163,7 @@ function EventCardData({ data, heading }) {
                   style={{
                     // backgroundImage: `url(${item.media.thumbnailImage})`,
                     backgroundImage: `url(${
-                      item.media?.thumbnailImage || "staticAssets/fallback-image.jpg"
+                      item.media?.thumbnailImage || "assets/staticAssets/fallback-image.jpg"
                     })`,
 
                     backgroundRepeat: "no-repeat",

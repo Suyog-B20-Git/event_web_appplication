@@ -55,7 +55,7 @@ export const updateLiftType = (data, props, setisLoader) => {
 // export const getEventData = () => {
 //   return (dispatch) => {
 //     axiosInstance
-//       .get("http://localhost:5000/api/event")
+//       .get("http://dev.eventsnode.com:3000/api/event")
 //       .then((response) => {
 //         if (!response.data.status) {
 //           toast.error(response.data.message, {
@@ -89,7 +89,7 @@ import axios from "axios";
 // export const getEventData = () => {
 //   return async (dispatch) => {
 //     try {
-//       const response = await axios.get("http://localhost:5000/api/event");
+//       const response = await axios.get("http://dev.eventsnode.com:3000/api/event");
 //       console.log("resi",response)
 //       if (!response.data.status) {
 //         toast.error(response.data.message,{

@@ -11,11 +11,11 @@ import { TbWorld } from "react-icons/tb";
 function Dj() {
   const card1 = [
     {
-      img: "staticAssets/Speaker1.png",
+      img: "assets/staticAssets/Speaker1.png",
       name: "Decon Duffy",
       desc: "Engineer & Businessman",
     },
-    { img: "staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
+    { img: "assets/staticAssets/Speaker2.png", name: "Jordyn Bryn", desc: "CEO & Founder" },
    
   ];
   return (

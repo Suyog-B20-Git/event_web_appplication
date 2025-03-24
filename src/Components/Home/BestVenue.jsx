@@ -124,27 +124,27 @@ function BestVenue() {
 
   const Venues = [
     {
-      img: "staticAssets/venue1.jpg",
+      img: "assets/staticAssets/venue1.jpg",
       desc: "Best Venue 1",
     },
     {
-      img: "staticAssets/venue2.jpeg",
+      img: "assets/staticAssets/venue2.jpeg",
       desc: "Best  Venue 2",
     },
     {
-      img: "staticAssets/venue3.jpeg",
+      img: "assets/staticAssets/venue3.jpeg",
       desc: "Best  Venue 3",
     },
     {
-      img: "staticAssets/venue4.jpeg",
+      img: "assets/staticAssets/venue4.jpeg",
       desc: "Best Venue 1",
     },
     {
-      img: "staticAssets/venue5.jpg",
+      img: "assets/staticAssets/venue5.jpg",
       desc: "Best  Venue 2",
     },
     {
-      img: "staticAssets/venue7.jpg",
+      img: "assets/staticAssets/venue7.jpg",
       desc: "Best  Venue 3",
     },
   ];

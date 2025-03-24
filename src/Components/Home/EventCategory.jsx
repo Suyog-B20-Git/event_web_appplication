@@ -18,14 +18,14 @@
 //   };
 
 //   var data = [
-//     { Name: "public/staticAssets/Ev1.png", text: "Business " },
+//     { Name: "public/assets/staticAssets/Ev1.png", text: "Business " },
 //     { Name: "fest.jpg", text: "Festival" },
 //     { Name: "music.jpeg", text: "Live Music" },
 //     { Name: "pro.jpg", text: "Professional" },
 //     { Name: "cahrity.webp", text: "Social" },
 //   ];
 //   var data1 = [
-//     { Name: "public/staticAssets/Ev1.png", text: "Business " },
+//     { Name: "public/assets/staticAssets/Ev1.png", text: "Business " },
 //     { Name: "fest.jpg", text: "Festival" },
 //     { Name: "music.jpeg", text: "Live Music" },
 //     { Name: "pro.jpg", text: "Professional" },
@@ -153,21 +153,21 @@ const EventCategory = () => {
   };
 
   var data = [
-    { Name: "staticAssets/Ev1.png", text: "Business " },
-    { Name: "staticAssets/fest.jpg", text: "Festival" },
-    { Name: "staticAssets/music.jpeg", text: "Live Music" },
-    { Name: "staticAssets/pro.jpg", text: "Professional" },
-    { Name: "staticAssets/cahrity.webp", text: "Social" },
+    { Name: "assets/staticAssets/Ev1.png", text: "Business " },
+    { Name: "assets/staticAssets/fest.jpg", text: "Festival" },
+    { Name: "assets/staticAssets/music.jpeg", text: "Live Music" },
+    { Name: "assets/staticAssets/pro.jpg", text: "Professional" },
+    { Name: "assets/staticAssets/cahrity.webp", text: "Social" },
   ];
   var data1 = [
-    { Name: "staticAssets/Ev1.png", text: "Business " },
-    { Name: "staticAssets/fest.jpg", text: "Festival" },
-    { Name: "staticAssets/music.jpeg", text: "Live Music" },
-    { Name: "staticAssets/pro.jpg", text: "Professional" },
-    { Name: "staticAssets/cahrity.webp", text: "Social" },
-    { Name: "staticAssets/music.jpeg", text: "Nightlife & Club" },
-    { Name: "staticAssets/sport.jpeg", text: "Sports & Leisure" },
-    { Name: "staticAssets/education.jpg", text: "Theatre & art" },
+    { Name: "assets/staticAssets/Ev1.png", text: "Business " },
+    { Name: "assets/staticAssets/fest.jpg", text: "Festival" },
+    { Name: "assets/staticAssets/music.jpeg", text: "Live Music" },
+    { Name: "assets/staticAssets/pro.jpg", text: "Professional" },
+    { Name: "assets/staticAssets/cahrity.webp", text: "Social" },
+    { Name: "assets/staticAssets/music.jpeg", text: "Nightlife & Club" },
+    { Name: "assets/staticAssets/sport.jpeg", text: "Sports & Leisure" },
+    { Name: "assets/staticAssets/education.jpg", text: "Theatre & art" },
   ];
   return (
     <>

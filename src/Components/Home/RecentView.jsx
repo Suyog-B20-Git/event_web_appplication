@@ -20,12 +20,12 @@ function RecentView() {
   const data = store.recentEventData;
   console.log("recent data",data)
   // const card1 = [
-  //   { img: "staticAssets/fI1.png", desc: "MUSIC CONCERT AT UK| ALL GABHD..." },
-  //   { img: "staticAssets/fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
-  //   { img: "staticAssets/fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
-  //   { img: "staticAssets/fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
-  //   { img: "staticAssets/fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
-  //   { img: "staticAssets/fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
+  //   { img: "assets/staticAssets/fI1.png", desc: "MUSIC CONCERT AT UK| ALL GABHD..." },
+  //   { img: "assets/staticAssets/fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
+  //   { img: "assets/staticAssets/fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
+  //   { img: "assets/staticAssets/fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
+  //   { img: "assets/staticAssets/fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
+  //   { img: "assets/staticAssets/fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
   // ];
   const navigate = useNavigate();
   if (loading) {

@@ -93,7 +93,7 @@
 
 //     try {
 //       const response = await axios.post(
-//         "http://localhost:5000/api/auth/login",
+//         "http://dev.eventsnode.com:3000/api/auth/login",
 //         {
 //           email,
 //           password,
@@ -336,7 +336,7 @@
 
 //     try {
 //       const response = await axios.post(
-//         "http://localhost:5000/api/auth/login",
+//         "http://dev.eventsnode.com:3000/api/auth/login",
 //         {
 //           email,
 //           password,
@@ -368,7 +368,7 @@
 //     <div className=" lg:pt-[180px] pt-[30px]  ">
 //       <div
 //         style={{
-//           backgroundImage: "url(/staticAssets/createEvent.png)",
+//           backgroundImage: "url(/assets/staticAssets/createEvent.png)",
 //           backgroundPosition: "center",
 //           backgroundSize: "cover",
 //           backgroundRepeat: "no-repeat",
@@ -512,7 +512,7 @@
 
 //     try {
 //       const response = await axios.post(
-//         "http://localhost:5000/api/auth/login",
+//         "http://dev.eventsnode.com:3000/api/auth/login",
 //         {
 //           email,
 //           password,

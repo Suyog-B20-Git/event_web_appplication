@@ -5,21 +5,21 @@ import React, { useState } from "react";
 
 function Sponsors() {
   const company = [
-    "Logos/l1.png",
+    "assets/Logos/l1.png",
 
-    "Logos/l3.png",
-    "Logos/l4.png",
-    "Logos/l5.png",
-    "Logos/l6.png",
+    "assets/Logos/l3.png",
+    "assets/Logos/l4.png",
+    "assets/Logos/l5.png",
+    "assets/Logos/l6.png",
   
-    "Logos/l8.png",
-    "Logos/l9.png",
-    "Logos/l10.png",
-    "Logos/l11.png",
-    "Logos/l12.png",
-    "Logos/l13.png",
-    "Logos/l14.png",
-    "Logos/l15.png",
+    "assets/Logos/l8.png",
+    "assets/Logos/l9.png",
+    "assets/Logos/l10.png",
+    "assets/Logos/l11.png",
+    "assets/Logos/l12.png",
+    "assets/Logos/l13.png",
+    "assets/Logos/l14.png",
+    "assets/Logos/l15.png",
   ];
 
   const [showAll, setShowAll] = useState(false);
