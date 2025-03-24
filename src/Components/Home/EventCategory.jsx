@@ -202,9 +202,9 @@ const EventCategory = () => {
 
 
     <div className="items-center justify-center lg:p-4 lg:pb-0 p-4 pt-1">
-    <div className="flex justify-around items-center p-2 font-sans">
-          <div className="w-[95%]  lg:text-2xl text-xl font-bold  font-sans lg:px-14  relative md:right-1 lg:right-5  flex gap-2 ">
-            <MdOutlineCategory className="relative top-1" /> Event Category
+    <div className="flex justify-around items-center p-2 ">
+          <div className="w-[95%]  font-bold font-sans lg:text-2xl lg:px-4 flex gap-2 ">
+            <MdOutlineCategory className="relative top-1" /> EVENT CATEGORY
           </div>
         </div>
 

@@ -48,9 +48,9 @@ function EventHeading({ heading, startDate, endDate, by }) {
           rounded={"rounded-2xl"}
         />
       </p>
-      <div className="flex rounded-b-lg font-semibold lg:text-lg p-2 gap-2 bg-[#ffa7bc]">
+      <div className="flex rounded-b-lg font-semibold lg:text-lg p-3 gap-4 bg-[#ffa7bc]">
         Share Event
-        <p className="flex relative text-2xl top-1.5 gap-2 text-white">
+        <p className="flex relative text-2xl gap-2 text-white">
           <button
             onClick={() => handleShare("facebook")}
             className="flex gap-1 shadow  p-1 rounded"

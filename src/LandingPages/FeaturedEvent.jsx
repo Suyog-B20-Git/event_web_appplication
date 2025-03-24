@@ -178,7 +178,7 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
     <div className="">
       <div className="flex lg:flex-row flex-col gap-4 ">
         <div
-          className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px]"
+          className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px] mt-20 sm:mt-0 relative"
           style={{
             backgroundImage: `url(${
               receivedData.media?.thumbnailImage || "assets/staticAssets/fallback-image.jpg"
@@ -188,6 +188,17 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
             backgroundRepeat: "no-repeat",
           }}
         >
+         <div className="absolute top-4 right-2 bg-white/70 rounded-lg p-2 flex gap-4 block md:block lg:hidden">
+            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900">
+              <FaEye className="relative top-0.5 text-blue-600" />
+              <span>Total {receivedData.visits}</span>
+            </p>
+            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900">
+              <FaEye className="relative top-0.5 text-blue-600" />
+              <span>Daily {receivedData.dailyVisits}</span>
+            </p>
+          </div>
+
           <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
             <p
               onClick={() => setEnquiry(!enquiry)}
@@ -203,7 +214,7 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
                 handleFavourite(receivedData._id);
                 checkFavourite(receivedData._id);
               }}
-              className={`flex gap-1 text-xs font-bold cursor-pointer ${
+              className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer ${
                 isFavourite ? "text-[#ff2459]" : "text-gray-900"
               }`}
             >
@@ -217,31 +228,36 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
               <MdDateRange className="text-lg " />
               Add to My Calendar
             </p>
-            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
-              <FaEye className="relative top-0.5 text-blue-600" />
-              <span>Total {receivedData.visits}</span>
-            </p>
-            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
-              <FaEye className="relative top-0.5 text-blue-600" />
-              <span>Daily {receivedData.dailyVisits}</span>
-            </p>
+
+            <div className="hidden md:hidden lg:flex gap-4">
+              <p className="flex gap-1 text-xs font-bold text-gray-900 cursor-pointer">
+                <FaEye className="relative top-0.5 text-blue-600" />
+                <span>Total {receivedData.visits}</span>
+              </p>
+              <p className="flex gap-1 text-xs font-bold text-gray-900 cursor-pointer">
+                <FaEye className="relative top-0.5 text-blue-600" />
+                <span>Daily {receivedData.dailyVisits}</span>
+              </p>
+            </div>
+
           </div>
         </div>
-        <div className="rounded-xl lg:m-0 m-2 mt-1 lg:p-4 p-2  shadow-lg lg:w-[20%] ">
-          <h1 className="font-bold flex justify-center font-sans break-words text-xl p-2">
+        
+        <div className="rounded-xl lg:m-0 m-2 lg:p-4 p-2  shadow-lg lg:w-[20%] ">
+          <h1 className="font-bold flex justify-start break-words text-xl p-2 mt-0 sm:mt-4 ">
             {" "}
             {receivedData.name}
           </h1>
-          <div className="flex gap-2 pb-3 justify-center">
-            <div className="relative flex flex-col gap-1 top-1 lg:text-2xl text-gray-600">
+          <div className="flex gap-2 pb-3 pl-4 justify-start mt-0 sm:mt-4 ">
+            <div className="relative flex flex-col space-y-4 top-1 lg:text-2xl text-gray-600 ">
               <TiBookmark />
               <CiCalendarDate />
               <CiLocationOn />
             </div>
-            <div className="text-gray-600 md:text-base lg:text-base text-xs font-medium flex flex-col gap-1 ">
+            <div className="text-gray-600 md:text-base  text-xs font-medium space-y-4">
               <p>{receivedData.category}</p>
               {/* <p>{receivedData.startDate}</p> */}
-              <p>
+              <p >
                 {date} - {time}
               </p>
               <p></p>
@@ -253,7 +269,7 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
             </div>
           </div>
           <hr />
-          <div className="pt-2 flex justify-between gap-2 lg:p-2 lg:pt-3 md:p-2 pr-3">
+          <div className="pt-2 flex justify-between gap-2 lg:pt-3 md:p-2 px-3 mt-0 sm:mt-6">
             <p className="lg:text-xl text-base font-bold">$99 onwards </p>
 
             {/* <button
@@ -282,18 +298,19 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
               //   }
               // }}
               onClick={() => {
-                setModal(true);
+                setModal(true); // Ensure the form is open
                 sectionRef.current?.scrollIntoView({
                   behavior: "smooth",
                   block: "nearest",
                 });
               }}
               className="relative lg:text-lg text-xs font-medium rounded-md p-2 px-4 bg-[#ff2459] text-white transition-all duration-300 
-  before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
-  hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
+            before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
+            hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
             >
-              <p className="relative "> Get Ticket</p>
+              <p className="relative">Get Ticket</p>
             </button>
+            
           </div>
           {/* <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
 
@@ -345,7 +362,7 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
         </div>
       </div>
 
-      <div className="lg:p-10 p-5 flex lg:flex-row md:flex-row flex-col w-full gap-4">
+      <div className="lg:p-10 p-3 flex lg:flex-row md:flex-row flex-col w-full gap-4">
         <div className="lg:w-[90%] md:w-[90%]  ">
           {receivedData ? (
             <EventHeading
@@ -357,23 +374,24 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
           ) : (
             <EventHeading heading={"No Event data"} by={"-"} startDate={"-"} />
           )}
-          {modal && (
-            <div className="border-2 m-1 rounded-lg">
+            <div className="border-2 m-1 mt-4 sm:mt-6 rounded-lg ">
               <div ref={sectionRef} className="p-2 pb-3">
-                <p className="font-semibold text-base lg:text-3xl pt-3 pb-3">
+                <p className="font-semibold text-base lg:text-3xl px-3">
                   Get Tickets Now
                 </p>
-                <div className=" m-1 mb-0 w-48 rounded-lg h-1 bg-[#ff2459]"></div>
-                <p className="font-medium  text-lg lg:text-2xl ml-1">
-                  {receivedData ? receivedData.startDate : "-"}
+                <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
+                <p className="font-semibold text-lg  ml-3 mb-6">
+             {receivedData?.startDate
+                ? new Date(receivedData.startDate).toLocaleString()
+                : "-"}                
                 </p>
                 <hr />
+                <div className="space-y-4">
                 <div onClick={() => setForm(!form)}>
                   {receivedData ? (
                     <GetTicket
-                      start={receivedData.startDate}
-                      // sTime={receivedData.startTime}
-                      eTime={receivedData.endDate}
+                    start={new Date(receivedData.startDate).toLocaleString()}
+                    eTime={new Date(receivedData.endDate).toLocaleString()}
                     />
                   ) : (
                     <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
@@ -382,9 +400,8 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
                 <div onClick={() => setForm(!form)}>
                   {receivedData ? (
                     <GetTicket
-                      start={receivedData.startDate}
-                      // sTime={receivedData.startTime}
-                      eTime={receivedData.endDate}
+                    start={new Date(receivedData.startDate).toLocaleString()}
+                    eTime={new Date(receivedData.endDate).toLocaleString()}
                     />
                   ) : (
                     <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
@@ -393,9 +410,8 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
                 <div onClick={() => setForm(!form)}>
                   {receivedData ? (
                     <GetTicket
-                      start={receivedData.startDate}
-                      // sTime={receivedData.startTime}
-                      eTime={receivedData.endDate}
+                    start={new Date(receivedData.startDate).toLocaleString()}
+                    eTime={new Date(receivedData.endDate).toLocaleString()}
                     />
                   ) : (
                     <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
@@ -403,59 +419,53 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
                 </div>
               </div>
             </div>
-          )}
+            </div>
         </div>
 
         <div className="lg:w-[20%] md:w-[90%] flex flex-col gap-2">
-          <div className="p-2 flex lg:flex-col md:flex-col justify-around  flex-row  w-full border rounded-xl">
-            <div>
-              <h1 className="lg:text-lg md:text-base text-xs lg:left-0 relative md:left-0 left-4   font-semibold gap-2  lg:pb-5   flex lg:flex-row flex-col">
-                Organiser
-                {/* <p
-                  className="flex text-yellow-300 relative lg:left-0 md:left-0 
-                left-4 top-1"
-                >
-                  <IoMdStar /> <IoMdStar />
-                </p> */}
-              </h1>
-              <div>
-                <div className="h-20 lg:hidden md:hidden  block w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 m-2 md:m-0  rounded-full bg-gray-500"></div>
-                <p className="font-semibold lg:hidden md:hidden relative  left-7 block lg:text-base text-sm">
-                  Name
+        <div className="p-4 flex flex-col items-center w-full border rounded-xl">
+            {/* Title */}
+            <h1 className="text-xl font-semibold text-left px-6 pb-3 lg:pb-5">
+              Organiser
+            </h1>
+
+            {/* Organizer Image */}
+            <div className="flex flex-col items-center w-full">
+              <div className="h-20 w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
+                {receivedData.organizer?.name?.charAt(0) || ""}
+              </div>
+
+              {/* Organizer Name */}
+              <p className="font-semibold lg:text-base text-sm pt-2 text-center">
+                {receivedData.organizer?.name || "Organizer Name"}
+              </p>
+
+              {/* Organizer Info */}
+              <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-2 gap-2 pt-4 text-center">
+                <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
+                  <PiBuildingApartmentFill className="text-lg" />
+                  {receivedData.venue?.city || "-"}, {receivedData.venue?.country || "-"}
+                </p>
+                <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
+                  <FaPhoneAlt className="text-lg" />
+                  {receivedData.organizer?.mobileNumber || "Not available"}
+                </p>
+                <p className="flex items-center  lg:text-xs md:text-xs text-sm gap-1">
+                  <MdOutlineMailOutline className="text-lg" />
+                  {receivedData.organizer?.email || "Not available"}
                 </p>
               </div>
-            </div>
-            <div className="flex flex-col lg:items-center lg:p-2">
-  <div className="h-14 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
-    {receivedData.organizer?.name?.charAt(0) || "N"}
-  </div>
-  <p className="font-semibold lg:text-base text-sm pt-2">
-    {receivedData.organizer?.name || "Organizer Name"}
-  </p>
-  <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-2 pt-4">
-    <p className="flex lg:text-xs md:text-xs text-sm gap-1">
-      <PiBuildingApartmentFill className="relative top-1" />
-      {receivedData.venue?.city || "-"}, {receivedData.venue?.country || "-"}
-    </p>
-    <p className="flex lg:text-xs md:text-xs text-sm gap-1">
-      <FaPhoneAlt className="relative top-1" />
-      {receivedData.organizer?.mobileNumber || "Not available"}
-      </p>
-    <p className="flex lg:text-xs md:text-xs text-sm gap-1">
-      <MdOutlineMailOutline className="relative top-1" />
-      {receivedData.organizer?.email || "Not available"}
-    </p>
-  </div>
-  <button
-    onClick={() => setIsFormOpen(true)}
-    className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
-  >
-    <IoIosContact className="relative top-1 text-xl" />
-    Contact Organizer
-  </button>
-</div>
 
-        </div>
+              {/* Contact Organizer Button */}
+              <button
+                onClick={() => setIsFormOpen(true)}
+                className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
+              >
+                <IoIosContact className="text-xl" />
+                Contact Organizer
+              </button>
+            </div>
+          </div>
 
           <div className="border-2 rounded-xl p-2 flex flex-col items-center">
             <p className="font-semibold">Google Location</p>
@@ -470,16 +480,16 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
           </div>
         </div>
       </div>
-      <div className="p-5 lg:p-10 md:p-10">
+      <div className="px-3 sm:px-10 py-2 ">
         {/* <Overview />
         <EventInfo /> */}
-        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-        <h2 className="text-2xl sm:text-xl font-bold text-gray-800 mb-3">Event Description</h2>
+        <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">Event Description</h2>
           <p className="text-lg text-gray-600 mt-2">{receivedData.description || "Description not available."}</p>
         </div>
         <div>
           
-          <h1 className="text-gray-900 font-bold pt-10 text-lg p-4 pl-0">
+          <h1 className="text-2xl sm:text-3xl text-gray-900 font-semibold pt-10 p-4 pl-0">
             Location
           </h1>
 

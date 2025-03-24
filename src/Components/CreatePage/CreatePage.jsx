@@ -27,20 +27,17 @@
 //   } = useForm();
 //   const [selectedTags, setSelectedTags] = useState([]);
 //   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
-//   const notifySuccess = (person) =>
-//     toast.success(`${person} Page created created successfully!`);
+
+//   // const notifySuccess = (person) =>
+//   //   toast.success(`${person} Page created created successfully!`);
+
 //   const handleTagChange = (selectedOptions) => {
 //     const newTags = selectedOptions
 //       ? selectedOptions.map((option) => option.value)
 //       : [];
 //     setSelectedTags(newTags);
 //   };
-//   // const handleSubcategoryChange = (selectedOptions) => {
-//   //   const newSubCategory = selectedOptions
-//   //     ? selectedOptions.map((option) => option.value)
-//   //     : [];
-//   //   setSelectedSubCategory(newSubCategory);
-//   // };
+  
 //   const handleSubcategoryChange = (selectedOptions) => {
 //     let newSubCategory;
 //     if (Array.isArray(selectedOptions)) {
@@ -52,6 +49,7 @@
 //     console.log("Updated SubCategory:", newSubCategory); // Debugging log
 //     setSelectedSubCategory(newSubCategory);
 //   };
+
 //   const categoryList = [
 //     { value: "Organiser", label: "Organiser" },
 //     { value: "Performers", label: "Performers" },
@@ -111,7 +109,7 @@
 //     { value: "Wedding Planner", label: "Wedding Planner" },
 //   ];
 //   const subCategoryList = selectedCategory
-//   ? subCategoryOptions[selectedCategory.value]
+//   ? subCategoryOptions[selectedCategory?.value] || []
 //   : [];
 
 
@@ -130,6 +128,7 @@
 //   const [state, setState] = useState("");
 //   const [city, setCity] = useState("");
 //   const [location, setLocation] = useState("");
+//   const [error, setError] = useState(null);
 
 //   useEffect(() => {
 //     if (country) {
@@ -152,6 +151,7 @@
 //   const store = useSelector((state) => state.countriesReducer) || {
 //     countries: [],
 //   };
+  
 //   const data = store?.countries || []; // Ensure data is always an array
 //   const countryOption = data.map((country) => ({
 //     value: country,
@@ -194,26 +194,49 @@
 //   };
 //   const data4 = store4.locationDetails ? store4.locationDetails : [];
 //   console.log(data4);
+
 //   // Handle Image Selection
 //   const [image, setImage] = useState(null);
 //   const [coverImage, setCoverImage] = useState(null);
+
+//   // const handleImageChange1 = (event) => {
+//   //   const file = event.target.files[0];
+//   //   if (!file) {
+//   //     setImageError("Profile image is required");
+//   //     return;
+//   //   }
+//   // };
+
+//   const [imageError, setImageError] = useState("");
+
 //   const handleImageChange = (event) => {
 //     const file = event.target.files[0];
-//     if (file) {
-//       setImage(file);
-//       // setPreview(URL.createObjectURL(file)); // Show image preview
+  
+//     if (!file) {
+//       setImageError("Profile image is required");
+//       return;
 //     }
-//   };
-//   const handleImageChange1 = (event) => {
-//     const file = event.target.files[0];
-//     if (file) {
-//       setCoverImage(file);
-//       // setPreview(URL.createObjectURL(file)); // Show image preview
+  
+//     if (file.size > 2 * 1024 * 1024) {
+//       setImageError("File size must be less than 2MB");
+//       return;
 //     }
+  
+//     setImage(file);
+//     setImageError(""); // Clear previous error if valid image is selected
 //   };
+  
+
 //   console.log(image);
 
 //   const onSubmit = (data) => {
+//     if (!check) {
+//       setError("You must accept the terms.");
+//       return; // Prevent form submission
+//     }
+  
+//     setError(""); // Clear error if checkbox is checked
+  
 //     const formData = new FormData();
 //     formData.append("profileImage", image); // Append file
 
@@ -271,21 +294,145 @@
 //       formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
 //       formData.append("amenities", data.amenities);
 //       formData.append("type", data.type);
+
 //       dispatch(createNewVenue(formData));
 //       // notifySuccess(data.listingTitle);
-//       toast.success(`${selectedCategory.value} Page created successfully!`);
+//       // toast.success(`${selectedCategory.value} Page created successfully!`);
 
 //     }
 
 //     console.log("Form Data:", data);
 
-//     setImage(null);
-//     setCoverImage(null);
+//     // setImage(null);
+//     // setCoverImage(null);
 
-//     reset();
-//     setSelectedTags([])
+//     // reset();
+//     // setSelectedTags([])
 //   };
 
+//   // const onSubmit = async (data) => {
+//   //   const formData = new FormData();
+//   //   formData.append("profileImage", image);
+//   //   selectedSubCategory.forEach((subCategory) => formData.append("categories[]", subCategory));
+//   //   formData.append("country", data.country);
+//   //   formData.append("state", data.state);
+//   //   formData.append("city", data.city);
+//   //   formData.append("location", data.location);
+//   //   formData.append("name", data.listingTitle);
+//   //   formData.append("description", data.listingDescription);
+  
+//   //   try {
+//   //     let response = null;
+  
+//   //     if (selectedCategory?.value === "Performers") {
+//   //       response = await dispatch(createNewPerformer(formData));
+//   //     } else if (selectedCategory?.value === "Organiser") {
+//   //       response = await dispatch(createNewOrganizer(formData));
+//   //     } else if (selectedCategory?.value === "Services") {
+//   //       response = await dispatch(createNewService(formData));
+//   //     } else if (selectedCategory?.value === "Venues") {
+//   //       response = await dispatch(createNewVenue(formData));
+//   //     }
+  
+//   //     console.log("API Response:", response);
+  
+//   //     // Check if API response contains an error and show only ONE toast
+//   //     if (!response || response?.error || response?.statusCode === 500 || !response?.status) {
+//   //       console.error("Error in form submission:", response?.message || "Unknown error");
+  
+//   //       // Avoid duplicate messages by exiting before the catch block
+//   //       toast.error(response?.message || "Something went wrong! Please try again.");
+//   //       return; 
+//   //     }
+  
+//   //     // Show success message only if no errors
+//   //     toast.success(`${selectedCategory.value} Page created successfully!`);
+  
+//   //   } catch (error) {
+//   //     console.error("Unexpected error:", error);
+  
+//   //     // Show generic error message only if no previous error message was shown
+//   //     toast.error("Something went wrong! Please check your data.");
+//   //   }
+//   // };
+  
+//   // const onSubmit = async (data) => {
+//   //   const formData = new FormData();
+    
+//   //   formData.append("profileImage", image);
+//   //   selectedSubCategory.forEach((subCategory) => formData.append("categories[]", subCategory));
+//   //   formData.append("country", data.country);
+//   //   formData.append("state", data.state);
+//   //   formData.append("city", data.city);
+//   //   formData.append("location", data.location);
+//   //   formData.append("name", data.listingTitle);
+//   //   formData.append("description", data.listingDescription);
+//   //   formData.append("address", data4.address);
+//   //   formData.append("googleSearchLocation", data.location);
+//   //   formData.append("googleSearchLat", data4.location.lat);
+//   //   formData.append("googleSearchLong", data4.location.lng);
+//   //   selectedTags.forEach((tag) => formData.append("tags[]", tag));
+  
+//   //   if (data.phone) formData.append("phoneNumber", data.phone);
+//   //   if (data.email) formData.append("email", data.email);
+//   //   if (data.availableTime) formData.append("availableTime", data.availableTime);
+//   //   if (data.website) formData.append("website", data.website);
+//   //   formData.append("facebookUrl", data.facebookUrl);
+//   //   formData.append("youtubeUrl", data.youtubeUrl);
+//   //   formData.append("twitterUrl", data.twitterUrl);
+  
+//   //   try {
+//   //     let response;
+  
+//   //     if (selectedCategory.value === "Performers") {
+//   //       formData.append("cloudSoundUrl", data.cloudSoundUrl);
+//   //       formData.append("spotifyUrl", data.spotifyUrl);
+//   //       response = await dispatch(createNewPerformer(formData));
+//   //     }
+  
+//   //     if (selectedCategory.value === "Organiser") {
+//   //       response = await dispatch(createNewOrganizer(formData));
+//   //     }
+  
+//   //     if (selectedCategory.value === "Services") {
+//   //       response = await dispatch(createNewService(formData));
+//   //     }
+  
+//   //     if (selectedCategory.value === "Venues") {
+//   //       formData.append("coverImage", coverImage);
+//   //       formData.append("url", data.url);
+//   //       formData.append("zipcode", data.zipcode);
+//   //       formData.append("quotedForm", data.quotedForm);
+//   //       formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
+//   //       formData.append("availability", data.availability);
+//   //       formData.append("pricing", data.pricing);
+//   //       formData.append("neighbourhoods", data.neighbourhoods);
+//   //       formData.append("noOfStandingGuest", data.noOfStandingGuest);
+//   //       formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
+//   //       formData.append("amenities", data.amenities);
+//   //       formData.append("type", data.type);
+//   //       response = await dispatch(createNewVenue(formData));
+//   //     }
+  
+//   //     if (response?.error) {
+//   //       console.error("Error in form submission:", response.error);
+//   //       toast.error("Submission failed! Please try again.");
+//   //     } else {
+//   //       toast.success(`${selectedCategory.value} Page created successfully!`);
+//   //     }
+//   //   } catch (error) {
+//   //     console.error("Unexpected error:", error);
+//   //     toast.error("Something went wrong! Please check your data.");
+//   //   }
+  
+//   //   console.log("Form Data:", formData);
+  
+//   //   // reset();
+//   //   // setImage(null);
+//   //   // setCoverImage(null);
+//   //   // setSelectedTags([]);
+//   // };
+  
 //   useEffect(() => {
 //     window.scrollTo(0, 0);
 //   }, []);
@@ -328,33 +475,35 @@
 //               Select Subcategory*
 //             </label>
 //             <Controller
-//               name="subCategory"
-//               control={control}
-//               rules={{ required: "Subcategory is required" }} // Required validation added
-//               render={({ field, fieldState: { error } }) => (
-//                 <>            
-//                 <Select
-//                   {...field}
-//                   options={subCategoryList}
-//                   isMulti={selectedCategory?.value !== "Venues"} // Allow multiple for all categories except "Venues"
-//                   isDisabled={!selectedCategory}
-//                   onChange={(selectedOptions) => {
-//                     handleSubcategoryChange(selectedOptions);
-//                     // field.onChange(selectedOptions);
-//                     field.onChange(
-//                       selectedOptions
-//                         ? selectedOptions.map((option) => option.value)
-//                         : []
-//                     );
-//                   }}
-//                   value={subCategoryList.filter((option) =>
-//                     selectedSubCategory.includes(option.value)
-//                   )}
-//                 />
-//                 {error && <span className="text-red-500 text-sm">{error.message}</span>}
-//                 </>
-//               )}
-//             />
+//   name="subCategory"
+//   control={control}
+//   rules={{ required: "Subcategory is required" }}
+//   render={({ field, fieldState: { error } }) => (
+//     <>
+//       <Select
+//         {...field}
+//         options={subCategoryList}
+//         isMulti={selectedCategory?.value !== "Venues"} // Multiple selection except for Venues
+//         isDisabled={!selectedCategory}
+//         onChange={(selectedOptions) => {
+//           const values = Array.isArray(selectedOptions)
+//             ? selectedOptions.map((option) => option.value)
+//             : selectedOptions
+//             ? [selectedOptions.value]
+//             : [];
+//           field.onChange(values);
+//           setSelectedSubCategory(values);
+//         }}
+//         value={subCategoryList.filter((option) =>
+//           (field.value || []).includes(option.value) // Ensure field.value is always an array
+//         )}
+//       />
+//       {error && <span className="text-red-500 text-sm">{error.message}</span>}
+//     </>
+//   )}
+// />
+
+
 //           </div>
 //           {/*Listing Title*/}
 //           <div className="flex flex-col gap-1">
@@ -586,7 +735,7 @@
 //         {selectedCategory && selectedCategory.value !== "Venues" && (
 //           <div className="mb-4 flex flex-col gap-1">
 //             <label className="font-medium text-gray-700">
-//               Select Tagkeywords*
+//               Select Tag keywords*
 //             </label>
 //             <Controller
 //               name="tagKeywords"
@@ -948,11 +1097,13 @@
 
 //         {/*FIle*/}
 //         <div className=" mt-8 mb-1 font-semibold">
-//         <label className="text-sm">Upload profile Image</label>
+//         <label className="text-sm">Upload Profile Image</label>
 //         </div>
 //         <div className="border p-2 flex flex-col gap-1 ">
 //           <input type="file" onChange={handleImageChange} accept="image/*" />
+
 //         </div>
+//           {imageError && <p className="text-red-500">{imageError}</p>}
 
 //         <p className="p-2 pt-1 pb-5 text-gray-500">
 //           Image size must be less than 2Mb
@@ -974,7 +1125,7 @@
 //                     className="mt-1 block w-full border rounded-md p-2"
 //                     placeholder={`Enter ${item.label}`}
 //                     {...register(item.value, {
-//                       required: `${item.value} is required`,
+//                       // required: `${item.value} is required`,
 //                     })}
 //                   />
 //                   {errors[item.value] && (
@@ -996,7 +1147,7 @@
 //                   className="mt-1 block w-full border rounded-md p-2"
 //                   placeholder="Enter Spotify Url"
 //                   {...register("spotifyUrl", {
-//                     required: `Spotify URL is required`,
+//                     // required: `Spotify URL is required`,
 //                   })}
 //                 />
 //                 {errors.spotifyUrl && (
@@ -1019,7 +1170,7 @@
 //                   className="mt-1 block w-full border rounded-md p-2"
 //                   placeholder="Enter SoundCloud Url"
 //                   {...register("soundCloudUrl", {
-//                     required: `SoundCloud URL is required`,
+//                     // required: `SoundCloud URL is required`,
 //                   })}
 //                 />
 //                 {errors.soundCloudUrl && (
@@ -1032,7 +1183,6 @@
 //           )}
 //         </div>
       
-
 //         <div className="flex gap-2 mt-8">
 //           <input
 //             type="checkbox"
@@ -1048,6 +1198,7 @@
 //             <span className="text-[#ff2459]">TERMS AND CONDITIONS.</span>
 //           </p>
 //         </div>
+//         {error && <p className="text-red-500 text-sm">{error}</p>}
 
 //         {/* Submit Button */}
 //         <div className="flex justify-center md:justify-end mr-0 sm:mr-6 mt-4">
@@ -1070,7 +1221,6 @@
 
 
 
-
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { MdCancel } from "react-icons/md";
@@ -1087,6 +1237,7 @@ import { toast } from "react-toastify";
 import { createNewPerformer } from "../../redux/actions/master/Performers/PostPerformer";
 import { createNewService } from "../../redux/actions/master/Services/PostServices";
 import { createNewVenue } from "../../redux/actions/master/Venue/postVenue";
+import { Country, State, City } from "country-state-city";
 
 function CreatePage() {
   const {
@@ -1132,8 +1283,8 @@ function CreatePage() {
 
   const selectedCategory = watch("category");
   // const selectedSubCategories = watch("subCategory") || [];
-  const selectedCountry = watch("country");
-  const selectedState = watch("state");
+  // const selectedCountry = watch("country");
+  // const selectedState = watch("state");
   const place_id = watch("location");
 
   const subCategoryOptions = {
@@ -1181,10 +1332,10 @@ function CreatePage() {
     { value: "Birthday Organiser", label: "Birthday Organiser" },
     { value: "Wedding Planner", label: "Wedding Planner" },
   ];
+
   const subCategoryList = selectedCategory
   ? subCategoryOptions[selectedCategory?.value] || []
   : [];
-
 
   const validateBusinessHours = (value) => {
     if (!value) return "Time is required";
@@ -1195,6 +1346,7 @@ function CreatePage() {
     return true;
   };
 
+  
   const dispatch = useDispatch();
   const [check, setCheck] = useState(false);
   const [country, setCountry] = useState("");
@@ -1203,55 +1355,85 @@ function CreatePage() {
   const [location, setLocation] = useState("");
   const [error, setError] = useState(null);
 
+  // useEffect(() => {
+  //   if (country) {
+  //     dispatch(getCountry(country)); 
+  //   }
+  //   if (country || state) {
+  //     dispatch(getState(country, state));
+  //   }
+  //   if (country || state || city) {
+  //     dispatch(getCity(country, state, city));
+  //   }
+  //   if (location) {
+  //     dispatch(getLocation(location));
+  //   }
+  //   if (place_id) {
+  //     dispatch(getLocationDetails(place_id));
+  //   }
+  // }, [dispatch, country, state, city, location, place_id]);
+  
+  // const store = useSelector((state) => state.countriesReducer) || {
+  //   countries: [],
+  // };
+  
+  // const data = store?.countries || []; // Ensure data is always an array
+  // const countryOption = data.map((country) => ({
+  //   value: country,
+  //   label: country,
+  // }));
+
+  // const store1 = useSelector((state) => state.statesReducer) || {
+  //   states: [],
+  // };
+
+  // const data1 = store1?.states || [];
+  // const stateOptions = data1.map((states) => ({
+  //   value: states,
+  //   label: states,
+  // }));
+
+  // const store2 = useSelector((state) => state.citiesReducer) || {
+  //   cities: [],
+  // };
+
+  // const data2 = store2?.cities || [];
+  // const cityOptions = data2.map((item) => ({
+  //   value: item,
+  //   label: item,
+  // }));
+  // console.log(data2);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
+
+  const countryOptions = Country.getAllCountries().map((country) => ({
+    value: country.isoCode,
+    label: country.name,
+  }));
+  
+  const stateOptions = selectedCountry
+  ? State.getStatesOfCountry(selectedCountry.value).map((state) => ({
+      value: state.isoCode,
+      label: state.name,
+    }))
+  : [];
+
+  
+  const cityOptions = selectedState
+  ? City.getCitiesOfState(selectedCountry.value, selectedState.value).map((city) => ({
+      value: city.name,
+      label: city.name,
+    }))
+  : [];
+
   useEffect(() => {
-    if (country) {
-      dispatch(getCountry(country)); 
-    }
-    if (country || state) {
-      dispatch(getState(country, state));
-    }
-    if (country || state || city) {
-      dispatch(getCity(country, state, city));
-    }
     if (location) {
+      console.log("Fetching locations for:", location);
       dispatch(getLocation(location));
     }
-    if (place_id) {
-      dispatch(getLocationDetails(place_id));
-    }
-  }, [dispatch, country, state, city, location, place_id]);
+  }, [dispatch, location]);
   
-  const store = useSelector((state) => state.countriesReducer) || {
-    countries: [],
-  };
-  
-  const data = store?.countries || []; // Ensure data is always an array
-  const countryOption = data.map((country) => ({
-    value: country,
-    label: country,
-  }));
-
-  const store1 = useSelector((state) => state.statesReducer) || {
-    states: [],
-  };
-
-  const data1 = store1?.states || [];
-  const stateOptions = data1.map((states) => ({
-    value: states,
-    label: states,
-  }));
-
-  const store2 = useSelector((state) => state.citiesReducer) || {
-    cities: [],
-  };
-
-  const data2 = store2?.cities || [];
-  const cityOptions = data2.map((item) => ({
-    value: item,
-    label: item,
-  }));
-  // console.log(data2);
-
   const store3 = useSelector((state) => state.locationsReducer) || {
     locations: [],
   };
@@ -1260,13 +1442,20 @@ function CreatePage() {
     value: item.place_id,
     label: item.description,
   }));
-  // console.log(data3);
+  console.log("Location Store Data:", store3);
 
+  useEffect(() => {
+    if (place_id) {
+      console.log("Fetching location details for:", place_id);
+      dispatch(getLocationDetails(place_id));
+    }
+  }, [dispatch, place_id]);
+  
   const store4 = useSelector((state) => state.locationDetailsReducer) || {
     locationDetails: [],
   };
   const data4 = store4.locationDetails ? store4.locationDetails : [];
-  console.log(data4);
+  console.log("Location Details Data:", data4);
 
   // Handle Image Selection
   const [image, setImage] = useState(null);
@@ -1303,17 +1492,26 @@ function CreatePage() {
   console.log(image);
 
   const onSubmit = (data) => {
+    if (!check) {
+      setError("You must accept the terms.");
+      return; // Prevent form submission
+    }
+  
+    setError(""); // Clear error if checkbox is checked
+  
     const formData = new FormData();
     formData.append("profileImage", image); // Append file
 
     selectedSubCategory.forEach((subCategory) =>
       formData.append("categories[]", subCategory)
     );
-
-    formData.append("country", data.country);
-
-    formData.append("state", data.state);
-    formData.append("city", data.city);
+    formData.append("country", selectedCountry ? selectedCountry.label : "");
+    formData.append("state", selectedState ? selectedState.label : "");
+    formData.append("city", selectedCity ? selectedCity.label : "");
+    
+    // formData.append("country", data.country);
+    // formData.append("state", data.state);
+    // formData.append("city", data.city);
     formData.append("location", data.location);
     formData.append("name", data.listingTitle);
     formData.append("description", data.listingDescription);
@@ -1507,9 +1705,9 @@ function CreatePage() {
     <div className="bg-white p-10 shadow-md rounded-md lg:pt-12 pt-28 md:pt-8 ">
       <form onSubmit={handleSubmit(onSubmit)}>
       <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
-               Create a Page
-              </h2>
-  {/* Category Selection */}
+         Create a Page
+       </h2>
+     {/* Category Selection */}
         <div className="grid lg:grid-cols-3 grid-cols-1 gap-6 mb-6">
           <div className="flex flex-col gap-1">
             <label className="text-gray-700 font-medium">
@@ -1541,34 +1739,33 @@ function CreatePage() {
               Select Subcategory*
             </label>
             <Controller
-  name="subCategory"
-  control={control}
-  rules={{ required: "Subcategory is required" }}
-  render={({ field, fieldState: { error } }) => (
-    <>
-      <Select
-        {...field}
-        options={subCategoryList}
-        isMulti={selectedCategory?.value !== "Venues"} // Multiple selection except for Venues
-        isDisabled={!selectedCategory}
-        onChange={(selectedOptions) => {
-          const values = Array.isArray(selectedOptions)
-            ? selectedOptions.map((option) => option.value)
-            : selectedOptions
-            ? [selectedOptions.value]
-            : [];
-          field.onChange(values);
-          setSelectedSubCategory(values);
-        }}
-        value={subCategoryList.filter((option) =>
-          (field.value || []).includes(option.value) // Ensure field.value is always an array
-        )}
-      />
-      {error && <span className="text-red-500 text-sm">{error.message}</span>}
-    </>
-  )}
-/>
-
+              name="subCategory"
+              control={control}
+              rules={{ required: "Subcategory is required" }}
+              render={({ field, fieldState: { error } }) => (
+                <>
+                  <Select
+                    {...field}
+                    options={subCategoryList}
+                    isMulti={selectedCategory?.value !== "Venues"} // Multiple selection except for Venues
+                    isDisabled={!selectedCategory}
+                    onChange={(selectedOptions) => {
+                      const values = Array.isArray(selectedOptions)
+                        ? selectedOptions.map((option) => option.value)
+                        : selectedOptions
+                        ? [selectedOptions.value]
+                        : [];
+                      field.onChange(values);
+                      setSelectedSubCategory(values);
+                    }}
+                    value={subCategoryList.filter((option) =>
+                      (field.value || []).includes(option.value) // Ensure field.value is always an array
+                    )}
+                  />
+                  {error && <span className="text-red-500 text-sm">{error.message}</span>}
+                </>
+              )}
+            />
 
           </div>
           {/*Listing Title*/}
@@ -1834,7 +2031,7 @@ function CreatePage() {
           </div>
         )}
 
-  {/*Location*/}
+    {/*Location*/}
         <div className="flex flex-col gap-1 mt-12">
           <h1 className="text-[#ff2459] text-2xl font-semibold mb-2">
             Location and map
@@ -1853,40 +2050,27 @@ function CreatePage() {
                 )}
               </label>
               <Controller
-                name="country"
-                control={control}
-                rules={{
-                  required: "Please select an country",
-                }}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    isClearable // Enables "X" button to clear input
-                    options={countryOption}
-                    placeholder="Search country..."
-                    getOptionLabel={(option) => option.label} // Show venue name
-                    getOptionValue={(option) => option.value} // Ensure unique selection by ID
-                    onInputChange={(value, { action }) => {
-                      if (action === "input-change") {
-                        setCountry(value); // Update search query
-                      }
-                      if (action === "input-blur" || action === "menu-close") {
-                        setCountry(""); // Clear input when dropdown closes
-                      }
-                    }}
-                    onChange={(selectedOption) => {
-                      field.onChange(
-                        selectedOption ? selectedOption.value : null
-                      ); // Store only ID
-                    }}
-                    value={
-                      countryOption.find(
-                        (option) => option.value === field.value
-                      ) || null
-                    } // Maintain selected value
-                  />
-                )}
-              />
+  name="country"
+  control={control}
+  rules={{ required: "Please select a country" }}
+  render={({ field }) => (
+    <Select
+      {...field}
+      isClearable
+      options={countryOptions}
+      placeholder="Search country..."
+      onChange={(selectedOption) => {
+        field.onChange(selectedOption); // Updates form state
+        setSelectedCountry(selectedOption); // Updates component state
+        setValue("state", null); // Reset state when country changes
+        setValue("city", null); // Reset city when country changes
+      }}
+      value={selectedCountry}
+    />
+  )}
+/>
+
+
             </div>
             <div>
               <label
@@ -1901,43 +2085,27 @@ function CreatePage() {
                 )}
               </label>
               <Controller
-                name="state"
-                control={control}
-                rules={{
-                  required: selectedCountry
-                    ? "Please select a state"
-                    : "Select a country first",
-                }}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    isClearable // Enables "X" button to clear input
-                    options={stateOptions}
-                    placeholder="Search state..."
-                    isDisabled={!selectedCountry}
-                    getOptionLabel={(option) => option.label} // Show venue name
-                    getOptionValue={(option) => option.value} // Ensure unique selection by ID
-                    onInputChange={(value, { action }) => {
-                      if (action === "input-change") {
-                        setState(value); // Update search query
-                      }
-                      if (action === "input-blur" || action === "menu-close") {
-                        setState(""); // Clear input when dropdown closes
-                      }
-                    }}
-                    onChange={(selectedOption) => {
-                      field.onChange(
-                        selectedOption ? selectedOption.value : null
-                      ); // Store only ID
-                    }}
-                    value={
-                      stateOptions.find(
-                        (option) => option.value === field.value
-                      ) || null
-                    } // Maintain selected value
-                  />
-                )}
-              />
+  name="state"
+  control={control}
+  rules={{ required: "Please select a state" }}
+  render={({ field }) => (
+    <Select
+      {...field}
+      isClearable
+      isDisabled={!selectedCountry}
+      options={stateOptions}
+      placeholder="Search state..."
+      onChange={(selectedOption) => {
+        field.onChange(selectedOption);
+        setSelectedState(selectedOption);
+        setValue("city", null); // Reset city when state changes
+      }}
+      value={selectedState}
+    />
+  )}
+/>
+
+
             </div>
           </div>
           <div className="grid lg:mt-4 lg:grid-cols-2 grid-cols-1 gap-6">
@@ -1954,44 +2122,27 @@ function CreatePage() {
                 )}
               </label>
               <Controller
-                name="city"
-                control={control}
-                rules={{
-                  required:
-                    selectedState && selectedCountry
-                      ? "Please select a city"
-                      : "Select country and state first",
-                }}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    isClearable // Enables "X" button to clear input
-                    options={cityOptions} // Disable if no state selected
-                    placeholder="Search city..."
-                    isDisabled={!selectedState}
-                    getOptionLabel={(option) => option.label} // Show venue name
-                    getOptionValue={(option) => option.value} // Ensure unique selection by ID
-                    onInputChange={(value, { action }) => {
-                      if (action === "input-change") {
-                        setCity(value); // Update search query
-                      }
-                      if (action === "input-blur" || action === "menu-close") {
-                        setCity(""); // Clear input when dropdown closes
-                      }
-                    }}
-                    onChange={(selectedOption) => {
-                      field.onChange(
-                        selectedOption ? selectedOption.value : null
-                      ); // Store only ID
-                    }}
-                    value={
-                      cityOptions.find(
-                        (option) => option.value === field.value
-                      ) || null
-                    } // Maintain selected value
-                  />
-                )}
-              />
+              name="city"
+              control={control}
+              rules={{
+                required: selectedState ? "Please select a city" : "Select a state first",
+              }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  isClearable
+                  options={cityOptions}
+                  placeholder="Search city..."
+                  isDisabled={!selectedState}
+                  onChange={(selectedOption) => {
+                    field.onChange(selectedOption);
+                    setSelectedCity(selectedOption);
+                  }}
+                  value={selectedCity}
+                />
+              )}
+            />
+
             </div>
             <div>
               <label
@@ -2264,7 +2415,7 @@ function CreatePage() {
             <span className="text-[#ff2459]">TERMS AND CONDITIONS.</span>
           </p>
         </div>
-        {!check && <p className="text-red-500 text-sm">You must accept the terms.</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         {/* Submit Button */}
         <div className="flex justify-center md:justify-end mr-0 sm:mr-6 mt-4">

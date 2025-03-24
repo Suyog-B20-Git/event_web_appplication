@@ -524,7 +524,7 @@ function Viewall() {
                       </p>
                     </div>
 
-                    <p className="mt-auto  flex lg:justify-between gap-4 items-center bg-[#F5FCFE] text-sm lg:text-sm p-2">
+                    <p className="mt-auto  flex lg:justify-between gap-4 items-center text-sm lg:text-sm p-2">
                       <span className="lg:text-sm text-xs">$1300 ONWARDS</span>
                       {/* <button className="rounded shadow lg:p-2 p-2 lg:m-0 mr-1 lg:text-sm text-xs bg-white">
                         BUY NOW
