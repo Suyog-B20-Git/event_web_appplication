@@ -192,7 +192,7 @@ function GetVenueById() {
             </div>
             <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
               <FaEye className="relative top-1" />
-              {data.visits} , {data.dailyVisits} visites today
+              {data.visits} , {data.dailyVisits} visits today
             </p>
           </div>
           <div
@@ -218,7 +218,7 @@ function GetVenueById() {
                 </button>
               </div>
               <p className="text-sm lg:block hidden">
-              {data.visits} , {data.dailyVisits} visites today
+              {data.visits} , {data.dailyVisits} visits today
               </p>
             </div>
             <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">
@@ -246,7 +246,7 @@ function GetVenueById() {
                   onClick={() => setEnquiry(!enquiry)}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
-                  Send Inquiry
+                  Send Enquiry
                 </p>
                 <button
                   onClick={() => {
@@ -525,13 +525,78 @@ function GetVenueById() {
                   STAT
                 </button>
               </div>
+              
               <div className="lg:px-10 p-2 border bg-white  rounded-lg h-full overflow-auto" >
-                <p className="py-5 ">
-                  {/* {about ? data.description : ""} */}
-                  {about
-                    ? data.description
-                      : ""}
-                </p>
+              {about && data ? (
+                <div className="py-5 space-y-6 bg-white shadow-md rounded-lg p-6">
+                 <h2 className="text-2xl font-semibold text-gray-800">About the Venue</h2>
+                  {/* Venue Description */}
+                  <p className="py-1 text-gray-600">
+                    {data?.description || "No description available"}
+                  </p>
+
+                  {/* Venue Details */}
+                  <div className="border-b pb-4">
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6">
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Venue Type</h3>
+                      <p className="text-gray-600">{data?.type || "Not specified"}</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Website</h3>
+                      {data?.url ? (
+                        <a href={data.url} target="_blank" className="text-blue-500 hover:underline">
+                          {data.url}
+                        </a>
+                      ) : "Not available"}
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Amenities</h3>
+                      <p className="text-gray-600">{data?.amenities || "Not specified"}</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Seated Guests</h3>
+                      <p className="text-gray-600">{data?.noOfSeatedGuest || "Not provided"}</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Standing Guests</h3>
+                      <p className="text-gray-600">{data?.noOfStandingGuest || "Not provided"}</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Neighbourhood</h3>
+                      <p className="text-gray-600">{data?.neighbourhoods || "Not mentioned"}</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Pricing</h3>
+                      <p className="text-gray-600">{data?.pricing || "Not specified"}</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Food & Beverages</h3>
+                      <p className="text-gray-600">{data?.foodAndBeveragesDetails || "Not mentioned"}</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Quoted Form</h3>
+                      <p className="text-gray-600">{data?.quotedForm || "Not specified"}</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-700">Availability</h3>
+                      <p className="text-gray-600">{data?.availability || "Not mentioned"}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
                 {/* <p className="font-medium text-lg text-center">
                   {upcomimg ? "" : <div className="  "></div>}
                 </p> */}

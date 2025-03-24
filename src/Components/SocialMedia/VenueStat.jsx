@@ -1,85 +1,184 @@
+// /* eslint-disable react/prop-types */
+// import React, { Component } from "react";
+
+// // VenueStats component
+// const VenueStats = ({ data }) => {
+//   console.log("stat", data);
+
+//   // Check if the necessary data exists for each section
+//   const hasYoutubeData = data.youtubeData && data.youtubeStats;
+//   const hasTwitterData = data.twitterData && data.twitterStats;
+
+//   // If no data is available, show a "No Stat Data" message
+//   if (!hasYoutubeData && !hasTwitterData) {
+//     return (
+//         <div className="h-44 lg:text-lg flex justify-center items-center">
+//           No Stat Data
+//         </div>
+//     );
+//   }
+
+//   return (
+//       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl">
+//         {/* YouTube Section */}
+//         {hasYoutubeData && (
+//             <ErrorBoundary fallback={<div>Error loading YouTube data</div>}>
+//               <div className="mb-6 grid grid-cols-2">
+//                 <img
+//                     src={data.youtubeData.thumbnails.high.url}
+//                     alt={data.youtubeData.title}
+//                     className="w-40 h-40 mx-auto rounded-full"
+//                 />
+//                 <div className="flex flex-col justify-center">
+//                   <h2 className="text-xl font-semibold mt-2">
+//                     {data.youtubeData.title}
+//                   </h2>
+//                   <p className="text-gray-600">
+//                     Subscribers: {data.youtubeStats.subscribers.toLocaleString()}
+//                   </p>
+//                   <p className="text-gray-600">
+//                     Total Views: {data.youtubeStats.views.toLocaleString()}
+//                   </p>
+//                   <p className="text-gray-600">
+//                     Videos: {data.youtubeStats.videos}
+//                   </p>
+//                 </div>
+//               </div>
+//             </ErrorBoundary>
+//         )}
+
+//         {/* Twitter Section */}
+//         {hasTwitterData && (
+//             <ErrorBoundary fallback={<div>Error loading Twitter data</div>}>
+//               <div className="mb-6 border-t grid grid-cols-2">
+//                 <img
+//                     src={data.twitterData.profile_image_url}
+//                     alt={data.twitterData.name}
+//                     className="w-40 h-40 mx-auto rounded-full"
+//                 />
+//                 <div className="flex flex-col justify-center">
+//                   <h2 className="text-xl font-semibold mt-2">
+//                     {data.twitterData.name}
+//                   </h2>
+//                   <p className="text-gray-600">
+//                     @{data.twitterData.username}
+//                   </p>
+//                   <p className="text-gray-600">
+//                     Followers: {data.twitterStats.followers.toLocaleString()}
+//                   </p>
+//                   <p className="text-gray-600">
+//                     Tweets: {data.twitterStats.tweets}
+//                   </p>
+//                 </div>
+//               </div>
+//             </ErrorBoundary>
+//         )}
+//       </div>
+//   );
+// };
+
+// export default VenueStats;
+
+// //todo refactor this code later
+// class ErrorBoundary extends Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = { hasError: false };
+//   }
+
+//   static getDerivedStateFromError(error) {
+//     // Update state so the next render shows the fallback UI.
+//     return { hasError: true };
+//   }
+
+//   componentDidCatch(error, errorInfo) {
+//     // Log the error details if needed.
+//     console.error("ErrorBoundary caught an error", error, errorInfo);
+//   }
+
+//   render() {
+//     if (this.state.hasError) {
+//       // Render fallback UI
+//       return this.props.fallback || <div>Something went wrong.</div>;
+//     }
+//     return this.props.children;
+//   }
+// }
+
+
 /* eslint-disable react/prop-types */
 import React, { Component } from "react";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
-// VenueStats component
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28DFF"];
+
 const VenueStats = ({ data }) => {
-  console.log("stat", data);
+  console.log("Stat Data:", data);
 
-  // Check if the necessary data exists for each section
   const hasYoutubeData = data.youtubeData && data.youtubeStats;
   const hasTwitterData = data.twitterData && data.twitterStats;
 
-  // If no data is available, show a "No Stat Data" message
   if (!hasYoutubeData && !hasTwitterData) {
-    return (
-        <div className="h-44 lg:text-lg flex justify-center items-center">
-          No Stat Data
-        </div>
+    return <div className="h-44 lg:text-lg flex justify-center items-center">No Stat Data</div>;
+  }
+
+  // Combine data for a single pie chart
+  let chartData = [];
+
+  if (hasYoutubeData) {
+    chartData.push(
+      { name: "YouTube Subscribers", value: data.youtubeStats.subscribers },
+      { name: "YouTube Views", value: data.youtubeStats.views },
+      { name: "YouTube Videos", value: data.youtubeStats.videos }
     );
   }
 
-  return (
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl">
-        {/* YouTube Section */}
-        {hasYoutubeData && (
-            <ErrorBoundary fallback={<div>Error loading YouTube data</div>}>
-              <div className="mb-6 grid grid-cols-2">
-                <img
-                    src={data.youtubeData.thumbnails.high.url}
-                    alt={data.youtubeData.title}
-                    className="w-40 h-40 mx-auto rounded-full"
-                />
-                <div className="flex flex-col justify-center">
-                  <h2 className="text-xl font-semibold mt-2">
-                    {data.youtubeData.title}
-                  </h2>
-                  <p className="text-gray-600">
-                    Subscribers: {data.youtubeStats.subscribers.toLocaleString()}
-                  </p>
-                  <p className="text-gray-600">
-                    Total Views: {data.youtubeStats.views.toLocaleString()}
-                  </p>
-                  <p className="text-gray-600">
-                    Videos: {data.youtubeStats.videos}
-                  </p>
-                </div>
-              </div>
-            </ErrorBoundary>
-        )}
+  if (hasTwitterData) {
+    chartData.push(
+      { name: "Twitter Followers", value: data.twitterStats.followers },
+      { name: "Twitter Tweets", value: data.twitterStats.tweets }
+    );
+  }
 
-        {/* Twitter Section */}
-        {hasTwitterData && (
-            <ErrorBoundary fallback={<div>Error loading Twitter data</div>}>
-              <div className="mb-6 border-t grid grid-cols-2">
-                <img
-                    src={data.twitterData.profile_image_url}
-                    alt={data.twitterData.name}
-                    className="w-40 h-40 mx-auto rounded-full"
-                />
-                <div className="flex flex-col justify-center">
-                  <h2 className="text-xl font-semibold mt-2">
-                    {data.twitterData.name}
-                  </h2>
-                  <p className="text-gray-600">
-                    @{data.twitterData.username}
-                  </p>
-                  <p className="text-gray-600">
-                    Followers: {data.twitterStats.followers.toLocaleString()}
-                  </p>
-                  <p className="text-gray-600">
-                    Tweets: {data.twitterStats.tweets}
-                  </p>
-                </div>
-              </div>
-            </ErrorBoundary>
-        )}
-      </div>
+  // Calculate total value
+  const total = chartData.reduce((sum, entry) => sum + entry.value, 0);
+
+  // Format labels as percentages
+  const renderLabel = ({ name, value }) => {
+    const percentage = ((value / total) * 100).toFixed(1); // Convert to percentage
+    return `${name}: ${percentage}%`;
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6">
+      <h2 className="text-xl font-semibold text-center mb-4">Social Media Stats (%)</h2>
+      
+      <ResponsiveContainer width="100%" height={350}>
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            outerRadius={120}
+            fill="#8884d8"
+            dataKey="value"
+            label={renderLabel} // Show % labels
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(value) => `${((value / total) * 100).toFixed(1)}%`} />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 
 export default VenueStats;
 
-//todo refactor this code later
+// Error Boundary Component
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -87,18 +186,15 @@ class ErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    // Update state so the next render shows the fallback UI.
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log the error details if needed.
     console.error("ErrorBoundary caught an error", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      // Render fallback UI
       return this.props.fallback || <div>Something went wrong.</div>;
     }
     return this.props.children;
