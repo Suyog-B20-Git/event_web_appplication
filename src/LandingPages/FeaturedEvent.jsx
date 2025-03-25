@@ -517,15 +517,15 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
       )}
       {/*show Meditation Form */}
       {form && (
-        <div className="w-[45%]">
-          <div className="fixed w-full backdrop-blur-md bg-black/50  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 ">
-            <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
+        <div className="w-[45%] ">
+          <div className="fixed w-full backdrop-blur-md bg-black/50  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 py-4 ">
+            <div className="bg-white p-1 rounded-lg   shadow-lg  lg:w-[full]">
               <div className="flex justify-end relative lg:right-0 right-16  ">
                 <button
-                  className="bg-[#ff2459] relative lg:left-0 left-10 w-[max-content] p-1 px-2  text-white"
+                  className="hover:text-[#ff2459] text-black text-lg font-bold relative lg:left-0 left-12 w-[max-content] mr-0 sm:mr-6"
                   onClick={() => setForm(!form)}
                 >
-                  X
+                  ✕
                 </button>
               </div>
               <MeditationForm data={receivedData} />

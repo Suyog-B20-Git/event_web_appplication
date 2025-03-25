@@ -33,7 +33,7 @@ const InputField = ({
           className={`${width} px-5 ${
             shadow ? shadow : "shadow-lg"
           } py-3 rounded-lg font-medium border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white text-gray-600  ${
-            isPasswordField ? "pr-4" : ""
+            isPasswordField ? "pr-2" : ""
           }`}
           type={inputType}
           placeholder={`${placeholder ? placeholder : `Enter your ${label}`}`}
@@ -42,7 +42,7 @@ const InputField = ({
           value={value}
           onChange={(e) => onChange(e)}
         />
-        {/* {isPasswordField && (
+        {isPasswordField && (
           <button
             type="button"
             className="absolute inset-y-0 right-3 flex items-center text-gray-500"
@@ -86,7 +86,7 @@ const InputField = ({
               </svg>
             )}
           </button>
-        )} */}
+        )}
       </div>
     </div>
   );

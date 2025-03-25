@@ -8,7 +8,7 @@ function Pagination({
   totalPages,
 }) {
   return (
-    <div className="flex justify-between items-center  p-2 pb-0">
+    <div className="flex justify-between items-center  p-2 pb-0 mt-4">
       <button
         onClick={handlePreviousPage}
         disabled={currentPage === 1}

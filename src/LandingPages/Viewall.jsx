@@ -248,12 +248,12 @@ function Viewall() {
   <div className="p-5 w-full max-w-[1340px]">
   <div className="flex justify-between">
           <div className="flex gap-2 lg:pl-3">
-            <BsFire className="text-2xl relative top-1" />
+            <BsFire className="text-2xl relative top-0" />
             <p className="font-bold font-sans lg:text-2xl">EVENTS</p>
           </div>
         </div>
 
-        <div className="flex justify-between pt-5 px-2 lg:px-3 gap-4">
+        <div className="flex justify-between pt-8 p-2 lg:px-3 gap-4">
           <button
             onClick={() => setFilter(!filter)}
             className="flex gap-3 lg:text-2xl md:text-base  font-medium"

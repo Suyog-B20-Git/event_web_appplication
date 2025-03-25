@@ -235,11 +235,11 @@ function Artist() {
     },
   ];
   return (
-    <div className=" w-full flex justify-center items-center pt-5 ">
-      <div className="lg:p-10 md:p-4 md:pb-5  p-5 w-full max-w-7xl">
+    <div className=" w-full flex justify-center items-center pt-5 lg:p-10 md:p-4 md:pb-5  p-5">
+      <div className=" w-full max-w-7xl">
       <div className="flex justify-between items-center pb-2">
         {/* <div className="flex justify-around md:justify-between lg:justify-between lg:relative lg:left-14 lg:pb-0 pb-2"> */}
-          <h1 className="ml-2 smLml-6 font-bold font-sans lg:text-2xl">
+          <h1 className="ml-2 sm:ml-6 font-bold font-sans lg:text-2xl">
             ARTIST
           </h1>
           {/* <div className="flex gap-2 relative right-8 md:-right-4 lg:right-32">
@@ -286,7 +286,7 @@ function Artist() {
         {/* <div className="relative left-3 flex  items-center"> */}
           {/* Back button */}
           <button
-            className="lg:block relative left-10 hidden h-[max-content] bg-black text-white p-3 rounded-full shadow-md hover:bg-gray-800"
+            className="lg:block relative left-2 hidden h-[max-content] bg-black text-white p-3 rounded-full shadow-md hover:bg-gray-800"
             onClick={() => handleScroll("left")}
           >
             <GrFormPrevious size={20} />
@@ -294,7 +294,7 @@ function Artist() {
           {/* Scrollable container */}
           <div
             ref={scrollRef}
-            className="flex gap-10 overflow-x-auto p-2 scrollbar-hide max-w-4xl mx-auto whitespace-nowrap"
+            className="flex gap-6 overflow-x-auto p-2 scrollbar-hide max-w-5xl mx-auto whitespace-nowrap"
           >
             {card1.map((item, index) => {
               return (
@@ -314,7 +314,7 @@ function Artist() {
           </div>
           {/* Forward button */}
           <button
-            className=" lg:block relative right-10 hidden h[max-content] bg-black text-white p-3 rounded-full shadow-md hover:bg-gray-800"
+            className=" lg:block relative right-2 hidden h[max-content] bg-black text-white p-3 rounded-full shadow-md hover:bg-gray-800"
             onClick={() => handleScroll("right")}
           >
             <MdNavigateNext size={20} />

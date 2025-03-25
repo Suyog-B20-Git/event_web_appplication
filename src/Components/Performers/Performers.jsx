@@ -877,7 +877,7 @@ function GetPerformers() {
     return <Loading />;
   }
   return (
-    <div className="flex lg:flex-row flex-col gap-2">
+    <div className="flex lg:flex-row flex-col gap-2 lg:pt-0 md:pt-0 pt-20">
       <div className="p-2 lg:w-[75%] w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
           <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 ">
@@ -897,53 +897,44 @@ function GetPerformers() {
           </div>
         </div>
         <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
-          <div className="rounded p-2 shadow flex-row md:flex gap-10 ">
-            <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
-              Performers Category
-            </h1>
-            <section className="flex lg:flex-col flex-row overflow-x-scroll gap-2  pt-3 ">
-              <div className="flex gap-2 ">
-                <div
-                  onClick={() => {
-                    setCategory("band");
-                  }}
-                  className="bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Band
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("disc jockey");
-                  }}
-                  className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Disc Jockey
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("sound artist");
-                  }}
-                  className="flex gap-2 px-2"
-                >
-                  <div className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
-                    Sound Artist
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2 px-2">
-                <div
-                  onClick={() => {
-                    setCategory("standup comedian");
-                  }}
-                  className="flex gap-2 px-2"
-                >
-                  <div className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs ">
-                    Stand up comedian
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
+        <div className="rounded p-4 shadow-md bg-white">
+  {/* Heading */}
+  <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+    Performers Category
+  </h1>
+
+  {/* Scrollable Categories */}
+  <section className="flex flex-wrap lg:flex-col gap-3 pt-3 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    {/* Category Wrapper */}
+    <div className="flex gap-3 flex-wrap md:flex-nowrap">
+      <div
+        onClick={() => setCategory("band")}
+        className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
+      >
+        Band
+      </div>
+      <div
+        onClick={() => setCategory("disc jockey")}
+        className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
+      >
+        Disc Jockey
+      </div>
+      <div
+        onClick={() => setCategory("sound artist")}
+        className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
+      >
+        Sound Artist
+      </div>
+      <div
+        onClick={() => setCategory("standup comedian")}
+        className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
+      >
+        Stand-up Comedian
+      </div>
+    </div>
+  </section>
+</div>
+
           <div className="rounded border ">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
               Find Events
@@ -976,7 +967,7 @@ function GetPerformers() {
             </h1>
             <div className="flex justify-center items-center ">
               <div className="flex  md:gap-7 gap-5 p-3 overflow-x-scroll ">
-                <div className="bg-blue-600 rounded h-28 lg:min-w-28 md:w-36 text-white font-medium flex flex-col gap-2 items-start p-4 ">
+                <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 ">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
                   <p>Todays 0</p>

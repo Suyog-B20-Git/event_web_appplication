@@ -111,7 +111,7 @@
 import React from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
-const COLORS = ["#FF0000", "#1DA1F2", "#FFD700"]; // YouTube, Twitter, and Additional Services
+const COLORS = ["#FF0000", "#1DA1F2", "#FFD700"]; 
 
 const ServiceStats = ({ data }) => {
   console.log("Service Stat Data:", data);
@@ -121,7 +121,7 @@ const ServiceStats = ({ data }) => {
   const hasAdditionalServiceData = data.additionalServiceStats && data.additionalServiceStats.users;
 
   if (!hasYoutubeData && !hasTwitterData && !hasAdditionalServiceData) {
-    return <div className="h-44 lg:text-lg flex justify-center items-center">No Stat Data</div>;
+    return <div className="h-44 lg:text-lg flex justify-center ">No Stat Data</div>;
   }
 
   let chartData = [];
@@ -140,9 +140,9 @@ const ServiceStats = ({ data }) => {
 
   return (
     <div className="max-w-4xl mx-auto bg-white  p-2">
-      <h2 className="text-xl font-semibold text-center mb-4">Service Stats (%)</h2>
+      <h2 className="text-xl font-semibold text-center mb-2">Service Stats (%)</h2>
 
-      <ResponsiveContainer width="100%" height={350}>
+      <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
             data={chartData}
@@ -154,8 +154,8 @@ const ServiceStats = ({ data }) => {
             dataKey="value"
             label={({ cx, cy, midAngle, outerRadius, percent, index }) => {
               const RADIAN = Math.PI / 180;
-              const x = cx + (outerRadius + 0) * Math.cos(-midAngle * RADIAN);
-              const y = cy + (outerRadius + 60) * Math.sin(-midAngle * RADIAN);
+              const x = cx + (outerRadius + 20) * Math.cos(-midAngle * RADIAN);
+              const y = cy + (outerRadius + 30) * Math.sin(-midAngle * RADIAN);
 
               return (
                 <text

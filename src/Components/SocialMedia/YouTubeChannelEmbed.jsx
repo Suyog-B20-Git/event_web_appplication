@@ -2,7 +2,11 @@ import React from "react";
 
 const YouTubeChannelEmbed = ({ youtubeUrl }) => {
     if (!youtubeUrl) {
-        return <p>No YouTube URL provided.</p>;
+        return (
+            <div className="flex items-center justify-center h-full w-full text-center">
+              <p className="text-gray-800 mt-4">No YouTube URL provided.</p>
+            </div>
+          );
     }
 
     return (

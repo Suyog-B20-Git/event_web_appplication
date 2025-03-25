@@ -152,7 +152,7 @@ function BestVenue() {
     // <div className="max-w-7xl rounded-md  mx-auto p-6 bg-gray-100 mt-5">
     
 <div className="w-full flex flex-col items-center justify-center pt-5">
-<div className="w-full max-w-6xl bg-white rounded-lg p-6 shadow-md">     
+<div className="w-full max-w-7xl bg-white rounded-lg p-6 shadow-md">     
    <h1 className="font-bold font-sans lg:text-2xl">
         TOP BEST VENUES
       </h1>
@@ -168,13 +168,13 @@ function BestVenue() {
         {/* Scrollable container */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scroll-smooth gap-6 px-4 scrollbar-hide max-w-4xl mx-auto"
+          className="flex overflow-x-auto scroll-smooth gap-4 px-4 scrollbar-hide max-w-5xl mx-auto"
           style={{ scrollbarWidth: "none" }} // Hide scrollbar for modern browsers
         >
           {Venues.map((venue, index) => (
             <div
               key={index}
-              className="lg:min-w-[250px] md:min-w-[160px] min-w-[150px] lg:p-5 p-2 flex flex-col items-center text-center"
+              className="lg:min-w-[200px] md:min-w-[160px] min-w-[150px] lg:p-5 p-2 flex flex-col items-center text-center"
             >
               <div
                 className="lg:w-44 w-32 h-32 lg:h-48  flex items-center rounded-xl"

@@ -130,20 +130,21 @@ eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </div>
 
       {/* Copyright Section */}
-      <div className="bg-gray-800 py-3 p-3 ">
-        <div className="container mx-auto flex flex-col md:flex-row justify-between text-sm">
-          <p >
-            &copy; 2025 EventsNode. All rights reserved. <br /> Product by <a
-              href="https://example.com" className="text-[#ff2459]"> MasterBlocks </a>
-          </p>
-          <ul className="flex gap-4">
-            <li><Link to="#" className="hover:text-[#ff2459]">Terms</Link></li>
-            <li><Link to="#" className="hover:text-[#ff2459]">Privacy</Link></li>
-            <li><Link to="#" className="hover:text-[#ff2459]">Policy</Link></li>
-            <li><Link to="#" className="hover:text-[#ff2459]">Contact</Link></li>
-          </ul>
-        </div>
-      </div>
+      <div className="bg-gray-800 py-3 p-3">
+  <div className="container mx-auto flex flex-col md:flex-row justify-between text-sm items-center text-center">
+    <p>
+      &copy; 2025 EventsNode. All rights reserved. <br /> Product by 
+      <a href="https://example.com" className="text-[#ff2459]"> Masterblocks Pvt Ltd </a>
+    </p>
+    <ul className="flex flex-row gap-2 md:gap-4 mt-2 md:mt-0">
+      <li><Link to="#" className="hover:text-[#ff2459]">Terms</Link></li>
+      <li><Link to="#" className="hover:text-[#ff2459]">Privacy</Link></li>
+      <li><Link to="#" className="hover:text-[#ff2459]">Policy</Link></li>
+      <li><Link to="#" className="hover:text-[#ff2459]">Contact</Link></li>
+    </ul>
+  </div>
+</div>
+
     </footer>
   );
 }

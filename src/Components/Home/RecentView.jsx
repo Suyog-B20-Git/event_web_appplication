@@ -38,7 +38,7 @@ function RecentView() {
     >
       <div className="flex justify-between items-center">
         {data.length>0 && (
-          <div className="flex gap-2 items-center p-4 sm:p-8">
+          <div className="flex gap-2 items-center p-4 sm:p-10">
             <IoIosTimer className="text-3xl" />
             <div>
               <p className="font-bold font-sans lg:text-2xl">RECENTLY VIEWED</p>

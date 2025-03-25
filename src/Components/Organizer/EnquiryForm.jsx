@@ -218,15 +218,21 @@ function EnquiryForm({ enquiry, setEnquiry, name }) {
     <div>
       <div className="">
         <div className="fixed w-full inset-0 flex flex-col items-center   justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
-          <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
-            <div className="lg:w-[600px] md:w-[600px] w-[350px]">
+          <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full] relative">
+          <button
+              className="absolute top-0 right-3 text-gray-700 hover:text-red-500 text-3xl"
+              onClick={() => setEnquiry(!enquiry)}
+            >
+              &times;
+            </button>
+            <div className="lg:w-[600px] md:w-[600px] w-[350px] mt-4">
               <div className="flex justify-between border-b">
                 <h1 className=" p-2 font-medium text-gray-600">
-                  Inquiry For <span className="text-[#ff2459]">{name}</span>
+                  Enquiry For <span className="text-[#ff2459]">{name}</span>
                 </h1>
-                <button onClick={() => setEnquiry(!enquiry)}>
+                {/* <button onClick={() => setEnquiry(!enquiry)}>
                   <GiCancel className="text-lg" />
-                </button>
+                </button> */}
               </div>
               <form
                 className="flex flex-col   "

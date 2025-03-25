@@ -182,19 +182,23 @@ function OrganiserContact({ isFormOpen, setIsFormOpen, name }) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md z-40 px-4">
+    <div className="fixed w-full inset-0 flex flex-col items-center   justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
       <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-[90%] md:max-w-[550px] lg:max-w-[600px]">
         {/* Header */}
         <div className="flex justify-between items-center pb-3">
           <h1 className="font-semibold text-lg md:text-xl">
-            Inquiry for{" "}
+            Enquiry for{" "}
             <span className="text-[#ff2459] ">
               Event 
             </span>
           </h1>
-          <button onClick={() => setIsFormOpen(false)}>
-            <MdCancel className="text-2xl text-gray-500 hover:text-red-500" />
+          <button 
+            onClick={() => setIsFormOpen(false)} 
+            className="text-gray-500 text-3xl hover:text-red-500 "
+          >
+            &times;
           </button>
+
         </div>
 
         {/* Form */}

@@ -1845,15 +1845,9 @@ function CreatePage() {
                   name="url"
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder={`Enter Website Url`}
-                  {...register("url", {
-                    required: `website url is required`,
-                  })}
+                  {...register("url")}
                 />
-                {errors.url && (
-                  <p className="text-red-600 text-sm px-2">
-                    {errors.url.message}*
-                  </p>
-                )}
+                
               </div>
               <div>
                 <label
@@ -2291,22 +2285,16 @@ function CreatePage() {
                   htmlFor="website"
                   className="block font-medium text-gray-700"
                 >
-                  Website*
+                  Website
                 </label>
                 <input
                   type="url"
                   name="website"
                   className="mt-2 block w-full border rounded-md p-2"
                   placeholder="website"
-                  {...register("website", {
-                    required: "website is required",
-                  })}
+                  {...register("website")}
                 />
-                {errors.website && (
-                  <p className="text-red-600 text-sm px-2">
-                    {errors.website.message}*
-                  </p>
-                )}
+                
               </div>
             </div>
           </div>
