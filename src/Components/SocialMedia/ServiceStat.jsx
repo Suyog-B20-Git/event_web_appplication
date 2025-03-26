@@ -106,12 +106,11 @@
 
 
 
-
 /* eslint-disable react/prop-types */
 import React from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
-const COLORS = ["#FF0000", "#1DA1F2", "#FFD700"]; 
+const COLORS = ["#FF0000", "#1DA1F2", "#FFD700"];
 
 const ServiceStats = ({ data }) => {
   console.log("Service Stat Data:", data);
@@ -139,7 +138,7 @@ const ServiceStats = ({ data }) => {
   const total = chartData.reduce((sum, entry) => sum + entry.value, 0);
 
   return (
-    <div className="max-w-4xl mx-auto bg-white  p-2">
+    <div className="max-w-4xl mx-auto bg-white p-2">
       <h2 className="text-xl font-semibold text-center mb-2">Service Stats (%)</h2>
 
       <ResponsiveContainer width="100%" height={300}>
@@ -157,6 +156,11 @@ const ServiceStats = ({ data }) => {
               const x = cx + (outerRadius + 20) * Math.cos(-midAngle * RADIAN);
               const y = cy + (outerRadius + 30) * Math.sin(-midAngle * RADIAN);
 
+              // Split the name into first and second lines dynamically
+              const words = chartData[index].name.split(" ");
+              const firstLine = words[0]; // First word (e.g., "YouTube")
+              const secondLine = words.slice(1).join(" "); // Remaining words (e.g., "Subscribers")
+
               return (
                 <text
                   x={x}
@@ -164,10 +168,12 @@ const ServiceStats = ({ data }) => {
                   fill={COLORS[index % COLORS.length]}
                   textAnchor={x > cx ? "start" : "end"}
                   dominantBaseline="central"
-                  fontSize="14px"
+                  fontSize="12px"
                   fontWeight="bold"
                 >
-                  {chartData[index].name}: {(percent * 100).toFixed(1)}%
+                  <tspan x={x} dy="-1.2em">{firstLine}</tspan>
+                  <tspan x={x} dy="1.2em">{secondLine}</tspan>
+                  <tspan x={x} dy="1.2em">{(percent * 100).toFixed(1)}%</tspan>
                 </text>
               );
             }}

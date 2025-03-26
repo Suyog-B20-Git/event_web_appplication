@@ -12,7 +12,7 @@ export const getFavouritePerformerData = (setLoader) => {
 
     try {
       const response = await axiosInstance.get(
-        `${Performer.postFavouritePerformer}`
+        `${Performer.getFavouritePerformer}`
       );
       // console.log("fav response", response);
       dispatch({

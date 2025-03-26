@@ -11,6 +11,7 @@ import {
   FaInstagram,
   FaSquareFacebook,
   FaSquareXTwitter,
+  FaWhatsapp
 } from "react-icons/fa6";
 import Select from "react-select";
 import { IoLogoWhatsapp, IoStarSharp } from "react-icons/io5";
@@ -237,13 +238,13 @@ function GetOrganizer() {
                   onClick={() => handleShare("facebook")}
                   className="flex gap-1 shadow border p-1 rounded"
                 >
-                  <FaSquareFacebook className="text-blue-700 relative " />
+                  <FaSquareFacebook className="text-red-500 relative " />
                 </button>
                 <button
                   onClick={() => handleShare("whatsapp")}
                   className="flex gap-1 shadow border p-1 rounded"
                 >
-                  <IoLogoWhatsapp className="text-green-600" />
+                  <FaWhatsapp className="bg-red-500 text-white" />
                 </button>
                 <button
                   onClick={() => handleShare("messenger")}
@@ -255,7 +256,7 @@ function GetOrganizer() {
                   onClick={() => handleShare("twitter")}
                   className="flex gap-1 shadow border p-1 rounded"
                 >
-                  <FaSquareXTwitter className="" />
+                  <FaSquareXTwitter className="text-red-500" />
                 </button>
               </div>
             </h1>
@@ -388,14 +389,14 @@ function GetOrganizer() {
               className="flex gap-1 shadow border p-1 rounded"
             >
               <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareFacebook className="text-blue-700 relative " />
+              <FaSquareFacebook className="text-red-500 relative " />
             </button>
             <button
               onClick={() => handleShare("whatsapp")}
               className="flex gap-1 shadow border p-1 rounded"
             >
               <span className="text-sm border-r px-2">SHARE </span>
-              <IoLogoWhatsapp className="text-green-600" />
+              <FaWhatsapp className="bg-red-500 text-white" />
             </button>
             <button
               onClick={() => handleShare("messenger")}
@@ -409,7 +410,7 @@ function GetOrganizer() {
               className="flex gap-1 shadow border p-1 rounded"
             >
               <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareXTwitter className="" />
+              <FaSquareXTwitter className="text-red-500" />
             </button>
           </div>
         </div>

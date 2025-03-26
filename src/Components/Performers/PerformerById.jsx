@@ -15,6 +15,7 @@ import {
   FaLocationDot,
   FaSquareFacebook,
   FaSquareXTwitter,
+  FaWhatsapp,
 } from "react-icons/fa6";
 import { IoFlagSharp, IoLogoWhatsapp } from "react-icons/io5";
 import {
@@ -22,6 +23,7 @@ import {
   CiCircleInfo,
   CiHeart,
   CiMenuKebab,
+  CiFacebook,
 } from "react-icons/ci";
 import { BsCalendar2DateFill } from "react-icons/bs";
 
@@ -105,47 +107,113 @@ function GetPerformerById() {
   const data = store.performerData;
   console.log(data, "performerData....");
 
+
   const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
     favouritePerformerData: [],
   };
   const favouritePerformer = store1.favouritePerformerData;
+  
+   const store2 = useSelector((state) => state.deleteFavoritePerformerReducer) || {
+      deletedFavoritePerformerData: [],
+    };
+    const deletedFavoritePerformer = store2.deletedFavoritePerformerData;
+   
+    // const isFavourite = favouritePerformer.some(
+    //   (performer) => fav._id === receivedData?._id
+    // );
+
   const isFavourite = (id) => {
     return favouritePerformer.some((fav) => fav._id === id);
   };
-  useEffect(() => {
-    dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
-  }, [dispatch]);
-
 
   const checkFavourite = (id) => {
-    if (favouritePerformer.some((fav) => fav._id === id)) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    }
-  };
-
-  const handleFavourite = (id) => {
     if (isFavourite(id)) {
-      return;
-    } else {
-      dispatch(postFavouritePerformer(id));
-      console.log(id, "fav id");
+      dispatch(deletefavouritePerformer(id));
       dispatch(getFavouritePerformerData(setLoading));
     }
   };
+  
+  
+    useEffect(() => {
+      dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
+    }, [dispatch]);
+    
+    useEffect(() => {
+      if (performerId) {
+        dispatch(getPerformerById(performerId, setLoading));
+        dispatch(getFavouritePerformerData(setLoading));
+      }
+    }, [dispatch, performerId]);
+    
+  // const checkFavourite = (id) => {
+  //   if (favouritePerformer.some((fav) => fav._id === id)) {
+  //     toast.warning("Already added to favorites!", {
+  //       position: "top-right",
+  //       autoClose: 2000, // Closes after 2 seconds
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "colored",
+  //     });
+  //   }
+  // };
 
-  useEffect(() => {
-    dispatch(getPerformerById(performerId, setLoading));
-    dispatch(getFavouritePerformerData(setLoading));
-  }, [dispatch]);
+  const handleFavourite = (id) => {
+    if (isFavourite(id)) {
+      toast.warning("Already added to favorites!", { autoClose: 2000 });
+    } else {
+      dispatch(postFavouritePerformer(id));
+      dispatch(getFavouritePerformerData(setLoading));  
+    }
+  };
+  
+  
+
+  
+
+  // const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
+  //   favouritePerformerData: [],
+  // };
+  // const favouritePerformer = store1.favouritePerformerData;
+  // const isFavourite = (id) => {
+  //   return favouritePerformer.some((fav) => fav._id === id);
+  // };
+  // useEffect(() => {
+  //   dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
+  // }, [dispatch]);
+
+
+  // const checkFavourite = (id) => {
+  //   if (favouritePerformer.some((fav) => fav._id === id)) {
+  //     toast.warning("Already added to favorites!", {
+  //       position: "top-right",
+  //       autoClose: 2000, // Closes after 2 seconds
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //       theme: "colored",
+  //     });
+  //   }
+  // };
+
+  // const handleFavourite = (id) => {
+  //   if (isFavourite(id)) {
+  //     return;
+  //   } else {
+  //     dispatch(postFavouritePerformer(id));
+  //     console.log(id, "fav id");
+  //     dispatch(getFavouritePerformerData(setLoading));
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   dispatch(getPerformerById(performerId, setLoading));
+  //   dispatch(getFavouritePerformerData(setLoading));
+  // }, [dispatch]);
 
   if (loading) {
     return <Loading />;
@@ -162,6 +230,7 @@ function GetPerformerById() {
     window.open(shareUrls[platform], "_blank");
   };
 
+  
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-2">
@@ -338,44 +407,50 @@ function GetPerformerById() {
             )}
           </div>
 
-              <div className=" lg:flex gap-2 hidden justify-center ">
-                {/* <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                  <CiCircleCheck className="relative top-1 lg:text-lg" />
-                  Follow
-                </button> */}
-                <div className="flex   gap-5 ">
-                  <button className="text-red-500 text-2xl">
-                    <a
-                      className="flex"
-                      href={data.instagramUrl ? data.instagramUrl : ""}
-                    >
-                      {data.instagramUrl ? (
-                        <FaInstagram className=" text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-                  <button className="text-red-500 text-2xl">
-                    <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                      {data.facebookUrl ? (
-                        <FcLike className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-                  <button className="text-red-500 text-2xl">
-                    <a href={data.twitterUrl ? data.twitterUrl : ""}>
-                      {data.twitterUrl ? (
-                        <FaSquareXTwitter className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-                </div>
-              </div>
+          <div className="lg:flex gap-2 hidden justify-center ">
+  <div className="flex gap-5 ">
+    {/* Instagram Button */}
+    <button className="text-red-500 text-2xl">
+      <a className="flex" href={data.instagramUrl ? data.instagramUrl : ""}>
+        {data.instagramUrl ? <FaInstagram className=" text-red-500" /> : ""}
+      </a>
+    </button>
+
+    {/* Facebook Link Button */}
+    <button className="text-red-500 text-2xl">
+      <a href={data.facebookUrl ? data.facebookUrl : ""}>
+        {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
+      </a>
+    </button>
+
+    {/* Facebook Like Button */}
+    {/* <button className="text-red-500 text-2xl">
+      <a href={data.facebookUrl ? `${data.facebookUrl}/likes` : ""}>
+        {data.facebookUrl ? <FcLike className="text-red-500" /> : ""}
+      </a>
+    </button> */}
+           <button
+              onClick={() => {
+                handleFavourite(receivedData._id);
+                checkFavourite(receivedData._id);
+              }}
+              className={`text-red-500 text-2xl ${
+                isFavourite ? "text-[#ff2459]" : "text-gray-900"
+              }`}
+            >
+              <FaHeart className="text-red-500" />
+            </button>
+                
+
+    {/* Twitter Button */}
+    <button className="text-red-500 text-2xl">
+      <a href={data.twitterUrl ? data.twitterUrl : ""}>
+        {data.twitterUrl ? <FaSquareXTwitter className="text-red-500" /> : ""}
+      </a>
+    </button>
+  </div>
+</div>
+
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
               {/* <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
@@ -749,13 +824,13 @@ function GetPerformerById() {
                       onClick={() => handleShare("facebook")}
                       className="flex gap-1 shadow border p-1 rounded"
                     >
-                      <FaSquareFacebook className="text-blue-700 relative " />
+                      <FaSquareFacebook className="text-red-500 relative " />
                     </button>
                     <button
                       onClick={() => handleShare("whatsapp")}
                       className="flex gap-1 shadow border p-1 rounded"
                     >
-                      <IoLogoWhatsapp className="text-green-600" />
+                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
                     </button>
                     <button
                       onClick={() => handleShare("messenger")}
@@ -767,7 +842,7 @@ function GetPerformerById() {
                       onClick={() => handleShare("twitter")}
                       className="flex gap-1 shadow border p-1 rounded"
                     >
-                      <FaSquareXTwitter className="" />
+                      <FaSquareXTwitter className="text-red-500" />
                     </button>
                   </div>
                 </h1>
@@ -808,14 +883,14 @@ function GetPerformerById() {
                 className="flex gap-1 shadow border p-1 rounded"
               >
                 <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareFacebook className="text-blue-700 relative " />
+                <FaSquareFacebook className="text-red-500 relative " />
               </button>
               <button
                 onClick={() => handleShare("whatsapp")}
                 className="flex gap-1 shadow border p-1 rounded"
               >
                 <span className="text-sm border-r px-2">SHARE </span>
-                <IoLogoWhatsapp className="text-green-600" />
+                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
               </button>
               <button
                 onClick={() => handleShare("messenger")}
@@ -829,7 +904,7 @@ function GetPerformerById() {
                 className="flex gap-1 shadow border p-1 rounded"
               >
                 <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareXTwitter className="" />
+                <FaSquareXTwitter className="text-red-500" />
               </button>
             </div>
           </div>

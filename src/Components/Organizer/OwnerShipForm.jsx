@@ -63,9 +63,11 @@ function OwnerShipForm({ ownership, setOwnership, name }) {
                 <h1 className=" p-2 font-medium text-gray-600">
                   Verify Ownership of{" "}
                   <span className="text-[#ff2459]">{name}</span>
-                </h1>
-               
+                </h1>              
               </div>
+              <p className="text-gray-500 p-2 text-sm ">
+              Hello, I would like to notify you that I am the owner of this listing. I would like to verify its authenticity.
+            </p>
               <form
                 className="flex flex-col   "
                 onSubmit={handleSubmit(onSubmit)}

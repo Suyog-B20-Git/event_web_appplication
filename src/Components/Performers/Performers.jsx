@@ -678,6 +678,7 @@ import {
   FaShareNodes,
   FaSquareFacebook,
   FaSquareXTwitter,
+  FaWhatsapp,
 } from "react-icons/fa6";
 import Select from "react-select";
 import { getPerformer } from "../../redux/actions/master/Performers/getPerformers";
@@ -943,13 +944,13 @@ function GetPerformers() {
                   onClick={() => handleShare("facebook")}
                   className="flex gap-1 shadow border p-1 rounded"
                 >
-                  <FaSquareFacebook className="text-blue-700 relative " />
+                  <FaSquareFacebook className="text-red-500 relative " />
                 </button>
                 <button
                   onClick={() => handleShare("whatsapp")}
                   className="flex gap-1 shadow border p-1 rounded"
                 >
-                  <IoLogoWhatsapp className="text-green-600" />
+                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
                 </button>
                 <button
                   onClick={() => handleShare("messenger")}
@@ -961,7 +962,7 @@ function GetPerformers() {
                   onClick={() => handleShare("twitter")}
                   className="flex gap-1 shadow border p-1 rounded"
                 >
-                  <FaSquareXTwitter className="" />
+                  <FaSquareXTwitter className="text-red-500" />
                 </button>
               </div>
             </h1>
@@ -1169,10 +1170,10 @@ function GetPerformers() {
                         </a>
                       </button>
                     </p>
-                    <p className="flex gap-2 pr-5">
+                    {/* <p className="flex gap-2 pr-5">
                       5{" "}
                       <IoStarSharp className="relative top-1 text-yellow-400" />
-                    </p>
+                    </p> */}
                   </div>
                 </div>
               );
@@ -1201,14 +1202,14 @@ function GetPerformers() {
               className="flex gap-1 shadow border p-1 rounded"
             >
               <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareFacebook className="text-blue-700 relative " />
+              <FaSquareFacebook className="text-red-500 relative " />
             </button>
             <button
               onClick={() => handleShare("whatsapp")}
               className="flex gap-1 shadow border p-1 rounded"
             >
               <span className="text-sm border-r px-2">SHARE </span>
-              <IoLogoWhatsapp className="text-green-600" />
+                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
             </button>
             <button
               onClick={() => handleShare("messenger")}
@@ -1222,7 +1223,7 @@ function GetPerformers() {
               className="flex gap-1 shadow border p-1 rounded"
             >
               <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareXTwitter className="" />
+              <FaSquareXTwitter className="text-red-500" />
             </button>
           </div>
         </div>

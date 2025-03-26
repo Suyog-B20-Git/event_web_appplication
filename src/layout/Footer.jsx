@@ -60,18 +60,18 @@ function Footer() {
             </div>
             <p className="text-sm leading-6">
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sed do
-eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
             <div className="mt-4 flex gap-4">
              
 
-              <Link to={"#"} className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-500 text-white">
+              <Link to={"#"} className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2459] text-white">
               <FaXTwitter />
               </Link>
-              <Link to={"#"} className="w-10 h-10 flex items-center justify-center rounded-full bg-pink-500 text-white">
+              <Link to={"#"} className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2459] text-white">
               <FaInstagram />
               </Link>
-              <Link to={"#"} className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white">
+              <Link to={"#"} className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2459] text-white">
               <FaFacebook />
               </Link>
             </div>

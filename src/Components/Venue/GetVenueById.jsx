@@ -15,6 +15,7 @@ import {
   FaLocationDot,
   FaSquareFacebook,
   FaSquareXTwitter,
+  FaWhatsapp,
 } from "react-icons/fa6";
 import { IoFlagSharp, IoLogoWhatsapp } from "react-icons/io5";
 import {
@@ -22,6 +23,7 @@ import {
   CiCircleInfo,
   CiHeart,
   CiMenuKebab,
+  CiFacebook,
 } from "react-icons/ci";
 import { BsCalendar2DateFill } from "react-icons/bs";
 
@@ -350,15 +352,23 @@ function GetVenueById() {
                       )}
                     </a>
                   </button>
-                  <button className="text-red-500 text-2xl">
-                    <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                      {data.facebookUrl ? (
-                        <FcLike className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
+                     <button className="text-red-500 text-2xl">
+                                          <a href={data.facebookUrl ? data.facebookUrl : ""}>
+                                            {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
+                                          </a>
+                                        </button>
+                                          <button
+                                              onClick={() => {
+                                                handleFavourite(receivedData._id);
+                                                checkFavourite(receivedData._id);
+                                              }}
+                                              className={`text-red-500 text-2xl ${
+                                                isFavourite ? "text-[#ff2459]" : "text-gray-900"
+                                              }`}
+                                            >
+                                              <FaHeart className="text-red-500" />
+                                            </button>
+                                              
                   <button className="text-red-500 text-2xl">
                     <a href={data.twitterUrl ? data.twitterUrl : ""}>
                       {data.twitterUrl ? (
@@ -727,13 +737,13 @@ function GetVenueById() {
                       onClick={() => handleShare("facebook")}
                       className="flex gap-1 shadow border p-1 rounded"
                     >
-                      <FaSquareFacebook className="text-blue-700 relative " />
+                      <FaSquareFacebook className="text-red-500 relative " />
                     </button>
                     <button
                       onClick={() => handleShare("whatsapp")}
                       className="flex gap-1 shadow border p-1 rounded"
                     >
-                      <IoLogoWhatsapp className="text-green-600" />
+                      <FaWhatsapp className="bg-red-500 text-white p-0.5" />
                     </button>
                     <button
                       onClick={() => handleShare("messenger")}
@@ -745,7 +755,7 @@ function GetVenueById() {
                       onClick={() => handleShare("twitter")}
                       className="flex gap-1 shadow border p-1 rounded"
                     >
-                      <FaSquareXTwitter className="" />
+                      <FaSquareXTwitter className="text-red-500" />
                     </button>
                   </div>
                 </h1>
@@ -787,15 +797,15 @@ function GetVenueById() {
                 className="flex gap-1 shadow border p-1 rounded"
               >
                 <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareFacebook className="text-blue-700 relative " />
+                <FaSquareFacebook className="text-red-500 relative " />
               </button>
               <button
                 onClick={() => handleShare("whatsapp")}
                 className="flex gap-1 shadow border p-1 rounded"
               >
                 <span className="text-sm border-r px-2">SHARE </span>
-                <IoLogoWhatsapp className="text-green-600" />
-              </button>
+                <FaWhatsapp className="bg-red-500 text-white p-0.5" />
+                </button>
               <button
                 onClick={() => handleShare("messenger")}
                 className="flex gap-1 shadow border p-1 rounded"
@@ -808,7 +818,7 @@ function GetVenueById() {
                 className="flex gap-1 shadow border p-1 rounded"
               >
                 <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareXTwitter className="" />
+                <FaSquareXTwitter className="text-red-500" />
               </button>
             </div>
           </div>

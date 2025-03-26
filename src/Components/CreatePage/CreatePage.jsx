@@ -1475,7 +1475,7 @@ function CreatePage() {
     const file = event.target.files[0];
   
     if (!file) {
-      setImageError("Profile image is required");
+      setImageError("Image is required");
       return;
     }
   
@@ -2300,7 +2300,7 @@ function CreatePage() {
           </div>
         )}
 
-        {/*FIle*/}
+        {/* FIle
         <div className=" mt-8 mb-1 font-semibold">
         <label className="text-sm">Upload Profile Image</label>
         </div>
@@ -2313,7 +2313,44 @@ function CreatePage() {
         <p className="p-2 pt-1 pb-5 text-gray-500">
           Image size must be less than 2Mb
         </p>
+        <hr /> */}
+
+       {/* File Upload Section */}
+        <div className="mt-8 mb-1 font-semibold">
+          <label className="text-sm">Upload Profile Image*</label>
+        </div>
+
+        <div className="border p-2 flex flex-col gap-1">
+          <input type="file" onChange={handleImageChange} accept="image/*" />
+        </div>
+        {imageError && <p className="text-red-500">{imageError}</p>}
+
+        <p className="p-2 pt-1 pb-5 text-gray-500">Image size must be less than 2MB</p>
+
+        {/* Add Cover Image Section - Only for Venues */}
+        {selectedCategory?.value === "Venues" && (
+          <>
+            <div className="mt-4 mb-1 font-semibold">
+              <label className="text-sm">Upload Cover Image</label>
+            </div>
+
+            <div className="border p-2 flex flex-col gap-1">
+              <input 
+                type="file" 
+                onChange={(e) => setCoverImage(e.target.files[0])} 
+                accept="image/*" 
+              />
+            </div>
+
+            <p className="p-2 pt-1 pb-5 text-gray-500">
+              Cover image size must be less than 2MB
+            </p>
+          </>
+        )}
+
         <hr />
+
+
 
         <div className="flex flex-col gap-6 mt-6">
             <h1 className="text-[#ff2459] text-2xl font-semibold">Social Profiles</h1>

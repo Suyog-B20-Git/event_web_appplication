@@ -5,7 +5,7 @@ const initialState = {
     params: {},
     allData: [],
     favouritePerformerData: []
-  }
+  };
   
   const getFavoritePerformerReducer = (state = initialState,action) => {
     // console.log("fav org list ..:",action.payload)
@@ -14,11 +14,11 @@ const initialState = {
         return {
           ...state,
           favouritePerformerData: action.payload
-        }
+        };
   
       default:
         return {...state}
     }
-  }
+  };
   export default getFavoritePerformerReducer
   

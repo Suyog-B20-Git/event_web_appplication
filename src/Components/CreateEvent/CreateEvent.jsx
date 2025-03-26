@@ -69,7 +69,7 @@ function CreateEvent({ one, two, three }) {
     }, []);
 
   return (
-    <div className="h-[90vh] md:h-[57vh]  lg:h-[77vh] ">
+    <div className="h-[94vh] md:h-[57vh]  lg:h-[77vh] ">
       <div className="flex   lg:flex-row h-screen">
         <Photo1 h={77} />
         <div className="p-1   lg:w-1/2 w-full ">
@@ -82,16 +82,16 @@ function CreateEvent({ one, two, three }) {
                   height: "max-content",
                 }}
               >
-                <p className="font-bold text-gray-700 text-lg  flex justify-center pb-8 md:pb-4 xl:pb-8 pt-20 md:pt-0">
+                <p className="font-bold text-gray-700 text-lg  flex justify-center pb-4 md:pb-4 xl:pb-8 pt-12 md:pt-0">
                   WHAT KIND OF EVENT ARE YOU ORGANIZING ?
                 </p>
                 <div className="flex flex-col">
-                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 grid-rows-auto gap-4 ">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 grid-rows-auto gap-3 sm:gap-4 ">
                     {divs.map((item, index) => (
                       <div key={index} className="">
                         <div
                           onClick={() => handleDivClick(item)}
-                          className={`h-20 flex flex-col gap-2 hover:scale-110 hover:border-pink-400 hover:border-2 rounded-md justify-center items-center p-1.5  text-sm md:text-base cursor-pointer ${
+                          className={`h-16 sm:h-20 flex flex-col gap-2 hover:scale-110 hover:border-pink-400 hover:border-2 rounded-md justify-center items-center p-1.5  text-sm md:text-base cursor-pointer ${
                             selectedEvent === item.text
                               ? "border-2 border-pink-500"
                               : ""
@@ -110,7 +110,7 @@ function CreateEvent({ one, two, three }) {
                   </div>
                 </div>
 
-                <p className="pt-8 sm:pt-6 xl:pt-10 font-semibold flex justify-center lg:text-base text-xs">
+                <p className="pt-4 sm:pt-6 xl:pt-10 font-semibold flex justify-center lg:text-base text-xs">
                   WHAT WILL YOU BE COLLECTING FOR THIS EVENT ?*
                 </p>
 
@@ -164,7 +164,7 @@ function CreateEvent({ one, two, three }) {
                     </div>
                   )} */}
 
-                  <div className="flex flex-row lg:flex-row lg:gap-14 justify-center gap-4 p-2 text-gray-600">
+                  <div className="flex flex-row lg:flex-row lg:gap-14 justify-center gap-4 p-0 sm:p-2 text-gray-600">
                     <div className="flex items-center gap-2">
                       <input
                         type="radio"
@@ -198,10 +198,10 @@ function CreateEvent({ one, two, three }) {
                   </div>
                 </div>
 
-                <p className="flex justify-center text-xs text-gray-500  font-medium lg:p-0 xl:p-2 p-3">
+                <p className="flex justify-center text-xs text-gray-500  font-medium lg:p-0 xl:p-2 p-2">
                   Your Event is open for anyone to find & register for it
                 </p>
-                <p className="flex justify-center  lg:pt-5 pt-3">
+                <p className="flex justify-center  lg:pt-5 pt-1">
                   <Button
                     onClick={() => {
                       if (selectedEvent && eventType && selectedRadio) {

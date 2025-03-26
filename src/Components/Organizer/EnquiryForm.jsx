@@ -234,6 +234,9 @@ function EnquiryForm({ enquiry, setEnquiry, name }) {
                   <GiCancel className="text-lg" />
                 </button> */}
               </div>
+              <p className="text-gray-500 p-2 text-sm">
+              Hello, I would like to inquire more about this listing. Please let me know how can I get in touch with you. Waiting for your prompt reply?
+                </p>
               <form
                 className="flex flex-col   "
                 onSubmit={handleSubmit(onSubmit)}
