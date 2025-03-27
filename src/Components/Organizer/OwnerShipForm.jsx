@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { GiCancel } from "react-icons/gi";
 import { useForm } from "react-hook-form";
 
@@ -65,9 +65,7 @@ function OwnerShipForm({ ownership, setOwnership, name }) {
                   <span className="text-[#ff2459]">{name}</span>
                 </h1>              
               </div>
-              <p className="text-gray-500 p-2 text-sm ">
-              Hello, I would like to notify you that I am the owner of this listing. I would like to verify its authenticity.
-            </p>
+             
               <form
                 className="flex flex-col   "
                 onSubmit={handleSubmit(onSubmit)}
@@ -111,11 +109,13 @@ function OwnerShipForm({ ownership, setOwnership, name }) {
                 </label>
                 <textarea
                   placeholder="Enter your Claim..."
+                  defaultValue="Hello, I would like to notify you that I am the owner of this listing. I would like to verify its authenticity."
                   {...register("claim", {
                     required: "Please fill claim input field",
                   })}
-                  className="bg-gray-100 rounded-md mb-3 p-2  px-2 ml-2"
-                ></textarea>
+                  className="bg-gray-100 rounded-md mb-3 p-2 px-2 ml-2"
+                />
+
                 {errors.claim && (
                   <p className="text-xs px-2 pt-1 relative bottom-3  text-red-500">
                     {errors.claim.message}*

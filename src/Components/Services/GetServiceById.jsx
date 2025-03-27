@@ -658,9 +658,8 @@ function GetServiceById() {
                   </p>
                 
                 <p className="font-medium text-lg text-center ">
-                {stat && data && (
-                    <ServiceStats data={data} />
-                )}
+                {stat && !about && data && <ServiceStats data={data} />}
+
                 </p>
                 </div>
               </div>

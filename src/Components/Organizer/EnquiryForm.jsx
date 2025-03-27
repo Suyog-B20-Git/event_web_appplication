@@ -234,9 +234,7 @@ function EnquiryForm({ enquiry, setEnquiry, name }) {
                   <GiCancel className="text-lg" />
                 </button> */}
               </div>
-              <p className="text-gray-500 p-2 text-sm">
-              Hello, I would like to inquire more about this listing. Please let me know how can I get in touch with you. Waiting for your prompt reply?
-                </p>
+              
               <form
                 className="flex flex-col   "
                 onSubmit={handleSubmit(onSubmit)}
@@ -280,11 +278,13 @@ function EnquiryForm({ enquiry, setEnquiry, name }) {
                 </label>
                 <textarea
                   placeholder="Enter your message..."
+                  defaultValue="Hello, I would like to inquire more about this listing. Please let me know how can I get in touch with you. Waiting for your prompt reply?"
                   {...register("message", {
-                    required: "Message filed is required",
+                    required: "Message field is required",
                   })}
-                  className="bg-gray-100 rounded-md  p-2 mb-4 px-2 ml-2"
-                ></textarea>
+                  className="bg-gray-100 rounded-md p-2 mb-4 px-2 ml-2"
+                />
+
                 {errors.message && (
                   <p className="text-xs px-1 relative bottom-3 text-red-500">
                     {errors.message.message}*

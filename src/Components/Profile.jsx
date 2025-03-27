@@ -6,19 +6,28 @@ import { updateUserProfile } from "../redux/actions/master/profileActions";
 function Profile() { 
   const [localLoading, setLocalLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("personaldetails");
-  const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
   const [errors, setErrors] = useState({});
   const [profileImage, setProfileImage] = useState(null);
   // const [successMessage, setSuccessMessage] = useState("");
   const dispatch = useDispatch();
   const { user, loading, error, successMessage } = useSelector((state) => state.profileReducer || {});
 
+  const [showPassword, setShowPassword] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     address: "",
     phone: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
+  
   
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -33,7 +42,7 @@ function Profile() {
       setProfileImage(user.profileImage || "https://via.placeholder.com/100"); 
     }
   }, [user]);
-
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -51,10 +60,10 @@ function Profile() {
     setLocalLoading(true); 
   
     const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name);
+    formDataToSend.append("username", formData.name);
     formDataToSend.append("email", formData.email);
     formDataToSend.append("address", formData.address);
-    formDataToSend.append("phone", formData.phone);
+    formDataToSend.append("phoneNumber", formData.phone);
   
     if (selectedFile) {
       formDataToSend.append("profileImage", selectedFile);

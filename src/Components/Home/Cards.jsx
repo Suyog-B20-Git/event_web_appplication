@@ -193,9 +193,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 
 const convertUTCToLocal = (utcString) => {
-  if (!utcString) return "Invalid Date"; // Handle empty or invalid values
+  if (!utcString) return "Invalid Date";
   const date = new Date(utcString);
-  return date.toLocaleString(); // Converts UTC to local time
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true, // Change to false if you prefer 24-hour format
+  });
 };
 
 // function Cards({ heading }) {

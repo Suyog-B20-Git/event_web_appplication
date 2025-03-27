@@ -21,7 +21,7 @@ const initialState = {
         return {
           ...state,
           loading: false,
-          user: action.payload, // Updated user data from API
+          user: action.payload, 
           successMessage: "Profile updated successfully!",
           error: null,
         };

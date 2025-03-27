@@ -10,6 +10,8 @@ export const Auth={
   refreshToken:`${baseUrl}auth/refresh`,
   register:`${baseUrl}auth/setup`,
   login:`${baseUrl}auth/login`,
+  updateProfile:`${baseUrl}auth/update`,
+  changePassword:`${baseUrl}auth/changePassword`,
 }
 export const Event = {
   createEvent: `${baseUrl}event`,
@@ -55,3 +57,4 @@ export const Service={
     getFavouriteService:`${baseUrl}services/favorites`
     
 }
+
