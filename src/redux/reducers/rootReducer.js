@@ -42,6 +42,7 @@ import addFavouriteServiceReducer from "./pages/Services/postFavouriteServiceRed
 import deleteFavouriteEventReducer from "./pages/Events/deleteFavouriteEvent";
 
 import profileReducer from "./pages/profileReducer";
+import changePasswordReducer  from "./pages/authReducer";
 
 // ** Reducers Import **//
 
@@ -84,6 +85,7 @@ const rootReducer = combineReducers({
   addFavouriteServiceReducer,
   deleteFavouriteEventReducer,
   profileReducer,
+  changePasswordReducer,
 
 });
 
