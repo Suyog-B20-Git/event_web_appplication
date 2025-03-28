@@ -472,6 +472,32 @@ export default function EventForm() {
                 </div>
                 <div>
                   <label
+                    htmlFor="facebookLink"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Facebook Link
+                  </label>
+                  <input
+                    type="url"
+                    id="facebookLink"
+                    name="facebookLink"
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="Enter your Facebook link"
+                    {...register("facebookLink", {
+                      required: "facebook link is required",
+                    })}
+                  />
+                  {errors.facebookLink && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.facebookLink.message}*
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
+
+                <div>
+                  <label
                     htmlFor="performer"
                     className="block text-sm mb-1 font-medium text-gray-700"
                   >
@@ -509,31 +535,6 @@ export default function EventForm() {
                   {errors.performers && (
                     <p className="text-red-500 text-sm">
                       {errors.performers.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
-                <div>
-                  <label
-                    htmlFor="facebookLink"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Facebook Link
-                  </label>
-                  <input
-                    type="url"
-                    id="facebookLink"
-                    name="facebookLink"
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder="Enter your Facebook link"
-                    {...register("facebookLink", {
-                      required: "facebook link is required",
-                    })}
-                  />
-                  {errors.facebookLink && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.facebookLink.message}*
                     </p>
                   )}
                 </div>

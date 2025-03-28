@@ -565,7 +565,7 @@ function GetPerformerById() {
                 >
                   TWITTER
                 </button>
-                {/* <button
+                <button
                   className={`${
                     instagram ? "border-b-2 border-b-red-600" : ""
                   } p-2 lg:px-0 px-4`}
@@ -582,7 +582,7 @@ function GetPerformerById() {
                   }}
                 >
                   INSTAGRAM
-                </button> */}
+                </button>
                 <button
                   className={`${
                     soundCloud ? "border-b-2 border-b-red-600" : ""
@@ -729,17 +729,14 @@ function GetPerformerById() {
                     </div>
                   )}
 
-                <p>
-                  {facebook ? (
-                   <div className="w-full flex justify-center mt-6">
+                {facebook ? (
+                  <div className="w-full flex justify-center py-6">
                     <div className="w-full max-w-[1200px]">
                       <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                     </div>
                   </div>
-                  ) : (
-                    ""
-                  )}
-                </p>
+                ) : null}
+
                 <p className="text-center mt-2 " >
                   {twitter ? (
                     <div>

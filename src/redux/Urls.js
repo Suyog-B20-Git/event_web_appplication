@@ -34,7 +34,9 @@ export const Performer = {
 export const Organizer={
     getOrganizerFilter:`${baseUrl}organizer/`,
     getOrganizerByFilter:`${baseUrl}organizer/filter?`,
-    addFavouriteOrganizer:`${baseUrl}organizer/favorites`
+    addFavouriteOrganizer:`${baseUrl}organizer/favorites`,
+    postFavouriteOrganizer:`${baseUrl}organizer/favorites`,
+    deleteFavouriteOrganizer:`${baseUrl}organizer/favorites`,
 }
 
 export const Venue = {

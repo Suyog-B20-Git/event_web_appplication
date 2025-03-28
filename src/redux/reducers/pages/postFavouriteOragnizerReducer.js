@@ -22,3 +22,4 @@ const addFavouriteOragnizerReducer = (state = initialState, action) => {
 };
 
 export default addFavouriteOragnizerReducer;
+

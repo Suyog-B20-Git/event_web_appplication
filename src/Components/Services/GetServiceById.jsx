@@ -56,7 +56,7 @@ function GetServiceById() {
   const [upcoming, setUpcoming] = useState(false);
   const [facebook, setFacebook] = useState(false);
   const [twitter, setTwitter] = useState(false);
-  // const [instagram, setInstagram] = useState(false);
+  const [instagram, setInstagram] = useState(false);
   const [youtube, setYoutube] = useState(false);
   const [stat, setStat] = useState(false);
 
@@ -503,7 +503,7 @@ function GetServiceById() {
                 >
                   TWITTER
                 </button>
-                  {/* <button
+                  <button
                     className={`${
                       instagram ? "border-b-2 border-b-red-600" : ""
                     } p-2 lg:px-0 px-4`}
@@ -518,7 +518,7 @@ function GetServiceById() {
                     }}
                   >
                     INSTAGRAM
-                  </button> */}
+                  </button>
                  
                  <button
                   className={`${youtube ? "border-b-2 border-b-red-600" : ""} p-2 lg:px-0 px-4`}
@@ -619,24 +619,21 @@ function GetServiceById() {
                     </div>
                   )}
 
-                  <p>
                   {facebook ? (
-                   <div className="w-full flex justify-center py-6">
-                    <div className="w-full max-w-[1200px]">
-                      <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
+                    <div className="w-full flex justify-center py-6">
+                      <div className="w-full max-w-[1200px]">
+                        <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
+                      </div>
                     </div>
-                  </div>
-                  ) : (
-                    ""
-                  )}
-                  </p>
-                  {/* <p className="font-medium text-lg text-center">
+                  ) : null}
+
+                  <p className="font-medium text-lg text-center">
                     {instagram ? (
                       <InstagramProfile username="cristiano" />
                     ) : (
                       <div className=" "></div>
                     )}
-                  </p> */}
+                  </p>
                   <p className="font-medium text-lg text-center p-4">
                   {twitter && data.twitterUrl && (
                       <div className="w-full flex justify-center py-6">

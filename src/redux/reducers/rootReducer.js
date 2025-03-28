@@ -27,13 +27,17 @@ import getEventByFilterReducer from "./pages/Events/getEventByFilter";
 import getEventByFilter1Reducer from "./pages/Events/getEventByFilter1";
 import getEventByIdReducer from "./pages/Events/getEventById";
 import getRecentlyViewReducer from "./pages/Events/getRecentlyViewReducer";
+
 import addFavouriteEventReducer from "./pages/Events/addFavouriteEvent";
 import getFavoriteEventReducer from "./pages/Events/getFavoriteEvent";
-import addFavouriteOragnizerReducer from "./pages/postFavouriteOragnizer";
 
 import getFavoriteOrganizerReducer from "./pages/getFavouriteOrganizerReducer";
+import postFavouriteOrganizerReducer  from "./pages/postFavouriteOragnizerReducer";
+import removeFavouriteOrganizerReducer  from "./pages/deleteFavouriteOrganizerReducer";
+
 import addFavouritePerformerReducer from "./pages/Performer/postFavouritePerformerReducer";
 import getFavoritePerformerReducer from "./pages/Performer/getFavouritePerformerReducer";
+
 import getFavouriteVenueReducer from "./pages/Venue/getFavouriteVenueReducer";
 import addFavouriteVenueReducer from "./pages/Venue/postFavouriteVenueReducer";
 
@@ -72,18 +76,26 @@ const rootReducer = combineReducers({
   getEventByFilterReducer,
   getEventByFilter1Reducer,
   getEventByIdReducer,
+
   getRecentlyViewReducer,
+
   addFavouriteEventReducer,
   getFavoriteEventReducer,
-  addFavouriteOragnizerReducer,
+
+  postFavouriteOrganizerReducer ,
   getFavoriteOrganizerReducer,
+  removeFavouriteOrganizerReducer ,
+
   addFavouritePerformerReducer,
   getFavoritePerformerReducer,
+
   getFavouriteVenueReducer,
   addFavouriteVenueReducer,
+
   getFavouriteServiceReducer,
   addFavouriteServiceReducer,
   deleteFavouriteEventReducer,
+
   profileReducer,
   changePasswordReducer,
 

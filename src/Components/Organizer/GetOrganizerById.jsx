@@ -35,7 +35,7 @@ import FacebookComments from "./FacebookComments";
 import EnquiryForm from "./EnquiryForm";
 import OwnerShipForm from "./OwnerShipForm";
 import FacebookEmbeded from "../SocialMedia/Facebook";
-import InstagramProfile from "../SocialMedia/Instagram";
+import InstagramEmbed from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import PerformerStats from "../SocialMedia/State";
@@ -507,7 +507,7 @@ function GetOrganizerById() {
                 >
                   TWITTER
                 </button>
-                {/* <button
+                <button
                   className={`${
                     instagram ? "border-b-2 border-b-red-600" : ""
                   } p-2 lg:px-0 px-4`}
@@ -522,7 +522,7 @@ function GetOrganizerById() {
                   }}
                 >
                   INSTAGRAM
-                </button> */}
+                </button>
                 <button
                   className={`${
                     youtube ? "border-b-2 border-b-red-600" : ""
@@ -629,24 +629,25 @@ function GetOrganizerById() {
                     </div>
                   )}
 
-                <p>
-                {facebook ? (
-                   <div className="w-full flex justify-center py-6">
-                    <div className="w-full max-w-[1200px]">
-                      <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl}  />
-                    </div>
+              {facebook ? (
+                <div className="w-full flex justify-center py-6">
+                  <div className="w-full max-w-[1200px]">
+                    <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                   </div>
-                ):( ""
-                )}
-                  {/* {facebook ? <FacebookEmbeded appId={849920522233544} /> : ""} */}
-                </p>
+                </div>
+              ) : null}
+
                 <p className="font-medium text-lg text-center ">
-                  {instagram ? (
-                    <InstagramProfile username="cristiano" />
-                  ) : (
-                    <div className=" "></div>
-                  )}
+                {instagram ? (
+                <div className="w-full flex justify-center py-6">
+                  <div className="w-full max-w-[1200px]">
+                    <InstagramEmbed instaId={data.instagramUrl} />
+                  </div>
+                </div>
+              ) : null}
+
                 </p>
+                
                 <p className="font-medium text-lg text-center py-6">
                   {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                 </p>
