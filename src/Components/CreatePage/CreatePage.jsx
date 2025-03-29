@@ -745,7 +745,7 @@ function CreatePage() {
     )}
 
           {selectedCategory?.value !== "Venues" && (
-          <div className="mb-4 p-4  rounded-lg shadow-md">
+          <div className="mb-4 rounded-lg ">
           <label className="block text-gray-700 font-semibold mb-2">Select Tag Keywords:</label>
           <Select
             isMulti
@@ -757,18 +757,18 @@ function CreatePage() {
             className="mb-3"
           />
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 max-w-[500px]">
             <input
               type="text"
               value={customTag}
               onChange={handleCustomTagChange}
-              placeholder="Type to add manually"
-              className="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              placeholder="Type to add..."
+              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
             />
             <button 
               type="button" 
               onClick={addCustomTag}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
             >
               Add
             </button>
@@ -1235,7 +1235,7 @@ function CreatePage() {
   onRequestClose={() => setIsPreviewOpen(false)}
   className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-auto min-h-screen"
 >
-<div className="bg-white p-6 rounded-md shadow-lg w-3/4 max-w-4xl relative max-h-[72vh] overflow-y-auto mt-36">
+<div className="bg-white p-2 sm:p-6 rounded-md shadow-lg w-3/4 max-w-4xl relative max-h-[72vh] overflow-y-auto mt-20 sm:mt-36">
     
     {/* Close Button */}
     <button
@@ -1247,7 +1247,7 @@ function CreatePage() {
 
     <div className="flex">
       {/* Left Section*/}
-      <div className="w-1/3 p-4">
+      <div className="w-1/3 p-2 sm:p-4">
         <img
           src={formData.image || "https://via.placeholder.com/150?text=No+Image"}
           alt="Listing"
@@ -1282,7 +1282,7 @@ function CreatePage() {
       </div>
 
       {/* Right Section: Tabs */}
-      <div className="w-2/3 p-4 border-l">
+      <div className="w-2/3 p-2 sm:p-4 border-l">
       <div className="flex overflow-x-auto space-x-4 pb-2">
         {["About", "Facebook", "Twitter", "Instagram", "SoundCloud", "YouTube", "Spotify"].map((tab) => (
           <button
@@ -1297,7 +1297,7 @@ function CreatePage() {
         ))}
       </div>
 
-      <div className="p-4 h-96 overflow-y-auto">
+      <div className="p-2 sm:p-4 h-96 overflow-y-auto">
         {activeTab === "About" && (
           <p>{formData.about || <span className="text-gray-500">About Info Missing</span>}</p>
         )}

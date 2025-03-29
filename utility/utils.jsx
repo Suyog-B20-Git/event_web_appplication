@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL; // ✅ Use `import.meta.env` in Vi
 const AUTH_TOKEN = token;
 console.log("t:", API_URL);
 
-export const axiosInstance = axios.create({
+ const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     // "Content-Type": "application/json",
@@ -16,6 +16,18 @@ export const axiosInstance = axios.create({
 });
 console.log("t:", axiosInstance);
 
+axiosInstance.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        config.headers.Authorization = token;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+export {axiosInstance};
 {/*---------------------------------------------------------------*/}
 
 // import axios from "axios";
