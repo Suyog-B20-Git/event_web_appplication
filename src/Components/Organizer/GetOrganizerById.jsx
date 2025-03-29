@@ -641,7 +641,7 @@ function GetOrganizerById() {
                 {instagram ? (
                 <div className="w-full flex justify-center py-6">
                   <div className="w-full max-w-[1200px]">
-                    <InstagramEmbed instaId={data.instagramUrl} />
+                    <InstagramEmbed id={data.instagramId} />
                   </div>
                 </div>
               ) : null}

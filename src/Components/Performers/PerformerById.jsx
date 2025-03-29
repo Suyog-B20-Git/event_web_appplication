@@ -754,7 +754,7 @@ function GetPerformerById() {
                   {spotify ? <SpotifyEmbed artistId={data.spotifyId} /> : ""}
                 </p>
                 <p>
-                  {instagram ? <InstagramProfile username={"cristiano"} /> : ""}
+                  {instagram ? <InstagramProfile id={data.instagramId} /> : ""}
                 </p>
                 <p>
                   {youtube? < YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl}/>:""}

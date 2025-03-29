@@ -675,16 +675,16 @@ function GetVenueById() {
                     </div>
                   ) : null}
 
-                <p className="font-medium text-lg text-center">
                   {instagram ? (
-                    <InstagramProfile username="cristiano" />
-                  ) : (
-                    <div className=" "></div>
-                  )}
-                </p>
+                    <div className="font-medium text-lg text-center">
+                    <InstagramProfile id={data.instagramId} />
+                </div>
+                ) : null}
+
                 <p className="font-medium text-lg text-center p-4">
                   {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                 </p>
+                
                 <p className="font-medium text-lg text-center ">
                   {youtube ? (
                       <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />

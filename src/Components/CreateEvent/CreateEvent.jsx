@@ -110,7 +110,7 @@ function CreateEvent({ one, two, three }) {
                   </div>
                 </div>
 
-                <p className="pt-4 sm:pt-6 xl:pt-10 font-semibold flex justify-center lg:text-base text-xs">
+                <p className="pt-4 sm:pt-4 xl:pt-8 font-semibold flex justify-center lg:text-base text-xs">
                   WHAT WILL YOU BE COLLECTING FOR THIS EVENT ?*
                 </p>
 
@@ -164,7 +164,7 @@ function CreateEvent({ one, two, three }) {
                     </div>
                   )} */}
 
-                  <div className="flex flex-row lg:flex-row lg:gap-14 justify-center gap-4 p-0 sm:p-2 text-gray-600">
+                  <div className="flex flex-row lg:flex-row lg:gap-14 justify-center gap-4 p-0 sm:p-0 text-gray-600">
                     <div className="flex items-center gap-2">
                       <input
                         type="radio"
@@ -198,10 +198,10 @@ function CreateEvent({ one, two, three }) {
                   </div>
                 </div>
 
-                <p className="flex justify-center text-xs text-gray-500  font-medium lg:p-0 xl:p-2 p-2">
+                <p className="flex justify-center text-xs text-gray-500  font-medium lg:p-2 xl:p-2 p-2">
                   Your Event is open for anyone to find & register for it
                 </p>
-                <p className="flex justify-center  lg:pt-5 pt-1">
+                <p className="flex justify-center  lg:pt-3 pt-1">
                   <Button
                     onClick={() => {
                       if (selectedEvent && eventType && selectedRadio) {

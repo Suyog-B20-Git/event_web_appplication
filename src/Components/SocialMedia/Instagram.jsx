@@ -19,8 +19,8 @@
 
 import React from "react";
 
-function InstagramEmbed({ postId }) {
-    if (!postId) {
+function InstagramEmbed({ id }) {
+    if (!id) {
         return (
             <div className="flex justify-center items-center h-full">
             <p className="text-gray-800 text-center mt-6">Missing Instagram ID</p>
@@ -50,7 +50,7 @@ function InstagramEmbed({ postId }) {
         </style>
 
         <iframe
-          src={`https://www.instagram.com/${postId}/embed/`}
+          src={`https://www.instagram.com/${id}/embed/`}
           className="w-full h-full scroll-container"
           style={{
             border: "none",

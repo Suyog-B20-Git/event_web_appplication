@@ -493,12 +493,13 @@ function GetServiceById() {
                   <button
                   className={`${twitter ? "border-b-2 border-b-red-600" : ""} p-2 lg:px-0 px-4`}
                   onClick={() => {
-                    setTwitter(true);
-                    setYoutube(false);
-                    setStat(false);
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(false);
+                    setTwitter(true);
+                    setInstagram(false);
+                    setYoutube(false);
+                    setStat(false);
                   }}
                 >
                   TWITTER
@@ -523,12 +524,13 @@ function GetServiceById() {
                  <button
                   className={`${youtube ? "border-b-2 border-b-red-600" : ""} p-2 lg:px-0 px-4`}
                   onClick={() => {
-                    setYoutube(true);
-                    setStat(false);
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(false);
                     setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(true);
+                    setStat(false);
                   }}
                 >
                   YOUTUBE
@@ -536,12 +538,13 @@ function GetServiceById() {
                 <button
                   className={`${stat ? "border-b-2 border-b-red-600" : ""} p-2 lg:px-0 px-4`}
                   onClick={() => {
-                    setStat(true);
-                    setYoutube(false);
-                    setTwitter(false);
                     setAbout(false);
                     setUpcoming(false);
                     setFacebook(false);
+                    setTwitter(false);
+                    setInstagram(false);
+                    setYoutube(false);
+                    setStat(true);
                   }}
                 >
                   STATS
@@ -627,37 +630,21 @@ function GetServiceById() {
                     </div>
                   ) : null}
 
-                  <p className="font-medium text-lg text-center">
-                    {instagram ? (
-                      <InstagramProfile username="cristiano" />
-                    ) : (
-                      <div className=" "></div>
-                    )}
-                  </p>
-                  <p className="font-medium text-lg text-center p-4">
-                  {twitter && data.twitterUrl && (
-                      <div className="w-full flex justify-center py-6">
-                        <TwitterEmbed twitterUrl={data.twitterUrl} />
-                      </div>
-                    )}
-                  </p>
-              
-                  <p className="font-medium text-lg text-center ">
-                    {youtube ? (
-                      data.youtubeEmbedUrl ? (
-                        <div className="w-full flex justify-center">
-                          <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
-                        </div>
-                      ) : (
-                        <p className="text-gray-800 text-center">No YouTube video available.</p>
-                      )
-                    ) : null}
-                  </p>
-                
-                <p className="font-medium text-lg text-center ">
-                {stat && !about && data && <ServiceStats data={data} />}
-
+                <p>
+                  {instagram ? <InstagramProfile id={data.instagramId} /> : ""}
                 </p>
+
+               <p className="font-medium text-lg text-center p-4">
+                  {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
+                </p>
+              
+                <p>
+                  {youtube? < YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl}/>:""}
+                </p>
+                
+              <p>{stat ? <ServiceStats data={data} /> : ""}</p>
+
+                
                 </div>
               </div>
             </div>

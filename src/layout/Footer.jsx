@@ -134,7 +134,7 @@ function Footer() {
   <div className="container mx-auto flex flex-col md:flex-row justify-between text-sm items-center text-center">
     <p>
       &copy; 2025 EventsNode. All rights reserved. <br /> Product by 
-      <a href="https://example.com" className="text-[#ff2459]"> Masterblocks Pvt Ltd </a>
+      <a href="https://masterblocks.co.in/" className="text-[#ff2459]"> Masterblocks Pvt Ltd </a>
     </p>
     <ul className="flex flex-row gap-2 md:gap-4 mt-2 md:mt-0">
       <li><Link to="#" className="hover:text-[#ff2459]">Terms</Link></li>
