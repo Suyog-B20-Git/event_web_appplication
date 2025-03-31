@@ -306,7 +306,7 @@ function CreatePage() {
     formData.append("googleSearchLat", data4.location.lat);
     formData.append("googleSearchLong", data4.location.lng);
 
-    selectedTags.forEach((tag) => formData.append("tags[]", tag));
+    selectedTagKeywords.forEach((tag) => formData.append("tags[]", tag));
 
     if (data.phone) formData.append("phoneNumber", data.phone);
     if (data.email) formData.append("email", data.email);
@@ -744,7 +744,7 @@ function CreatePage() {
       </div>
     )}
 
-          {selectedCategory?.value !== "Venues" && (
+          {/* {selectedCategory?.value !== "Venues" && (
           <div className="mb-4 rounded-lg ">
           <label className="block text-gray-700 font-semibold mb-2">Select Tag Keywords:</label>
           <Select
@@ -794,7 +794,66 @@ function CreatePage() {
           )}
           </div>
 
-          )}
+          )} */}
+        {selectedCategory?.value !== "Venues" && (
+          <div className="mb-4 rounded-lg">
+            <label className="block text-gray-700 font-semibold mb-2">Select Tag Keywords:</label>
+            
+            <Select
+              isMulti
+              options={tagKeywordOptions[selectedCategory?.value] || []}
+              onChange={(selectedOptions) => {
+                const selectedValues = selectedOptions.map((option) => option.value);
+                setSelectedTagKeywords(selectedValues);
+              }}
+              value={(tagKeywordOptions[selectedCategory?.value] || []).filter((opt) =>
+                selectedTagKeywords.includes(opt.value)
+              )}
+              className="mb-3"
+            />
+            
+            <div className="flex gap-2 max-w-[500px]">
+              <input
+                type="text"
+                value={customTag}
+                onChange={(e) => setCustomTag(e.target.value)}
+                placeholder="Type to add..."
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              />
+              <button 
+                type="button" 
+                onClick={() => {
+                  if (customTag && !selectedTagKeywords.includes(customTag)) {
+                    setSelectedTagKeywords([...selectedTagKeywords, customTag]);
+                    setCustomTag(""); // Clear input after adding
+                  }
+                }}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+              >
+                Add
+              </button>
+            </div>
+
+            {selectedTagKeywords.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {selectedTagKeywords.map((tag, index) => (
+                  <span 
+                    key={index} 
+                    className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm flex items-center"
+                  >
+                    {tag}
+                    <button 
+                      className="text-gray-800 hover:text-red-500 font-bold ml-2"
+                      onClick={() => setSelectedTagKeywords(selectedTagKeywords.filter((t) => t !== tag))}
+                    >
+                      x
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
 
     {/*Location*/}

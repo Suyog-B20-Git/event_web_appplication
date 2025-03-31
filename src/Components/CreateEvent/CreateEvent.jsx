@@ -18,14 +18,14 @@ function CreateEvent({ one, two, three }) {
   const [eventType, setEventType] = useState(null);
 
   const divs = [
-    { text: "Business", icons: <PiSuitcaseSimple /> },
-    { text: "Festival", icons: <FaGift /> },
+    { text: "Business & Seminars", icons: <PiSuitcaseSimple /> },
+    { text: "Festivals", icons: <FaGift /> },
     { text: "Live Music", icons: <FaMusic /> },
-    { text: "Nightlife,Club", icons: <BiDrink /> },
+    { text: "Nightlife & Club", icons: <BiDrink /> },
     { text: "Professional", icons: <FaBlackTie /> },
     { text: "Social", icons: <MdGroups /> },
-    { text: "Sports ,Leisure", icons: <IoFootballOutline /> },
-    { text: "Theatre & Arts", icons: <BsBrush /> },
+    { text: "Sports & Leisure", icons: <IoFootballOutline /> },
+    { text: "Theatre and Arts", icons: <BsBrush /> },
   ];
 
   const handleDivClick = (item) => {

@@ -3,7 +3,7 @@ import { getVenue } from "./actions/master/Events/GetVenue";
 import { getLocationDetails } from "./actions/master/location/locationDetail";
 
 export const baseUrl = "http://localhost:5000/api/";
-// export const baseUrl = "http://dev.eventsnode.com:3000/api/";
+// export const baseUrl = "http://localhost:5000/api/";
 
 
 export const Auth={
