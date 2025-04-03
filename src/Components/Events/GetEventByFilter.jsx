@@ -143,11 +143,11 @@ function GetEventByFilter() {
               </div>
               <div
                 onClick={() => {
-                  setCategory("theatre & art");
+                  setCategory("theatre & arts");
                 }}
                 className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs "
               >
-                Theatre and Art
+                Theatre & Arts
               </div>
             </section>
           </div>
@@ -320,11 +320,11 @@ function GetEventByFilter() {
       </div>
       <div
         onClick={() => {
-          setCategory("theatre & art");
+          setCategory("theatre & arts");
         }}
         className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
       >
-        Theatre and Art
+        Theatre & Arts
       </div>
     </section>
   </div>

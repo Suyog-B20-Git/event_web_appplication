@@ -166,8 +166,8 @@ const EventCategory = () => {
     { Name: "assets/staticAssets/pro.jpg", text: "Professional" },
     { Name: "assets/staticAssets/cahrity.webp", text: "Social" },
     { Name: "assets/staticAssets/music.jpeg", text: "Nightlife & Club" },
-    { Name: "assets/staticAssets/sport.jpeg", text: "Sports & Leisure" },
-    { Name: "assets/staticAssets/education.jpg", text: "Theatre & art" },
+    { Name: "assets/staticAssets/sport.jpeg", text: "Sport & Leisure" },
+    { Name: "assets/staticAssets/education.jpg", text: "Theatre & Arts" },
   ];
   return (
     <>

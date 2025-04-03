@@ -44,8 +44,8 @@ function Viewall() {
     { value: "nightlife and club", label: "Nightlife & Club" },
     { value: "professional", label: "Professional" },
     { value: "social", label: "Social" },
-    { value: "sports  and leisure", label: "Sports & Leisure" },
-    { value: "theatre and arts", label: "Theatre and Arts" },
+    { value: "sport & leisure", label: "Sport & Leisure" },
+    { value: "theatre & arts", label: "Theatre & Arts" },
   ];
   const priceOptions = [
     { value: "free", label: "Free" },

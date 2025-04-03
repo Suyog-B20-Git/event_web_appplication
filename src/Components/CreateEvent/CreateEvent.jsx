@@ -24,8 +24,8 @@ function CreateEvent({ one, two, three }) {
     { text: "Nightlife & Club", icons: <BiDrink /> },
     { text: "Professional", icons: <FaBlackTie /> },
     { text: "Social", icons: <MdGroups /> },
-    { text: "Sports & Leisure", icons: <IoFootballOutline /> },
-    { text: "Theatre and Arts", icons: <BsBrush /> },
+    { text: "Sport & Leisure", icons: <IoFootballOutline /> },
+    { text: "Theatre & Arts", icons: <BsBrush /> },
   ];
 
   const handleDivClick = (item) => {
