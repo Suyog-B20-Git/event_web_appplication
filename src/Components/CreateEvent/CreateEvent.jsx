@@ -55,6 +55,7 @@ function CreateEvent({ one, two, three }) {
   const [localstorageData, setLocalStorageData] = useState(
     JSON.parse(localStorage.getItem("eventData")) || {}
   );
+  
   useEffect(() => {
     const storedData = JSON.parse(localStorage.getItem("eventData")) || {};
     setLocalStorageData(storedData);
@@ -64,6 +65,7 @@ function CreateEvent({ one, two, three }) {
     setSelectedRadio(storedData.selectedRadio || "");
     setFees(storedData.fees || "");
   }, []);
+
    useEffect(() => {
       window.scrollTo(0, 0);
     }, []);

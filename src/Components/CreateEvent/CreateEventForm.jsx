@@ -297,6 +297,7 @@ export default function EventForm() {
       formData.append("performerFacebookLinks", JSON.stringify(data.performerFacebookLinks));
   }
 
+  
     // if (!data.venue && !data.facebookLink) {
     //   setError("venue", { type: "manual", message: "Either Venue or Facebook Link is required." });
     //   setError("facebookLink", { type: "manual", message: "Either Venue or Facebook Link is required." });
@@ -401,29 +402,54 @@ export default function EventForm() {
     window.scrollTo(0, 0);
   }, []);
 
+  // const handleNextClick = handleSubmit(
+  //   (data) => {
+  //     console.log("Form data:", data);
+  //     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+  //     if (isLogin) {
+  //       dispatch(
+  //         createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
+  //         // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
+  //       );
+
+  //       reset();
+  //       setThumnPreview(null);
+  //       setPosterPreview(null);
+  //       setSeatingChartPreview(null);
+  //       localStorage.removeItem("eventData");
+  //       navigate("/createTicket");
+  //     }
+  //   },
+  //   (errors) => {
+  //     toast.error("Please fill in all required fields.");
+  //   }
+  // );
+
   const handleNextClick = handleSubmit(
-    (data) => {
-      console.log("Form data:", data);
+    async (data) => {
       const isLogin = JSON.parse(localStorage.getItem("isLogin"));
       if (isLogin) {
-        dispatch(
-          createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-          // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
-        );
-
-        reset();
-        setThumnPreview(null);
-        setPosterPreview(null);
-        setSeatingChartPreview(null);
-        localStorage.removeItem("eventData");
-        navigate("/createTicket");
+        try {
+          await dispatch(
+            createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
+          );
+  
+          reset();
+          setThumnPreview(null);
+          setPosterPreview(null);
+          setSeatingChartPreview(null);
+          localStorage.removeItem("eventData");
+          navigate("/createTicket"); 
+        } catch (error) {
+          console.error("Event creation failed:", error);
+        }
       }
     },
     (errors) => {
       toast.error("Please fill in all required fields.");
     }
   );
-
+  
   return (
       <div className="lg:h-auto md:mb-0 pt-20 md:pt-0 lg:pt-4">
       <div className="flex flex-col lg:flex-row w-full min-h-screen"> 
