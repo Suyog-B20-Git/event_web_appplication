@@ -59,8 +59,10 @@ function Routess() {
             path="/Organizer/:organizerId"
             element={<GetOrganizerById />}
           /> */}
-          <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} /> 
-          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} />
+          {/* <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} /> 
+          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} /> */}
+<Route path="/Organizer/:organizerId" element={<GetOrganizerById />} />
+<Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} />
 
           <Route path="/Performers" element={<GetPerformers />} />
           <Route

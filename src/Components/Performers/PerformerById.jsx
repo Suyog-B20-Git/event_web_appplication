@@ -39,7 +39,7 @@ import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 import FacebookEmbeded from "../SocialMedia/Facebook";
-import InstagramProfile from "../SocialMedia/Instagram";
+import InstagramEmbed from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import PerformerStats from "../SocialMedia/State";
 import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
@@ -754,7 +754,7 @@ function GetPerformerById() {
                   {spotify ? <SpotifyEmbed artistId={data.spotifyId} /> : ""}
                 </p>
                 <p>
-                  {instagram ? <InstagramProfile id={data.instagramId} /> : ""}
+                {instagram && <InstagramEmbed instagramUrl={data.instagramUrl} />}
                 </p>
                 <p>
                   {youtube? < YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl}/>:""}

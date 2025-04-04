@@ -267,22 +267,6 @@ const handleSoundCloudChange = (e) => {
   const [formData, setFormData] = useState({ image: null });
   const [previewImage, setPreviewImage] = useState(null);
 
-  // const handleImageChange = (event) => {
-  //   const file = event.target.files[0];
-
-  //   if (!file) return;
-
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     image: file, // Store the file
-  //   }));
-
-  //   // Generate a preview URL
-  //   setPreviewImage(URL.createObjectURL(file));
-  // };
-
-  // console.log(image);
-
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (!file) {
@@ -1420,7 +1404,7 @@ const handleSoundCloudChange = (e) => {
             )
           )}
 
-          {/* {activeTab === "SoundCloud" && (
+          {activeTab === "SoundCloud" && (
             formData.socialLinks?.soundcloud ? (
               <p className="text-center mt-2">
                 <SoundCloudEmbed soundCloudUrl={formData.socialLinks.soundcloud} />
@@ -1428,22 +1412,7 @@ const handleSoundCloudChange = (e) => {
             ) : (
               <p className="text-gray-500">SoundCloud Link Not Provided</p>
             )
-          )} */}
-
-{activeTab === "SoundCloud" && (
-    <>
-        {console.log("🔍 Checking SoundCloud URL:", formData?.socialLinks?.soundcloud)}
-        
-        {formData?.socialLinks?.soundcloud ? (
-            <p className="text-center mt-2">
-                <SoundCloudEmbed soundCloudUrl={formData.socialLinks.soundcloud} />
-            </p>
-        ) : (
-            <p className="text-gray-500">SoundCloud Link Not Provided</p>
-        )}
-    </>
-)}
-
+          )} 
 
           {activeTab === "YouTube" && (
             formData.socialLinks?.youtube ? (

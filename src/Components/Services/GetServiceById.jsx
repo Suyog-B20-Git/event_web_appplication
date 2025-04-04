@@ -630,9 +630,13 @@ function GetServiceById() {
                     </div>
                   ) : null}
 
-                <p>
-                  {instagram ? <InstagramProfile id={data.instagramId} /> : ""}
-                </p>
+              {instagram ? (
+                <div className="w-full flex justify-center py-6">
+                  <div className="w-full max-w-[1200px]">
+                    <InstagramProfile instagramUrl={data.instagramUrl} />
+                  </div>
+                </div>
+              ) : null}
 
                <p className="font-medium text-lg text-center p-4">
                   {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}

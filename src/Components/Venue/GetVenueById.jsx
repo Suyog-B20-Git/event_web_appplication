@@ -677,9 +677,9 @@ function GetVenueById() {
 
                   {instagram ? (
                     <div className="font-medium text-lg text-center">
-                    <InstagramProfile id={data.instagramId} />
-                </div>
-                ) : null}
+                      <InstagramProfile instagramUrl={data.instagramUrl} />
+                    </div>
+                  ) : null}
 
                 <p className="font-medium text-lg text-center p-4">
                   {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}

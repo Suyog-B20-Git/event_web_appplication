@@ -637,16 +637,16 @@ function GetOrganizerById() {
                 </div>
               ) : null}
 
-                <p className="font-medium text-lg text-center ">
-                {instagram ? (
+            <div className="font-medium text-lg text-center">
+              {instagram ? (
                 <div className="w-full flex justify-center py-6">
                   <div className="w-full max-w-[1200px]">
-                    <InstagramEmbed id={data.instagramId} />
+                    <InstagramEmbed instagramUrl={data.instagramUrl} />
                   </div>
                 </div>
               ) : null}
+            </div>
 
-                </p>
                 
                 <p className="font-medium text-lg text-center py-6">
                   {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
