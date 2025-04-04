@@ -18,6 +18,12 @@ import { Country, State, City } from "country-state-city";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Eye } from "lucide-react"; 
 import Modal from "react-modal";
+import FacebookEmbeded from "../SocialMedia/Facebook";
+import InstagramEmbed  from "../SocialMedia/Instagram";
+import YouTubeProfile from "../SocialMedia/Youtube";
+import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
+import SoundCloudEmbed from "../SocialMedia/Soundcloud";
+import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 
 function CreatePage() {
   const {
@@ -35,7 +41,7 @@ function CreatePage() {
   const [customTag, setCustomTag] = useState("");
   const [captchaValue, setCaptchaValue] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [formData, setFormData] = useState({});
+  // const [formData, setFormData] = useState({});
   const [activeTab, setActiveTab] = useState("About");
   
   const handleTagChange = (selectedOptions) => {
@@ -137,6 +143,14 @@ function CreatePage() {
     ],
   };
   
+const [soundCloudUrl, setSoundCloudUrl] = useState("");
+
+const handleSoundCloudChange = (e) => {
+  setSoundCloudUrl(e.target.value);
+  console.log("Updated SoundCloud URL:", e.target.value); 
+};
+
+
   const handleTagKeywordChange = (selectedOptions) => {
     const selectedValues = selectedOptions ? selectedOptions.map((opt) => opt.value) : [];
     setSelectedTagKeywords([...selectedValues, ...selectedTagKeywords.filter(tag => !tagKeywordList.some(t => t.value === tag))]);
@@ -249,28 +263,38 @@ function CreatePage() {
   // Handle Image Selection
   const [image, setImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
-
   const [imageError, setImageError] = useState("");
+  const [formData, setFormData] = useState({ image: null });
+  const [previewImage, setPreviewImage] = useState(null);
+
+  // const handleImageChange = (event) => {
+  //   const file = event.target.files[0];
+
+  //   if (!file) return;
+
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     image: file, // Store the file
+  //   }));
+
+  //   // Generate a preview URL
+  //   setPreviewImage(URL.createObjectURL(file));
+  // };
+
+  // console.log(image);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-  
     if (!file) {
-      setImageError("Image is required");
-      return;
+        console.error("No file selected");
+        return;
     }
-  
-    if (file.size > 2 * 1024 * 1024) {
-      setImageError("File size must be less than 2MB");
-      return;
-    }
-  
-    setImage(file);
-    setImageError(""); // Clear previous error if valid image is selected
-  };
-  
 
-  console.log(image);
+    setImage(file);  // Update state with file
+
+    setPreviewImage(URL.createObjectURL(file));
+};
+
 
   const onSubmit = (data) => {
     // if (!captchaValue) {
@@ -1226,6 +1250,7 @@ function CreatePage() {
                 <input
                   type="url"
                   name="soundCloudUrl"
+                  onChange={handleSoundCloudChange} 
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="https://www.soundcloud.com/album/track"
                   {...register("soundCloudUrl", {
@@ -1289,126 +1314,162 @@ function CreatePage() {
         </div>
       </form>
  
-      <Modal
+
+  <Modal
   isOpen={isPreviewOpen}
   onRequestClose={() => setIsPreviewOpen(false)}
-  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-auto min-h-screen"
+  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-auto min-h-screen p-2 sm:p-4"
 >
-<div className="bg-white p-2 sm:p-6 rounded-md shadow-lg w-3/4 max-w-4xl relative max-h-[72vh] overflow-y-auto mt-20 sm:mt-36">
+  <div className="bg-white p-4 sm:p-6 rounded-md shadow-lg w-[95%] sm:w-3/4 max-w-4xl relative max-h-[72vh] overflow-y-auto mt-20 sm:mt-36">
     
     {/* Close Button */}
     <button
       onClick={() => setIsPreviewOpen(false)}
-      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+      className="absolute top-2 right-2 text-gray-900 hover:text-gray-700 text-sm p-0 sm:p-2"
     >
       ✖
     </button>
 
-    <div className="flex">
-      {/* Left Section*/}
-      <div className="w-1/3 p-2 sm:p-4">
-        <img
-          src={formData.image || "https://via.placeholder.com/150?text=No+Image"}
-          alt="Listing"
-          className="w-full h-40 object-cover rounded-md"
-        />
-        
-        <div className="flex items-center mt-2">
-        <p className="text-gray-700 font-semibold ">Name : </p>
-        <h2 className="font-semibold">
-          {formData.title || <span className="text-gray-500 "> Listing Title Missing</span>}
-        </h2>
-      </div>
-      <div className="flex items-center mt-2">
+    <div className="flex flex-col sm:flex-row">
+      
+      {/* Left Section */}
+      <div className="w-full sm:w-1/3 p-2 sm:p-4">
+        {previewImage ? (
+          <img
+            src={previewImage}
+            alt="Listing"
+            className="w-full h-40 object-cover rounded-md"
+          />
+        ) : (
+          <div className="w-full h-40 flex items-center justify-center bg-gray-200 text-gray-500 rounded-md">
+            No Image Available
+          </div>
+        )}
 
-        <p className="text-gray-700 font-semibold">Address :</p>
-        <p className="text-gray-700">
-          {formData.address || <span className="text-gray-500"> Address Not Provided</span>}
-        </p>
+        <div className="mt-2 space-y-2">
+          <p className="text-gray-700 font-semibold">Name:</p>
+          <h2 className="font-semibold text-sm sm:text-base">
+            {formData.title || <span className="text-gray-500">Listing Title Missing</span>}
+          </h2>
+
+          <p className="text-gray-700 font-semibold">Address:</p>
+          <p className="text-gray-700 text-sm sm:text-base">
+            {formData.address || <span className="text-gray-500">Address Not Provided</span>}
+          </p>
+
+          <p className="text-gray-700 font-semibold">Phone:</p>
+          <p className="text-gray-700 text-sm sm:text-base">
+            {formData.phone || <span className="text-gray-500">Phone Missing</span>}
+          </p>
+
+          <p className="text-gray-700 font-semibold">Website:</p>
+          <p className="text-gray-700 text-sm sm:text-base">
+            {formData.website || <span className="text-gray-500">Website Not Available</span>}
+          </p>
         </div>
-        <div className="flex items-center mt-2">
-
-        <p className="text-gray-700 font-semibold">Phone :</p>
-        <p className="text-gray-700">
-          {formData.phone || <span className="text-gray-500"> Phone Missing</span>}
-        </p>
-        </div>
-
-        <p className="text-gray-700 font-semibold mt-2 ">Website :</p>
-        <p className="text-gray-700">
-          {formData.website || <span className="text-gray-500"> Website Not Available</span>}
-        </p>
       </div>
 
       {/* Right Section: Tabs */}
-      <div className="w-2/3 p-2 sm:p-4 border-l">
-      <div className="flex overflow-x-auto space-x-4 pb-2">
-        {["About", "Facebook", "Twitter", "Instagram", "SoundCloud", "YouTube", "Spotify"].map((tab) => (
-          <button
-            key={tab}
-            className={`py-2 px-4 transition-all ${
-              activeTab === tab ? "border-b-2 border-blue-500 font-bold" : "text-gray-500"
-            }`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <div className="w-full sm:w-2/3 p-2 sm:p-4 border-t sm:border-l">
+        <div className="flex overflow-x-auto space-x-2 pb-2 text-sm sm:text-base">
+          {["About", "Facebook", "Twitter", "Instagram", "SoundCloud", "YouTube", "Spotify"].map((tab) => (
+            <button
+              key={tab}
+              className={`py-2 px-3 sm:px-4 transition-all ${
+                activeTab === tab ? "border-b-2 border-blue-500 font-bold" : "text-gray-500"
+              }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
 
-      <div className="p-2 sm:p-4 h-96 overflow-y-auto">
-        {activeTab === "About" && (
-          <p>{formData.about || <span className="text-gray-500">About Info Missing</span>}</p>
-        )}
+        <div className="p-2 sm:p-4 h-80 sm:h-96 overflow-y-auto">
+          {activeTab === "About" && (
+            <p>{formData.about || <span className="text-gray-500">About Info Missing</span>}</p>
+          )}
 
-        {activeTab === "Facebook" && (
-          formData.socialLinks?.facebook ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.facebook }} />
-          ) : (
-            <p className="text-gray-500">Facebook Link Not Provided</p>
-          )
-        )}
-        {activeTab === "Twitter" && (
-          formData.socialLinks?.twitter ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.twitter }} />
-          ) : (
-            <p className="text-gray-500">Twitter Link Not Provided</p>
-          )
-        )}
-        {activeTab === "Instagram" && (
-          formData.socialLinks?.instagram ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.instagram }} />
-          ) : (
-            <p className="text-gray-500">Instagram Link Not Provided</p>
-          )
-        )}
-        {activeTab === "SoundCloud" && (
-          formData.socialLinks?.soundcloud ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.soundcloud }} />
-          ) : (
+          {activeTab === "Facebook" && (
+            formData.socialLinks?.facebook ? (
+              <div className="w-full flex justify-center py-4">
+                <div className="w-full max-w-[800px]">
+                  <FacebookEmbeded appId={849920522233544} fbId={formData.socialLinks.facebook} />
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-500">Facebook Link Not Provided</p>
+            )
+          )}
+
+          {activeTab === "Twitter" && (
+            formData.socialLinks?.twitter ? (
+              <p className="font-medium text-lg text-center py-4">
+                <TwitterEmbed twitterUrl={formData.socialLinks.twitter} />
+              </p>
+            ) : (
+              <p className="text-gray-500">Twitter Link Not Provided</p>
+            )
+          )}
+
+          {activeTab === "Instagram" && (
+            formData.socialLinks?.instagram ? (
+              <InstagramEmbed instagramUrl={formData.socialLinks.instagram} />
+            ) : (
+              <p className="text-gray-500">Instagram Link Not Provided</p>
+            )
+          )}
+
+          {/* {activeTab === "SoundCloud" && (
+            formData.socialLinks?.soundcloud ? (
+              <p className="text-center mt-2">
+                <SoundCloudEmbed soundCloudUrl={formData.socialLinks.soundcloud} />
+              </p>
+            ) : (
+              <p className="text-gray-500">SoundCloud Link Not Provided</p>
+            )
+          )} */}
+
+{activeTab === "SoundCloud" && (
+    <>
+        {console.log("🔍 Checking SoundCloud URL:", formData?.socialLinks?.soundcloud)}
+        
+        {formData?.socialLinks?.soundcloud ? (
+            <p className="text-center mt-2">
+                <SoundCloudEmbed soundCloudUrl={formData.socialLinks.soundcloud} />
+            </p>
+        ) : (
             <p className="text-gray-500">SoundCloud Link Not Provided</p>
-          )
         )}
-        {activeTab === "YouTube" && (
-          formData.socialLinks?.youtube ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.youtube }} />
-          ) : (
-            <p className="text-gray-500">YouTube Link Not Provided</p>
-          )
-        )}
-        {activeTab === "Spotify" && (
-          formData.socialLinks?.spotify ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.spotify }} />
-          ) : (
-            <p className="text-gray-500">Spotify Link Not Provided</p>
-          )
-        )}
-      </div>
-    </div>
+    </>
+)}
 
+
+          {activeTab === "YouTube" && (
+            formData.socialLinks?.youtube ? (
+              <p>
+                <YouTubeProfile youtubeEmbedUrl={formData.socialLinks.youtube} />
+              </p>
+            ) : (
+              <p className="text-gray-500">YouTube Link Not Provided</p>
+            )
+          )}
+
+          {activeTab === "Spotify" && (
+            formData.socialLinks?.spotify ? (
+              <p>
+                <SpotifyEmbed artistId={formData.socialLinks.spotify} />
+              </p>
+            ) : (
+              <p className="text-gray-500">Spotify Link Not Provided</p>
+            )
+          )}
+        </div>
+      </div>
     </div>
   </div>
 </Modal>
+
 
     </div>
   );

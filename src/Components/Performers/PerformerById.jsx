@@ -453,10 +453,10 @@ function GetPerformerById() {
 
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
-              {/* <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
+              <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
                 <CiCircleCheck className="relative top-1 lg:text-lg" />
                 Follow
-              </button> */}
+              </button>
               <div className="flex   gap-5 ">
                 <button className="text-red-500 text-2xl">
                   <a

@@ -296,9 +296,15 @@ function GetOrganizer() {
                 <div
                   onClick={() => {
                     navigate(`/Organizer/${item._id}`, {
-                      state: item._id,
+                      state: item,
                     });
                   }}
+                  // onClick={() => {
+                  //   navigate(`/city/${item.city}/listing/organizers/${item.name}`, {
+                  //     state: item,c  
+                  //   });
+                  // }}
+                  
                   className="h-40 md:h-36 lg:h-40 w-full overflow-hidden"
                 >
                   <img
