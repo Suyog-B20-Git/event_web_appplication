@@ -408,55 +408,51 @@ function GetPerformerById() {
           </div>
 
           <div className="lg:flex gap-2 hidden justify-center ">
-  <div className="flex gap-5 ">
-    {/* Instagram Button */}
-    <button className="text-red-500 text-2xl">
-      <a className="flex" href={data.instagramUrl ? data.instagramUrl : ""}>
-        {data.instagramUrl ? <FaInstagram className=" text-red-500" /> : ""}
-      </a>
-    </button>
-
-    {/* Facebook Link Button */}
-    <button className="text-red-500 text-2xl">
-      <a href={data.facebookUrl ? data.facebookUrl : ""}>
-        {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
-      </a>
-    </button>
-
-    {/* Facebook Like Button */}
-    {/* <button className="text-red-500 text-2xl">
-      <a href={data.facebookUrl ? `${data.facebookUrl}/likes` : ""}>
-        {data.facebookUrl ? <FcLike className="text-red-500" /> : ""}
-      </a>
-    </button> */}
-           <button
-              onClick={() => {
-                handleFavourite(receivedData._id);
-                checkFavourite(receivedData._id);
-              }}
-              className={`text-red-500 text-2xl ${
-                isFavourite ? "text-[#ff2459]" : "text-gray-900"
-              }`}
-            >
-              <FaHeart className="text-red-500" />
+            <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
+             <CiCircleCheck className="relative top-1 lg:text-lg" />
+                   Follow
             </button>
+        <div className="flex gap-3 ">
+          {/* Instagram Button */}
+          <button className="text-red-500 text-2xl">
+            <a className="flex" href={data.instagramUrl ? data.instagramUrl : ""}>
+              {data.instagramUrl ? <FaInstagram className=" text-red-500" /> : ""}
+            </a>
+          </button>
+
+          {/* Facebook Link Button */}
+          <button className="text-red-500 text-2xl">
+            <a href={data.facebookUrl ? data.facebookUrl : ""}>
+              {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
+            </a>
+          </button>
+
+          <button
+               onClick={() => handleFavourite(data._id)}
+               disabled={isFavourite(data._id)}
+              className={` text-2xl ${
+               isFavourite(data._id) ? "text-red-500 cursor-not-allowed" : "text-gray-400"
+             }`}
+             >
+              <FaHeart />
+             </button>
                 
-
-    {/* Twitter Button */}
-    <button className="text-red-500 text-2xl">
-      <a href={data.twitterUrl ? data.twitterUrl : ""}>
-        {data.twitterUrl ? <FaSquareXTwitter className="text-red-500" /> : ""}
-      </a>
-    </button>
-  </div>
-</div>
-
-            </div>
+          {/* Twitter Button */}
+          <button className="text-red-500 text-2xl">
+            <a href={data.twitterUrl ? data.twitterUrl : ""}>
+              {data.twitterUrl ? <FaSquareXTwitter className="text-red-500" /> : ""}
+            </a>
+          </button>
+        </div>
+      </div>
+   </div>
+           
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
               <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
                 <CiCircleCheck className="relative top-1 lg:text-lg" />
                 Follow
               </button>
+
               <div className="flex   gap-5 ">
                 <button className="text-red-500 text-2xl">
                   <a
@@ -470,15 +466,23 @@ function GetPerformerById() {
                     )}
                   </a>
                 </button>
+
                 <button className="text-red-500 text-2xl">
-                  <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                    {data.facebookUrl ? (
-                      <FcLike className="text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
+                   <a href={data.facebookUrl ? data.facebookUrl : ""}>
+                       {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
+                         </a>
+                 </button>
+
+                 <button
+                    onClick={() => handleFavourite(data._id)}
+                    disabled={isFavourite(data._id)}
+                    className={` text-2xl ${
+                    isFavourite(data._id) ? "text-red-500 cursor-not-allowed" : "text-gray-400"
+                  }`}
+                 >
+                <FaHeart />
+                 </button>
+
                 <button className="text-red-500 text-2xl">
                   <a href={data.twitterUrl ? data.twitterUrl : ""}>
                     {data.twitterUrl ? (

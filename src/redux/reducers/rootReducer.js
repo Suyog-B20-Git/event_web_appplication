@@ -48,6 +48,8 @@ import deleteFavouriteEventReducer from "./pages/Events/deleteFavouriteEvent";
 import profileReducer from "./pages/profileReducer";
 import changePasswordReducer  from "./pages/authReducer";
 
+import ticketReducer  from "./pages/Events/ticketReducer";
+
 // ** Reducers Import **//
 
 const rootReducer = combineReducers({
@@ -98,7 +100,7 @@ const rootReducer = combineReducers({
 
   profileReducer,
   changePasswordReducer,
-
+  ticketReducer,
 });
 
 export default rootReducer;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { alpha, styled } from "@mui/material/styles";
 import { pink } from "@mui/material/colors";
@@ -6,11 +6,29 @@ import { IoTicket } from "react-icons/io5";
 import { RiSimCardLine } from "react-icons/ri";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { MdCancel, MdDelete, MdModeEditOutline } from "react-icons/md";
-function CreateTicket() {
-  const [getTicket, setGetTicket] = useState(false);
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from "react-redux";
+import {postTicketData } from "../../redux/actions/master/Events/updateTicket";
+import { useParams } from "react-router-dom";
 
+
+function CreateTicket() {
+  const dispatch = useDispatch();
+  const { eventId } = useParams();
+
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState(0);
+  const [order, setOrder] = useState(1);
+  const [description, setDescription] = useState("");
+  const [totalTicketQuantity, setTotalTicketQuantity] = useState(0);
+  const [limitPerCustomer, setLimitPerCustomer] = useState(1);
+  const [saleStartDate, setSaleStartDate] = useState("");
+  const [saleEndDate, setSaleEndDate] = useState("");
+  const [salePrice, setSalePrice] = useState(null);
   const [formData, setFormdata] = useState([]);
   const [editIndex, setEditIndex] = useState(null); // Track the index of the item being edited
+  
   const {
     handleSubmit,
     watch,
@@ -24,26 +42,118 @@ function CreateTicket() {
       isDonation: false,
     },
   });
+  const [getTicket, setGetTicket] = useState(false);
+
+  const header = ["Title", "Price", "Qty", "Order", "Actions"];
+  const isSoldOut = watch("isSoldOut"); // Watch state
+  const isDonation = watch("isDonation"); // Watch state
+  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+
+  // const ticketData = {
+  //   title,
+  //   price,
+  //   order,
+  //   description,
+  //   totalTicketQuantity,
+  //   limitPerCustomer,
+  //   saleStartDate,
+  //   saleEndDate,
+  //   salePrice,
+  //   isDonation,
+  //   isSoldOut,
+  //   eventId,
+  // };
+  // console.log("ticketData to be posted:", ticketData);
+
   const startDate = watch("saleStartDate"); // Watch start date to validate end date
   const endDate = watch("saleEndDate"); // Watch start date to validate end date
-
+  useEffect(() => {
+    console.log("✅ eventId from useParams:", eventId);
+  }, [eventId]);
+  
   const onSubmit = (data) => {
+    const {
+      title,
+      price,
+      order,
+      description,
+      totalTicketQuantity,
+      limitPerCustomer,
+      saleStartDate,
+      saleEndDate,
+      salePrice,
+      isDonation,
+      isSoldOut,
+    } = data;
+  
+    if (!title || !description || price <= 0 || totalTicketQuantity <= 0 || !saleStartDate || !saleEndDate) {
+      toast.error("Please fill all required fields before submitting.");
+      return;
+    }
+  
+    const ticketData = {
+      title,
+      price,
+      order,
+      description,
+      totalTicketQuantity,
+      limitPerCustomer,
+      saleStartDate,
+      saleEndDate,
+      salePrice,
+      isDonation,
+      isSoldOut,
+      eventId,
+    };
+  
+    console.log("Sending ticket data:", ticketData);
+    dispatch(postTicketData(ticketData));
+  
     if (editIndex !== null) {
-      // If editing, update the existing item
       setFormdata((prevFormData) => {
         const updatedData = [...prevFormData];
-        updatedData[editIndex] = data;
+        updatedData[editIndex] = ticketData;
         return updatedData;
       });
-      setEditIndex(null); // Reset edit state
+      toast.success("Ticket updated successfully!");
+      setEditIndex(null);
     } else {
-      // If adding a new item
-      setFormdata((prevFormData) => [...prevFormData, data]);
+      setFormdata((prevFormData) => [...prevFormData, ticketData]);
+      // toast.success("Ticket created successfully!");
     }
-
+  
     setGetTicket(false);
     reset();
   };
+  
+  useEffect(() => {
+    console.log(" eventId from useParams:", eventId);
+  }, [eventId]);
+   
+  useEffect(() => {
+    document.body.style.overflow = getTicket ? "hidden" : "auto";
+    return () => (document.body.style.overflow = "auto");
+  }, [getTicket]);
+  
+
+  // const onSubmit = (data) => {
+  //   if (editIndex !== null) {
+  //     // If editing, update the existing item
+  //     setFormdata((prevFormData) => {
+  //       const updatedData = [...prevFormData];
+  //       updatedData[editIndex] = data;
+  //       return updatedData;
+  //     });
+  //     setEditIndex(null); // Reset edit state
+  //   } else {
+  //     // If adding a new item
+  //     setFormdata((prevFormData) => [...prevFormData, data]);
+  //   }
+
+  //   setGetTicket(false);
+  //   reset();
+  // };
+
   const PinkSwitch = styled(Switch)(({ theme }) => ({
     "& .MuiSwitch-switchBase.Mui-checked": {
       color: "#ff2459",
@@ -55,21 +165,20 @@ function CreateTicket() {
       backgroundColor: pink[600],
     },
   }));
+
   const handleDelete = (index) => {
     setFormdata((prevFormData) =>
       prevFormData.filter((item, i) => i !== index)
     );
   };
+
   const handleEdit = (index) => {
     const item = formData[index];
     Object.keys(item).forEach((key) => setValue(key, item[key])); // Populate form fields
     setEditIndex(index);
     setGetTicket(true);
   };
-  const header = ["Title", "Price", "Qty", "Order", "Actions"];
-  const isSoldOut = watch("isSoldOut"); // Watch state
-  const isDonation = watch("isDonation"); // Watch state
-  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  
   return (
     <div className="p-6 lg:p-10 md:pt-10 pt-28 overflow-auto">
       <button

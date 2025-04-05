@@ -339,7 +339,8 @@ function GetVenueById() {
                   <CiCircleCheck className="relative top-1 lg:text-lg" />
                   Follow
                 </button>
-                <div className="flex   gap-5 ">
+
+                <div className="flex   gap-3 ">
                   <button className="text-red-500 text-2xl">
                     <a
                       className="flex"
@@ -352,23 +353,22 @@ function GetVenueById() {
                       )}
                     </a>
                   </button>
+
                      <button className="text-red-500 text-2xl">
-                                          <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                                            {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
-                                          </a>
-                                        </button>
-                                          <button
-                                              onClick={() => {
-                                                handleFavourite(receivedData._id);
-                                                checkFavourite(receivedData._id);
-                                              }}
-                                              className={`text-red-500 text-2xl ${
-                                                isFavourite ? "text-[#ff2459]" : "text-gray-900"
-                                              }`}
-                                            >
-                                              <FaHeart className="text-red-500" />
-                                            </button>
-                                              
+                     <a href={data.facebookUrl ? data.facebookUrl : ""}>
+                     {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
+                    </a>
+                       </button>
+                           <button
+                             onClick={() => handleFavourite(data._id)}
+                             disabled={isFavourite(data._id)}
+                             className={` text-2xl ${
+                              isFavourite(data._id) ? "text-red-500 cursor-not-allowed" : "text-gray-400"
+                          }`}
+                        >
+                       <FaHeart />
+                  </button>
+
                   <button className="text-red-500 text-2xl">
                     <a href={data.twitterUrl ? data.twitterUrl : ""}>
                       {data.twitterUrl ? (
@@ -399,15 +399,21 @@ function GetVenueById() {
                     )}
                   </a>
                 </button>
-                <button className="text-red-500 text-2xl">
-                  <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                    {data.facebookUrl ? (
-                      <FcLike className="text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
+               <button className="text-red-500 text-2xl">
+                <a href={data.facebookUrl ? data.facebookUrl : ""}>
+                  {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
+                </a>
+               </button>
+             <button
+                 onClick={() => handleFavourite(data._id)}
+                 disabled={isFavourite(data._id)}
+                  className={` text-2xl ${
+                 isFavourite(data._id) ? "text-red-500 cursor-not-allowed" : "text-gray-400"
+                }`}
+                >
+               <FaHeart />
+              </button>
+                                             
                 <button className="text-red-500 text-2xl">
                   <a href={data.twitterUrl ? data.twitterUrl : ""}>
                     {data.twitterUrl ? (
