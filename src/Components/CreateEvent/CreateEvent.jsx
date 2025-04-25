@@ -207,7 +207,7 @@ function CreateEvent({ one, two, three }) {
                   <Button
                     onClick={() => {
                       if (selectedEvent && eventType && selectedRadio) {
-                        navigate("/createEvent1", {
+                        navigate("/submit-event", {
                           state: {
                             eventType: eventType,
                             selectedEvent: selectedEvent,

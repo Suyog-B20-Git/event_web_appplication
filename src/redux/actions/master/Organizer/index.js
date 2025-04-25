@@ -249,7 +249,7 @@ import { Zoom } from "react-toastify";
                 })
 
                 .catch((error) => {
-                  console.log("error in catch creatnewOrganizer");
+                  console.log("error in catch creatnewOrganizer", error);
                   toast.error(
                     error.response && error.response.data
                       ? error.response.data.message

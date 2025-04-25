@@ -1,19 +1,18 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef } from "react";
 
-const MapContainer = ({ location }) => {
+const MapContainer = ({ venueData }) => {
   const mapRef = useRef(null);
   const markerRef = useRef(null);
-  const GOOGLE_MAPS_API_KEY = "AIzaSyDBvQO - S7yEtX4__jyFra4HvGMz15MqGyE";
+  const GOOGLE_MAPS_API_KEY = "AIzaSyDBvQO-S7yEtX4__jyFra4HvGMz15MqGyE";
   const mapStyles = {
-    height: window.innerWidth < 768 ? "200px" : "400px",
+    height: window.innerWidth <= 768 ? "200px" : "400px",
     width: "100%",
   };
-  
 
   const defaultCenter = {
-    lat: location ? location.lat : 40.7127753,
-    lng: location ? location.lng : -74.0059728,
+    lat: parseFloat(venueData?.googleSearchLat) || 40.7127753,
+    lng: parseFloat(venueData?.googleSearchLong) || -74.0059728,
   };
 
   useEffect(() => {
@@ -44,7 +43,7 @@ const MapContainer = ({ location }) => {
       // Cleanup script to prevent memory leaks
       document.head.removeChild(script);
     };
-  }, [location]);
+  }, [venueData]);
 
   return <div ref={mapRef} style={mapStyles}></div>;
 };

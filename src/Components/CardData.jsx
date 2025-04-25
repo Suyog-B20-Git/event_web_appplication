@@ -10,6 +10,7 @@ function CardData({ data }) {
   const navigate = useNavigate();
 
   return (
+   
     <div className="grid  lg:grid-cols-3 md:grid-cols-3 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
       {data.map((item, index) => {
         return (

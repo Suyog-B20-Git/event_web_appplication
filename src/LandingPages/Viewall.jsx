@@ -35,6 +35,11 @@ const convertUTCToLocal = (utcString) => {
 
 
 function Viewall() {
+//new code 
+const category1 = "";
+const location = useLocation();
+const value = location.state;
+const filterValue = value?.toLowerCase() || "";
   const [filter, setFilter] = useState(false);
   const options = [
     { value: "all", label: "All" },
@@ -54,7 +59,6 @@ function Viewall() {
   const [selectedOption, setSelectedOption] = useState("");
   const category = selectedOption.value ? selectedOption.value : "";
 
-  console.log(selectedOption);
   const [price, setPrice] = useState("");
   const priceType = price.value;
   const [country, setCountry] = useState("");
@@ -91,7 +95,7 @@ function Viewall() {
     dispatch(
       getEventByFilter(
         setLoading,
-        category,
+       filterValue,
         priceType,
         searchEvent,
         countryFilter,
@@ -102,13 +106,13 @@ function Viewall() {
         currentPage
       )
     ); // Call API when component mounts
-  }, [dispatch, currentPage]);
+  }, [dispatch, currentPage,filterValue]);
 
   const handleApi = () => {
     dispatch(
       getEventByFilter(
         setLoading,
-        category,
+        filterValue,
         priceType,
         searchEvent,
         countryFilter,
@@ -124,7 +128,6 @@ function Viewall() {
     filterEventData: [],
   };
   const data = store.filterEventData;
-  // console.log(data);
   const totalPages = store.totalPages;
 
   const handleNextPage = () => {
@@ -206,7 +209,6 @@ function Viewall() {
     value: item,
     label: item,
   }));
-  // console.log(selectedCity, selectedState, selectedCountry);
   const reset = () => {
     setStartDate("");
     setEndDate("");
@@ -222,29 +224,7 @@ function Viewall() {
     handleApi();
   };
 
-  console.log(
-    category,
-    startDate,
-    endDate,
-    countryFilter,
-    cityFilter,
-    stateFilter
-  );
-
-  // const isDisabled = () => {
-  //   return !(
-  //     category ||
-  //     priceType ||
-  //     searchEvent ||
-  //     countryFilter ||
-  //     cityFilter ||
-  //     stateFilter ||
-  //     startDate ||
-  //     endDate ||
-  //     currentPage
-  //   );
-  // };
-
+ 
   const navigate = useNavigate();
   if (loading) {
     return <Loading />;
@@ -526,7 +506,7 @@ function Viewall() {
                       <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                         <CiLocationOn className="relative top-1" />
                         <span>
-                          {item.venue?.city} - {item.venue?.country}
+                          {item.venueDetails?.city} - {item.venueDetails?.country}
                         </span>
                       </p>
                     </div>

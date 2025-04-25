@@ -189,10 +189,10 @@ export const getEventByFilter = (
       const response = await axios.get(`${api}&${queryString}`);
       
       console.log("API Response:", response.data);
-
+      
       dispatch({
         type: "GET_EVENT_BY_FILTER",
-        filterEventData: response.data.events || [],
+        filterEventData: response.data?.data.events || [],
         totalPages: response.data.totalPages || 1,
       });
     } catch (error) {

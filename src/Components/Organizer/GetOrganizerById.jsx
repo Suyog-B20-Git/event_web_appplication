@@ -43,7 +43,11 @@ import OrganizerStats from "../SocialMedia/OrganizerStat";
 import { toast } from "react-toastify";
 import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
 import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
-import {getUpcomingEventData, getUpcomingEventsDataForProfile} from "../../redux/actions/master/Events/UpcomingEvent";
+import {
+  getUpcomingEventData,
+  getUpcomingEventsDataForProfile,
+} from "../../redux/actions/master/Events/UpcomingEvent";
+import { FaPhoneAlt } from "react-icons/fa";
 
 function GetOrganizerById() {
   const { organizerId } = useParams();
@@ -64,35 +68,36 @@ function GetOrganizerById() {
   console.log(organizerId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [showNumber, setShowNumber] = useState(false);
 
   // get Upcoming Event Data
   useEffect(() => {
     dispatch(
-        getUpcomingEventsDataForProfile({
-          organizer: organizerId,
-          setLoader: setLoading,
-          // Optionally pass additional query params:
-          page: 1,
-          limit: 10,
-          timezoneOffset: new Date().getTimezoneOffset(),
-          sortBy: "startDate",
-          sortOrder: "asc",
-        })
+      getUpcomingEventsDataForProfile({
+        organizer: organizerId,
+        setLoader: setLoading,
+        // Optionally pass additional query params:
+        page: 1,
+        limit: 10,
+        timezoneOffset: new Date().getTimezoneOffset(),
+        sortBy: "startDate",
+        sortOrder: "asc",
+      })
     );
   }, [dispatch, organizerId]);
-    // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
-    //   upcomingEventData: [],
-    // }
+  // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
+  //   upcomingEventData: [],
+  // }
 
-    const upcomingEventData = useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
+  const upcomingEventData =
+    useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
 
-    if (!upcomingEventData) {
-      return <div>Loading...</div>;
-    }
+  if (!upcomingEventData) {
+    return <div>Loading...</div>;
+  }
 
-    const data1 = upcomingEventData;
-    console.log("Upcoming Event Data:", data1);
-
+  const data1 = upcomingEventData;
+  console.log("Upcoming Event Data:", data1);
 
   const store = useSelector((state) => state.getOrganizerByIdReducer) || {
     organizerData: [],
@@ -110,6 +115,11 @@ function GetOrganizerById() {
   useEffect(() => {
     dispatch(getFavouriteOrganizerData(setLoading)); // Fetch favorites on mount
   }, [dispatch]);
+
+  const togglePhoneVisibility = () => {
+    setShowNumber((prev) => !prev);
+  };
+  const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
 
   const checkFavourite = (id) => {
     if (favouriteOrganizer.some((fav) => fav._id === id)) {
@@ -191,7 +201,9 @@ function GetOrganizerById() {
               <MdKeyboardDoubleArrowRight className="text-lg top-1 relative" />
               <p
                 className="cursor-pointer text-[#ff2459] hover:text-[#ff2459]"
-                onClick={() => navigate(`/Organizer/${data._id}`, { state: data })}
+                onClick={() =>
+                  navigate(`/Organizer/${data._id}`, { state: data })
+                }
               >
                 {data.name}
               </p>
@@ -248,6 +260,24 @@ function GetOrganizerById() {
                 {data.city},{data.state},{data.country}
               </p>
             </div>
+            <div
+              className="flex gap-2 lg:px-0 px-2 lg:p-0 p-2 py-0 cursor-pointer"
+              onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+            >
+              <p>
+                <FaPhoneAlt
+                  className="text-red-500 relative top-1"
+                  style={{ textShadow: "1px 1px 1px black" }}
+                />
+              </p>
+              <p>
+                {!hasPhoneNumber
+                  ? "Not available"
+                  : showNumber
+                  ? data.phoneNumber
+                  : "View Contact"}
+              </p>
+            </div>
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
@@ -281,71 +311,74 @@ function GetOrganizerById() {
               </div>
             </div>
           </div>
-            {isPopUp && (
-           <div className="lg:hidden block">
-             <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-52 md:pt-42 md:pr-10 overflow-y-scroll z-40">
-               <div className="bg-white rounded-lg shadow-lg lg:w-full relative p-4">
-                 
-                 {/* Close Button */}
-                 <button
-                   className="absolute top-0 right-2 text-gray-900 hover:text-red-500 text-3xl"
-                   onClick={() => setIsPopUp(false)}
-                 >
-                   &times;
-                 </button>
-         
-                 <div className="flex flex-col gap-0 px-0 h-[170px] w-[300px] border rounded mt-6">
-                   <button
-                     className="flex gap-3 p-4 px-4 hover:text-white hover:bg-[#ff2459]"
-                     onClick={() => {
-                       setOwnership(!ownership);
-                       setIsPopUp(false);
-                     }}
-                   >
-                     <IoFlagSharp className="relative top-1 lg:text-base" />
-                     Claim Ownership
-                   </button>
-                   <button
-                     className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
-                     onClick={() => {
-                       setEnquiry(!enquiry);
-                       setIsPopUp(false);
-                     }}
-                   >
-                     <CiCircleInfo className="relative top-1 lg:text-base" />
-                     Send Enquiry
-                   </button>
-                   <button
-                     onClick={() => {
-                       handleFavourite(data._id);
-                       checkFavourite(data._id);
-                       setIsPopUp(false);
-                     }}
-                     className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                       isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
-                     }`}
-                   >
-                     <FaHeart className="relative top-2 lg:text-base text-sm" />
-                     {isFavourite(data._id) ? "Added to Favourites" : "Add Favourite"}
-                   </button>
-                 </div>
-               </div>
-             </div>
-           </div>
-         )}
+          {isPopUp && (
+            <div className="lg:hidden block">
+              <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-52 md:pt-42 md:pr-10 overflow-y-scroll z-40">
+                <div className="bg-white rounded-lg shadow-lg lg:w-full relative p-4">
+                  {/* Close Button */}
+                  <button
+                    className="absolute top-0 right-2 text-gray-900 hover:text-red-500 text-3xl"
+                    onClick={() => setIsPopUp(false)}
+                  >
+                    &times;
+                  </button>
+
+                  <div className="flex flex-col gap-0 px-0 h-[170px] w-[300px] border rounded mt-6">
+                    <button
+                      className="flex gap-3 p-4 px-4 hover:text-white hover:bg-[#ff2459]"
+                      onClick={() => {
+                        setOwnership(!ownership);
+                        setIsPopUp(false);
+                      }}
+                    >
+                      <IoFlagSharp className="relative top-1 lg:text-base" />
+                      Claim Ownership
+                    </button>
+                    <button
+                      className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
+                      onClick={() => {
+                        setEnquiry(!enquiry);
+                        setIsPopUp(false);
+                      }}
+                    >
+                      <CiCircleInfo className="relative top-1 lg:text-base" />
+                      Send Enquiry
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleFavourite(data._id);
+                        checkFavourite(data._id);
+                        setIsPopUp(false);
+                      }}
+                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
+                        isFavourite(data._id)
+                          ? "text-[#ff2459]"
+                          : "text-gray-900"
+                      }`}
+                    >
+                      <FaHeart className="relative top-2 lg:text-base text-sm" />
+                      {isFavourite(data._id)
+                        ? "Added to Favourites"
+                        : "Add Favourite"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div className=" flex lg:flex-row flex-col py-3 ">
             <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
-            <div className="w-[100%] md:w-[80%] lg:w-[100%] max-w-[250px] md:max-w-[400px] lg:max-w-[180px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
-            {data.profileImage ? (
-              <img
-                src={data.profileImage}
-                className="w-full h-auto object-contain"
-                alt="Profile"
-              />
-            ) : (
-              <span className="text-gray-500">No Image Available</span>
-            )}
-          </div>
+              <div className="w-[100%] md:w-[80%] lg:w-[100%] max-w-[250px] md:max-w-[400px] lg:max-w-[180px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
+                {data.profileImage ? (
+                  <img
+                    src={data.profileImage}
+                    className="w-full h-auto object-contain"
+                    alt="Profile"
+                  />
+                ) : (
+                  <span className="text-gray-500">No Image Available</span>
+                )}
+              </div>
 
               <div className=" lg:flex gap-2 hidden justify-center">
                 <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
@@ -366,20 +399,26 @@ function GetOrganizerById() {
                     </a>
                   </button>
                   <button className="text-red-500 text-2xl">
-                        <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                          {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
-                        </a>
-                      </button>
-                      <button
-                           onClick={() => handleFavourite(data._id)}
-                           disabled={isFavourite(data._id)}
-                           className={` text-2xl ${
-                             isFavourite(data._id) ? "text-red-500 cursor-not-allowed" : "text-gray-400"
-                             }`}
-                            >
-                       <FaHeart />
-                      </button>
-                              
+                    <a href={data.facebookUrl ? data.facebookUrl : ""}>
+                      {data.facebookUrl ? (
+                        <CiFacebook className="text-red-500" />
+                      ) : (
+                        ""
+                      )}
+                    </a>
+                  </button>
+                  <button
+                    onClick={() => handleFavourite(data._id)}
+                    disabled={isFavourite(data._id)}
+                    className={` text-2xl ${
+                      isFavourite(data._id)
+                        ? "text-red-500 cursor-not-allowed"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    <FaHeart />
+                  </button>
+
                   {/* <button className="text-red-500 text-2xl">
                     <a href={data.facebookmUrl ? data.facebookUrl : ""}>
                       {data.facebookUrl ? (
@@ -420,19 +459,25 @@ function GetOrganizerById() {
                   </a>
                 </button>
                 <button className="text-red-500 text-2xl">
-                        <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                          {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
-                        </a>
-                      </button>
-                      <button
-                           onClick={() => handleFavourite(data._id)}
-                           disabled={isFavourite(data._id)}
-                           className={` text-2xl ${
-                             isFavourite(data._id) ? "text-red-500 cursor-not-allowed" : "text-gray-400"
-                             }`}
-                            >
-                       <FaHeart />
-                      </button>
+                  <a href={data.facebookUrl ? data.facebookUrl : ""}>
+                    {data.facebookUrl ? (
+                      <CiFacebook className="text-red-500" />
+                    ) : (
+                      ""
+                    )}
+                  </a>
+                </button>
+                <button
+                  onClick={() => handleFavourite(data._id)}
+                  disabled={isFavourite(data._id)}
+                  className={` text-2xl ${
+                    isFavourite(data._id)
+                      ? "text-red-500 cursor-not-allowed"
+                      : "text-gray-400"
+                  }`}
+                >
+                  <FaHeart />
+                </button>
                 <button className="text-red-500 text-2xl">
                   <a href={data.twitterUrl ? data.twitterUrl : ""}>
                     {data.twitterUrl ? (
@@ -561,96 +606,105 @@ function GetOrganizerById() {
                 </button>
               </div>
               <div className="lg:px-4 px-2 border bg-white rounded-lg h-full overflow-auto">
-              {about && data ? (
-                <p className="py-5 ">
-                <h2 className="text-2xl font-semibold text-gray-800 py-4">About the Organisers</h2>
+                {about && data ? (
+                  <p className="py-5 ">
+                    <h2 className="text-2xl font-semibold text-gray-800 py-4">
+                      About the Organisers
+                    </h2>
 
-                  {/* {about ? data.description : ""} */}
-                  {data?.description || "No description available"}
-                </p>
-              ) : null}
+                    {/* {about ? data.description : ""} */}
+                    {data?.description || "No description available"}
+                  </p>
+                ) : null}
                 {/* <p className="font-medium text-lg text-center">
                   {upcomimg ? "" : <div className="  "></div>}
                 </p> */}
-                  {/*Event Data Section*/}
+                {/*Event Data Section*/}
 
-                  {upcoming && (
-          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
-        {upcomingEventData.length > 0 ? (
-          upcomingEventData.map((event, index) => (
-            <div
-              key={index}
-              className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
-            >
-              {/* 🔹 Image Container*/}
-              <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
-                <img
-                  src={event.media?.thumbnailImage || "https://via.placeholder.com/250x160?text=No+Image"}
-                  alt={event.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-                {/* 🔹 Event Details  */}
-                <div className="p-2 flex flex-col flex-grow gap-y-2">
-                    {/* Event Name */}
-                    <div className="text-center min-h-[40px] max-h-[40px] flex items-center justify-center">
-                      <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 break-words line-clamp-2">
-                        {event.name}
-                      </h3>
-                    </div>
-
-                    {/* Category */}
-                    <div className="text-center min-h-[20px] flex items-center justify-center">
-                      <p className="text-xs sm:text-sm text-gray-500 break-words whitespace-normal">
-                        {event.category || "Music Festival"}
-                      </p>
-                    </div>
-
-                    {/* Date */}
-                    <div className="text-center min-h-[20px] flex items-center justify-center">
-                      <p className="text-xs sm:text-sm text-gray-400 break-words whitespace-normal">
-                        {new Date(event.startDate).toDateString()} - {new Date(event.endDate).toDateString()}
-                      </p>
-                    </div>
-
-                    {/* Venue */}
-                    <div className="text-center min-h-[25px] max-h-[40px] flex items-center justify-center flex-nowrap">
-                      <p className="text-xs sm:text-sm text-gray-600 font-medium break-words whitespace-normal">
-                        📍 {event.venue?.city || ""} {event.venue?.state || ""} {event.venue?.country || "Not Available"}
-                      </p>
-                    </div>
-                  </div>
-
+                {upcoming && (
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
+                    {upcomingEventData.length > 0 ? (
+                      upcomingEventData.map((event, index) => (
+                        <div
+                          key={index}
+                          className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
+                        >
+                          {/* 🔹 Image Container*/}
+                          <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
+                            <img
+                              src={
+                                event.media?.thumbnailImage ||
+                                "https://via.placeholder.com/250x160?text=No+Image"
+                              }
+                              alt={event.name}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-gray-500 col-span-full p-4 text-xs sm:text-sm md:text-base">
-                          No Upcoming Events Found
-                        </p>
-                      )}
+
+                          {/* 🔹 Event Details  */}
+                          <div className="p-2 flex flex-col flex-grow gap-y-2">
+                            {/* Event Name */}
+                            <div className="text-center min-h-[40px] max-h-[40px] flex items-center justify-center">
+                              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 break-words line-clamp-2">
+                                {event.name}
+                              </h3>
+                            </div>
+
+                            {/* Category */}
+                            <div className="text-center min-h-[20px] flex items-center justify-center">
+                              <p className="text-xs sm:text-sm text-gray-500 break-words whitespace-normal">
+                                {event.category || "Music Festival"}
+                              </p>
+                            </div>
+
+                            {/* Date */}
+                            <div className="text-center min-h-[20px] flex items-center justify-center">
+                              <p className="text-xs sm:text-sm text-gray-400 break-words whitespace-normal">
+                                {new Date(event.startDate).toDateString()} -{" "}
+                                {new Date(event.endDate).toDateString()}
+                              </p>
+                            </div>
+
+                            {/* Venue */}
+                            <div className="text-center min-h-[25px] max-h-[40px] flex items-center justify-center flex-nowrap">
+                              <p className="text-xs sm:text-sm text-gray-600 font-medium break-words whitespace-normal">
+                                📍 {event.venue?.city || ""}{" "}
+                                {event.venue?.state || ""}{" "}
+                                {event.venue?.country || "Not Available"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center text-gray-500 col-span-full p-4 text-xs sm:text-sm md:text-base">
+                        No Upcoming Events Found
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {facebook ? (
+                  <div className="w-full flex justify-center py-6">
+                    <div className="w-full max-w-[1200px]">
+                      <FacebookEmbeded
+                        appId={849920522233544}
+                        fbId={data.facebookUrl}
+                      />
                     </div>
-                  )}
-
-              {facebook ? (
-                <div className="w-full flex justify-center py-6">
-                  <div className="w-full max-w-[1200px]">
-                    <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
                   </div>
-                </div>
-              ) : null}
+                ) : null}
 
-            <div className="font-medium text-lg text-center">
-              {instagram ? (
-                <div className="w-full flex justify-center py-6">
-                  <div className="w-full max-w-[1200px]">
-                    <InstagramEmbed instagramUrl={data.instagramUrl} />
-                  </div>
+                <div className="font-medium text-lg text-center">
+                  {instagram ? (
+                    <div className="w-full flex justify-center py-6">
+                      <div className="w-full max-w-[1200px]">
+                        <InstagramEmbed instagramUrl={data.instagramUrl} />
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
 
-                
                 <p className="font-medium text-lg text-center py-6">
                   {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                 </p>
@@ -720,7 +774,7 @@ function GetOrganizerById() {
                       onClick={() => handleShare("whatsapp")}
                       className="flex gap-1 shadow border p-1 rounded"
                     >
-                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
+                      <FaWhatsapp className="bg-red-500 text-white p-0.5" />
                     </button>
                     <button
                       onClick={() => handleShare("messenger")}
@@ -741,7 +795,7 @@ function GetOrganizerById() {
                     <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 ">
                       <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
-                      <p>Todays 0</p>
+                      <p>Today 0</p>
                     </div>
                     <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                       <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
@@ -762,7 +816,6 @@ function GetOrganizerById() {
               </div>
             </div>
           </div>
-
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">
@@ -780,7 +833,7 @@ function GetOrganizerById() {
                 className="flex gap-1 shadow border p-1 rounded"
               >
                 <span className="text-sm border-r px-2">SHARE </span>
-                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
+                <FaWhatsapp className="bg-red-500 text-white p-0.5" />
               </button>
               <button
                 onClick={() => handleShare("messenger")}
@@ -801,41 +854,41 @@ function GetOrganizerById() {
             </div>
           </div>
           <div className="rounded p-2 shadow ">
-  <h1 className="text-lg font-medium text-gray-900 p-2 border-b">
-    Organizer Category
-  </h1>
-  <section className="flex flex-col gap-2 pt-3 justify-center items-center">
-    <div className="flex flex-wrap gap-2 justify-center">
-      <div
-        onClick={() => {
-          setCategory("event planner");
-          navigate("/Organizers", { state: category });
-        }}
-        className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-      >
-        Event Planner
-      </div>
-      <div
-        onClick={() => {
-          setCategory("wedding planner");
-          navigate("/Organizers", { state: category });
-        }}
-        className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-      >
-        Wedding Planner
-      </div>
-      <div
-        onClick={() => {
-          setCategory("adventure");
-          navigate("/Organizers", { state: category });
-        }}
-        className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-      >
-        Adventure
-      </div>
-    </div>
-  </section>
-</div>
+            <h1 className="text-lg font-medium text-gray-900 p-2 border-b">
+              Organizer Category
+            </h1>
+            <section className="flex flex-col gap-2 pt-3 justify-center items-center">
+              <div className="flex flex-wrap gap-2 justify-center">
+                <div
+                  onClick={() => {
+                    setCategory("event planner");
+                    navigate("/Organizers", { state: category });
+                  }}
+                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+                >
+                  Event Planner
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("wedding planner");
+                    navigate("/Organizers", { state: category });
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+                >
+                  Wedding Planner
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("adventure");
+                    navigate("/Organizers", { state: category });
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+                >
+                  Adventure
+                </div>
+              </div>
+            </section>
+          </div>
 
           <div className="rounded border">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
@@ -846,7 +899,7 @@ function GetOrganizerById() {
                 <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
-                  <p>Todays 0</p>
+                  <p>Today 0</p>
                 </div>
                 <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
@@ -876,24 +929,24 @@ function GetOrganizerById() {
         </div>
       </div>
       <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
-            Organizer Location
-          </h1>
+        Organizer Location
+      </h1>
 
-          <div className="px-6 w-full flex justify-center">
-            <MapContainer data={data} />
-          </div>
+      <div className="px-6 w-full flex justify-center">
+        <MapContainer data={data} />
+      </div>
 
-          {/* <div className="flex justify-between ">
+      {/* <div className="flex justify-between ">
             <div className="text-sm">Visited 4133 Times , 9 Times in Day</div>
           </div> */}
-          <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
-          <FacebookComments
-              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-              // dataHref={currentUrl}
-              numPosts={10}
-              width="1600"
-            />
-          </div>
+      <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
+        <FacebookComments
+          dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+          // dataHref={currentUrl}
+          numPosts={10}
+          width="1600"
+        />
+      </div>
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}

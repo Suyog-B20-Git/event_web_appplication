@@ -245,6 +245,8 @@ import axios from "axios";
 import Photo from "./Photo";
 import { Auth } from "../redux/Urls";
 import { toast } from "react-toastify";
+const baseUrl = import.meta.env.VITE_API_URL;
+
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -260,9 +262,7 @@ function Login() {
     setSuccessMessage("");
 
     try {
-      const response = await axios.post(
-        // "http://localhost:5000/api/auth/login",
-        `${Auth.login}`,
+      const response = await axios.post(`${baseUrl}/api/auth/login`,
         {
           email,
           password,

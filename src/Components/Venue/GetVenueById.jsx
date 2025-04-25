@@ -179,7 +179,7 @@ function GetVenueById() {
               <p
                 className="cursor-pointer hover:text-[#ff2459]"
                 onClick={() => {
-                  navigate("/Venues");
+                  navigate("/venues");
                 }}
               >
                 Venue
@@ -325,7 +325,7 @@ function GetVenueById() {
           <div className="w-[100%] md:w-[80%] lg:w-[100%] max-w-[250px] md:max-w-[400px] lg:max-w-[180px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
             {data.profileImage ? (
               <img
-                src={data.profileImage}
+                src={`http://old.eventsnode.com/uploads/organizer_images/${data.profileImage}`}
                 className="w-full h-auto object-contain"
                 alt="Profile"
               />
@@ -716,7 +716,7 @@ function GetVenueById() {
                     <div
                       onClick={() => {
                         setCategory("indoor");
-                        navigate("/Venues", { state: category });
+                        navigate("/venues/indoor", { state: category });
                       }}
                       className="bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -725,7 +725,7 @@ function GetVenueById() {
                     <div
                       onClick={() => {
                         setCategory("outdoor");
-                        navigate("/Venues", { state: category });
+                        navigate("/venues/outdoor", { state: category });
                       }}
                       className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
@@ -769,7 +769,7 @@ function GetVenueById() {
                     <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 ">
                       <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
-                      <p>Todays 0</p>
+                      <p>Today 0</p>
                     </div>
                     <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                       <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
@@ -836,7 +836,7 @@ function GetVenueById() {
                 <div
                   onClick={() => {
                     setCategory("indoor");
-                    navigate("/Venues", { state: category });
+                    navigate("/venues/indoor", { state: category });
                   }}
                   className="bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -845,7 +845,7 @@ function GetVenueById() {
                 <div
                   onClick={() => {
                     setCategory("outdoor");
-                    navigate("/Venues", { state: category });
+                    navigate("/venues/outdoor", { state: category });
                   }}
                   className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                 >
@@ -863,7 +863,7 @@ function GetVenueById() {
                 <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
-                  <p>Todays 0</p>
+                  <p>Today 0</p>
                 </div>
                 <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <BsCalendar2DateFill className=" text-white text-2xl font-medium" />

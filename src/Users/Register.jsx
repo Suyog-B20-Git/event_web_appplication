@@ -1,192 +1,3 @@
-// import React, { useState } from "react";
-// import Button from "../Components/ReusableComponents/Button";
-// import InputField from "../Components/ReusableComponents/InputField";
-
-// function Register() {
-//   const [firstName, setFirstName] = useState("");
-//   const [lastName, setLastName] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-
-//   return (
-//     <div className="w-full flex justify-center items-center">
-//       <div className="w-[360px] md:h-[470px] pb-5 flex flex-col gap-1">
-//         <InputField
-//           label={"First Name"}
-//           type={"text"}
-//           name={"firstName"}
-//           width={"w-full"}
-//           placeholder={"Enter yor first Name"}
-//           value={email}
-//           onChange={(e) => setFirstName(e.target.value)}
-//         />
-//         <InputField
-//           label={"Last Name"}
-//           type={"text"}
-//           name={"LastName"}
-//           width={"w-full"}
-//           placeholder={"Enter yor last Name"}
-//           value={lastName}
-//           onChange={(e) => setLastName(e.target.value)}
-//         />
-//         <InputField
-//           label={"Email*"}
-//           type={"email"}
-//           name={"email"}
-//           width={"w-full"}
-//           placeholder={"Enter email"}
-//           value={email}
-//           onChange={(e) => setEmail(e.target.value)}
-//         />
-//         <InputField
-//           label={"password*"}
-//           type={"password"}
-//           isPasswordField={true}
-//           name={"password"}
-//           width={"w-full"}
-//           placeholder={"Enter password"}
-//           value={password}
-//           onChange={(e) => setPassword(e.target.value)}
-//         />
-//         <div className="text-[10px] whitespace-nowrap ">
-//           Minimum of 8 Chracter & must include lettere & 1 number(no space
-//           ,slashes or quotes)
-//         </div>
-
-//         <button className="text-gray-600 shadow bg-white lg:text-base text-sm w-[max-content] p-1 border-2 rounded font-semibold">
-//           Im not Robot
-//         </button>
-//         <button className=" text-center shadow text-white lg:text-base text-sm w-full rounded-lg p-1 border-2 bg-[#ff2459] font-semibold">
-//           Sign Up
-//         </button>
-
-//         <p className="text-[10px] whitespace-nowrap">
-//           By clicking ‘SIGN UP’ you are agrreging to the Event.com Terms of use
-//           & privacy Policey
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Register;
-
-// import React, { useState } from "react";
-// import InputField from "../Components/ReusableComponents/InputField";
-// import axios from "axios";
-// import Button from "../Components/ReusableComponents/Button";
-
-// function Register() {
-//   const [firstName, setFirstName] = useState("");
-//   const [lastName, setLastName] = useState("");
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [mobileNumber, setMobileNumber] = useState("");
-//   const [error, setError] = useState("");
-//   const [success, setSuccess] = useState("");
-
-//   const handleRegister = async (e) => {
-//     e.preventDefault();
-//     setError("");
-//     setSuccess("");
-
-//     try {
-//       const response = await axios.post("http://localhost:5000/api/auth/setup", {
-//         username: firstName,
-//         lastName,
-//         email,
-//         password,
-//         mobileNumber,
-//       });
-
-//       if (response.status === 201) {
-//         setSuccess("Registration successful!");
-//         setFirstName("");
-//         setLastName("");
-//         setEmail("");
-//         setPassword("");
-//         setMobileNumber("");
-//       }
-//     } catch (err) {
-//       if (err.response && err.response.data && err.response.data.message) {
-//         setError(err.response.data.message);
-//       } else {
-//         setError("Something went wrong. Please try again.");
-//       }
-//     }
-//   };
-
-//   return (
-//     <div className="w-full flex justify-center items-center">
-//       <div className="w-[360px] md:h-[470px] pb-5 flex flex-col gap-1">
-//         {error && <p className="text-red-500 text-sm">{error}</p>}
-//         {success && <p className="text-green-500 text-sm">{success}</p>}
-
-//         <InputField
-//           label={"First Name"}
-//           type={"text"}
-//           name={"firstName"}
-//           width={"w-full"}
-//           placeholder={"Enter your first name"}
-//           value={firstName}
-//           onChange={(e) => setFirstName(e.target.value)}
-//         />
-//         <InputField
-//           label={"Last Name"}
-//           type={"text"}
-//           name={"lastName"}
-//           width={"w-full"}
-//           placeholder={"Enter your last name"}
-//           value={lastName}
-//           onChange={(e) => setLastName(e.target.value)}
-//         />
-//         <InputField
-//           label={"Email*"}
-//           type={"email"}
-//           name={"email"}
-//           width={"w-full"}
-//           placeholder={"Enter email"}
-//           value={email}
-//           onChange={(e) => setEmail(e.target.value)}
-//         />
-//         <InputField
-//           label={"Mobile Number"}
-//           type={"text"}
-//           name={"mobileNumber"}
-//           width={"w-full"}
-//           placeholder={"Enter your mobile number"}
-//           value={mobileNumber}
-//           onChange={(e) => setMobileNumber(e.target.value)}
-//         />
-//         <InputField
-//           label={"Password*"}
-//           type={"password"}
-//           name={"password"}
-//           width={"w-full"}
-//           placeholder={"Enter password"}
-//           value={password}
-//           onChange={(e) => setPassword(e.target.value)}
-//         />
-//         <div className="text-[10px] lg:whitespace-nowrap">
-//           Minimum of 8 characters & must include letters & 1 number (no spaces, slashes, or quotes)
-//         </div>
-
-//         <button
-//           className="text-center shadow text-white lg:text-base text-sm w-full rounded-lg p-1 border-2 bg-[#ff2459] font-semibold"
-//           onClick={handleRegister}
-//         >
-//           Sign Up
-//         </button>
-
-//         <p className="text-[10px] lg:whitespace-nowrap">
-//           By clicking ‘SIGN UP’ you are agreeing to the Event.com Terms of Use & Privacy Policy
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Register;
 
 import React, { useState } from "react";
 import InputField from "../Components/InputField";
@@ -200,8 +11,10 @@ import axios from "axios";
 import Photo from "./Photo";
 import { Auth } from "../redux/Urls";
 import { toast } from "react-toastify";
+const baseUrl = import.meta.env.VITE_API_URL;
+
 function Register() {
-  // const navigate = useNavigate();
+ 
   const [name, setName] = useState("");
 
   const [email, setEmail] = useState("");
@@ -224,16 +37,20 @@ function Register() {
     try {
       if (password === confirmPassword) {
         const response = await axios.post(
-          // "http://localhost:5000/api/auth/setup",
-          `${Auth.register}`,
+          `${baseUrl}/api/auth/setup`,
           {
-            username: name,
-
+            name,
             email,
             password,
             mobileNumber,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
+        console.log("REGISTER response", response);
 
         if (response.status === 201) {
           // setSuccess("Registration successful!");
@@ -255,19 +72,14 @@ function Register() {
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
-        // setError(err.response.data.message);
-
         toast.error(err.response.data.message, {
           position: "top-right",
         });
+        console.log("REGISTER error", err.response.data.message);
       } else {
-        // setError("Something went wrong. Please try again.");
-        // toast.error("Something went wrong. Please try again.", {
-        //   position: "top-right",
-        // });
         if (err.response.data.errors) {
-          const errors = err.response.data.errors; // Accessing errors correctly
-          const errorMsg = errors.length > 0 ? errors.join(", ") : errors[0]; // Joining errors properly
+          const errors = err.response.data.errors;
+          const errorMsg = errors.length > 0 ? errors.join(", ") : errors[0];
           errorMsg &&
             toast.error(errorMsg, {
               position: "top-right",
@@ -303,7 +115,7 @@ function Register() {
               <InputField
                 label={"User Name"}
                 type={"text"}
-                name={"firstName"}
+                name={"username"}
                 width={"w-full"}
                 placeholder={"Enter your name"}
                 value={name}

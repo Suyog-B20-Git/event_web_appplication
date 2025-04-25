@@ -439,7 +439,7 @@ export default function EventForm() {
           setPosterPreview(null);
           setSeatingChartPreview(null);
           localStorage.removeItem("eventData");
-          navigate("/createTicket"); 
+          navigate("/create-ticket"); 
         } catch (error) {
           console.error("Event creation failed:", error);
         }

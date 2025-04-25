@@ -146,7 +146,7 @@ function EventCardData({ data, heading }) {
             <p className="font-bold font-sans lg:text-2xl">{heading}</p>
           </div>
           <button
-            onClick={() => navigate("/viewall")}
+            onClick={() => navigate("/events")}
             className="shadow-md lg:text-base text-sm p-2  font-medium"
           >
             View All
@@ -163,8 +163,11 @@ function EventCardData({ data, heading }) {
 
               // className="overflow-hidden  border  shadow-lg p-3 rounded-lg lg:w-[320px] w-full"
            
-              onClick={() => navigate("/featuredEvent", { state: item._id })}
-            >
+              onClick={() => {
+                const path = `/events/${item.slug || "featured-event"}`;
+                console.log("Navigating to:", path, "with state ID:", item._id);
+                navigate(path, { state: item._id });
+              }}      >
               <div className="h-32 w-full rounded-lg"
               >
                 <div

@@ -18,12 +18,12 @@ function GetEventByFilter() {
   const value = location.state;
   console.log(value);
 
-  const filterValue = value.toLowerCase();
-
+  const filterValue = value?.value?.toLowerCase() || "";
+ 
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [category, setCategory] = useState("");
-  const[heading,setHeading]=useState("")
+  const [heading, setHeading] = useState("")
   // Fetch data when `filterValue` is available
   useEffect(() => {
     if (filterValue) {
@@ -186,7 +186,7 @@ function GetEventByFilter() {
                 <div className="bg-blue-600 rounded  h-28 min-w-28   text-white font-medium flex flex-col gap-2 items-start p-4 ">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
-                  <p>Todays 0</p>
+                  <p>Today 0</p>
                 </div>
                 <div className="bg-orange-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
@@ -336,7 +336,7 @@ function GetEventByFilter() {
       <div className="grid grid-cols-2 gap-4 p-3">
         <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
           <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-          <p>Todays 0</p>
+          <p>Today 0</p>
         </div>
         <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
           <BsCalendar2DateFill className=" text-white text-2xl font-medium" />

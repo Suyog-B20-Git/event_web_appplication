@@ -1,0 +1,18 @@
+/* In App.css or index.css */
+.hide-scrollbar::-webkit-scrollbar {
+    height: 6px; /* <-- this controls scrollbar thickness */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 10px;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+  }
+  

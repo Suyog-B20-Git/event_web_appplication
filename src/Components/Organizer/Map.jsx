@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 const MapContainer = ({ data }) => {
   const mapRef = useRef(null);
   const markerRef = useRef(null);
-  const GOOGLE_MAPS_API_KEY = "AIzaSyDBvQO - S7yEtX4__jyFra4HvGMz15MqGyE";
+  const GOOGLE_MAPS_API_KEY = "AIzaSyDBvQO-S7yEtX4__jyFra4HvGMz15MqGyE";
   const mapStyles = {
     height: window.innerWidth <= 768 ? "200px" : "400px",
     width: "100%",

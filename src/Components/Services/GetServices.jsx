@@ -363,7 +363,7 @@ function GetService() {
                 <div className="bg-blue-600 rounded h-28 min-w-28  text-white font-medium flex flex-col gap-2 items-start p-4 ">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
-                  <p>Todays 0</p>
+                  <p>Today 0</p>
                 </div>
                 <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
@@ -526,7 +526,7 @@ function GetService() {
         <div className="lg:flex hidden flex-col gap-5 rounded pt-5 justify-center bg-white shadow-md  mx-auto ">
           <div className="rounded p-2 shadow ">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
-              ServiceCategory
+              Service Category
             </h1>
             <section className="flex flex-col gap-2 p-3 justify-center items-center">
             <div className="flex gap-2 flex-wrap justify-center">
@@ -603,7 +603,7 @@ function GetService() {
                 <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
-                  <p>Todays 0</p>
+                  <p>Today 0</p>
                 </div>
                 <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <BsCalendar2DateFill className=" text-white text-2xl font-medium" />

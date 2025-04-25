@@ -6,7 +6,7 @@ const Card2 = ({ item, customStyle }) => {
   const navigate=useNavigate()
   return (
     <div onClick={()=>{
-      navigate("/getEventByFilter", {
+      navigate("/filtered-events", {
         state:item.text,
       });
     }} className="w-full cursor-pointer lg:w-max   md:w-[80%]   rounded-lg border border-blue-500 ">

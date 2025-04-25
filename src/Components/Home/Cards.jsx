@@ -218,7 +218,7 @@ function Cards({ data, heading }) {
             <p className="font-bold font-sans lg:text-2xl">{heading}</p>
           </div>
           <button
-            onClick={() => navigate("/viewall")}
+            onClick={() => navigate("/events")}
             className="shadow-md lg:text-base text-sm p-2  font-medium"
           >
             View All

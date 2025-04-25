@@ -44,3 +44,19 @@
     background: rgb(143, 37, 55);
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  height: 6px;
+  ;
+}
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #ff2459;
+  border-radius: 10px;
+}
+.hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(143, 37, 55);
+}
+
+
