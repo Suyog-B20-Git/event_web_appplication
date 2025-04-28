@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
@@ -14,6 +14,39 @@ function Footer() {
     "Mumbai",
     "Pune",
   ];
+
+  const [email, setEmail] = useState("")
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+
+    if (!email) return alert("Please enter an email address.");
+
+    // try {
+    //   const response = await fetch("/emailsubscribe", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email }),
+    //   });
+
+    //   const data = await response.json();
+
+    //   if (response.ok) {
+    //     alert("Subscribed successfully!");
+    //     setEmail(""); 
+    //   } else {
+    //     alert(data.message || "Subscription failed.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error);
+    //   alert("An error occurred while subscribing.");
+    // }
+
+    console.log("Passing the email", email);
+    alert(`You entered: ${email}`);
+    setEmail("");
+  };
 
   return (
     <footer className="bg-gray-900 text-gray-300 ">
@@ -81,7 +114,7 @@ function Footer() {
           <div>
             <h3 className="font-semibold text-lg mb-3">Useful Links</h3>
             <ul className="grid grid-cols-2 gap-2 text-sm">
-              <li><Link to="/" className="">Home</Link></li>
+              <li><Link to="/home" className="hover:text-[#ff2459]">Home</Link></li>
               <li><Link to="/about" className="hover:text-[#ff2459]">About</Link></li>
               <li><Link to="/services" className="hover:text-[#ff2459]">Events</Link></li>
               <li><Link to="/portfolio" className="hover:text-[#ff2459]">Blog</Link></li>
@@ -98,13 +131,16 @@ function Footer() {
               Don’t miss to subscribe to our new feeds, kindly fill the form
               below.
             </p>
-            <form className="flex items-center">
+            <form className="flex items-center" onSubmit={handleSubscribe}>
               <input
                 type="email"
                 placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 p-2 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-l-md focus:outline-none"
               />
-              <button className="bg-[#ff2459] text-white px-4 md:px-2 lg:px-4 py-2 rounded-r-md">
+              <button type="submit"
+              className="bg-[#ff2459] text-white px-4 md:px-2 lg:px-4 py-2 rounded-r-md" >
                 <i className="fab fa-telegram-plane"></i>Subscribe
               </button>
             </form>
@@ -133,8 +169,8 @@ function Footer() {
       <div className="bg-gray-800 py-3 p-3">
   <div className="container mx-auto flex flex-col md:flex-row justify-between text-sm items-center text-center">
     <p>
-      &copy; 2025 EventsNode. All rights reserved. <br /> Product by 
-      <a href="https://masterblocks.co.in/" className="text-[#ff2459]"> Masterblocks Pvt Ltd </a>
+      &copy; 2015 - 2025 EventsNode. All rights reserved. <br /> A 
+      <a href="https://masterblocks.co.in/" className="text-[#ff2459]"> Masterblocks Pvt Ltd </a> Company
     </p>
     <ul className="flex flex-row gap-2 md:gap-4 mt-2 md:mt-0">
       <li><Link to="#" className="hover:text-[#ff2459]">Terms</Link></li>

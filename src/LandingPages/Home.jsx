@@ -47,34 +47,48 @@ import { useDispatch, useSelector } from "react-redux";
 import { getEventData } from "../redux/actions/master/Events/index";
 import { getUpcomingEventData } from "../redux/actions/master/Events/UpcomingEvent";
 import { getFeaturedEventData } from "../redux/actions/master/Events/FeaturedEvent";
+import { getOrganizer } from "../redux/actions/master/Organizer/getOrganiser";
+import { getVenue } from "../redux/actions/master/Venue/getVenue";
+
+
 import Loading from "../Components/Loading";
+import CardData from "../Components/CardData";
 function Home() {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    dispatch(getEventData(setLoading)); // Call API when component mounts
+    dispatch(getEventData(setLoading)); 
     dispatch(getUpcomingEventData(setLoading));
     dispatch(getFeaturedEventData(setLoading));
+    dispatch(getOrganizer(setLoading));
+    dispatch(getVenue(setLoading));
   }, [dispatch]);
 
   const heading = [];
   const store = useSelector((state) => state.eventReducer) || { eventData: [] };
   const data = store.eventData;
-  // console.log(store.eventData, "data....:");
 
   const store1 = useSelector((state) => state.upcomingEventReducer) || {
     upcomingEventData: [],
   };
   const data1 = store1.upcomingEventData;
-  // console.log(store.upcomingEventData, "data1....:");
 
   const store2 = useSelector((state) => state.featuredEventReducer) || {
     featuredEventData: [],
   };
   const data2 = store2.featuredEventData;
-  // console.log(store.featuredEventData, "data2....:");
-  // console.log(data2, "data2....:");
+  
+  const store3 = useSelector((state) => state.getOrganizerReducer) || {
+    organizerData: [],
+  };
+  const data3 = store3.organizerData;
+
+  const store4 = useSelector((state) => state.getVenueReducer) || {
+    venueData: [],
+  };
+  const data4 = store4.venueData;
+  const data5 = [...new Set(data4)];
 
   const [currentSlide, setCurrentSlide] = useState(2);
   const [isTransitioning, setIsTransitioning] = useState(true);
@@ -113,7 +127,6 @@ function Home() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // window.location.reload();
   }, []);
 
   if (loading) {
@@ -215,31 +228,17 @@ function Home() {
       ) : (
         setLoading(true)
       )}
-
-      <BestVenue />
-      {/* <EventGenre /> */}
-
-      {/* <NewExperience /> */}
-      <Artist />
-      <EventStepOrg
-        heading={"For Event Organiser"}
-        i1={<MdEvent />}
-        step1={"create Event"}
-        i2={<MdOutlineEventAvailable />}
-        step2={"Publish Event"}
-        i3={<GiPayMoney />}
-        step3={"Selling Event"}
-      />
-
-      <EventStepOrg
-        heading={"For Event Customer"}
-        i1={<MdEvent />}
-        step1={"Choose Event"}
-        i2={<LuTicketCheck />}
-        step2={"Get Ticket"}
-        i3={<FaPerson />}
-        step3={"Attend Event"}
-      />
+      {data3.length > 0 ? (
+        <CardData data={data3} heading={"ORGANIZERS"}/>
+      ) : (
+        setLoading(true)
+      )}
+      {data5.length > 0 ? (
+        <CardData data={data5} heading={"VENUES"}/>
+      ) : (
+        setLoading(true)
+      )} 
+     
     </div>
   );
 }

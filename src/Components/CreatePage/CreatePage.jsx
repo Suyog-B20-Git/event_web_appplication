@@ -71,9 +71,7 @@ function CreatePage() {
   ];
 
   const selectedCategory = watch("category");
-  // const selectedSubCategories = watch("subCategory") || [];
-  // const selectedCountry = watch("country");
-  // const selectedState = watch("state");
+  
   const place_id = watch("location");
 
   const subCategoryOptions = {
