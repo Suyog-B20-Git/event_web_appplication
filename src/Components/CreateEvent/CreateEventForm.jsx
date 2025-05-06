@@ -15,7 +15,11 @@ import { useForm, Controller } from "react-hook-form";
 import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
+import { postTicketData } from "../../redux/actions/master/Events/updateTicket";
 import { toast } from "react-toastify";
+const baseUrl = import.meta.env.VITE_API_URL;
+import axios from "axios";
+
 export default function EventForm() {
   const [tagInput, setTagInput] = useState("");
   const fileInputRef = useRef(null);
@@ -30,6 +34,26 @@ export default function EventForm() {
   const dispatch = useDispatch();
   const [youtubeLinks, setYoutubeLinks] = useState([""]); 
   const [performerFacebookLinks, setPerformerFacebookLinks] = useState([""]); 
+  const [showTicketForm, setShowTicketForm] = useState(false); 
+
+ const selectedRadio = localStorage.getItem("selectedRadio");
+ const [title, setTitle] = useState("");
+ const [price, setPrice] = useState("");
+ const [order, setOrder] = useState("");
+ const [totalTicketQuantity, setTotalTicketQuantity] = useState("");
+ const [limitPerCustomer, setLimitPerCustomer] = useState("");
+ const [description, setDescription] = useState("");
+ const [promoCodes, setPromoCodes] = useState("");
+ const [bookedSeats, setBookedSeats] = useState("");
+ const [saleStartDate, setSaleStartDate] = useState("");
+ const [saleEndDate, setSaleEndDate] = useState("");
+ const [salePrice, setSalePrice] = useState("");
+ const [isDonation, setIsDonation] = useState(false);
+ const [isSoldOut, setIsSoldOut] = useState(false);
+ const [isSale, setIsSale] = useState(false);
+ 
+
+
 
   // Fetch API data whenever `query` updates
   useEffect(() => {
@@ -184,22 +208,9 @@ export default function EventForm() {
       // ✅ Ensure `category` is always set
       if (parsedData.selectedEvent) {
         setValue("category", parsedData.selectedEvent);
-        console.log("Setting category:", parsedData.selectedEvent);
       }
     }
   }, [setValue]);
-
-  // const PinkSwitch = styled(Switch)(({ theme }) => ({
-  //   "& .MuiSwitch-switchBase.Mui-checked": {
-  //     color: "#ff2459",
-  //     "&:hover": {
-  //       backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
-  //     },
-  //   },
-  //   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-  //     backgroundColor: pink[600],
-  //   },
-  // }));
 
   // image input
   const [thumbnailImage, setThumbnailImage] = useState(null);
@@ -208,6 +219,7 @@ export default function EventForm() {
   const [thumnPreview, setThumnPreview] = useState(null);
   const [posterPreview, setPosterPreview] = useState(null);
   const [seatingChartPreview, setSeatingChartPreview] = useState(null);
+  
 
   const handleImagesChange1 = (e) => {
     const files = Array.from(e.target.files);
@@ -268,6 +280,8 @@ export default function EventForm() {
   const media = watch("media"); // Watching media state
   const enableRatingReview = watch("enableRatingReview"); // Watching media state
   const repetitiveType = watch("repetitiveType");
+ 
+
 
   useEffect(() => {
     if (watch("venue") || watch("facebookLink")) {
@@ -277,7 +291,7 @@ export default function EventForm() {
   
   useEffect(() => {
     if ((!watch("performers") || watch("performers").length === 0) &&
-        (!watch("performerFacebookLinks") || watch("performerFacebookLinks").every(link => !link.trim()))) {
+        (!watch("performerFacebookLinks") || watch("performerFacebookLinks"))) {
       setError("performers", { type: "manual", message: "Either Performers or Performers Facebook Link is required." });
       setError("performerFacebookLinks", { type: "manual", message: "Either Performers or Performers Facebook Link is required." });
     } else {
@@ -286,49 +300,14 @@ export default function EventForm() {
     }
   }, [watch("performers"), watch("performerFacebookLinks"), setError, clearErrors]);
   
-  const onSubmit = (data) => {
-    if (data.venue) {
-      formData.append("venue", data.venue);
-  } else if (data.facebookLink) {
-      formData.append("facebookLink", data.facebookLink);
-  }
-
-  if (data.performerFacebookLinks && data.performerFacebookLinks.length > 0 && data.performerFacebookLinks[0] !== "") {
-      formData.append("performerFacebookLinks", JSON.stringify(data.performerFacebookLinks));
-  }
-
-  
-    // if (!data.venue && !data.facebookLink) {
-    //   setError("venue", { type: "manual", message: "Either Venue or Facebook Link is required." });
-    //   setError("facebookLink", { type: "manual", message: "Either Venue or Facebook Link is required." });
-    //   return;
-    // } else {
-    //   clearErrors("venue");
-    //   clearErrors("facebookLink");
-    // }
-  
-
-    // if ((!data.performers || data.performers.length === 0) &&
-    // (!data.performerFacebookLinks || data.performerFacebookLinks.every(link => !link.trim()))) {
-    //   setError("performers", { type: "manual", message: "Either Performers or Performers Facebook Link is required." });
-    //   setError("performerFacebookLinks", { type: "manual", message: "Either Performers or Performers Facebook Link is required." });
-    //   return;
-    // }
-
-    // clearErrors("performers");
-    // clearErrors("performerFacebookLinks");
-
-    console.log(data);
-
-    // console.log(data.media.thumbnailImage);
-    const formData = new FormData();
-    
-    console.log("category", data.category);
-    console.log("eventTags", data.eventTags);
-
+ 
+  const onSubmit = (data) => { 
+    console.log("FORM DATA",data);
+    const formData = new FormData();    
+    const category = data.selectedEvent || data.category;
+    data.category = category;
     formData.append("name", data.name);
-    formData.append("category", data.category ? data.category : "");
-
+    formData.append("category", category);
     formData.append("eventUrl", data.eventUrl);
     formData.append("shortUrl", data.shortUrl);
     formData.append("excerpt", data.excerpt);
@@ -344,22 +323,15 @@ export default function EventForm() {
     formData.append("repeatExcept", data.repeatExcept);
     formData.append("performers", data.performers || []);
     formData.append("performerFacebookLinks", JSON.stringify(data.performerFacebookLinks));
-
-    formData.append(
-      "repeatStartTime",
-      data.repeatStartTime ? data.repeatStartTime : ""
-    );
+    formData.append("repeatStartTime", data.repeatStartTime ? data.repeatStartTime : "");
     formData.append("repeatEndTime", data.repeatEndTime);
     formData.append("facebookLink", data.facebookLink);
     formData.append("youtubeLink", data.youtubeLink);
     formData.append("startDate", `${data.startDate}T${data.startTime}`);
     formData.append("endDate", `${data.endDate}T${data.endTime}`);
     formData.append("description", data.description);
-    formData.append(
-      "offlinePaymentInstructions",
-      data.offlinePaymentInstructions
-    );
-    formData.append("eventTags", data.eventTag); // ✅ Fix key name
+    formData.append("offlinePaymentInstructions",data.offlinePaymentInstructions );
+    formData.append("eventTags", data.eventTag);
     formData.append("seo", JSON.stringify(data.seo));
 
     if (data.media?.thumbnailImage) {
@@ -371,84 +343,140 @@ export default function EventForm() {
     if (data.media?.seatingChartImage) {
       formData.append("seatingChartImage", data.media.seatingChartImage);
     }
-
-    // 🔹 Append Images Array (Multiple Images)
     if (data.media?.images?.length > 0) {
       data.media.images.forEach((image) => {
-        formData.append("images", image.file); // ✅ Correct field name
+        formData.append("images", image.file); 
       });
-    }
+    }   
 
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-    if (isLogin) {
-      dispatch(
-        createNewEvent(formData, thumbnailImage, posterImage, seatingChartImage)
-        // createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-        // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
-      );
+    const authToken = localStorage.getItem("authToken");
 
+    if(!isLogin || !authToken){
+      localStorage.setItem("eventData", JSON.stringify({...data}));
+      toast.error("Please log in to create an event.");
+      localStorage.setItem("redirectAfterLogin", "/submit-event");
+      navigate("/login?redirectTo=/submit-event");
+      return;
+    }
+    try{
+      dispatch(
+        createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
+      );
       reset();
       setThumnPreview(null);
       setPosterPreview(null);
       setSeatingChartPreview(null);
       localStorage.removeItem("eventData");
-      navigate("/home");
-    } else {
-      // navigate("/login");
+      navigate("/home");  
     }
+      catch (error) {
+        const errorMessage =
+          error?.response?.message ||
+          error?.message ||
+          "Something went wrong!";
+          console.log("Error:", errorMessage);
+        toast.error(errorMessage);
+      }
   };
+
+  useEffect(() => {
+    const savedData = localStorage.getItem("eventData");
+    if (savedData) {
+      reset(JSON.parse(savedData));
+      localStorage.removeItem("eventData");
+    }
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // const handleNextClick = handleSubmit(
-  //   (data) => {
-  //     console.log("Form data:", data);
-  //     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-  //     if (isLogin) {
-  //       dispatch(
-  //         createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-  //         // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
-  //       );
-
-  //       reset();
-  //       setThumnPreview(null);
-  //       setPosterPreview(null);
-  //       setSeatingChartPreview(null);
-  //       localStorage.removeItem("eventData");
-  //       navigate("/createTicket");
-  //     }
-  //   },
-  //   (errors) => {
-  //     toast.error("Please fill in all required fields.");
-  //   }
-  // );
-
-  const handleNextClick = handleSubmit(
-    async (data) => {
-      const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-      if (isLogin) {
-        try {
-          await dispatch(
-            createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-          );
   
-          reset();
-          setThumnPreview(null);
-          setPosterPreview(null);
-          setSeatingChartPreview(null);
-          localStorage.removeItem("eventData");
-          navigate("/create-ticket"); 
-        } catch (error) {
-          console.error("Event creation failed:", error);
-        }
-      }
-    },
-    (errors) => {
-      toast.error("Please fill in all required fields.");
+  const handleNextClick = handleSubmit(async (data) => {
+    const category = data.selectedEvent || data.category;
+    data.category = category;
+
+    localStorage.setItem("eventFormData", JSON.stringify(data));
+  
+    const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+    const token = localStorage.getItem("authToken");
+  
+    if (!isLogin || !token) {
+      localStorage.setItem("eventData", JSON.stringify({ ...data }));
+      toast.error("Please login to continue");
+      localStorage.setItem("redirectAfterLogin", "/submit-event");
+      navigate("/login?redirectTo=/submit-event");
+      return;
     }
-  );
+  
+    try {
+      const response = await dispatch(
+        createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
+      );
+      const eventId4 = response?.event._id;
+      localStorage.setItem("createdEventId", eventId4);
+      setShowTicketForm(true);
+    } catch (error) {
+      toast.error("Failed to create event.");
+      console.error(error);
+    }
+  });  
+  
+  const handleCreateTicket = async (e) => {
+    e.preventDefault();
+  
+    const event = localStorage.getItem("createdEventId");  
+    if (!event) {
+      toast.error("Event ID not found. Please create the event first.");
+      return;
+    }
+  
+    const promoCodeArray = promoCodes
+  .split(',')
+  .map(code => code.trim())
+  .filter(Boolean);
+
+  const bookedSeatArray = bookedSeats
+  .split(',')
+  .map(seat => parseInt(seat.trim(), 10))
+  .filter(n => !isNaN(n));
+
+    const ticketData = {
+      event,
+      title,
+      price: Number(price),
+      totalTicketQuantity: Number(totalTicketQuantity),
+      limitPerCustomer: Number(limitPerCustomer),
+      description,
+      promoCodes: promoCodeArray,
+      isSale: isSale,
+      salePrice: Number(salePrice),
+      saleStartDate: new Date(saleStartDate).toISOString(),
+      saleEndDate: new Date(saleEndDate).toISOString(),
+      soldOut: isSoldOut,
+      seatingPoints: [], 
+      bookedSeats: bookedSeatArray, 
+      noOfBookedSeats: bookedSeatArray.length,
+    };
+  
+    try {
+      const token = localStorage.getItem("authToken");
+      console.log("Ticket data to be sent:", ticketData);
+      const response = await axios.post(`${baseUrl}/api/ticketFormat`, ticketData, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+      console.log("API Response:", response.data);
+      toast.success("Ticket created successfully!");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Failed to create ticket.");
+      console.error("Ticket creation failed:", error);
+    }
+  };
+   
   
   return (
       <div className="lg:h-auto md:mb-0 pt-20 md:pt-0 lg:pt-4">
@@ -506,38 +534,6 @@ export default function EventForm() {
                 )}
               </div>
 
-              {/* select Category
-              <div className="mb-4">
-                <label
-                  htmlFor="category"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Select Category
-                </label>
-                <select
-                  id="state"
-                  name="state"
-                  className="mt-1 block w-full border rounded-md p-2"
-                  {...register("category", {
-                    required: "category is required",
-                  })}
-                >
-                  <option value="">Select Category</option>
-                  <option value="Music & concert">Music & concert</option>
-                  <option value="Business">Business</option>
-                  <option value="Fiteness & Yoga">Fiteness & Yoga</option>
-                  <option value="Travelling & Trekking">
-                    Travelling & Trekking
-                  </option>
-                  <option value="Sport & fitness">Sport & fitness</option>
-                  <option value="Education & Classes">
-                    Education & Classes
-                  </option>
-                  <option value="    Charity & Non-profit">
-                    Charity & Non-profit
-                  </option>
-                </select>
-              </div> */}
 
         <div className="flex items-center justify-center h-full mb-4 ">
           {/* Venue Field */}
@@ -759,7 +755,7 @@ export default function EventForm() {
                   htmlFor="excerpt"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Excerpt*
+                  Excerpt(Short Info)*
                 </label>
                 <input
                   type="text"
@@ -1179,7 +1175,7 @@ export default function EventForm() {
                   }}
                   className="border p-2 rounded w-full"
                 />
-                {media.thumbnailImage && (
+                {media?.thumbnailImage && (
                   <div className="mt-2 relative">
                     <img
                       src={thumnPreview}
@@ -1225,7 +1221,7 @@ export default function EventForm() {
                 className="border p-2 rounded w-full"
               />
 
-              {media.posterImage && (
+              {media?.posterImage && (
                 <div className="mt-2 relative">
                   <img src={posterPreview} alt="Poster Preview" className="w-16 h-16 object-cover rounded" />
                   <button
@@ -1269,7 +1265,7 @@ export default function EventForm() {
                   }}
                   className="border p-2 rounded w-full"
                 />
-                {media.seatingChartImage && (
+                {media?.seatingChartImage && (
                   <div className="mt-2 relative">
                     <img
                       src={seatingChartPreview}
@@ -1463,13 +1459,178 @@ export default function EventForm() {
                   <p>Disable Event after sold out</p>
                 </div>
               </div>
+
+            { showTicketForm && selectedRadio === "Tickets" && (
+              <form onSubmit={handleCreateTicket} 
+  className="w-full max-w-8xl px-1 sm:px-4 lg:px-8 xl:px-0 lg:ml-0 lg:mr-auto p-2 bg-gray-100 rounded-lg space-y-6"
+  >
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label className="block mb-1 font-medium">Title*</label>
+      <input
+        type="text"
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+        placeholder="Ticket Title"
+        required
+        className="w-full border border-gray-300 rounded-md px-4 py-2"
+      />
+    </div>
+
+    <div>
+      <label className="block mb-1 font-medium">Price*</label>
+      <input
+        type="number"
+        value={price}
+        onChange={e => setPrice(e.target.value)}
+        placeholder="Ticket Price"
+        required
+        className="w-full border border-gray-300 rounded-md px-4 py-2"
+      />
+    </div>
+
+    <div>
+      <label className="block mb-1 font-medium">Order*</label>
+      <input
+        type="text"
+        value={order}
+        onChange={e => setOrder(e.target.value)}
+        placeholder="Display Order"
+        required
+        className="w-full border border-gray-300 rounded-md px-4 py-2"
+      />
+    </div>
+
+    <div>
+      <label className="block mb-1 font-medium">Total Ticket Quantity*</label>
+      <input
+        type="number"
+        value={totalTicketQuantity}
+        onChange={e => setTotalTicketQuantity(e.target.value)}
+        placeholder="Total Quantity"
+        required
+        className="w-full border border-gray-300 rounded-md px-4 py-2"
+      />
+    </div>
+
+    <div>
+      <label className="block mb-1 font-medium">Limit Per Customer*</label>
+      <input
+        type="number"
+        value={limitPerCustomer}
+        onChange={e => setLimitPerCustomer(e.target.value)}
+        placeholder="Limit per customer"
+        className="w-full border border-gray-300 rounded-md px-4 py-2"
+      />
+    </div>
+
+    <div>
+      <label className="block mb-1 font-medium">Sale Price*</label>
+      <input
+        type="number"
+        value={salePrice}
+        onChange={e => setSalePrice(e.target.value)}
+        placeholder="Optional Sale Price"
+        className="w-full border border-gray-300 rounded-md px-4 py-2"
+      />
+    </div>
+
+    <div>
+      <label className="block mb-1 font-medium">Sale Start Date*</label>
+      <input
+        type="datetime-local"
+        value={saleStartDate}
+        onChange={e => setSaleStartDate(e.target.value)}
+        className="w-full border border-gray-300 rounded-md px-4 py-2"
+      />
+    </div>
+
+    <div>
+      <label className="block mb-1 font-medium">Sale End Date*</label>
+      <input
+        type="datetime-local"
+        value={saleEndDate}
+        onChange={e => setSaleEndDate(e.target.value)}
+        className="w-full border border-gray-300 rounded-md px-4 py-2"
+      />
+    </div>
+
+    <div>
+    <label className="block mb-1 font-medium">Promo Codes*</label>
+    <input
+      type="text"
+      value={promoCodes}
+      onChange={e => setPromoCodes(e.target.value)}
+      placeholder="Comma separated promo codes (e.g. VIP32,EARLYBIRD)"
+      className="w-full border border-gray-300 rounded-md px-4 py-2"
+    />
+  </div>
+
+  <div>
+    <label className="block mb-1 font-medium">Booked Seats*</label>
+    <input
+      type="text"
+      value={bookedSeats}
+      onChange={e => setBookedSeats(e.target.value)}
+      placeholder="Comma separated seat numbers (e.g. 1,2,3)"
+      className="w-full border border-gray-300 rounded-md px-4 py-2"
+    />
+  </div>
+
+  </div>
+
+  <div>
+    <label className="block mb-1 font-medium">Description*</label>
+    <textarea
+      value={description}
+      onChange={e => setDescription(e.target.value)}
+      placeholder="Enter ticket description"
+      rows={4}
+      required
+      className="w-full border border-gray-300 rounded-md px-4 py-2"
+    />
+  </div>
+
+  <div className="flex flex-wrap gap-6 items-center">
+    <label className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={isDonation}
+        onChange={e => setIsDonation(e.target.checked)}
+        className="accent-blue-500"
+      />
+      <span>Is Donation</span>
+    </label>
+
+    <label className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={isSoldOut}
+        onChange={e => setIsSoldOut(e.target.checked)}
+        className="accent-red-500"
+      />
+      <span>Is Sold Out</span>
+    </label>
+  </div>
+
+  <button
+    type="submit"
+    onClick={handleCreateTicket}
+    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+  >
+    Create Ticket
+  </button>
+</form>
+
+            )}
+               
               
               <div className="flex justify-around p-0">
                 <Button
                   text={"Previous"}
                   variant={"normal"}
                   rounded={"rounded-lg"}
-                  onClick={() => navigate("/createEvent")}
+                  onClick={() => navigate("/create-event")}
                 />
                 {ticketFormat ? (
                   <button

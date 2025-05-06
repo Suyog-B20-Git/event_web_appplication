@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import InputField from "../Components/InputField";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
 import Button from "../Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
@@ -15,16 +15,19 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 function Register() {
  
-  const [name, setName] = useState("");
+  const [username, setName] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [phoneNumber, setMobileNumber] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const redirectTo = searchParams.get("redirectTo") || "/home";
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
@@ -33,16 +36,16 @@ function Register() {
     e.preventDefault();
     setError("");
     setSuccess("");
-
+  
     try {
       if (password === confirmPassword) {
         const response = await axios.post(
           `${baseUrl}/api/auth/setup`,
           {
-            name,
+            username,
             email,
             password,
-            mobileNumber,
+            phoneNumber,
           },
           {
             headers: {
@@ -51,44 +54,49 @@ function Register() {
           }
         );
         console.log("REGISTER response", response);
-
-        if (response.status === 201) {
-          // setSuccess("Registration successful!");
+  
+        if (response.data.statusCode === 201) {
           toast.success("Registration successful!", {
             position: "top-right",
           });
           localStorage.setItem("authToken", response.data.token);
-
-          navigate("/home");
-
-          setName("");
-
+          localStorage.setItem("isLogin", JSON.stringify(true));
+          navigate(redirectTo);
+          setUsername("");
           setEmail("");
           setPassword("");
-          setMobileNumber("");
+          setPhoneNumber("");
         }
       } else {
-        toast.error("Wrong confirm password");
+        toast.error("Passwords do not match.");
       }
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
-        toast.error(err.response.data.message, {
-          position: "top-right",
-        });
-        console.log("REGISTER error", err.response.data.message);
-      } else {
-        if (err.response.data.errors) {
+      if (err.response) {
+        if (err.response.status === 409) {
+          toast.error(err.response.data.message || "User already exists.", {
+            position: "top-right",
+          });
+        } else if (err.response.data.errors) {
           const errors = err.response.data.errors;
           const errorMsg = errors.length > 0 ? errors.join(", ") : errors[0];
           errorMsg &&
             toast.error(errorMsg, {
               position: "top-right",
             });
+        } else {
+          toast.error("An unexpected error occurred.", {
+            position: "top-right",
+          });
         }
+      } else {
+        console.error("REGISTER error", err);
+        toast.error("Network error. Please try again later.", {
+          position: "top-right",
+        });
       }
     }
   };
-
+  
   return (
     <div className="flex sm:flex-col-reverse lg:h-[110vh] xl:h-[86vh] md:h-[64vh] lg:pt-1 md:pt-0 pt-20 flex-col md:flex-row      ">
       {/* Left Section */}
@@ -118,7 +126,7 @@ function Register() {
                 name={"username"}
                 width={"w-full"}
                 placeholder={"Enter your name"}
-                value={name}
+                value={username}
                 onChange={(e) => setName(e.target.value)}
               />
 
@@ -137,7 +145,7 @@ function Register() {
                 name={"mobileNumber"}
                 width={"w-full"}
                 placeholder={"Enter your mobile number"}
-                value={mobileNumber}
+                value={phoneNumber}
                 onChange={(e) => setMobileNumber(e.target.value)}
               />
               <InputField

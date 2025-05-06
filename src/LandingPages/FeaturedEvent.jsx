@@ -42,7 +42,11 @@ import "react-toastify/dist/ReactToastify.css";
 import { deleteFavouriteEvent } from "../redux/actions/master/Events/deleteFavouriteEvent";
 
 function FeaturedEvent() {
-  const { categoryname: urlCategory, slug: urlSlug, eventId: eventId } = useParams();
+  const {
+    categoryname: urlCategory,
+    slug: urlSlug,
+    eventId: eventId,
+  } = useParams();
   console.log("Event ID:", eventId);
   console.log("Category Name:", urlCategory);
   const navigate = useNavigate();
@@ -70,7 +74,7 @@ function FeaturedEvent() {
   const categoryname = urlCategory || receivedData?.category || "all-events";
   const slug = urlSlug || receivedData?.slug || "featured-event";
   const eventid = eventId || receivedData?._id || "null";
- console.log("eventIdddddddddd", eventid);
+  console.log("eventIdddddddddd", eventid);
   const store1 = useSelector((state) => state.getFavoriteEventReducer) || {
     favouriteEventData: [],
   };
@@ -323,9 +327,9 @@ function FeaturedEvent() {
               </p>
               <p></p>
               <p>
-                {" "}
-                {receivedData.venue?.city || "-"} -{" "}
-                {receivedData.venue?.country || "-"}
+                {receivedData.venue?.city && receivedData.venue?.country
+                  ? `${receivedData.venue.city} - ${receivedData.venue.country}`
+                  : receivedData.venue?.name || "-"}
               </p>
             </div>
           </div>
@@ -492,12 +496,12 @@ function FeaturedEvent() {
             {/* Organizer Image */}
             <div className="flex flex-col items-center w-full">
               <div className="h-20 w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
-                {receivedData.organizer?.name?.charAt(0) || ""}
+                {receivedData.organizer?.username?.charAt(0) || ""}
               </div>
 
               {/* Organizer Name */}
               <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                {receivedData.organizer?.name || "Organizer Name"}
+                {receivedData.organizer?.username || "Organizer Name"}
               </p>
 
               {/* Organizer Info */}

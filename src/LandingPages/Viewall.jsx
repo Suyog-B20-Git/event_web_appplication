@@ -58,7 +58,6 @@ const filterValue = value?.toLowerCase() || "";
   ];
   const [selectedOption, setSelectedOption] = useState("");
   const category = selectedOption.value ? selectedOption.value : "";
-
   const [price, setPrice] = useState("");
   const priceType = price.value;
   const [country, setCountry] = useState("");
@@ -95,7 +94,7 @@ const filterValue = value?.toLowerCase() || "";
     dispatch(
       getEventByFilter(
         setLoading,
-       filterValue,
+        category,
         priceType,
         searchEvent,
         countryFilter,
@@ -106,13 +105,13 @@ const filterValue = value?.toLowerCase() || "";
         currentPage
       )
     ); // Call API when component mounts
-  }, [dispatch, currentPage,filterValue]);
+  }, [dispatch, currentPage,category]);
 
   const handleApi = () => {
     dispatch(
       getEventByFilter(
         setLoading,
-        filterValue,
+        category,
         priceType,
         searchEvent,
         countryFilter,

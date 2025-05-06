@@ -1,6 +1,8 @@
 import React,{useState} from "react";
 import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import axios from "axios";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 function Footer() {
   const cities = [
@@ -15,38 +17,74 @@ function Footer() {
     "Pune",
   ];
 
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const handleSubscribe = async (e) => {
     e.preventDefault();
-
-    if (!email) return alert("Please enter an email address.");
-
-    // try {
-    //   const response = await fetch("/emailsubscribe", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ email }),
-    //   });
-
-    //   const data = await response.json();
-
-    //   if (response.ok) {
-    //     alert("Subscribed successfully!");
-    //     setEmail(""); 
-    //   } else {
-    //     alert(data.message || "Subscription failed.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error:", error);
-    //   alert("An error occurred while subscribing.");
-    // }
-
-    console.log("Passing the email", email);
-    alert(`You entered: ${email}`);
-    setEmail("");
+  
+    if (!email) {
+      alert("Please enter an email address.");
+      return;
+    }  
+    try {
+      const apiResponse = await axios.post(
+        `${baseUrl}/api/newsletter/subscribe`,
+        { email }       
+      );
+      if ( apiResponse.data.statusCode === 201) {
+        alert(apiResponse.data.message); 
+        setIsSubscribed(true);
+        setEmail("");
+      } else {
+        alert("Subscription failed.");
+      }
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 404) {
+          alert(error.response.data.message || "Email not found.");
+        } else {
+          alert(`Error: ${error.response.data.message || "An error occurred."}`);
+        }
+      } else {
+        console.error("Error during subscription:", error);
+        alert("An error occurred while subscribing.");
+      }
+    }
   };
+  
+  const handleUnsubscribe = async (e) => {
+    e.preventDefault();
+  
+    if (!email) {
+      alert("Please enter an email address.");
+      return;
+    }  
+    try {
+      const apiResponse = await axios.delete(`${baseUrl}/api/newsletter/unsubscribe`, {
+        params: { email }
+      });
+      if (apiResponse.data.statusCode === 200) {
+        alert(apiResponse.data.message);
+        setIsSubscribed(false);
+        setEmail("");
+      } else {
+        alert("Unsubscription failed.");
+      }
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 404) {
+          alert(error.response.data.message || "Email not found.");
+        } else {
+          alert(`Error: ${error.response.data.message || "An error occurred."}`);
+        }
+      } else {
+        console.error("Error during unsubscription:", error);
+        alert("An error occurred while unsubscribing.");
+      }
+    }
+  };
+  
+  
 
   return (
     <footer className="bg-gray-900 text-gray-300 ">
@@ -131,19 +169,32 @@ function Footer() {
               Don’t miss to subscribe to our new feeds, kindly fill the form
               below.
             </p>
-            <form className="flex items-center" onSubmit={handleSubscribe}>
-              <input
-                type="email"
-                placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 p-2 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-l-md focus:outline-none"
-              />
-              <button type="submit"
-              className="bg-[#ff2459] text-white px-4 md:px-2 lg:px-4 py-2 rounded-r-md" >
-                <i className="fab fa-telegram-plane"></i>Subscribe
-              </button>
-            </form>
+            <form className="flex items-center" onSubmit={isSubscribed ? handleUnsubscribe : handleSubscribe}>
+  <input
+    type="email"
+    placeholder="Email Address"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    className="flex-1 p-2 bg-gray-800 border border-gray-700 text-white placeholder-gray-500 rounded-l-md focus:outline-none"
+  />
+  <button
+    type="submit"
+    className={`bg-[#ff2459] text-white px-4 md:px-2 lg:px-4 py-2 rounded-r-md ${
+      isSubscribed ? 'bg-red-600' : 'bg-[#ff2459]'
+    }`}
+  >
+    {isSubscribed ? (
+      <>
+        <i className="fas fa-times-circle mr-2"></i>Unsubscribe
+      </>
+    ) : (
+      <>
+        <i className="fab fa-telegram-plane mr-2"></i>Subscribe
+      </>
+    )}
+  </button>
+</form>
+
           </div>
         </div>
       </div>

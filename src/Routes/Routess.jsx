@@ -34,21 +34,6 @@ function Routess() {
   return (
     <div>
       <Routes>
-
-        {/* <Route path="/" element={<Screen />}> */}
-        {/* <Route index element={<LandingPage />} />
-          <Route path="/landingPage" element={<LandingPage />} />
-          
-          <Route path="/createPage" element={<CreateProfile />} />
-          <Route path="/featuredEvent" element={<FeaturedEvent />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/eventComponent" element={<EventComponent />} />
-          <Route path="/Vanue" element={<Vanue />} />
-          <Route path="/myBooking" element={<MyBooking />} />
-          <Route path="/bookingDetails" element={<BookingDetails />} />
-           */}
-
-
         <Route path="/" element={<Index />}>
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
@@ -111,24 +96,11 @@ function Routess() {
           <Route path="/organizers/adventure" element={<GetOrganizer />} />
           <Route path="/organizers/event-planner" element={<GetOrganizer />} />
          
-          {/* <Route
-            path="/Organizer/:organizerId"
-            element={<GetOrganizerById />}
-          /> */}
-          {/* <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} /> 
-          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} /> */}
-
-
           <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} />
-          <Route
-            path="/city/:cityName/listing/organizers/:organizerName"
-            element={<GetOrganizerById />}
-          />
+          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />}          />
 
           <Route path="/Performer/:performerId" element={<GetPerformerById />} />
-
           <Route path="/Venue/:venueId" element={<GetVenueById />} />
-
           <Route path="/Service/:serviceId" element={<GetServiceById />} />
 
           <Route path="/city/events" element={<Viewall />} />

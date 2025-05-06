@@ -30,7 +30,6 @@ import { CgProfile } from "react-icons/cg";
 import gsap from "gsap";
 import axios from "axios";
 const baseUrl = import.meta.env.VITE_API_URL;
-console.log("baseUrl", baseUrl);
 
 const Header = () => {
   const navigate = useNavigate();
@@ -186,6 +185,32 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleProfileClick = async () => {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      console.error("No auth token found");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${baseUrl}/api/user`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+      if (response.data.status) {
+        localStorage.setItem("userProfile", JSON.stringify(response.data.data));
+        setIsLog(false);
+        navigate("/profile");
+      } else {
+        console.error("Failed to fetch user:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }
 
   const handleLogOut = () => {
     localStorage.removeItem("authToken");
@@ -627,10 +652,7 @@ const Header = () => {
                             </button>
                           )}
                           <button
-                            onClick={() => {
-                              setIsLog(false);
-                              navigate("/profile");
-                            }}
+                           onClick={handleProfileClick}
                             className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
                           >
                             <CgProfile className=" hover:text-white relative top-1" />
