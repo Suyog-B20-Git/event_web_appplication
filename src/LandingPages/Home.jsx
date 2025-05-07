@@ -48,6 +48,9 @@ import { getEventData } from "../redux/actions/master/Events/index";
 import { getUpcomingEventData } from "../redux/actions/master/Events/UpcomingEvent";
 import { getFeaturedEventData } from "../redux/actions/master/Events/FeaturedEvent";
 import Loading from "../Components/Loading";
+import CardData from "../Components/CardData";
+
+
 function Home() {
   const dispatch = useDispatch();
 
@@ -56,6 +59,9 @@ function Home() {
     dispatch(getEventData(setLoading)); // Call API when component mounts
     dispatch(getUpcomingEventData(setLoading));
     dispatch(getFeaturedEventData(setLoading));
+    dispatch(getOrganizer(setLoading));
+    dispatch(getVenue(setLoading));
+    // dispatch(loadHomeData());
   }, [dispatch]);
 
   const heading = [];
@@ -115,6 +121,11 @@ function Home() {
     window.scrollTo(0, 0);
     // window.location.reload();
   }, []);
+
+  // const [loadingCount, setLoadingCount] = useState(5);
+  // if (loadingCount > 0) {
+  //   return <Loading />;
+  // }
 
   if (loading) {
     return <Loading />;

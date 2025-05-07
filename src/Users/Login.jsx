@@ -245,6 +245,10 @@ import axios from "axios";
 import Photo from "./Photo";
 import { Auth } from "../redux/Urls";
 import { toast } from "react-toastify";
+
+
+const baseUrl = import.meta.env.VITE_API_URL;
+
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");

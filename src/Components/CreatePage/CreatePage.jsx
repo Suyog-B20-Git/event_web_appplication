@@ -18,8 +18,17 @@ import { Country, State, City } from "country-state-city";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Eye } from "lucide-react"; 
 import Modal from "react-modal";
+import FacebookEmbeded from "../SocialMedia/Facebook";
+import InstagramEmbed  from "../SocialMedia/Instagram";
+import YouTubeProfile from "../SocialMedia/Youtube";
+import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
+import SoundCloudEmbed from "../SocialMedia/Soundcloud";
+import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
+import { useNavigate } from "react-router-dom";
+
 
 function CreatePage() {
+  const navigate = useNavigate(); 
   const {
     control,
     handleSubmit,
@@ -272,19 +281,40 @@ function CreatePage() {
 
   console.log(image);
 
-  const onSubmit = (data) => {
-    // if (!captchaValue) {
-    //   toast.error("Please complete the reCAPTCHA verification.");
-    //   return;
-    // }
+  // const onSubmit = (data) => {
+  //   // if (!captchaValue) {
+  //   //   toast.error("Please complete the reCAPTCHA verification.");
+  //   //   return;
+  //   // }
 
-    if (!check) {
-      setError("You must accept the terms.");
-      return; // Prevent form submission
-    }
+  //   if (!check) {
+  //     setError("You must accept the terms.");
+  //     return; // Prevent form submission
+  //   }
   
-    setError(""); // Clear error if checkbox is checked
-  
+  //   setError(""); // Clear error if checkbox is checked
+
+
+    const onSubmit = async (data) => {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Please login first.");
+        localStorage.setItem("redirectAfterLogin", "/createPage");
+        navigate("/login");
+        return;
+      }
+
+      try {
+        
+          if (!check) {
+          setError("Please accept the terms.");
+          return;
+        }
+            
+        setError(""); // Clear checkbox errors
+        console.log("All checks passed. Submitting data:", data);
+
+
     const formData = new FormData();
     formData.append("profileImage", image); // Append file
 
@@ -295,9 +325,9 @@ function CreatePage() {
     formData.append("state", selectedState ? selectedState.label : "");
     formData.append("city", selectedCity ? selectedCity.label : "");
     
-    // formData.append("country", data.country);
-    // formData.append("state", data.state);
-    // formData.append("city", data.city);
+    formData.append("country", data.country);
+    formData.append("state", data.state);
+    formData.append("city", data.city);
     formData.append("location", data.location);
     formData.append("name", data.listingTitle);
     formData.append("description", data.listingDescription);
@@ -358,9 +388,15 @@ function CreatePage() {
 
     // reset();
     // setSelectedTags([])
-  };
+  } 
+catch (error) {
+  console.error("Submission failed:", error);
+  alert("An error occurred during submission.");
+}
+};
 
-  const onPreview = () => {
+
+    const onPreview = () => {
     const formValues = watch(); 
     setFormData({
       profileImage: formValues.Image, 

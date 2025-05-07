@@ -46,7 +46,7 @@ function Routess() {
            */}
         <Route path="/" element={<Index />}>
           <Route index element={<Home />} />
-          <Route path="home" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="viewAll" element={<Viewall />} />
           <Route path="/createEvent" element={<CreateEvent />} />
           <Route path="/createEvent1" element={<CreateEventForm />} />
@@ -88,8 +88,7 @@ function Routess() {
           <Route path="/createTicket" element={<CreateTicket />} />
         </Route>
 
-        {/* </Route> */}
-      </Routes>
+          </Routes>
     </div>
   );
 }
