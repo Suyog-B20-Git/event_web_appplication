@@ -18,7 +18,7 @@ function RecentView() {
   }, [dispatch]);
 
   const data = store.recentEventData;
-  console.log("recent data",data)
+  // console.log("recent data",data)
   // const card1 = [
   //   { img: "assets/staticAssets/fI1.png", desc: "MUSIC CONCERT AT UK| ALL GABHD..." },
   //   { img: "assets/staticAssets/fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },

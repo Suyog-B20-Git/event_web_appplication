@@ -19,7 +19,6 @@ import { getEventByFilter } from "../redux/actions/master/Events/getEventByFilte
 import { VscFilterFilled } from "react-icons/vsc";
 import Pagination from "../Components/Pagination";
 
-// Function to convert UTC to local time
 const convertUTCToLocal = (utcString) => {
   if (!utcString) return "Invalid Date";
   const date = new Date(utcString);
@@ -29,7 +28,8 @@ const convertUTCToLocal = (utcString) => {
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true, // Change to false if you prefer 24-hour format
+    hour12: true,
+    timeZone: "UTC",
   });
 };
 
@@ -528,7 +528,7 @@ const filterValue = value?.toLowerCase() || "";
               </div>
             ))
           ) : (
-            <div>No Date found</div>
+            <div>No Data found</div>
           )}
         </div>
         <div className="pb-3 ">

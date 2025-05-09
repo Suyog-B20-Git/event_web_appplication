@@ -4,7 +4,7 @@ import { FaWifi } from "react-icons/fa6";
 import { LuClock3 } from "react-icons/lu";
 import { MdEvent } from "react-icons/md";
 import Button from "../Button";
-
+import { useNavigate } from "react-router-dom";
 import { IoTimeOutline } from "react-icons/io5";
 import { BiSolidDrink } from "react-icons/bi";
 
@@ -124,28 +124,6 @@ const TicketForm = ({ type, price, onQuantityChange, addTicket }) => {
       </div>
 
       <div>
-        {/* {[...Array(quantity)].map((_, index) => (
-          <div key={index} className="mt-1">
-            <h4 className="text-sm font-medium">Attendee {index + 1}</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
-              <input
-                type="text"
-                placeholder="Name"
-                className="border rounded p-2 w-full text-sm"
-              />
-              <input
-                type="text"
-                placeholder="Phone"
-                className="border rounded p-2 w-full text-sm"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="border rounded p-2 w-full text-sm"
-              />
-            </div>
-          </div>
-        ))} */}
         {[...Array(formData.quantity)].map((_, index) => (
           <div key={index} className="mt-1">
             <h4 className="text-sm font-medium">Attendee {index + 1}</h4>
@@ -195,32 +173,33 @@ const TicketForm = ({ type, price, onQuantityChange, addTicket }) => {
     </div>
   );
 };
+
 import { useForm } from "react-hook-form";
-import "react-toastify/dist/ReactToastify.css"; // Import default styles
+import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
+const baseUrl = import.meta.env.VITE_API_URL;
+
 const MeditationForm = ({ data }) => {
+  const navigate = useNavigate();
+
+  const eventId = data._id;
   const modalRef = useRef(null);
 
   const { form, setForm, showTimer, setShowTimer, setLogin } =
     useContext(Context);
   const { addTicket, ticket } = useContext(Context);
-  console.log(ticket);
-  const [time, setTime] = useState(5 * 60); // 5 minutes in seconds
+  const [time, setTime] = useState(5 * 60);
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
     }, 1000);
 
-    // Clear the interval when the component unmounts
     return () => clearInterval(interval);
   }, []);
   // Calculate minutes and seconds
   const minutes = Math.floor(time / 60);
   const seconds = time % 60;
-  // const [login, setLogin] = useState(false);
-  // const [account, setAccount] = useState(false);
-  // const [guest, setGuest] = useState(true);
-  // const [showTimer, setShowTimer] = useState(false); // Track timer visibility
+
   const tickets = [
     { type: "Free", price: 0 },
     { type: "Early Bird", price: 10 },
@@ -229,81 +208,102 @@ const MeditationForm = ({ data }) => {
   ];
 
   const handleQuantityChange = (quantity) => {
-    // Show the timer if any ticket quantity is greater than 0
     setShowTimer(quantity > 0);
   };
 
   const {
-    register, // Registers inputs for validation
+    register,
     handleSubmit,
-    reset, // Handles form submission
-    formState: { errors }, // Contains form errors
+    reset,
+    formState: { errors },
   } = useForm();
-
-  // const [formData, setFormData] = useState(new FormData());
-
-  // const onSubmit = (data) => {
-  //   console.log("Form Data:", data);
-  //   const newFormData = new FormData();
-  //   newFormData.append("name", data.name);
-  //   newFormData.append("email", data.email);
-  //   newFormData.append("phoneNo", data.phone);
-  //   setFormData(newFormData); // Update state to persist data
-  // };
-
-  // const handleCheckout = () => {
-  //   if (formData.get("email") && formData.get("phoneNo")) {
-  //     setLogin(true);
-  //     setForm(false);
-  //     reset();
-  //   } else {
-  //     toast.error("Please enter customer details before proceeding!", {
-  //       position: "top-right",
-  //     });
-
-  //     if (modalRef.current) {
-  //       modalRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-  //     }
-  //   }
-  // };
 
   const formDataRef = useRef(new FormData());
 
-const onSubmit = (data) => {
-  console.log("Form Data:", data);
-  const newFormData = new FormData();
-  newFormData.append("name", data.name);
-  newFormData.append("email", data.email);
-  newFormData.append("phoneNo", data.phone);
+  const onSubmit = (data) => {
+    console.log("Form Data:", data);
+    const newFormData = new FormData();
+    newFormData.append("name", data.name);
+    newFormData.append("email", data.email);
+    newFormData.append("phoneNo", data.phone);
 
-  formDataRef.current = newFormData; // Directly update ref, no re-render issue
-};
+    formDataRef.current = newFormData;
+  };
 
-const handleCheckout = () => {
-  if (formDataRef.current.get("email") && formDataRef.current.get("phoneNo")) {
-    setLogin(true);
-    setForm(false);
-    reset();
-  } else {
-    toast.error("Please enter customer details before proceeding!", {
-      position: "top-right",
-    });
+  const handleCheckout = async () => {
+    const name = formDataRef.current.get("name");
+    const email = formDataRef.current.get("email");
+    const phone = formDataRef.current.get("phoneNo");
 
-    if (modalRef.current) {
-      modalRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (email && phone && name) {
+      const ticketPayload = {
+        event: eventId,
+        price: 0,
+        currency: "INR",
+        booking: [
+          {
+            ticketFormat: "67cc43c646bed332e54cd29a",
+            promocode: "FREE50",
+            bookedSeatNos: [1],
+            attendees: [
+              {
+                name: name,
+                email: email,
+                phoneNumber: "+91" + phone,
+              },
+            ],
+            bookedDate: new Date().toISOString(),
+          },
+        ],
+      };
+
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await fetch(`${baseUrl}/api/ticket`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify(ticketPayload),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log("Ticket created successfully:", data);
+          toast.success("Ticket booked successfully!");
+          navigate("/dashboard");
+          setLogin(true);
+          setForm(false);
+          reset();
+        } else {
+          toast.error(data.message || "Booking failed!");
+        }
+      } catch (error) {
+        console.error("Error during ticket creation:", error);
+        toast.error("Something went wrong. Please try again.");
+      }
+    } else {
+      toast.error("Please enter customer details before proceeding!", {
+        position: "top-right",
+      });
+
+      if (modalRef.current) {
+        modalRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
-  }
-};
+  };
 
   return (
     <div
       ref={modalRef}
-      className="lg:w-[50vw] overflow-y-auto mx-auto p-4 sm:p-0 pt-0 sm:px-6 mb-4 overflow-x-auto"
-      >
+      className="lg:w-[full] mt-[22%] lg:p-4 overflow-y-auto mx-1 sm:mx-2 p-0 md:p-0 sm:p-0 pt-0 sm:px-1 sm:mt-0 sm:w-auto mb-4 overflow-x-auto"
+    >
       <h1 className="text-2xl lg:text-3xl font-bold text-center mb-2 w-full">
-          {data.name}
-        </h1>     
-         <p className="text-center flex gap-1 text-gray-600 mb-2 justify-center">
+        {data.name}
+      </h1>
+      <p className="text-center flex gap-1 text-gray-600 mb-2 justify-center">
         <FaWifi className="relative top-1 text-[#ff2459]" /> Online |{" "}
         <MdEvent className="relative top-1 text-[#ff2459]" />
         {data.start} | <LuClock3 className="relative top-1 text-[#ff2459]" />
@@ -323,75 +323,80 @@ const handleCheckout = () => {
       )}
 
       <div>
-      <form onSubmit={handleSubmit(onSubmit)} className="p-0">
-  <h1 className="p-1 px-0 font-medium text-lg">Customer Details</h1>
+        <form onSubmit={handleSubmit(onSubmit)} className="p-0">
+          <h1 className="p-1 px-0 font-medium text-lg">Customer Details</h1>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border p-3 rounded-lg">
-    {/* Name Input */}
-    <div className="flex flex-col gap-1">
-      <label className="text-sm md:text-base">Name :</label>
-      <input
-        type="text"
-        className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
-        {...register("name", { required: "Name is required" })}
-      />
-      {errors.name && (
-        <p className="text-red-500 text-xs">{errors.name.message}*</p>
-      )}
-    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border p-3 rounded-lg">
+            {/* Name Input */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm md:text-base">Name :</label>
+              <input
+                type="text"
+                className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
+                {...register("name", { required: "Name is required" })}
+              />
+              {errors.name && (
+                <p className="text-red-500 text-xs">{errors.name.message}*</p>
+              )}
+            </div>
 
-    {/* Email Input */}
-    <div className="flex flex-col gap-1">
-      <label className="text-sm md:text-base">Email :</label>
-      <input
-        type="email"
-        className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
-        {...register("email", {
-          required: "Email is required",
-          pattern: {
-            value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-            message: "Invalid email format",
-          },
-        })}
-      />
-      {errors.email && (
-        <p className="text-red-500 text-xs">{errors.email.message}*</p>
-      )}
-    </div>
+            {/* Email Input */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm md:text-base">Email :</label>
+              <input
+                type="email"
+                className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                    message: "Invalid email format",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs">{errors.email.message}*</p>
+              )}
+            </div>
 
-    {/* Phone Number Input */}
-    <div className="flex flex-col gap-1">
-      <label className="text-sm md:text-base">Phone Number :</label>
-      <input
-        type="tel"
-        className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
-        {...register("phone", {
-          required: "Phone number is required",
-          pattern: {
-            value: /^[6-9]\d{9}$/,
-            message: "Invalid phone number (must be 10 digits)",
-          },
-          minLength: { value: 10, message: "Phone number must be 10 digits" },
-          maxLength: { value: 10, message: "Phone number must be 10 digits" },
-        })}
-      />
-      {errors.phone && (
-        <p className="text-red-500 text-xs">{errors.phone.message}*</p>
-      )}
-    </div>
-  </div>
+            {/* Phone Number Input */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm md:text-base">Phone Number :</label>
+              <input
+                type="tel"
+                className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
+                {...register("phone", {
+                  required: "Phone number is required",
+                  pattern: {
+                    value: /^[6-9]\d{9}$/,
+                    message: "Invalid phone number (must be 10 digits)",
+                  },
+                  minLength: {
+                    value: 10,
+                    message: "Phone number must be 10 digits",
+                  },
+                  maxLength: {
+                    value: 10,
+                    message: "Phone number must be 10 digits",
+                  },
+                })}
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-xs">{errors.phone.message}*</p>
+              )}
+            </div>
+          </div>
 
-  {/* Submit Button */}
-  <div className="pt-2 flex justify-center md:justify-end">
-    <button
-      type="submit"
-      className="bg-[#ff2459] text-white rounded px-2 py-1 text-xs font-semibold hover:bg-red-600 transition"
-    >
-      Save Data
-    </button>
-  </div>
-</form>
-
+          {/* Submit Button */}
+          <div className="pt-2 flex justify-center md:justify-end">
+            <button
+              type="submit"
+              className="bg-[#ff2459] text-white rounded px-2 py-1 text-xs font-semibold hover:bg-red-600 transition"
+            >
+              Save Data
+            </button>
+          </div>
+        </form>
       </div>
 
       <div className=" rounded-lg w-full">

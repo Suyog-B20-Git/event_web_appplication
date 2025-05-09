@@ -35,7 +35,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [location, setLocation] = useState(false);
   const [ShowPopup, setShowPopup] = useState(false);
-  const [userName, setUserName] = useState(""); // State to store the name from JWT
+  const [userName, setUserName] = useState(""); 
   const [refresh, setRefresh] = useState(0);
   const [suggestions, setSuggestions] = useState([]);
   const [searchResults, setSearchResults] = useState([]);

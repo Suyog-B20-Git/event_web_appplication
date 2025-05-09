@@ -27,6 +27,7 @@ import { MdDateRange, MdOutlineMailOutline } from "react-icons/md";
 import { PiBuildingApartmentFill } from "react-icons/pi";
 import OrganiserContact from "../Components/FeaturedEvent/OrganiserContact";
 import { useDispatch, useSelector } from "react-redux";
+import Collapsible from "react-collapsible";
 import {
   getEventById,
   getEventByCategoryAndSlug,
@@ -57,6 +58,8 @@ function FeaturedEvent() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
+  const [enquirySent, setEnquirySent] = useState(false);
 
   const store = useSelector((state) => state.getEventByIdReducer) || {
     eventData: [],
@@ -65,6 +68,8 @@ function FeaturedEvent() {
   console.log("Received Data from getEventByIdReducer:", receivedData);
   const phoneNumber = receivedData?.organizer?.phoneNumber?.trim();
   const hasPhoneNumber = phoneNumber !== "" && phoneNumber !== undefined;
+  const organizerEmail = receivedData?.organizer?.email?.trim();
+  console.log("Organizer Email from the FeaturedEvent page", organizerEmail);
   const togglePhone = () => {
     if (hasPhoneNumber) {
       setShowNumber((prev) => !prev);
@@ -87,26 +92,47 @@ function FeaturedEvent() {
   const isFavourite = favouriteEvent.some(
     (event) => event._id === receivedData?._id
   );
-  const checkFavourite = (id) => {
-    if (isFavourite) {
-      // toast.warning("Already added to favorites!", {
-      //   position: "top-right",
-      //   autoClose: 2000, // Closes after 2 seconds
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      //   theme: "colored",
-      // });
-      dispatch(deleteFavouriteEvent(id));
-      dispatch(getFavouriteEventData(setLoading));
 
-      // favouriteEvent=deletedFavouriteEvent;
+  const name = receivedData.name;
+  console.log("eventName", name);
 
-      // window.location.reload();
+  useEffect(() => {
+    setEnquirySent(false);
+
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    console.log("is Sent for", name, ":", sent);
+    if (sent === "true") {
+      setEnquirySent(true);
     }
+  }, [name]);
+
+  const handleEnquirySent = () => {
+    setEnquirySent(true);
+    setEnquiry(false);
   };
+
+  useEffect(() => {
+    setLocalIsFavorite(isFavourite);
+  }, [isFavourite]);
+
+  const toggleFavorite = (id) => {
+    if (localIsFavorite) {
+      setLocalIsFavorite(false); 
+      dispatch(deleteFavouriteEvent(id));
+    } else {
+      setLocalIsFavorite(true); 
+      dispatch(addFavouriteEvent(id));
+    }
+
+    dispatch(getFavouriteEventData(setLoading));
+  };
+
+  const handleGetTicketClick = () => {
+    navigate("/bookTicket", {
+      state: { data: receivedData },
+    });
+  };
+
 
   useEffect(() => {
     console.log("FeaturedEvent useEffect running with params:", {
@@ -143,15 +169,6 @@ function FeaturedEvent() {
     }
   }, [receivedData, navigate, id]);
 
-  const handleFavourite = (id) => {
-    if (isFavourite) {
-      return;
-    } else {
-      dispatch(addFavouriteEvent(id));
-      dispatch(getFavouriteEventData(setLoading));
-    }
-  };
-
   const [modal, setModal] = useState(false);
   // const [form, setForm] = useState(false);
   const {
@@ -187,7 +204,7 @@ function FeaturedEvent() {
     const formattedTime = date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, // Ensures 12-hour format
+      hour12: true, 
     });
     console.log("FormattedTime from the FeaturedEvent page", formattedTime);
     setDate(formattedDate);
@@ -195,12 +212,6 @@ function FeaturedEvent() {
   };
   console.log("Date & Time:", date, time);
   const venueData = receivedData.venue || {};
-
-  //   const loc = {
-  //     lat: receivedData?.venue?.googleSearchLat || 40.7127753,
-  //     lng: receivedData?.venue?.googleSearchLong || -74.0059728,
-  //   };
-  // console.log(loc, "location");
 
   const sectionRef = useRef(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -258,26 +269,31 @@ function FeaturedEvent() {
 
           <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
             <p
-              onClick={() => setEnquiry(!enquiry)}
-              className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
+              onClick={() => {
+                if (!enquirySent) {
+                  setEnquiry(!enquiry);
+                }
+              }}
+              className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
+                enquirySent
+                  ? "text-[#ff2459] cursor-not-allowed"
+                  : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+              }`}
             >
-              {" "}
-              <IoIosInformationCircleOutline className="text-lg " />
-              Send Enquiry
+              <IoIosInformationCircleOutline className="text-lg" />
+              {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
             </p>
 
             <button
-              onClick={() => {
-                handleFavourite(receivedData._id);
-                checkFavourite(receivedData._id);
-              }}
-              className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer ${
-                isFavourite ? "text-[#ff2459]" : "text-gray-900"
+              onClick={() => toggleFavorite(receivedData._id)}
+              className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer hover:text-[#ff2459] ${
+                localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
               }`}
             >
               <FaHeart className="text-lg" />
-              {isFavourite ? "Added to Favourites" : "Add To Favourite"}
+              {localIsFavorite ? "Added to Favourites" : "Add To Favourite"}
             </button>
+
             <p
               onClick={addToCalendar}
               className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
@@ -287,11 +303,11 @@ function FeaturedEvent() {
             </p>
 
             <div className="hidden md:hidden lg:flex gap-4">
-              <p className="flex gap-1 text-xs font-bold text-gray-900 cursor-pointer">
+              <p className="flex gap-1 text-xs font-bold text-gray-900 ">
                 <FaEye className="relative top-0.5 text-blue-600" />
                 <span>Total {receivedData.visits}</span>
               </p>
-              <p className="flex gap-1 text-xs font-bold text-gray-900 cursor-pointer">
+              <p className="flex gap-1 text-xs font-bold text-gray-900 ">
                 <FaEye className="relative top-0.5 text-blue-600" />
                 <span>Daily {receivedData.dailyVisits}</span>
               </p>
@@ -322,6 +338,7 @@ function FeaturedEvent() {
                       hour: "2-digit",
                       minute: "2-digit",
                       hour12: true,
+                      timeZone: "UTC",
                     })
                   : "--"}
               </p>
@@ -336,34 +353,9 @@ function FeaturedEvent() {
           <hr />
           <div className="pt-2 flex justify-between gap-2 lg:pt-3 md:p-2 px-3 mt-0 sm:mt-6">
             <p className="lg:text-xl text-base font-bold">$99 onwards </p>
-
-            {/* <button
-              onClick={() => {
-                setModal(true);
-                sectionRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "nearest",
-                });
-              }}
-              className="relative lg:text-lg text-xs overflow-hidden font-medium rounded-md p-2 px-4 bg-[#ff2459] hover:text-black  text-white   transition-all duration-300 before:absolute before:top-0 before:left-0 before:w-0 before:h-full before:bg-pink-400 hover:before:w-full before:transition-all before:duration-300"
-              // className="lg:text-lg text-xs bg-[#ff2459] text-white font-medium rounded-md p-2 px-4"
-            >
-              Get Ticket
-            </button> */}
             <button
-              // onClick={() => {
-              //   if (receivedData.isRepetitive) {
-              //     setModal(true);
-              //     sectionRef.current?.scrollIntoView({
-              //       behavior: "smooth",
-              //       block: "nearest",
-              //     });
-              //   } else {
-              //     setForm(!form);
-              //   }
-              // }}
               onClick={() => {
-                setModal(true); // Ensure the form is open
+                setModal(true); 
                 sectionRef.current?.scrollIntoView({
                   behavior: "smooth",
                   block: "nearest",
@@ -376,53 +368,6 @@ function FeaturedEvent() {
               <p className="relative">Get Ticket</p>
             </button>
           </div>
-          {/* <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
-
-            <div className="flex items-center  space-x-3">
-              <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-5 h-5 text-gray-600"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17 20h5v-2a4 4 0 00-5-4M9 20H4v-2a4 4 0 015-4m9-7a4 4 0 11-8 0 4 4 0 018 0zM12 11a9 9 0 00-9 9v2h18v-2a9 9 0 00-9-9z"
-                  />
-                </svg>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-800">
-                  Invite your friends
-                </h3>
-                <p className="text-xs text-gray-500">
-                  and enjoy a shared experience
-                </p>
-              </div>
-            </div>
-
-            <button className="flex items-center justify-center w-8 h-8 text-gray-400 transition hover:text-gray-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="w-5 h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div> */}
         </div>
       </div>
 
@@ -432,6 +377,7 @@ function FeaturedEvent() {
             <EventHeading
               heading={receivedData.name}
               by={receivedData.name}
+              category={receivedData.category}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
             />
@@ -451,7 +397,11 @@ function FeaturedEvent() {
               </p>
               <hr />
               <div className="space-y-4">
-                <div onClick={() => setForm(!form)}>
+                <div onClick={() => {
+                  setForm(!form),
+                  handleGetTicketClick()
+                }
+              }>
                   {receivedData ? (
                     <GetTicket
                       start={new Date(receivedData.startDate).toLocaleString()}
@@ -490,53 +440,70 @@ function FeaturedEvent() {
           <div className="p-4 flex flex-col items-center w-full border rounded-xl">
             {/* Title */}
             <h1 className="text-xl font-semibold text-left px-6 pb-3 lg:pb-5">
-              Organiser
+              Organizer
             </h1>
 
             {/* Organizer Image */}
-            <div className="flex flex-col items-center w-full">
-              <div className="h-20 w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
-                {receivedData.organizer?.username?.charAt(0) || ""}
-              </div>
+            <Collapsible
+              trigger={
+                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
+                  View Organizer Details
+                </div>
+              }
+              triggerWhenOpen={
+                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
+                  Hide Organizer Details
+                </div>
+              }
+              className=""
+            >
+              {" "}
+              <div className="flex flex-col items-center w-full">
+                <div className="h-20 w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
+                  {receivedData.organizer?.username?.charAt(0) || ""}
+                </div>
 
-              {/* Organizer Name */}
-              <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                {receivedData.organizer?.username || "Organizer Name"}
-              </p>
-
-              {/* Organizer Info */}
-              <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-2 gap-2 pt-4 text-center">
-                <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
-                  <PiBuildingApartmentFill className="text-lg" />
-                  {receivedData.venue?.city || "-"},{" "}
-                  {receivedData.venue?.country || "-"}
+                {/* Organizer Name */}
+                <p className="font-semibold lg:text-base text-sm pt-2 text-center">
+                  {receivedData.organizer?.username || "Organizer Name"}
                 </p>
-                <p
-                  className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1 cursor-pointer"
-                  onClick={togglePhone}
+
+                {/* Organizer Info */}
+                <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-2 gap-2 pt-4 text-center">
+                  <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
+                    <PiBuildingApartmentFill className="text-lg" />
+                    {receivedData.venue?.city || "-"},{" "}
+                    {receivedData.venue?.country || "-"}
+                  </p>
+                  <p
+                    className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1 cursor-pointer"
+                    onClick={togglePhone}
+                  >
+                    <FaPhoneAlt className="text-lg" />
+                    {hasPhoneNumber
+                      ? showNumber
+                        ? phoneNumber
+                        : "View Contact"
+                      : "Not available"}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm md:text-xs lg:text-xs whitespace-nowrap">
+                    <MdOutlineMailOutline className="text-base min-w-[1rem]" />
+                    <span>
+                      {receivedData.organizer?.email || "Not available"}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Contact Organizer Button */}
+                <button
+                  onClick={() => setIsFormOpen(true)}
+                  className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
                 >
-                  <FaPhoneAlt className="text-lg" />
-                  {hasPhoneNumber
-                    ? showNumber
-                      ? phoneNumber
-                      : "View Contact"
-                    : "Not available"}
-                </p>
-                <p className="flex items-center  lg:text-xs md:text-xs text-sm gap-1">
-                  <MdOutlineMailOutline className="text-lg" />
-                  {receivedData.organizer?.email || "Not available"}
-                </p>
+                  <IoIosContact className="text-xl" />
+                  Contact Organizer
+                </button>
               </div>
-
-              {/* Contact Organizer Button */}
-              <button
-                onClick={() => setIsFormOpen(true)}
-                className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
-              >
-                <IoIosContact className="text-xl" />
-                Contact Organizer
-              </button>
-            </div>
+            </Collapsible>
           </div>
 
           <div className="border-2 rounded-xl p-2 flex flex-col items-center">
@@ -546,9 +513,9 @@ function FeaturedEvent() {
             </p>
             {/* <p className="text-gray-400 ">Goa, india</p> */}
           </div>
-          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2 items-center">
-            <p className="text-gray-400">Page visited By </p>
-            <p className="font-semibold">{receivedData.dailyVisits} Times</p>
+          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2  items-center">
+            <p className="text-gray-400 ml-2">Page visited By </p>
+            <p className="font-semibold ml-2">{receivedData.dailyVisits} Times</p>
           </div>
         </div>
       </div>
@@ -591,7 +558,7 @@ function FeaturedEvent() {
         </div>
       )}
       {/*show Meditation Form */}
-      {form && (
+      {/* {form && (
         <div className="w-[45%] ">
           <div className="fixed w-full backdrop-blur-md bg-black/50  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 py-4 ">
             <div className="bg-white p-1 rounded-lg   shadow-lg  lg:w-[full]">
@@ -607,7 +574,7 @@ function FeaturedEvent() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
       {login && (
         <div className="fixed w-full lg:h-[120vh] pt-[40px] p-10  h-[100vh]  inset-0 flex flex-col items-center justify-center z-70 bg-white/30 overflow-x-hidden">
           <div className="bg-white p-6 rounded-lg shadow-lg  overflow-y-scroll scrollbar-hide  lg:w-[full] w-[max-content]">
@@ -682,7 +649,9 @@ function FeaturedEvent() {
       {enquiry && (
         <EnquiryForm
           setEnquiry={setEnquiry}
+          onEnquirySent={handleEnquirySent}
           name={receivedData.name}
+          email={organizerEmail}
           enquiry={enquiry}
         />
       )}

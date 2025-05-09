@@ -65,6 +65,10 @@ const redirectTo =
     setIsPasswordVisible(!isPasswordVisible);
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${baseUrl}/api/auth/google`;
+  };
+
   return (
     <div className="flex sm:flex-col-reverse flex-col md:flex-row lg:h-[75vh] md:h-max   ">
       {/* Left Section */}
@@ -149,6 +153,7 @@ const redirectTo =
                   <ImGoogle
                     className=" text-3xl p-1 rounded-md"
                     style={{ color: "white", backgroundColor: "#FF2459" }}
+                    onClick={handleGoogleLogin}
                   />
                 </Link>
                 <Link>

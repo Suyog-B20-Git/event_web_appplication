@@ -24,6 +24,7 @@ import YouTubeProfile from "../SocialMedia/Youtube";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
+import { useNavigate } from "react-router-dom";
 
 function CreatePage() {
   const {
@@ -43,7 +44,7 @@ function CreatePage() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   // const [formData, setFormData] = useState({});
   const [activeTab, setActiveTab] = useState("About");
-  
+  const navigate = useNavigate();
   const handleTagChange = (selectedOptions) => {
     const newTags = selectedOptions
       ? selectedOptions.map((option) => option.value)
@@ -284,6 +285,15 @@ const handleSoundCloudChange = (e) => {
     //   return;
     // }
 
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      alert("Please login first.");
+      localStorage.setItem("redirectAfterLogin", "/create-page");
+      navigate("/login");
+      return;
+    }
+    try {
+
     if (!check) {
       setError("You must accept the terms.");
       return; // Prevent form submission
@@ -364,6 +374,11 @@ const handleSoundCloudChange = (e) => {
 
     // reset();
     // setSelectedTags([])
+    }
+  catch (error) {
+    console.error("Submission failed:", error);
+    alert("An error occurred during submission.");
+  }
   };
 
   const onPreview = () => {
@@ -1136,7 +1151,7 @@ const handleSoundCloudChange = (e) => {
         </div>
 
         <div className="border p-2 flex flex-col gap-1">
-          <input type="file" onChange={handleImageChange} accept="image/*" />
+          <input type="file" onChange={handleImageChange} accept="image/*" required />
         </div>
         {imageError && <p className="text-red-500">{imageError}</p>}
 

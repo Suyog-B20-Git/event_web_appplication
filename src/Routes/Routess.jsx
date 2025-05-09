@@ -29,6 +29,9 @@ import Profile from "../Components/Profile";
 import MybookingDetail from "../Components/MybookingDetail";
 import CreateTicket from "../Components/CreateEvent/CreateTicket";
 import SearchData from "../Components/SearchData";
+import OAuthSuccess from "../Users/OAuthSuccess";
+import OAuthFailure from "../Users/OAuthFailure";
+import BookTicket from "../LandingPages/BookTicket";
 
 function Routess() {
   return (
@@ -95,6 +98,8 @@ function Routess() {
           <Route path="/organizers/wedding-planner" element={<GetOrganizer />}   />
           <Route path="/organizers/adventure" element={<GetOrganizer />} />
           <Route path="/organizers/event-planner" element={<GetOrganizer />} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
+          <Route path="/oauth-failure" element={<OAuthFailure />} />
          
           <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} />
           <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />}          />
@@ -108,6 +113,7 @@ function Routess() {
           <Route path="/events/:categoryname/:eventId" element={<FeaturedEvent />} />
           <Route path="/city/location" element={<SearchData />} />
           <Route path='event/:eventId' element={<FeaturedEvent />} />
+          <Route path="/bookTicket" element={<BookTicket/>} />
 
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
