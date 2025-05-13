@@ -28,7 +28,10 @@ export const Performer = {
   getPerformer: `${baseUrl}performer/suggestions`,
   postPerformer:`${baseUrl}performer`,
   getPerformerByFilter:`${baseUrl}performer/filter`,
-  postFavouritePerformer:`${baseUrl}performer/favorites`
+  postFavouritePerformer:`${baseUrl}performer/favorites`,
+  getFavouritePerformer:`${baseUrl}performer/favorites`,
+  deleteFavouritePerformer:`${baseUrl}performer/favorites`,
+
 };
 
 export const Organizer={

@@ -2,18 +2,18 @@ import { Axios } from "axios";
 import { axiosInstance } from "../../../../../utility/utils";
 import { toast } from "react-toastify";
 import { Zoom } from "react-toastify";
-import { Organizer } from "../../../Urls";
+import { Performer } from "../../../Urls";
 
-export const removeFavouriteOrganizer = (organizerId) => {
-  console.log("Removing organizer from favourites:", organizerId);
+export const deleteFavouritePerformer = (performerId) => {
+  console.log("Removing performer from favourites:", performerId);
   const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   return (dispatch) => {
     dispatch({ type: "REMOVE_FAVOURITE" });
 
     axiosInstance
-      .delete(Organizer.deleteFavouriteOrganizer, {
-        data: { organizerId: organizerId },
+      .delete(Performer.deleteFavouritePerformer, {
+        data: { performerId: performerId },
       })
       .then((response) => {
         const resData = response.data;
@@ -34,7 +34,7 @@ export const removeFavouriteOrganizer = (organizerId) => {
           if (isLogin) {
             dispatch({
               type: "REMOVE_FAVOURITE_SUCCESS",
-              payload: organizerId,
+              payload: performerId,
             });
           } else {
             toast.error("Login first!!!", {

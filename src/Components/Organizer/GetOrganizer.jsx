@@ -11,7 +11,7 @@ import {
   FaInstagram,
   FaSquareFacebook,
   FaSquareXTwitter,
-  FaWhatsapp
+  FaWhatsapp,
 } from "react-icons/fa6";
 import Select from "react-select";
 import { IoLogoWhatsapp, IoStarSharp } from "react-icons/io5";
@@ -21,6 +21,7 @@ import { CalendarCheck } from "lucide-react";
 import Pagination from "../Pagination";
 import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
 import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
+import { removeFavouriteOrganizer } from "../../redux/actions/master/Organizer/removeFavouriteOrganizer";
 import { toast } from "react-toastify";
 
 function GetOrganizer() {
@@ -28,6 +29,8 @@ function GetOrganizer() {
   const location = useLocation();
   const value = location.state;
   const filterValue = value ? value.toLowerCase() : "";
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
+
   {
     /*header*/
   }
@@ -97,50 +100,30 @@ function GetOrganizer() {
 
   const data1 = store.organizerData;
   const data = [...new Set(data1)];
-  // console.log(data, "OragnizerData....");
-  
+
   const store1 = useSelector((state) => state.getFavoriteOrganizerReducer) || {
     favouriteOrganizerData: [],
   };
-  const favouriteOragnizer = store1.favouriteOrganizerData;
+  const favouriteOrganizer = store1.favouriteOrganizerData;
 
-  // const isFavourite = favouriteOragnizer.some((event) => event._id === oId);
-  const isFavourite = (id) => {
-    return favouriteOragnizer.some((fav) => fav._id === id);
+  const isFavoriteOrganizer = (id) => {
+    return favouriteOrganizer.some((fav) => fav._id === id);
   };
-  useEffect(() => {
-    dispatch(getFavouriteOrganizerData(setLoading)); // Fetch favorites on mount
-  }, [dispatch]);
 
-  useEffect(() => {
-    favouriteOragnizer.forEach((item) => {
-      isFavourite(item._id);
-    });
-  }, [favouriteOragnizer]); // Add dependency to re-run when favorite data updates
-
-  const checkFavourite = (id) => {
-    if (favouriteOragnizer.some((fav) => fav._id === id)) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    }
-  };
-  const handleFavourite = (id) => {
-    if (isFavourite(id)) {
-      return;
+  const toggleFavorite = (id) => {
+    if (isFavoriteOrganizer(id)) {
+      dispatch(removeFavouriteOrganizer(id));
+      dispatch(getFavouriteOrganizerData(setLoading));
     } else {
       dispatch(postFavouriteOrganizer(id));
-
       dispatch(getFavouriteOrganizerData(setLoading));
     }
+    dispatch(getFavouriteOrganizerData(setLoading));
   };
+
+  useEffect(() => {
+    dispatch(getFavouriteOrganizerData(setLoading));
+  }, [dispatch]);
 
   const currentUrl = window.location.href;
   const shareUrls = {
@@ -302,10 +285,10 @@ function GetOrganizer() {
                   }}
                   // onClick={() => {
                   //   navigate(`/city/${item.city}/listing/organizers/${item.name}`, {
-                  //     state: item,c  
+                  //     state: item,c
                   //   });
                   // }}
-                  
+
                   className="h-40 md:h-36 lg:h-40 w-full overflow-hidden"
                 >
                   <img
@@ -351,11 +334,12 @@ function GetOrganizer() {
                     </button>
                     <button
                       onClick={() => {
-                        handleFavourite(item._id);
-                        checkFavourite(item._id);
+                        toggleFavorite(item._id);
                       }}
                       className={`flex gap-1 text-xs font-bold cursor-pointer ${
-                        isFavourite(item._id) ? "text-[#ff2459]" : "text-gray-200"
+                        isFavoriteOrganizer(item._id)
+                          ? "text-red-500"
+                          : "text-gray-200"
                       }`}
                     >
                       <FaHeart className="text-lg" />
@@ -389,7 +373,7 @@ function GetOrganizer() {
         </div>
       </div>
       <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
-      <div className="flex flex-col gap-2 px-2 shadow-md p-4">
+        <div className="flex flex-col gap-2 px-2 shadow-md p-4">
           <div className="grid grid-cols-3 gap-2 text-xl">
             <button
               onClick={() => handleShare("facebook")}
@@ -427,8 +411,8 @@ function GetOrganizer() {
               Organizer Category
             </h1>
             <section className="flex flex-col gap-2 p-3 justify-center items-center">
-            <div className="flex gap-2 flex-wrap justify-center">
-            <div
+              <div className="flex gap-2 flex-wrap justify-center">
+                <div
                   onClick={() => {
                     setCategory("event planner");
                   }}
@@ -490,112 +474,3 @@ function GetOrganizer() {
 }
 
 export default GetOrganizer;
-
-// import React, { useEffect, useRef, useState, useCallback } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { getOrganizer } from "../../redux/actions/master/Organizer/getOrganiser";
-// import Loading from "../Loading";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import { FcLike } from "react-icons/fc";
-// import { CiFacebook } from "react-icons/ci";
-// import {
-//   FaInstagram,
-//   FaSquareXTwitter,
-// } from "react-icons/fa6";
-
-// function GetOrganizer() {
-//   const [category, setCategory] = useState("");
-//   const location = useLocation();
-//   const category1 = location.state;
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-//   const [loading, setLoading] = useState(false);
-//   const [pageNo, setPageNo] = useState(1);
-
-//   useEffect(() => {
-//     dispatch(
-//       getOrganizer(setLoading, "", pageNo, category1 || category || "")
-//     );
-//   }, [dispatch, pageNo, category1, category]);
-
-//   const store = useSelector((state) => state.getOrganizerReducer) || {
-//     organizerData: [],
-//   };
-//   const data = [...new Set(store.organizerData)];
-//   console.log(data, "OrganizerData....");
-
-//   const observerRef = useRef();
-
-//   // Intersection Observer with proper clean-up
-//   const lastElementRef = useCallback(
-//     (node) => {
-//       if (loading) return;
-
-//       if (observerRef.current) observerRef.current.disconnect();
-
-//       observerRef.current = new IntersectionObserver(
-//         (entries) => {
-//           if (entries[0].isIntersecting) {
-//             setPageNo((prevPage) => prevPage + 1);
-//           }
-//         },
-//         { rootMargin: "330px" } // Adjusting for footer height
-//       );
-
-//       if (node) observerRef.current.observe(node);
-//     },
-//     [loading]
-//   );
-
-//   if (loading && pageNo === 1) {
-//     return <Loading />;
-//   }
-
-//   return (
-//     <div className="flex lg:flex-row flex-col gap-2 lg:pt-0 md:pt-0 pt-20">
-//       <div className="p-2 lg:w-[75%] w-full">
-//         <div className="grid lg:grid-cols-3 md:grid-cols-3 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
-//           {data.map((item, index) => (
-//             <div
-//               key={index}
-//               className="flex flex-col pb-5 shadow-md rounded border"
-//               onClick={() => navigate("/getOrganizerById", { state: item._id })}
-//             >
-//               <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
-//                 <img
-//                   src={item.profileImage}
-//                   className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
-//                   alt={item.name}
-//                 />
-//               </div>
-//               <div className="p-2">
-//                 <h1 className="font-medium text-lg capitalize">{item.name}</h1>
-//                 <section className="text-sm text-gray-500">
-//                   {item.address}, {item.city}, {item.state}
-//                 </section>
-//               </div>
-//               <div className="flex justify-between">
-//                 <p className="flex gap-2 p-1 px-3 text-lg">
-//                   <a href={item.facebookUrl || "#"}>
-//                     {item.facebookUrl && <CiFacebook className="text-red-500" />}
-//                   </a>
-//                   <a href={item.instagramUrl || "#"}>
-//                     {item.instagramUrl && <FaInstagram className="text-red-500" />}
-//                   </a>
-//                   <FcLike />
-//                   <a href={item.twitterUrl || "#"}>
-//                     {item.twitterUrl && <FaSquareXTwitter className="text-red-500" />}
-//                   </a>
-//                 </p>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//         {/* Infinite Scroll Trigger */}
-//         <div ref={lastElementRef} className="h-10"></div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default GetOrganizer;

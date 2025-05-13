@@ -43,6 +43,7 @@ import OrganizerStats from "../SocialMedia/OrganizerStat";
 import { toast } from "react-toastify";
 import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
 import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
+import { removeFavouriteOrganizer } from "../../redux/actions/master/Organizer/removeFavouriteOrganizer";
 import {
   getUpcomingEventData,
   getUpcomingEventsDataForProfile,
@@ -64,8 +65,9 @@ function GetOrganizerById() {
   const [youtube, setYoutube] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  // const organizerId = location.state;
-  console.log(organizerId);
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
+  const [enquirySent, setEnquirySent] = useState(false);
+  // console.log(organizerId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
@@ -105,46 +107,52 @@ function GetOrganizerById() {
 
   const data = store.organizerData;
   console.log(data, "OrganizerData....");
+  const organizerEmail = data?.email;
+  console.log(organizerEmail, "Organizer Email");
   const store1 = useSelector((state) => state.getFavoriteOrganizerReducer) || {
     favouriteOrganizerData: [],
   };
   const favouriteOrganizer = store1.favouriteOrganizerData;
-  const isFavourite = (id) => {
-    return favouriteOrganizer.some((fav) => fav._id === id);
-  };
-  useEffect(() => {
-    dispatch(getFavouriteOrganizerData(setLoading)); // Fetch favorites on mount
-  }, [dispatch]);
+
+  const isFavourite = favouriteOrganizer.some((fav) => fav._id === data._id);
 
   const togglePhoneVisibility = () => {
     setShowNumber((prev) => !prev);
   };
   const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
 
-  const checkFavourite = (id) => {
-    if (favouriteOrganizer.some((fav) => fav._id === id)) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+  const name = data.name;
+  console.log("Organizer Name:", name);
+
+  useEffect(() => {
+    setEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    console.log("is Sent for", name, ":", sent);
+    if (sent === "true") {
+      setEnquirySent(true);
     }
+  }, [name]);
+
+  const handleEnquirySent = () => {
+    setEnquirySent(true);
+    setEnquiry(false);
   };
 
-  const handleFavourite = (id) => {
-    if (isFavourite(id)) {
-      return;
+  useEffect(() => {
+    setLocalIsFavorite(isFavourite);
+  }, [isFavourite]);
+
+  const toggleFavorite = (id) => {
+    if (localIsFavorite) {
+      setLocalIsFavorite(false);
+      dispatch(removeFavouriteOrganizer(id));
     } else {
+      setLocalIsFavorite(true);
       dispatch(postFavouriteOrganizer(id));
-      console.log(id, "fav id");
-      dispatch(getFavouriteOrganizerData(setLoading));
     }
+    dispatch(getFavouriteOrganizerData(setLoading));
   };
+
   const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
@@ -212,12 +220,12 @@ function GetOrganizerById() {
               <FaEye className="relative top-1" />
               {data.visits} , {data.dailyVisits} visites today
             </p> */}
-            <div className="lg:flex hidden gap-1 pt-3 p-3 pb-0">
-              <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
+            <div className="lg:flex hidden gap-2 pt-3 p-3 pb-0 cursor-default">
+              <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 ">
                 <FaEye className="relative top-0.5 text-blue-600" />
-                <span>Total {data.visits} </span>
+                <span>Total {data.visits}</span>
               </p>
-              <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
+              <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 ">
                 <FaEye className="relative top-0.5 text-blue-600" />
                 <span>Daily {data.dailyVisits} </span>
               </p>
@@ -246,7 +254,7 @@ function GetOrganizerById() {
                 </button>
               </div>
               <p className="text-sm lg:block hidden">
-                {data.visits} , {data.dailyVisits} visits today
+                Total {data.visits} , {data.dailyVisits} visits today
               </p>
             </div>
             <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">
@@ -257,7 +265,7 @@ function GetOrganizerById() {
                 />
               </p>
               <p>
-                {data.city},{data.state},{data.country}
+                {data.city}, {data.state}, {data.country}
               </p>
             </div>
             <div
@@ -288,25 +296,26 @@ function GetOrganizerById() {
                   Claim Ownership
                 </p>
                 <p
-                  className="flex gap-1 bg-white text-gray-900"
+                  className={`flex gap-1 bg-white hover:text-[#ff2459] ${
+                enquirySent
+                  ? "text-[#ff2459] cursor-not-allowed"
+                  : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+              }`}
                   onClick={() => setEnquiry(!enquiry)}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
-                  Send Enquiry
+                   {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                 </p>
                 <button
                   onClick={() => {
-                    handleFavourite(data._id);
-                    checkFavourite(data._id);
+                    toggleFavorite(data._id);
                   }}
-                  className={`flex gap-1 bg-white  ${
-                    isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                  className={`flex gap-1 bg-white hover:text-[#ff2459] ${
+                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                   }`}
                 >
-                  <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  {isFavourite(data._id)
-                    ? "Added to Favourites"
-                    : "Add Favourite"}
+                  <FaHeart className="relative top-1 lg:text-base text-xs hover:text-[#ff2459]" />{" "}
+                  {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
                 </button>
               </div>
             </div>
@@ -335,29 +344,36 @@ function GetOrganizerById() {
                       Claim Ownership
                     </button>
                     <button
-                      className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
+                      className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
+                        enquirySent
+                          ? "text-[#ff2459] cursor-not-allowed"
+                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                      }`}
                       onClick={() => {
-                        setEnquiry(!enquiry);
-                        setIsPopUp(false);
+                        if (!organizerEmail) {
+                          toast.error("Organizer email not available.");
+                          return;
+                        }
+                        if (!enquirySent) {
+                          setEnquiry(!enquiry);
+                          setIsPopUp(false);
+                        }
                       }}
                     >
-                      <CiCircleInfo className="relative top-1 lg:text-base" />
-                      Send Enquiry
+                      <CiCircleInfo className="relative top-1 lg:text-base " />
+                      {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                     </button>
                     <button
                       onClick={() => {
-                        handleFavourite(data._id);
-                        checkFavourite(data._id);
+                        toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
                       className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                        isFavourite(data._id)
-                          ? "text-[#ff2459]"
-                          : "text-gray-900"
+                        localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                       }`}
                     >
                       <FaHeart className="relative top-2 lg:text-base text-sm" />
-                      {isFavourite(data._id)
+                      {localIsFavorite
                         ? "Added to Favourites"
                         : "Add Favourite"}
                     </button>
@@ -408,12 +424,9 @@ function GetOrganizerById() {
                     </a>
                   </button>
                   <button
-                    onClick={() => handleFavourite(data._id)}
-                    disabled={isFavourite(data._id)}
+                    onClick={() => toggleFavorite(data._id)}
                     className={` text-2xl ${
-                      isFavourite(data._id)
-                        ? "text-red-500 cursor-not-allowed"
-                        : "text-gray-400"
+                      localIsFavorite ? "text-red-500" : "text-gray-400"
                     }`}
                   >
                     <FaHeart />
@@ -468,10 +481,10 @@ function GetOrganizerById() {
                   </a>
                 </button>
                 <button
-                  onClick={() => handleFavourite(data._id)}
-                  disabled={isFavourite(data._id)}
+                  onClick={() => toggleFavorite(data._id)}
+                  disabled={isFavourite}
                   className={` text-2xl ${
-                    isFavourite(data._id)
+                    localIsFavorite
                       ? "text-red-500 cursor-not-allowed"
                       : "text-gray-400"
                   }`}
@@ -957,7 +970,9 @@ function GetOrganizerById() {
       {enquiry && (
         <EnquiryForm
           setEnquiry={setEnquiry}
+          onEnquirySent={handleEnquirySent}
           name={data.name}
+          email={organizerEmail}
           enquiry={enquiry}
         />
       )}

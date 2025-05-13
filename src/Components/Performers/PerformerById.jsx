@@ -46,6 +46,7 @@ import PerformerStats from "../SocialMedia/State";
 import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
 import { toast } from "react-toastify";
 import { postFavouritePerformer } from "../../redux/actions/master/Performers/postFavouritePerformer";
+import { deletefavouritePerformer } from "../../redux/actions/master/Performers/deleteFavouritePerformer";
 import {
   getUpcomingEventData,
   getUpcomingEventsDataForProfile,
@@ -55,7 +56,7 @@ function GetPerformerById() {
   const { performerId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
-
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
   const [about, setAbout] = useState(true);
@@ -129,15 +130,32 @@ function GetPerformerById() {
   // );
 
   const isFavourite = (id) => {
-    return favouritePerformer.some((fav) => fav._id === id);
+    return favouritePerformer.some((fav) => fav._id === data._id);
   };
 
-  const checkFavourite = (id) => {
-    if (isFavourite(id)) {
-      dispatch(deletefavouritePerformer(id));
+  useEffect(() => {
+      setLocalIsFavorite(isFavourite);
+    }, [isFavourite]);
+
+  const toggleFavorite = (id) => {
+      if (localIsFavorite) {
+        setLocalIsFavorite(false);
+        dispatch(deletefavouritePerformer(id));
+      } else {
+        setLocalIsFavorite(true);
+        dispatch(postFavouritePerformer(id));
+      }
       dispatch(getFavouritePerformerData(setLoading));
-    }
-  };
+    };
+
+
+
+  // const checkFavourite = (id) => {
+  //   if (isFavourite(id)) {
+  //     dispatch(deletefavouritePerformer(id));
+  //     dispatch(getFavouritePerformerData(setLoading));
+  //   }
+  // };
 
   useEffect(() => {
     dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
@@ -150,35 +168,20 @@ function GetPerformerById() {
     }
   }, [dispatch, performerId]);
 
-  // const checkFavourite = (id) => {
-  //   if (favouritePerformer.some((fav) => fav._id === id)) {
-  //     toast.warning("Already added to favorites!", {
-  //       position: "top-right",
-  //       autoClose: 2000, // Closes after 2 seconds
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //       theme: "colored",
-  //     });
-  //   }
-  // };
-  
 
   const togglePhoneVisibility = () => {
     setShowNumber((prev) => !prev);
   };
   const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
 
-  const handleFavourite = (id) => {
-    if (isFavourite(id)) {
-      toast.warning("Already added to favorites!", { autoClose: 2000 });
-    } else {
-      dispatch(postFavouritePerformer(id));
-      dispatch(getFavouritePerformerData(setLoading));
-    }
-  };
+  // const handleFavourite = (id) => {
+  //   if (isFavourite(id)) {
+  //     toast.warning("Already added to favorites!", { autoClose: 2000 });
+  //   } else {
+  //     dispatch(postFavouritePerformer(id));
+  //     dispatch(getFavouritePerformerData(setLoading));
+  //   }
+  // };
 
   // const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
   //   favouritePerformerData: [],
@@ -350,15 +353,14 @@ function GetPerformerById() {
                 </p>
                 <button
                   onClick={() => {
-                    handleFavourite(data._id);
-                    checkFavourite(data._id);
+                    toggleFavorite(data._id);
                   }}
                   className={`flex gap-1 bg-white  ${
-                    isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                   }`}
                 >
                   <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  {isFavourite(data._id)
+                  {localIsFavorite
                     ? "Added to Favourites"
                     : "Add Favourite"}
                 </button>
@@ -400,18 +402,17 @@ function GetPerformerById() {
                     </button>
                     <button
                       onClick={() => {
-                        handleFavourite(data._id);
-                        checkFavourite(data._id);
+                        toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
                       className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                        isFavourite(data._id)
+                       localIsFavorite
                           ? "text-[#ff2459]"
                           : "text-gray-900"
                       }`}
                     >
                       <FaHeart className="relative top-2 lg:text-base text-sm" />
-                      {isFavourite(data._id)
+                      {localIsFavorite
                         ? "Added to Favourites"
                         : "Add Favourite"}
                     </button>
@@ -467,10 +468,10 @@ function GetPerformerById() {
                   </button>
 
                   <button
-                    onClick={() => handleFavourite(data._id)}
+                    onClick={() => toggleFavorite(data._id)}
                     disabled={isFavourite(data._id)}
                     className={` text-2xl ${
-                      isFavourite(data._id)
+                      localIsFavorite
                         ? "text-red-500 cursor-not-allowed"
                         : "text-gray-400"
                     }`}
@@ -523,10 +524,10 @@ function GetPerformerById() {
                 </button>
 
                 <button
-                  onClick={() => handleFavourite(data._id)}
+                  onClick={() => toggleFavorite(data._id)}
                   disabled={isFavourite(data._id)}
                   className={` text-2xl ${
-                    isFavourite(data._id)
+                   localIsFavorite
                       ? "text-red-500 cursor-not-allowed"
                       : "text-gray-400"
                   }`}

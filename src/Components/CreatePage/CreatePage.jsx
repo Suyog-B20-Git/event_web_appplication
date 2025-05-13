@@ -287,7 +287,8 @@ const handleSoundCloudChange = (e) => {
 
     const token = localStorage.getItem("authToken");
     if (!token) {
-      alert("Please login first.");
+      alert("Please login first.");     
+      localStorage.setItem("createPageData", JSON.stringify({...data}));
       localStorage.setItem("redirectAfterLogin", "/create-page");
       navigate("/login");
       return;
@@ -380,6 +381,15 @@ const handleSoundCloudChange = (e) => {
     alert("An error occurred during submission.");
   }
   };
+
+   useEffect(() => {
+      const savedData = localStorage.getItem("createPageData");
+      console.log("Saved Data:", savedData);
+      if (savedData) {
+        reset(JSON.parse(savedData));
+        localStorage.removeItem("createPageData");
+      }
+    }, []);
 
   const onPreview = () => {
     const formValues = watch(); 

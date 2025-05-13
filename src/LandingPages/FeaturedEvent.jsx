@@ -270,9 +270,14 @@ function FeaturedEvent() {
           <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
             <p
               onClick={() => {
+                 if(!organizerEmail) {
+                  toast.error("Organizer email not available.");      
+                    return;           
+                }               
                 if (!enquirySent) {
                   setEnquiry(!enquiry);
                 }
+               
               }}
               className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
                 enquirySent
@@ -646,7 +651,7 @@ function FeaturedEvent() {
           </div>
         </div>
       )}
-      {enquiry && (
+      {enquiry &&   (
         <EnquiryForm
           setEnquiry={setEnquiry}
           onEnquirySent={handleEnquirySent}
