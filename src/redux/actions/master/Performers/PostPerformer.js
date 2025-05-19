@@ -14,6 +14,7 @@ export const createNewPerformer = (data) => {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
+        console.log("response", response);
         if (!response.data.status) {
           toast.error(response.data.message, {
             transition: Zoom,

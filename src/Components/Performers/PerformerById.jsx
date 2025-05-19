@@ -44,9 +44,9 @@ import InstagramEmbed from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import PerformerStats from "../SocialMedia/State";
 import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
-import { toast } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 import { postFavouritePerformer } from "../../redux/actions/master/Performers/postFavouritePerformer";
-import { deletefavouritePerformer } from "../../redux/actions/master/Performers/deleteFavouritePerformer";
+import { deleteFavouritePerformer } from "../../redux/actions/master/Performers/deleteFavouritePerformer";
 import {
   getUpcomingEventData,
   getUpcomingEventsDataForProfile,
@@ -71,9 +71,8 @@ function GetPerformerById() {
   const navigate = useNavigate();
   const location = useLocation();
   const [eventData, setEventData] = useState(null);
+  const [enquirySent, setEnquirySent] = useState(false);
 
-  // const performerId = location.state;
-  console.log(performerId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
@@ -92,9 +91,6 @@ function GetPerformerById() {
       })
     );
   }, [dispatch, performerId]);
-  // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
-  //   upcomingEventData: [],
-  // }
 
   const upcomingEventData =
     useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
@@ -104,14 +100,16 @@ function GetPerformerById() {
   }
 
   const data1 = upcomingEventData;
-  console.log("Upcoming Event Data:", data1);
 
   const store = useSelector((state) => state.getPerformerByIdReducer) || {
     performerData: [],
   };
 
   const data = store.performerData;
-  console.log(data, "performerData....");
+  const name = data?.name;
+  const email = data?.email || data?.organizerEmail;
+
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
     favouritePerformerData: [],
@@ -125,40 +123,38 @@ function GetPerformerById() {
   };
   const deletedFavoritePerformer = store2.deletedFavoritePerformerData;
 
-  // const isFavourite = favouritePerformer.some(
-  //   (performer) => fav._id === receivedData?._id
-  // );
+  const isFavourite = favouritePerformer.some((fav) => fav._id === data?._id);
 
-  const isFavourite = (id) => {
-    return favouritePerformer.some((fav) => fav._id === data._id);
+  useEffect(() => {
+    setEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    if (sent === "true") {
+      setEnquirySent(true);
+    }
+  }, [name]);
+
+  const handleEnquirySent = () => {
+    setEnquirySent(true);
+    setEnquiry(false);
   };
 
   useEffect(() => {
-      setLocalIsFavorite(isFavourite);
-    }, [isFavourite]);
+    setLocalIsFavorite(isFavourite);
+  }, [isFavourite]);
 
   const toggleFavorite = (id) => {
-      if (localIsFavorite) {
-        setLocalIsFavorite(false);
-        dispatch(deletefavouritePerformer(id));
-      } else {
-        setLocalIsFavorite(true);
-        dispatch(postFavouritePerformer(id));
-      }
-      dispatch(getFavouritePerformerData(setLoading));
-    };
-
-
-
-  // const checkFavourite = (id) => {
-  //   if (isFavourite(id)) {
-  //     dispatch(deletefavouritePerformer(id));
-  //     dispatch(getFavouritePerformerData(setLoading));
-  //   }
-  // };
+    if (localIsFavorite) {
+      setLocalIsFavorite(false);
+      dispatch(deleteFavouritePerformer(id));
+    } else {
+      setLocalIsFavorite(true);
+      dispatch(postFavouritePerformer(id));
+    }
+    dispatch(getFavouritePerformerData(setLoading));
+  };
 
   useEffect(() => {
-    dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
+    dispatch(getFavouritePerformerData(setLoading));
   }, [dispatch]);
 
   useEffect(() => {
@@ -168,61 +164,10 @@ function GetPerformerById() {
     }
   }, [dispatch, performerId]);
 
-
   const togglePhoneVisibility = () => {
     setShowNumber((prev) => !prev);
   };
   const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
-
-  // const handleFavourite = (id) => {
-  //   if (isFavourite(id)) {
-  //     toast.warning("Already added to favorites!", { autoClose: 2000 });
-  //   } else {
-  //     dispatch(postFavouritePerformer(id));
-  //     dispatch(getFavouritePerformerData(setLoading));
-  //   }
-  // };
-
-  // const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
-  //   favouritePerformerData: [],
-  // };
-  // const favouritePerformer = store1.favouritePerformerData;
-  // const isFavourite = (id) => {
-  //   return favouritePerformer.some((fav) => fav._id === id);
-  // };
-  // useEffect(() => {
-  //   dispatch(getFavouritePerformerData(setLoading)); // Fetch favorites on mount
-  // }, [dispatch]);
-
-  // const checkFavourite = (id) => {
-  //   if (favouritePerformer.some((fav) => fav._id === id)) {
-  //     toast.warning("Already added to favorites!", {
-  //       position: "top-right",
-  //       autoClose: 2000, // Closes after 2 seconds
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //       theme: "colored",
-  //     });
-  //   }
-  // };
-
-  // const handleFavourite = (id) => {
-  //   if (isFavourite(id)) {
-  //     return;
-  //   } else {
-  //     dispatch(postFavouritePerformer(id));
-  //     console.log(id, "fav id");
-  //     dispatch(getFavouritePerformerData(setLoading));
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   dispatch(getPerformerById(performerId, setLoading));
-  //   dispatch(getFavouritePerformerData(setLoading));
-  // }, [dispatch]);
 
   if (loading) {
     return <Loading />;
@@ -345,14 +290,42 @@ function GetPerformerById() {
                   Claim Ownership
                 </p>
                 <p
-                  className="flex gap-1 bg-white text-gray-900"
-                  onClick={() => setEnquiry(!enquiry)}
+                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${
+                    enquirySent
+                      ? "text-[#ff2459] cursor-not-allowed"
+                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                  }`}
+                  onClick={() => {
+                      if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                    if (!email) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    if (!enquirySent) {
+                      setEnquiry(!enquiry);
+                    }
+                  }}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
-                  Send Enquiry
+                  {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                 </p>
                 <button
                   onClick={() => {
+                     if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
                     toggleFavorite(data._id);
                   }}
                   className={`flex gap-1 bg-white  ${
@@ -360,9 +333,7 @@ function GetPerformerById() {
                   }`}
                 >
                   <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  {localIsFavorite
-                    ? "Added to Favourites"
-                    : "Add Favourite"}
+                  {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
                 </button>
               </div>
             </div>
@@ -391,24 +362,49 @@ function GetPerformerById() {
                       Claim Ownership
                     </button>
                     <button
-                      className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
+                      className={`flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]
+                                                            ${
+                                                              enquirySent
+                                                                ? "text-[#ff2459] cursor-not-allowed"
+                                                                : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                                                            }`}
                       onClick={() => {
-                        setEnquiry(!enquiry);
-                        setIsPopUp(false);
+                          if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        if (!email) {
+                          toast.error("Email not available for this service.");
+                          return;
+                        }
+                        if (!enquirySent) {
+                          setEnquiry(!enquiry);
+                          setIsPopUp(false);
+                        }
                       }}
                     >
                       <CiCircleInfo className="relative top-1 lg:text-base" />
-                      Send Enquiry
+                      {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                     </button>
                     <button
                       onClick={() => {
+                          if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
                         toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
                       className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                       localIsFavorite
-                          ? "text-[#ff2459]"
-                          : "text-gray-900"
+                        localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                       }`}
                     >
                       <FaHeart className="relative top-2 lg:text-base text-sm" />
@@ -469,7 +465,6 @@ function GetPerformerById() {
 
                   <button
                     onClick={() => toggleFavorite(data._id)}
-                    disabled={isFavourite(data._id)}
                     className={` text-2xl ${
                       localIsFavorite
                         ? "text-red-500 cursor-not-allowed"
@@ -525,9 +520,8 @@ function GetPerformerById() {
 
                 <button
                   onClick={() => toggleFavorite(data._id)}
-                  disabled={isFavourite(data._id)}
                   className={` text-2xl ${
-                   localIsFavorite
+                    localIsFavorite
                       ? "text-red-500 cursor-not-allowed"
                       : "text-gray-400"
                   }`}
@@ -722,11 +716,6 @@ function GetPerformerById() {
                     {data?.description || "No description available"}
                   </p>
                 ) : null}
-                {/* <p className="font-medium text-lg text-center">
-                  {upcomimg ? "" : " "}
-                </p> */}
-
-                {/*Event Data Section*/}
 
                 {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
@@ -940,7 +929,7 @@ function GetPerformerById() {
                     <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                       <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                      <p className="text-sm p-1">These Weekend 0</p>
+                      <p className="text-sm p-1">This Weekend 0</p>
                     </div>
                     <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                       <CalendarCheck className="text-2xl text-white font-medium" />
@@ -1056,7 +1045,7 @@ function GetPerformerById() {
                 <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />
@@ -1077,9 +1066,6 @@ function GetPerformerById() {
           <MapContainer data={data} />
         </div>
 
-        {/* <div className="flex justify-between ">
-            <div className="text-sm">Visited 4133 Times , 9 Times in Day</div>
-          </div> */}
         <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
           <FacebookComments
             dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
@@ -1100,7 +1086,9 @@ function GetPerformerById() {
       {enquiry && (
         <EnquiryForm
           setEnquiry={setEnquiry}
-          name={data.name}
+          onEnquirySent={handleEnquirySent}
+          name={name}
+          email={email}
           enquiry={enquiry}
         />
       )}

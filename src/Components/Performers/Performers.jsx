@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrganizer } from "../../redux/actions/master/Organizer/getOrganiser";
@@ -24,7 +23,7 @@ import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
 import Pagination from "../Pagination";
 import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
-import { toast } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 import { postFavouritePerformer } from "../../redux/actions/master/Performers/postFavouritePerformer";
 import { deleteFavouritePerformer } from "../../redux/actions/master/Performers/deleteFavouritePerformer";
 
@@ -32,7 +31,7 @@ function GetPerformers() {
   const navigate = useNavigate();
   const location = useLocation();
   const value = location.state;
-   const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const filterValue = value ? value.toLowerCase() : "";
   {
     /*header*/
@@ -44,10 +43,7 @@ function GetPerformers() {
     { value: "title desc", label: "Title descending" },
   ];
   const [selectedOption, setSelectedOption] = useState("");
-  console.log(
-    "selected option",
-    selectedOption.value ? selectedOption.value : ""
-  );
+
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -101,33 +97,35 @@ function GetPerformers() {
 
   const data1 = store.performerData;
   const data = [...new Set(data1)];
-  console.log(data, "PerformerData....");
   const totalPages = store.totalPages;
 
-  const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
-    favouritePerformerData: [],
-  };
-  const favouritePerformer = store1.favouritePerformerData;
+  const { favouritePerformerData = [] } = useSelector(
+    (state) => state.getFavoritePerformerReducer
+  );
+
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   const isFavouritePerformer = (id) => {
-    return favouritePerformer.some((fav) => fav._id === id);
+    return favouritePerformerData.some((fav) => fav._id === id);
   };
 
-  const toggleFavorite = (id) => {
-      if (isFavouritePerformer(id)) {
-        dispatch(deleteFavouritePerformer(id));
-        dispatch(getFavouritePerformerData(setLoading));
-      } else {
-        dispatch(postFavouritePerformer(id));
-        dispatch(getFavouritePerformerData(setLoading));
-      }
-      dispatch(getFavouritePerformerData(setLoading));
-    };
-  
-    useEffect(() => {
-      dispatch(getFavouritePerformerData(setLoading));
-    }, [dispatch]);
+  useEffect(() => {}, [favouritePerformerData]);
 
+  const toggleFavorite = async (id) => {
+    setLoading(true);
+
+    if (isFavouritePerformer(id)) {
+      await dispatch(deleteFavouritePerformer(id));
+      await dispatch(getFavouritePerformerData(() => setLoading(false)));
+    } else {
+      await dispatch(postFavouritePerformer(id));
+      await dispatch(getFavouritePerformerData(() => setLoading(false)));
+    }
+  };
+
+  useEffect(() => {
+    dispatch(getFavouritePerformerData(setLoading));
+  }, [dispatch]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -140,18 +138,6 @@ function GetPerformers() {
       setCurrentPage(currentPage - 1);
     }
   };
-  // useEffect(() => {
-  //   const handleScroll = (e) => {
-  //     const scrollHeight = e.target.documentElement.scrollHeight;
-  //     const currentHeight =
-  //       e.target.documentElement.scrollTop + window.innerHeight;
-  //     if (currentHeight + 1 >= scrollHeight * 0.5) {
-  //       setPageNo(pageNo + 1);
-  //     }
-  //   };
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, [pageNo]);
 
   const currentUrl = window.location.href;
   const shareUrls = {
@@ -168,31 +154,6 @@ function GetPerformers() {
     window.scrollTo(0, 0);
   }, []);
 
-  // const observerRef = useRef(null); // Ref for the observer target (bottom div)
-  // const isFetching = useRef(false); // Prevent multiple rapid API calls
-
-  //-------------------------------------------------------------------------------//
-  //   useEffect(() => {
-  //     if (!observerRef.current) return;
-
-  //     const observer = new IntersectionObserver(
-  //       (entries) => {
-  //         if (entries[0].isIntersecting && !loading) {
-  //           setPageNo((prevPage) => prevPage + 1);
-  //         }
-  //       },
-  //       { threshold: 1.0 } // Fully visible before triggering
-  //     );
-
-  //     observer.observe(observerRef.current);
-  //     console.log(pageNo);
-  //     return () => {
-  //       if (observerRef.current) observer.unobserve(observerRef.current);
-  //     };
-  //   }, [loading]); // Run effect when loading state changes
-
-  //-------------------------------------------------------------------------------//
-
   if (loading) {
     return <Loading />;
   }
@@ -201,7 +162,6 @@ function GetPerformers() {
       <div className="p-2 lg:w-[75%] w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
           <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 ">
-            {/* {filterValue ? filterValue : category ? category : " Performers"} */}
             Performers
           </h1>
 
@@ -217,43 +177,43 @@ function GetPerformers() {
           </div>
         </div>
         <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
-        <div className="rounded p-4 shadow-md bg-white">
-  {/* Heading */}
-  <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
-    Performers Category
-  </h1>
+          <div className="rounded p-4 shadow-md bg-white">
+            {/* Heading */}
+            <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+              Performers Category
+            </h1>
 
-  {/* Scrollable Categories */}
-  <section className="flex flex-wrap lg:flex-col gap-3 pt-3 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-    {/* Category Wrapper */}
-    <div className="flex gap-3 flex-wrap md:flex-nowrap">
-      <div
-        onClick={() => setCategory("band")}
-        className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
-      >
-        Band
-      </div>
-      <div
-        onClick={() => setCategory("disc jockey")}
-        className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
-      >
-        Disc Jockey
-      </div>
-      <div
-        onClick={() => setCategory("sound artist")}
-        className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
-      >
-        Sound Artist
-      </div>
-      <div
-        onClick={() => setCategory("standup comedian")}
-        className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
-      >
-        Stand-up Comedian
-      </div>
-    </div>
-  </section>
-</div>
+            {/* Scrollable Categories */}
+            <section className="flex flex-wrap lg:flex-col gap-3 pt-3 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+              {/* Category Wrapper */}
+              <div className="flex gap-3 flex-wrap md:flex-nowrap">
+                <div
+                  onClick={() => setCategory("band")}
+                  className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
+                >
+                  Band
+                </div>
+                <div
+                  onClick={() => setCategory("disc jockey")}
+                  className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
+                >
+                  Disc Jockey
+                </div>
+                <div
+                  onClick={() => setCategory("sound artist")}
+                  className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
+                >
+                  Sound Artist
+                </div>
+                <div
+                  onClick={() => setCategory("standup comedian")}
+                  className="bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-2 px-4 text-xs cursor-pointer"
+                >
+                  Stand-up Comedian
+                </div>
+              </div>
+            </section>
+          </div>
 
           <div className="rounded border ">
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
@@ -300,7 +260,7 @@ function GetPerformers() {
                 <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />
@@ -311,103 +271,7 @@ function GetPerformers() {
           </div>
         </div>
 
-        {/* <div className="grid  lg:grid-cols-3 md:grid-cols-2 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
-          {data.length > 0 ? (
-            data.map((item, index) => {
-              return (
-                <div
-                  key={index}
-                  className=" flex flex-col pb-5 shadow-md rounded border  "
-                >
-                  <div
-                    onClick={() => {
-                      navigate(`/Performer/${item._id}`, {
-                        state: item._id,
-                      });
-                    }}
-                    className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden"
-                  >
-                    <img
-                      src={item.profileImage}
-                      className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
-                      alt={item.name}
-                    />
-                  </div>
-                  <div
-                    onClick={() => {
-                      navigate(`/Performer/${item._id}`, {
-                        state: item._id,
-                      });
-                    }}
-                    className="p-2"
-                  >
-                    <h1 className="font-medium text-lg capitalize">
-                      {item.name}
-                    </h1>
-                    <section className="text-sm text-gray-500 ">
-                      {item.address}, {item.city}, {item.state}
-                    </section>
-                  </div>
-                  <div className="flex justify-between">
-                    <p className="flex gap-2 p-1 px-3 text-lg">
-                      <button className="text-red-500">
-                        <a href={item.facebookUrl ? item.facebookUrl : ""}>
-                          {item.facebookUrl ? (
-                            <CiFacebook className="text-red-500" />
-                          ) : (
-                            ""
-                          )}
-                        </a>
-                      </button>
-                      <button className="text-red-500">
-                        <a href={item.instagramUrl ? item.instagramUrl : ""}>
-                          {item.instagramUrl ? (
-                            <FaInstagram className="text-red-500" />
-                          ) : (
-                            ""
-                          )}
-                        </a>
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleFavourite(item._id);
-                          checkFavourite(item._id);
-                        }}
-                        className={`flex gap-1 text-xs font-bold cursor-pointer ${
-                          isFavourite(item._id)
-                            ? "text-[#ff2459]"
-                            : "text-gray-200"
-                        }`}
-                      >
-                        <FaHeart className="text-lg" />
-                      </button>
-
-                      <button className="text-red-500">
-                        <a href={item.twitterUrl ? item.twitterUrl : ""}>
-                          {item.twitterUrl ? (
-                            <FaSquareXTwitter className="text-red-500" />
-                          ) : (
-                            ""
-                          )}
-                        </a>
-                      </button>
-                    </p>
-                    <p className="flex gap-2 pr-5">
-                      5{" "}
-                      <IoStarSharp className="relative top-1 text-yellow-400" />
-                    </p>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="flex lg:h-[500px] md:h-[400px] h-[250px]  font-medium text-3xl justify-center items-center">
-              No data found...
-            </div>
-          )}
-        </div> */}
-
-<div className="grid  lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 ">
+        <div className="grid  lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 ">
           {data.length > 0 ? (
             data.map((item, index) => {
               return (
@@ -421,7 +285,6 @@ function GetPerformers() {
                         state: item._id,
                       });
                     }}
-
                     className="h-40 md:h-36 lg:h-40 w-full overflow-hidden flex items-center justify-center"
                   >
                     <img
@@ -467,11 +330,19 @@ function GetPerformers() {
                       </button>
                       <button
                         onClick={() => {
+                          if (!isLogin) {
+                            toast.error("Please login first to Add favorite!", {
+                              transition: Zoom,
+                              hideProgressBar: true,
+                              autoClose: 2000,
+                            });
+                            return;
+                          }
                           toggleFavorite(item._id);
                         }}
                         className={`flex gap-1 text-xs font-bold cursor-pointer ${
                           isFavouritePerformer(item._id)
-                            ? "text-red-500"
+                            ? "text-[#ff2459]"
                             : "text-gray-200"
                         }`}
                       >
@@ -488,10 +359,6 @@ function GetPerformers() {
                         </a>
                       </button>
                     </p>
-                    {/* <p className="flex gap-2 pr-5">
-                      5{" "}
-                      <IoStarSharp className="relative top-1 text-yellow-400" />
-                    </p> */}
                   </div>
                 </div>
               );
@@ -527,7 +394,7 @@ function GetPerformers() {
               className="flex gap-1 shadow border p-1 rounded"
             >
               <span className="text-sm border-r px-2">SHARE </span>
-                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
+              <FaWhatsapp className="bg-red-500 text-white p-0.5" />
             </button>
             <button
               onClick={() => handleShare("messenger")}
@@ -612,7 +479,7 @@ function GetPerformers() {
                 <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />

@@ -41,7 +41,8 @@ import InstagramProfile from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import ServiceStats from "../SocialMedia/ServiceStat";
 import { getFavouriteServiceData } from "../../redux/actions/master/Services/getFavouriteService";
-import { toast } from "react-toastify";
+import { deleteFavouriteService } from "../../redux/actions/master/Services/deleteFavouriteService";
+import { toast, Zoom } from "react-toastify";
 import { postFavouriteService } from "../../redux/actions/master/Services/postFavouriteService";
 import {
   getUpcomingEventData,
@@ -53,7 +54,6 @@ function GetServiceById() {
   const { serviceId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
-
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
   const [about, setAbout] = useState(true);
@@ -63,11 +63,10 @@ function GetServiceById() {
   const [instagram, setInstagram] = useState(false);
   const [youtube, setYoutube] = useState(false);
   const [stat, setStat] = useState(false);
-
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const navigate = useNavigate();
   const location = useLocation();
-  // const serviceId = location.state;
-  console.log(serviceId);
+  const [enquirySent, setEnquirySent] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
@@ -87,10 +86,6 @@ function GetServiceById() {
     );
   }, [dispatch, serviceId]);
 
-  // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
-  //   upcomingEventData: [],
-  // }
-
   const upcomingEventData =
     useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
 
@@ -99,60 +94,60 @@ function GetServiceById() {
   }
 
   const data1 = upcomingEventData;
-  console.log("Upcoming Event Data:", data1);
 
   const store = useSelector((state) => state.getServiceByIdReducer) || {
     serviceData: [],
   };
 
   const data = store.serviceData;
-  console.log(data, "serviceData....");
+  const name = data.name;
+  const email = data?.organizerEmail || data?.email;
 
   const store1 = useSelector((state) => state.getFavouriteServiceReducer) || {
     favouriteServiceData: [],
   };
   const favouriteService = store1.favouriteServiceData;
-  const isFavourite = (id) => {
-    return favouriteService.some((fav) => fav._id === id);
-  };
-  useEffect(() => {
-    dispatch(getFavouriteServiceData(setLoading)); // Fetch favorites on mount
-  }, [dispatch]);
 
-  const checkFavourite = (id) => {
-    if (favouriteService.some((fav) => fav._id === id)) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+  const isFavourite = favouriteService.some((fav) => fav._id === data._id);
+
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+
+  useEffect(() => {
+    setEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    if (sent === "true") {
+      setEnquirySent(true);
     }
+  }, [name]);
+
+  const handleEnquirySent = () => {
+    setEnquirySent(true);
+    setEnquiry(false);
   };
+
+  useEffect(() => {
+    dispatch(getFavouriteServiceData(setLoading));
+  }, [dispatch]);
 
   const togglePhoneVisibility = () => {
     setShowNumber((prev) => !prev);
   };
   const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
 
-  const handleFavourite = (id) => {
-    if (isFavourite(id)) {
-      return;
-    } else {
-      dispatch(postFavouriteService(id));
-      console.log(id, "fav id");
-      dispatch(getFavouriteServiceData(setLoading));
-    }
-  };
-
   useEffect(() => {
-    dispatch(getServiceById(serviceId, setLoading));
+    setLocalIsFavorite(isFavourite);
+  }, [isFavourite]);
+
+  const toggleFavorite = (id) => {
+    if (localIsFavorite) {
+      setLocalIsFavorite(false);
+      dispatch(deleteFavouriteService(id));
+    } else {
+      setLocalIsFavorite(true);
+      dispatch(postFavouriteService(id));
+    }
     dispatch(getFavouriteServiceData(setLoading));
-  }, [dispatch]);
+  };
 
   const currentUrl = encodeURIComponent(window.location.href); // Get the current page URL
 
@@ -166,9 +161,10 @@ function GetServiceById() {
     window.open(shareUrls[platform], "_blank");
   };
 
-  // useEffect(() => {
-  //   dispatch(getServiceById(serviceId, setLoading));
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getServiceById(serviceId, setLoading));
+    dispatch(getFavouriteServiceData(setLoading));
+  }, [dispatch]);
   if (loading) {
     return <Loading />;
   }
@@ -206,10 +202,7 @@ function GetServiceById() {
                 {data.name}
               </p>
             </div>
-            {/* <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
-                <FaEye className="relative top-1" />
-                {data.visits} , {data.dailyVisits} visits today
-              </p> */}
+
             <div className="lg:flex hidden gap-1 pt-3 p-3 pb-0">
               <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
                 <FaEye className="relative top-0.5 text-blue-600" />
@@ -286,25 +279,50 @@ function GetServiceById() {
                   Claim Ownership
                 </p>
                 <p
-                  className="flex gap-1 bg-white text-gray-900"
-                  onClick={() => setEnquiry(!enquiry)}
+                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${
+                    enquirySent
+                      ? "text-[#ff2459] cursor-not-allowed"
+                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                  }`}
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    if (!email) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    if (!enquirySent) {
+                      setEnquiry(!enquiry);
+                    }
+                  }}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
-                  Send Enquiry
+                  {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                 </p>
                 <button
                   onClick={() => {
-                    handleFavourite(data._id);
-                    checkFavourite(data._id);
+                    if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    toggleFavorite(data._id);
                   }}
-                  className={`flex gap-1 bg-white  ${
-                    isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
+                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                   }`}
                 >
-                  <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  {isFavourite(data._id)
-                    ? "Added to Favourites"
-                    : "Add Favourite"}
+                  <FaHeart className="relative top-1 lg:text-base text-xs hover:text-[#ff2459]" />{" "}
+                  {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
                 </button>
               </div>
             </div>
@@ -333,29 +351,53 @@ function GetServiceById() {
                       Claim Ownership
                     </button>
                     <button
-                      className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
+                      className={`flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]
+                      ${
+                        enquirySent
+                          ? "text-[#ff2459] cursor-not-allowed"
+                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                      }`}
                       onClick={() => {
-                        setEnquiry(!enquiry);
-                        setIsPopUp(false);
+                        if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        if (!email) {
+                          toast.error("Email not available for this service.");
+                          return;
+                        }
+                        if (!enquirySent) {
+                          setEnquiry(!enquiry);
+                          setIsPopUp(false);
+                        }
                       }}
                     >
                       <CiCircleInfo className="relative top-1 lg:text-base" />
-                      Send Enquiry
+                      {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                     </button>
                     <button
                       onClick={() => {
-                        handleFavourite(data._id);
-                        checkFavourite(data._id);
+                        if (!isLogin) {
+                          toast.error("Please login first to Add favorite!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
                       className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                        isFavourite(data._id)
-                          ? "text-[#ff2459]"
-                          : "text-gray-900"
+                        localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                       }`}
                     >
                       <FaHeart className="relative top-2 lg:text-base text-sm" />
-                      {isFavourite(data._id)
+                      {localIsFavorite
                         ? "Added to Favourites"
                         : "Add Favourite"}
                     </button>
@@ -396,15 +438,7 @@ function GetServiceById() {
                       )}
                     </a>
                   </button>
-                  {/* <button className="text-red-500 text-2xl">
-                      <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                        {data.facebookUrl ? (
-                          <FcLike className="text-red-500" />
-                        ) : (
-                          ""
-                        )}
-                      </a>
-                    </button> */}
+
                   <button className="text-red-500 text-2xl">
                     <a href={data.facebookUrl ? data.facebookUrl : ""}>
                       {data.facebookUrl ? (
@@ -416,10 +450,9 @@ function GetServiceById() {
                   </button>
 
                   <button
-                    onClick={() => handleFavourite(data._id)}
-                    disabled={isFavourite(data._id)}
+                    onClick={() => toggleFavorite(data._id)}
                     className={` text-2xl ${
-                      isFavourite(data._id)
+                      localIsFavorite
                         ? "text-red-500 cursor-not-allowed"
                         : "text-gray-400"
                     }`}
@@ -457,15 +490,6 @@ function GetServiceById() {
                     )}
                   </a>
                 </button>
-                {/* <button className="text-red-500 text-2xl">
-                    <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                      {data.facebookUrl ? (
-                        <FcLike className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button> */}
 
                 <button className="text-red-500 text-2xl">
                   <a href={data.facebookUrl ? data.facebookUrl : ""}>
@@ -479,11 +503,18 @@ function GetServiceById() {
 
                 <button
                   onClick={() => {
-                    handleFavourite(receivedData._id);
-                    checkFavourite(receivedData._id);
+                    if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    toggleFavorite(data._id);
                   }}
                   className={`text-red-500 text-2xl ${
-                    isFavourite ? "text-[#ff2459]" : "text-gray-900"
+                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                   }`}
                 >
                   <FaHeart className="text-red-500" />
@@ -628,9 +659,6 @@ function GetServiceById() {
                   </p>
                 ) : null}
 
-                {/* <p className="font-medium text-lg text-center">
-                    {upcomimg ? "" : <div className="  "></div>}
-                  </p> */}
                 {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
                     {upcomingEventData.length > 0 ? (
@@ -855,7 +883,7 @@ function GetServiceById() {
                     <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                       <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                      <p className="text-sm p-1">These Weekend 0</p>
+                      <p className="text-sm p-1">This Weekend 0</p>
                     </div>
                     <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                       <CalendarCheck className="text-2xl text-white font-medium" />
@@ -997,7 +1025,7 @@ function GetServiceById() {
                 <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />
@@ -1017,9 +1045,6 @@ function GetServiceById() {
         <MapContainer data={data} />
       </div>
 
-      {/* <div className="flex justify-between ">
-            <div className="text-sm">Visited 4133 Times , 9 Times in Day</div>
-          </div> */}
       <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
         <FacebookComments
           dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
@@ -1038,7 +1063,9 @@ function GetServiceById() {
       {enquiry && (
         <EnquiryForm
           setEnquiry={setEnquiry}
-          name={data.name}
+          onEnquirySent={handleEnquirySent}
+          name={name}
+          email={email}
           enquiry={enquiry}
         />
       )}

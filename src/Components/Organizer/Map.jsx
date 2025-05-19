@@ -46,7 +46,7 @@ const MapContainer = ({ data }) => {
     };
   }, [data]);
 
-  return <div ref={mapRef} style={mapStyles} className="lg:m-2 m-3 mr-4 lg:w-full w-max"></div>;
+  return <div ref={mapRef} style={mapStyles} className="lg:m-0 m-0 mr-4 lg:w-full w-max"></div>;
 };
 
 export default MapContainer;

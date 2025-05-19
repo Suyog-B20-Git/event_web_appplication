@@ -40,7 +40,7 @@ import YouTubeProfile from "../SocialMedia/Youtube";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import PerformerStats from "../SocialMedia/State";
 import OrganizerStats from "../SocialMedia/OrganizerStat";
-import { toast } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
 import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
 import { removeFavouriteOrganizer } from "../../redux/actions/master/Organizer/removeFavouriteOrganizer";
@@ -67,18 +67,15 @@ function GetOrganizerById() {
   const location = useLocation();
   const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const [enquirySent, setEnquirySent] = useState(false);
-  // console.log(organizerId);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
 
-  // get Upcoming Event Data
   useEffect(() => {
     dispatch(
       getUpcomingEventsDataForProfile({
         organizer: organizerId,
         setLoader: setLoading,
-        // Optionally pass additional query params:
         page: 1,
         limit: 10,
         timezoneOffset: new Date().getTimezoneOffset(),
@@ -87,9 +84,6 @@ function GetOrganizerById() {
       })
     );
   }, [dispatch, organizerId]);
-  // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
-  //   upcomingEventData: [],
-  // }
 
   const upcomingEventData =
     useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
@@ -99,20 +93,18 @@ function GetOrganizerById() {
   }
 
   const data1 = upcomingEventData;
-  console.log("Upcoming Event Data:", data1);
-
   const store = useSelector((state) => state.getOrganizerByIdReducer) || {
     organizerData: [],
   };
 
   const data = store.organizerData;
-  console.log(data, "OrganizerData....");
   const organizerEmail = data?.email;
-  console.log(organizerEmail, "Organizer Email");
   const store1 = useSelector((state) => state.getFavoriteOrganizerReducer) || {
     favouriteOrganizerData: [],
   };
   const favouriteOrganizer = store1.favouriteOrganizerData;
+
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   const isFavourite = favouriteOrganizer.some((fav) => fav._id === data._id);
 
@@ -122,12 +114,10 @@ function GetOrganizerById() {
   const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
 
   const name = data.name;
-  console.log("Organizer Name:", name);
 
   useEffect(() => {
     setEnquirySent(false);
     const sent = localStorage.getItem(`enquiry_sent_${name}`);
-    console.log("is Sent for", name, ":", sent);
     if (sent === "true") {
       setEnquirySent(true);
     }
@@ -172,17 +162,6 @@ function GetOrganizerById() {
     return <Loading />;
   }
 
-  // useEffect(() => {
-  //   if (!window.FB) {
-  //     const script = document.createElement("script");
-  //     script.src =
-  //       "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v17.0";
-  //     script.async = true;
-  //     script.defer = true;
-  //     document.body.appendChild(script);
-  //   }
-  // }, []);
-
   return (
     <div>
       <div className="flex lg:flex-row flex-col gap-2">
@@ -216,10 +195,6 @@ function GetOrganizerById() {
                 {data.name}
               </p>
             </p>
-            {/* <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
-              <FaEye className="relative top-1" />
-              {data.visits} , {data.dailyVisits} visites today
-            </p> */}
             <div className="lg:flex hidden gap-2 pt-3 p-3 pb-0 cursor-default">
               <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 ">
                 <FaEye className="relative top-0.5 text-blue-600" />
@@ -297,17 +272,41 @@ function GetOrganizerById() {
                 </p>
                 <p
                   className={`flex gap-1 bg-white hover:text-[#ff2459] ${
-                enquirySent
-                  ? "text-[#ff2459] cursor-not-allowed"
-                  : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-              }`}
-                  onClick={() => setEnquiry(!enquiry)}
+                    enquirySent
+                      ? "text-[#ff2459] cursor-not-allowed"
+                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                  }`}
+                  onClick={() => {
+                      if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                    if (!organizerEmail) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    if (!enquirySent) {
+                      setEnquiry(!enquiry);
+                    }
+                  }}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
-                   {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
+                  {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                 </p>
                 <button
                   onClick={() => {
+                     if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
                     toggleFavorite(data._id);
                   }}
                   className={`flex gap-1 bg-white hover:text-[#ff2459] ${
@@ -350,6 +349,14 @@ function GetOrganizerById() {
                           : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                       }`}
                       onClick={() => {
+                          if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
                         if (!organizerEmail) {
                           toast.error("Organizer email not available.");
                           return;
@@ -365,6 +372,14 @@ function GetOrganizerById() {
                     </button>
                     <button
                       onClick={() => {
+                         if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
                         toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
@@ -431,16 +446,6 @@ function GetOrganizerById() {
                   >
                     <FaHeart />
                   </button>
-
-                  {/* <button className="text-red-500 text-2xl">
-                    <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                      {data.facebookUrl ? (
-                        <FcLike className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button> */}
                   <button className="text-red-500 text-2xl">
                     <a href={data.twitterUrl ? data.twitterUrl : ""}>
                       {data.twitterUrl ? (
@@ -629,10 +634,6 @@ function GetOrganizerById() {
                     {data?.description || "No description available"}
                   </p>
                 ) : null}
-                {/* <p className="font-medium text-lg text-center">
-                  {upcomimg ? "" : <div className="  "></div>}
-                </p> */}
-                {/*Event Data Section*/}
 
                 {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
@@ -729,9 +730,12 @@ function GetOrganizerById() {
                   )}
                 </p>
                 <p>{stat ? <OrganizerStats data={data} /> : ""}</p>
-              </div>
-            </div>
+              </div>              
+            </div>           
           </div>
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-5">
+        <MapContainer data={data} />
+      </div>
 
           <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
             <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
@@ -818,7 +822,7 @@ function GetOrganizerById() {
                     <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                       <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                      <p className="text-sm p-1">These Weekend 0</p>
+                      <p className="text-sm p-1">This Weekend 0</p>
                     </div>
                     <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                       <CalendarCheck className="text-2xl text-white font-medium" />
@@ -829,6 +833,7 @@ function GetOrganizerById() {
               </div>
             </div>
           </div>
+         
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">
@@ -922,7 +927,7 @@ function GetOrganizerById() {
                 <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />
@@ -931,33 +936,16 @@ function GetOrganizerById() {
               </div>
             </div>
           </div>
-          {/* <div className="rounded border">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
-              Popular events
-            </h1>
-            <div className="flex justify-center items-center p-3">
-              <MdOutlineNavigateNext className="text-4xl rounded-full bg-gray-100 " />
-            </div>
-          </div> */}
         </div>
       </div>
-      <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
-        Organizer Location
-      </h1>
+      
+      
 
-      <div className="px-6 w-full flex justify-center">
-        <MapContainer data={data} />
-      </div>
-
-      {/* <div className="flex justify-between ">
-            <div className="text-sm">Visited 4133 Times , 9 Times in Day</div>
-          </div> */}
-      <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
+      <div className="pl-8 pr-16 pb-2 w-full flex justify-center">
         <FacebookComments
           dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-          // dataHref={currentUrl}
           numPosts={10}
-          width="1600"
+          width="850"
         />
       </div>
       {ownership && (
@@ -971,7 +959,7 @@ function GetOrganizerById() {
         <EnquiryForm
           setEnquiry={setEnquiry}
           onEnquirySent={handleEnquirySent}
-          name={data.name}
+          name={name}
           email={organizerEmail}
           enquiry={enquiry}
         />

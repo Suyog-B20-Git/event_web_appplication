@@ -2,7 +2,7 @@
 // src/FacebookComments.jsx
 import React, { useEffect } from "react";
 
-const FacebookComments = ({ dataHref, numPosts = 5, width = "600" }) => {
+const FacebookComments = ({ dataHref, numPosts = 5, width }) => {
   useEffect(() => {
     const parseFB = () => {
       if (window.FB) {

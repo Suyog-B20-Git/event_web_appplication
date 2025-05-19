@@ -206,7 +206,7 @@ function GetOrganizerByFilter() {
                 <div className="bg-blue-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600  rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />
@@ -368,7 +368,7 @@ function GetOrganizerByFilter() {
                 <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />

@@ -95,6 +95,7 @@ const filterValue = value?.toLowerCase() || "";
       getEventByFilter(
         setLoading,
         category,
+        filterValue,
         priceType,
         searchEvent,
         countryFilter,
@@ -105,12 +106,13 @@ const filterValue = value?.toLowerCase() || "";
         currentPage
       )
     ); // Call API when component mounts
-  }, [dispatch, currentPage,category]);
+  }, [dispatch, currentPage,category,filterValue]);
 
   const handleApi = () => {
     dispatch(
       getEventByFilter(
         setLoading,
+        filterValue,
         category,
         priceType,
         searchEvent,

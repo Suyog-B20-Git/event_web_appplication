@@ -22,7 +22,7 @@ import Pagination from "../Pagination";
 import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
 import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
 import { removeFavouriteOrganizer } from "../../redux/actions/master/Organizer/removeFavouriteOrganizer";
-import { toast } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 
 function GetOrganizer() {
   const navigate = useNavigate();
@@ -43,11 +43,6 @@ function GetOrganizer() {
     { value: "title desc", label: "Title descending" },
   ];
   const [selectedOption, setSelectedOption] = useState("");
-  console.log("selected option", selectedOption.value);
-  console.log(
-    "selected option",
-    selectedOption.value ? selectedOption.value : ""
-  );
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -106,6 +101,8 @@ function GetOrganizer() {
   };
   const favouriteOrganizer = store1.favouriteOrganizerData;
 
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+
   const isFavoriteOrganizer = (id) => {
     return favouriteOrganizer.some((fav) => fav._id === id);
   };
@@ -163,7 +160,6 @@ function GetOrganizer() {
       <div className="p-2 lg:w-[75%] w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
           <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 ">
-            {/* {filterValue ? filterValue : category ? category : "  Oraganizer"} */}
             Organizers
           </h1>
 
@@ -259,7 +255,7 @@ function GetOrganizer() {
                 <div className="bg-blue-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600  rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />
@@ -283,12 +279,6 @@ function GetOrganizer() {
                       state: item,
                     });
                   }}
-                  // onClick={() => {
-                  //   navigate(`/city/${item.city}/listing/organizers/${item.name}`, {
-                  //     state: item,c
-                  //   });
-                  // }}
-
                   className="h-40 md:h-36 lg:h-40 w-full overflow-hidden"
                 >
                   <img
@@ -334,6 +324,14 @@ function GetOrganizer() {
                     </button>
                     <button
                       onClick={() => {
+                        if (!isLogin) {
+                          toast.error("Please login first to Add favorite!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
                         toggleFavorite(item._id);
                       }}
                       className={`flex gap-1 text-xs font-bold cursor-pointer ${
@@ -355,9 +353,6 @@ function GetOrganizer() {
                       </a>
                     </button>
                   </p>
-                  {/* <p className="flex gap-2 pr-5">
-                  5 <IoStarSharp className="relative top-1 text-yellow-400" />
-                </p> */}
                 </div>
               </div>
             );
@@ -458,7 +453,7 @@ function GetOrganizer() {
                 <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                  <p className="text-sm p-1">These Weekend 0</p>
+                  <p className="text-sm p-1">This Weekend 0</p>
                 </div>
                 <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
                   <CalendarCheck className="text-2xl text-white font-medium" />

@@ -26,8 +26,9 @@ import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 import { useNavigate } from "react-router-dom";
 
+
 function CreatePage() {
-  const {
+   const {
     control,
     handleSubmit,
     watch,
@@ -245,7 +246,7 @@ const handleSoundCloudChange = (e) => {
     label: item.description,
   }));
   console.log("Location Store Data:", store3);
-
+  
   useEffect(() => {
     if (place_id) {
       console.log("Fetching location details for:", place_id);
@@ -258,6 +259,29 @@ const handleSoundCloudChange = (e) => {
   };
   const data4 = store4.locationDetails ? store4.locationDetails : [];
   console.log("Location Details Data:", data4);
+
+// handle page-redirection and data saving
+
+useEffect(() => {
+  const savedData = localStorage.getItem("savedFormData");
+  const savedUIState = localStorage.getItem("savedUIState");
+  if (savedData) {
+    const parsedData = JSON.parse(savedData);
+    reset(parsedData); // react-hook-form's reset function to preload form
+    localStorage.removeItem("savedFormData"); // Clean up
+  }
+   if (savedUIState) {
+    const uiState = JSON.parse(savedUIState);
+  setSelectedCountry(uiState.selectedCountry || null);
+    setSelectedState(uiState.selectedState || null);
+    setSelectedCity(uiState.selectedCity || null);
+    setSelectedSubCategory(uiState.selectedSubCategory || []);
+    setSelectedTagKeywords(uiState.selectedTagKeywords || []);
+    setImage(uiState.image || null);
+  localStorage.removeItem("savedUIState");
+   }
+}, []);
+
 
   // Handle Image Selection
   const [image, setImage] = useState(null);
@@ -278,43 +302,166 @@ const handleSoundCloudChange = (e) => {
     setPreviewImage(URL.createObjectURL(file));
 };
 
-
-  const onSubmit = (data) => {
-    // if (!captchaValue) {
+   if (!captchaValue) {
     //   toast.error("Please complete the reCAPTCHA verification.");
     //   return;
-    // }
-
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      alert("Please login first.");     
-      localStorage.setItem("createPageData", JSON.stringify({...data}));
-      localStorage.setItem("redirectAfterLogin", "/create-page");
-      navigate("/login");
-      return;
     }
-    try {
 
+// const onSubmit = (data) => {
+    
+//     const token = localStorage.getItem("authToken");
+//     if (!token) {
+//       alert("Please login first.");
+//       localStorage.setItem("redirectAfterLogin", "/create-page");
+//       localStorage.setItem("savedFormData", JSON.stringify(data));
+//       localStorage.setItem("missingUploads", JSON.stringify({
+//     imageMissing: !!image,
+//       coverImageMissing: !!coverImage
+// }));
+//       localStorage.setItem("savedUIState", JSON.stringify({
+//     selectedCountry,
+//     selectedState,
+//     selectedCity,
+//     selectedSubCategory,
+//     selectedTagKeywords,
+//     image,
+//     coverImage
+//       }));
+//       navigate("/login");
+//       return;
+//     }
+//     try {
+
+//     if (!check) {
+//       setError("You must accept the terms.");
+//       return; // Prevent form submission
+//     }
+  
+//     setError(""); // Clear error if checkbox is checked
+  
+//     const formData = new FormData();
+//     formData.append("profileImage", image); // Append file
+
+//     selectedSubCategory.forEach((subCategory) =>
+//       formData.append("categories[]", subCategory)
+//     );
+//     formData.append("country", selectedCountry ? selectedCountry.label : "");
+//     formData.append("state", selectedState ? selectedState.label : "");
+//     formData.append("city", selectedCity ? selectedCity.label : "");
+//     // formData.append("country", data.country);
+//     // formData.append("state", data.state);
+//     // formData.append("city", data.city);
+    
+//      formData.append("location", data.location);
+//     formData.append("name", data.listingTitle);
+//     formData.append("description", data.listingDescription);
+//     formData.append("address", data4.address);
+//     formData.append("googleSearchLocation", data.location);
+//     formData.append("googleSearchLat", data4.location.lat);
+//     formData.append("googleSearchLong", data4.location.lng);
+
+//     selectedTagKeywords.forEach((tag) => formData.append("tags[]", tag));
+
+//     if (data.phone) formData.append("phoneNumber", data.phone);
+//     if (data.email) formData.append("email", data.email);
+//     if (data.availableTime)
+//       formData.append("availableTime", data.availableTime);
+//     if (data.website) formData.append("website", data.website);
+//     formData.append("facebookUrl", data.facebookUrl);
+//     formData.append("instagramUrl", data.instagramUrl);
+//     formData.append("youtubeUrl", data.youtubeUrl);
+//     formData.append("twitterUrl", data.twitterUrl);
+
+//     if (selectedCategory.value === "Performers") {
+//       formData.append("cloudSoundUrl", data.cloudSoundUrl);
+//       formData.append("spotifyUrl", data.spotifyUrl);
+//       dispatch(createNewPerformer(formData));
+//       navigate("/home")
+//     }
+
+//     if (selectedCategory.value === "Organiser") {
+//       dispatch(createNewOrganizer(formData));
+//       navigate("/home")
+//     }
+//     if (selectedCategory.value === "Services") {
+//       dispatch(createNewService(formData));
+//       navigate("/home")
+//       // notifySuccess(data.listingTitle);
+//     }
+//     if (selectedCategory.value === "Venues") {
+//       formData.append("coverImage", coverImage); // Append file
+//       formData.append("url", data.url);
+//       formData.append("zipcode", data.zipcode);
+//       formData.append("quotedForm", data.quotedForm);
+//       formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
+//       formData.append("availability", data.availability);
+//       formData.append("pricing", data.pricing);
+//       formData.append("neighbourhoods", data.neighbourhoods);
+//       formData.append("noOfStandingGuest", data.noOfStandingGuest);
+//       formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
+//       formData.append("amenities", data.amenities);
+//       formData.append("type", data.type);
+//       dispatch(createNewVenue(formData));
+//       navigate("/home")
+//     }
+
+//     console.log("Form Data:", data);
+
+  
+//     }
+//   catch (error) {
+//     console.error("Submission failed:", error);
+//     alert("An error occurred during submission.");
+//   }
+//   };
+
+const onSubmit = (data) => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    alert("Please login first.");
+    localStorage.setItem("redirectAfterLogin", "/create-page");
+    localStorage.setItem("savedFormData", JSON.stringify(...data));
+    localStorage.setItem(
+      "missingUploads",
+      JSON.stringify({
+        imageMissing: !!image,
+        coverImageMissing: !!coverImage,
+      })
+    );
+    localStorage.setItem(
+      "savedUIState",
+      JSON.stringify({
+        selectedCountry,
+        selectedState,
+        selectedCity,
+        selectedSubCategory,
+        selectedTagKeywords,
+        image,
+        coverImage,
+      })
+    );
+    navigate("/login");
+    return;
+  }
+
+  try {
     if (!check) {
       setError("You must accept the terms.");
-      return; // Prevent form submission
+      return;
     }
-  
+
     setError(""); // Clear error if checkbox is checked
-  
+
     const formData = new FormData();
-    formData.append("profileImage", image); // Append file
+    formData.append("profileImage", image);
 
     selectedSubCategory.forEach((subCategory) =>
       formData.append("categories[]", subCategory)
     );
-    formData.append("country", selectedCountry ? selectedCountry.label : "");
-    formData.append("state", selectedState ? selectedState.label : "");
-    formData.append("city", selectedCity ? selectedCity.label : "");
-    
-    // formData.append("country", data.country);
-    // formData.append("state", data.state);
-    // formData.append("city", data.city);
+    formData.append("country", selectedCountry?.label || "");
+    formData.append("state", selectedState?.label || "");
+    formData.append("city", selectedCity?.label || "");
+
     formData.append("location", data.location);
     formData.append("name", data.listingTitle);
     formData.append("description", data.listingDescription);
@@ -323,6 +470,8 @@ const handleSoundCloudChange = (e) => {
     formData.append("googleSearchLat", data4.location.lat);
     formData.append("googleSearchLong", data4.location.lng);
 
+    //  Update map pin here
+    
     selectedTagKeywords.forEach((tag) => formData.append("tags[]", tag));
 
     if (data.phone) formData.append("phoneNumber", data.phone);
@@ -339,17 +488,22 @@ const handleSoundCloudChange = (e) => {
       formData.append("cloudSoundUrl", data.cloudSoundUrl);
       formData.append("spotifyUrl", data.spotifyUrl);
       dispatch(createNewPerformer(formData));
+      console.log("dispatching data", formData);
+      navigate("/home");
     }
 
     if (selectedCategory.value === "Organiser") {
       dispatch(createNewOrganizer(formData));
+      navigate("/home");
     }
+
     if (selectedCategory.value === "Services") {
       dispatch(createNewService(formData));
-      // notifySuccess(data.listingTitle);
+      navigate("/home");
     }
+
     if (selectedCategory.value === "Venues") {
-      formData.append("coverImage", coverImage); // Append file
+      formData.append("coverImage", coverImage);
       formData.append("url", data.url);
       formData.append("zipcode", data.zipcode);
       formData.append("quotedForm", data.quotedForm);
@@ -361,35 +515,17 @@ const handleSoundCloudChange = (e) => {
       formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
       formData.append("amenities", data.amenities);
       formData.append("type", data.type);
-
       dispatch(createNewVenue(formData));
-      // notifySuccess(data.listingTitle);
-      // toast.success(`${selectedCategory.value} Page created successfully!`);
-
+      navigate("/home");
     }
 
-    console.log("Form Data:", data);
-
-    // setImage(null);
-    // setCoverImage(null);
-
-    // reset();
-    // setSelectedTags([])
-    }
-  catch (error) {
+    console.log("Form submitted with data:", data);
+  } catch (error) {
     console.error("Submission failed:", error);
     alert("An error occurred during submission.");
   }
-  };
+};
 
-   useEffect(() => {
-      const savedData = localStorage.getItem("createPageData");
-      console.log("Saved Data:", savedData);
-      if (savedData) {
-        reset(JSON.parse(savedData));
-        localStorage.removeItem("createPageData");
-      }
-    }, []);
 
   const onPreview = () => {
     const formValues = watch(); 
@@ -887,7 +1023,7 @@ const handleSoundCloudChange = (e) => {
         )}
 
 
-    {/*Location*/}
+    {/* Location */}
         <div className="flex flex-col gap-1 mt-12">
           <h1 className="text-[#ff2459] text-2xl font-semibold mb-2">
             Location and map
@@ -1032,8 +1168,14 @@ const handleSoundCloudChange = (e) => {
                     }}
                     onChange={(selectedOption) => {
                       field.onChange(
-                        selectedOption ? selectedOption.value : null
-                      ); // Store only ID
+                        selectedOption ? selectedOption.value : null );
+                       if (selectedOption) {
+                        console.log("Selected location:", selectedOption.value);
+                        geocodeAndCenterMap(selectedOption.label);
+                        console.log("Selected location:", selectedOption.label);
+                       }
+                   
+                      // Store only ID
                     }}
                     value={
                       locationOptions.find(
@@ -1338,7 +1480,7 @@ const handleSoundCloudChange = (e) => {
     </button>
 
     <div className="flex flex-col sm:flex-row">
-      
+       
       {/* Left Section */}
       <div className="w-full sm:w-1/3 p-2 sm:p-4">
         {previewImage ? (

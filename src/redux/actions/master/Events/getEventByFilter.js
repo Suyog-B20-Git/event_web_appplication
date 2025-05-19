@@ -58,6 +58,7 @@ import { Event } from "../../../Urls";
 
 export const getEventByFilter = (
   setLoader,
+  filterValue,
   category,
   priceType,
   searchEvent,
@@ -71,6 +72,7 @@ export const getEventByFilter = (
   let api = `${Event.getEventByFilter}?page=${pageNo}&limit=9`;
 
   const filters = {
+    category: filterValue,
     category: category,
     price: priceType,
     name: searchEvent,

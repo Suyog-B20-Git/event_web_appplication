@@ -8,7 +8,7 @@ import { Service } from "../../../Urls";
 
 export const createNewService = (data) => {
   console.log("data.:::", data);
-  const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
+  const isLogin = JSON.parse(localStorage.getItem("isLogin")); 
   return () => {
     axiosInstance
       .post(`${Service.postService}`, data, {

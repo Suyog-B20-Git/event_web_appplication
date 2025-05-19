@@ -17,6 +17,7 @@ export const deleteFavouritePerformer = (performerId) => {
       })
       .then((response) => {
         const resData = response.data;
+        console.log("resData", resData);
 
         if (!resData.status) {
           toast.error(resData.message || "Something went wrong!", {

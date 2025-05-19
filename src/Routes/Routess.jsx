@@ -102,7 +102,7 @@ function Routess() {
           <Route path="/oauth-failure" element={<OAuthFailure />} />
          
           <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} />
-          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />}          />
+          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} />
 
           <Route path="/Performer/:performerId" element={<GetPerformerById />} />
           <Route path="/Venue/:venueId" element={<GetVenueById />} />
