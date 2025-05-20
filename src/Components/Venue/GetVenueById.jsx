@@ -70,7 +70,7 @@ function GetVenueById() {
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
   const [hoveredTab, setHoveredTab] = useState(null);
-  const HrefUrl = `http://localhost:5173/Venue/${venueId}`;
+  const HrefUrl = window.location.href; 
   const fallbackImage =
     "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fG9yZ2FuaXplcnxlbnwwfHx8fDE2OTY5NzQ1NTg&ixlib=rb-4.0.3&q=80&w=1080";
 

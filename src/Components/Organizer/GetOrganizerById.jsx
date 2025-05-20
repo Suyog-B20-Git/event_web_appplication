@@ -71,7 +71,7 @@ function GetOrganizerById() {
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
   const [hoveredTab, setHoveredTab] = useState(null);
-  const HrefUrl = `http://localhost:5173/Organizer/${organizerId}`;
+  const HrefUrl = window.location.href; 
 
   useEffect(() => {
     dispatch(

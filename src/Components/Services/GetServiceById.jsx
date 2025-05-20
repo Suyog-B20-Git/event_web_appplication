@@ -71,7 +71,8 @@ function GetServiceById() {
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
   const [hoveredTab, setHoveredTab] = useState(null);
-  const HrefUrl = `http://localhost:5173/Service/${serviceId}`;
+  const HrefUrl = window.location.href; 
+
 
   // get Upcoming Event Data
   useEffect(() => {
