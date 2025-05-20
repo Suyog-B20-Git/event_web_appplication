@@ -61,7 +61,6 @@ function CreatePage() {
       newSubCategory = selectedOptions ? [selectedOptions.value] : [];
     }
 
-    console.log("Updated SubCategory:", newSubCategory); // Debugging log
     setSelectedSubCategory(newSubCategory);
   };
 
@@ -147,7 +146,6 @@ const [soundCloudUrl, setSoundCloudUrl] = useState("");
 
 const handleSoundCloudChange = (e) => {
   setSoundCloudUrl(e.target.value);
-  console.log("Updated SoundCloud URL:", e.target.value); 
 };
 
 
@@ -232,7 +230,6 @@ const handleSoundCloudChange = (e) => {
 
   useEffect(() => {
     if (location) {
-      console.log("Fetching locations for:", location);
       dispatch(getLocation(location));
     }
   }, [dispatch, location]);
@@ -245,11 +242,9 @@ const handleSoundCloudChange = (e) => {
     value: item.place_id,
     label: item.description,
   }));
-  console.log("Location Store Data:", store3);
   
   useEffect(() => {
     if (place_id) {
-      console.log("Fetching location details for:", place_id);
       dispatch(getLocationDetails(place_id));
     }
   }, [dispatch, place_id]);
@@ -258,7 +253,6 @@ const handleSoundCloudChange = (e) => {
     locationDetails: [],
   };
   const data4 = store4.locationDetails ? store4.locationDetails : [];
-  console.log("Location Details Data:", data4);
 
 // handle page-redirection and data saving
 
@@ -488,7 +482,6 @@ const onSubmit = (data) => {
       formData.append("cloudSoundUrl", data.cloudSoundUrl);
       formData.append("spotifyUrl", data.spotifyUrl);
       dispatch(createNewPerformer(formData));
-      console.log("dispatching data", formData);
       navigate("/home");
     }
 
@@ -519,7 +512,6 @@ const onSubmit = (data) => {
       navigate("/home");
     }
 
-    console.log("Form submitted with data:", data);
   } catch (error) {
     console.error("Submission failed:", error);
     alert("An error occurred during submission.");
@@ -1170,9 +1162,7 @@ const onSubmit = (data) => {
                       field.onChange(
                         selectedOption ? selectedOption.value : null );
                        if (selectedOption) {
-                        console.log("Selected location:", selectedOption.value);
                         geocodeAndCenterMap(selectedOption.label);
-                        console.log("Selected location:", selectedOption.label);
                        }
                    
                       // Store only ID

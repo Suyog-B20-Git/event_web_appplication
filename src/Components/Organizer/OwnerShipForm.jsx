@@ -11,7 +11,6 @@ function OwnerShipForm({ ownership, setOwnership, name }) {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Form Data:", data);
     reset();
   };
 

@@ -65,7 +65,6 @@ const TicketForm = ({ type, price, onQuantityChange, addTicket }) => {
       totalCost: (price * formData.quantity).toFixed(2),
       attendees: formData.attendees,
     };
-    console.log(postData);
     addTicket(postData); // Store data in Context
   };
 
@@ -221,7 +220,6 @@ const MeditationForm = ({ data }) => {
   const formDataRef = useRef(new FormData());
 
   const onSubmit = (data) => {
-    console.log("Form Data:", data);
     const newFormData = new FormData();
     newFormData.append("name", data.name);
     newFormData.append("email", data.email);
@@ -271,7 +269,6 @@ const MeditationForm = ({ data }) => {
         const data = await response.json();
 
         if (response.ok) {
-          console.log("Ticket created successfully:", data);
           toast.success("Ticket booked successfully!");
           navigate("/dashboard");
           setLogin(true);

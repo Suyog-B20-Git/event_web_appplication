@@ -10,9 +10,7 @@ function OrganiserContact({
   OrganizerName,
   OrganizerEmail,
 }) {
-  console.log("OrganizerName:", OrganizerName);
-  console.log("OrganizerEmail:", OrganizerEmail);
-
+ 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -49,12 +47,10 @@ function OrganiserContact({
       message: formData.message,
     };
 
-    console.log("Contact Organizer Payload:", payload);
     setLoading(true);
 
     try {
       const response = await axios.post(`${baseUrl}/api/enquiries`, payload);
-      console.log("Message sent successfully:", response.data);
       toast.success("Message sent successfully!");
       setData([...data, formData]);
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });

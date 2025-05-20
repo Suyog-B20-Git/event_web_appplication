@@ -7,7 +7,6 @@ import { BsFire } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
 function CardData({ data, heading }) {
-  console.log("CardData", data);
   const navigate = useNavigate();
 
   const dataArray = Array.isArray(data) ? data : data ? [data] : [];

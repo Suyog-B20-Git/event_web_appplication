@@ -67,7 +67,6 @@ export default function EventForm() {
 
   const store = useSelector((state) => state.venuesReducer) || { venues: [] };
   const data = store?.venues || []; // Ensure data is always an array
-  // console.log(data);
   const options = data.map((venue) => ({
     value: venue._id,
     label: venue.name,
@@ -77,7 +76,6 @@ export default function EventForm() {
     performers: [],
   };
   const data1 = store1?.performers || []; // Ensure data is always an array
-  // console.log(data1);
   const performerOptions = data1.map((performer) => ({
     value: performer._id,
     label: performer.name,
@@ -302,7 +300,6 @@ export default function EventForm() {
   
  
   const onSubmit = (data) => { 
-    console.log("FORM DATA",data);
     const formData = new FormData();    
     const category = data.selectedEvent || data.category;
     data.category = category;
@@ -375,7 +372,6 @@ export default function EventForm() {
           error?.response?.message ||
           error?.message ||
           "Something went wrong!";
-          console.log("Error:", errorMessage);
         toast.error(errorMessage);
       }
   };
@@ -462,13 +458,11 @@ export default function EventForm() {
   
     try {
       const token = localStorage.getItem("authToken");
-      console.log("Ticket data to be sent:", ticketData);
       const response = await axios.post(`${baseUrl}/api/ticketFormat`, ticketData, {
         headers: {
           Authorization: `${token}`,
         },
       });
-      console.log("API Response:", response.data);
       toast.success("Ticket created successfully!");
       navigate("/dashboard");
     } catch (error) {

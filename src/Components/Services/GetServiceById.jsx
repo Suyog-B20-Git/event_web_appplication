@@ -70,6 +70,8 @@ function GetServiceById() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const HrefUrl = `http://localhost:5173/Service/${serviceId}`;
 
   // get Upcoming Event Data
   useEffect(() => {
@@ -218,7 +220,7 @@ function GetServiceById() {
             className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
             style={{
               backgroundImage:
-                "radial-gradient( circle farthest-corner at 5.6% 54.5%,  rgba(47,71,79,1) 0%, rgba(159,188,198,1) 83.6% )",
+                "url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fG9yZ2FuaXplcnxlbnwwfHx8fDE2OTY5NzQ1NTg&ixlib=rb-4.0.3&q=80&w=1080')",
             }}
           >
             <div className="flex flex-col gap-4 lg:px-0 px-2 ">
@@ -351,10 +353,9 @@ function GetServiceById() {
                       Claim Ownership
                     </button>
                     <button
-                      className={`flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]
-                      ${
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4  hover:text-[#ff2459] ${
                         enquirySent
-                          ? "text-[#ff2459] cursor-not-allowed"
+                          ? "text-[#ff2459] cursor-not-allowed font-bold"
                           : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                       }`}
                       onClick={() => {
@@ -409,17 +410,20 @@ function GetServiceById() {
 
           <div className=" flex lg:flex-row flex-col py-3 ">
             <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
-              <div className="w-[100%] md:w-[80%] lg:w-[100%] max-w-[250px] md:max-w-[400px] lg:max-w-[180px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
+              <div className="w-full border border-gray-200 shadow max-w-[250px] md:max-w-[400px] lg:max-w-[180px] h-auto aspect-[5/5] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
                 {data.profileImage ? (
                   <img
                     src={data.profileImage}
-                    className="w-full h-auto object-contain"
+                    className="w-full h-full object-cover"
                     alt="Profile"
                   />
                 ) : (
-                  <span className="text-gray-500">No Image Available</span>
+                  <span className="text-gray-500 text-sm">
+                    No Image Available
+                  </span>
                 )}
               </div>
+
               <div className=" lg:flex gap-2 hidden justify-center">
                 <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
                   <CiCircleCheck className="relative top-1 lg:text-lg" />
@@ -452,9 +456,7 @@ function GetServiceById() {
                   <button
                     onClick={() => toggleFavorite(data._id)}
                     className={` text-2xl ${
-                      localIsFavorite
-                        ? "text-red-500 cursor-not-allowed"
-                        : "text-gray-400"
+                      localIsFavorite ? "text-[#ff2459]" : "text-gray-400"
                     }`}
                   >
                     <FaHeart />
@@ -513,11 +515,11 @@ function GetServiceById() {
                     }
                     toggleFavorite(data._id);
                   }}
-                  className={`text-red-500 text-2xl ${
+                  className={`text-2xl ${
                     localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                   }`}
                 >
-                  <FaHeart className="text-red-500" />
+                  <FaHeart />
                 </button>
 
                 <button className="text-red-500 text-2xl">
@@ -531,6 +533,13 @@ function GetServiceById() {
                 </button>
               </div>
             </div>
+
+            {hoveredTab && (
+              <div className="fixed bottom-1 left-2 text-xs text-white bg-gray-900 px-2 py-1 rounded shadow">
+                {`${HrefUrl}#${hoveredTab}`}
+              </div>
+            )}
+
             <div className="lg:w-[70%]  h-[500px] overflow-scroll scrollbar-hide rounded-lg">
               <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
                 <button
@@ -546,6 +555,8 @@ function GetServiceById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("about")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   ABOUT
                 </button>
@@ -562,6 +573,8 @@ function GetServiceById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("upcoming-event")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   UPCOMING EVENT
                 </button>
@@ -578,6 +591,8 @@ function GetServiceById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("facebook")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   FACEBOOK
                 </button>
@@ -594,6 +609,8 @@ function GetServiceById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("twitter")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   TWITTER
                 </button>
@@ -610,6 +627,8 @@ function GetServiceById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("instagram")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   INSTAGRAM
                 </button>
@@ -627,6 +646,8 @@ function GetServiceById() {
                     setYoutube(true);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("youtube")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   YOUTUBE
                 </button>
@@ -643,6 +664,8 @@ function GetServiceById() {
                     setYoutube(false);
                     setStat(true);
                   }}
+                  onMouseEnter={() => setHoveredTab("stats")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   STATS
                 </button>
@@ -756,6 +779,18 @@ function GetServiceById() {
                 <p>{stat ? <ServiceStats data={data} /> : ""}</p>
               </div>
             </div>
+          </div>
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-5">
+            <MapContainer data={data} />
+          </div>
+
+          <div className="pl-8 border border-gray shadow md:w-[70%] md:ml-[30%] pr-14 pb-2 w-full h-auto mb-5 flex justify-start overflow-y-scroll">
+            <FacebookComments
+              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+              numPosts={10}
+              width="750"
+            />
+            <hr />
           </div>
 
           <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
@@ -1037,22 +1072,6 @@ function GetServiceById() {
         </div>
       </div>
 
-      <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
-        Service Location
-      </h1>
-
-      <div className="px-6 w-full flex justify-center">
-        <MapContainer data={data} />
-      </div>
-
-      <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
-        <FacebookComments
-          dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-          // dataHref={currentUrl}
-          numPosts={10}
-          width="1600"
-        />
-      </div>
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}

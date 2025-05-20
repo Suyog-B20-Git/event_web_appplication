@@ -64,14 +64,11 @@ function FeaturedEvent() {
     eventData: [],
   };
   const receivedData = store.eventData;
-  console.log("Received Data:", receivedData);
-  const VenuesData = Array.isArray(receivedData?.venue) 
-  ? receivedData?.venue 
-  : receivedData?.venue 
-    ? [receivedData.venue] 
+  const VenuesData = Array.isArray(receivedData?.venue)
+    ? receivedData?.venue
+    : receivedData?.venue
+    ? [receivedData.venue]
     : [];
-    // const VenueData = receivedData?.venue || [];
-  console.log("Venue Data:", VenuesData);
   const thumbnailImage = receivedData?.media?.thumbnailImage;
   const posterImage = receivedData?.media?.posterImage;
   const phoneNumber = receivedData?.organizer?.phoneNumber?.trim();
@@ -504,18 +501,25 @@ function FeaturedEvent() {
                 </p>
               </div>
 
-            <div className="p-4 px-0 sm:px-6 mt-3 rounded-xl">
+              <div className="p-4 px-0 sm:px-6 mt-3 rounded-xl">
                 <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
                   Events Venue
                 </h2>
-              <VenueData data={VenuesData} />
-                </div>
+                {VenuesData && VenuesData.length > 0 ? (
+                  <VenueData data={VenuesData} />
+                ) : (
+                  <p className="text-gray-500 lg:ml-5">Not Available.</p>
+                )}
+              </div>
 
               <div ref={LocationRef} className="px-0 sm:px-6 mb-3 mt-4">
                 <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
                   Location
                 </h1>
-                <MapContainer className="p-4 ml-2" venueLocationData={venueLocationData} />
+                <MapContainer
+                  className="p-4 ml-2"
+                  venueLocationData={venueLocationData}
+                />
               </div>
 
               <div className="px-0 sm:px-6 mb-3">
@@ -531,7 +535,7 @@ function FeaturedEvent() {
                   </p>
                 )}
               </div>
-              
+
               <div className="px-0 sm:px-6 mb-0 lg:mt-10 sm:mt-4">
                 <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
                   Watch Trailer

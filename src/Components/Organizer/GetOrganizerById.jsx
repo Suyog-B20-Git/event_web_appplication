@@ -70,6 +70,8 @@ function GetOrganizerById() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const HrefUrl = `http://localhost:5173/Organizer/${organizerId}`;
 
   useEffect(() => {
     dispatch(
@@ -210,7 +212,7 @@ function GetOrganizerById() {
             className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
             style={{
               backgroundImage:
-                "radial-gradient( circle farthest-corner at 5.6% 54.5%,  rgba(47,71,79,1) 0%, rgba(159,188,198,1) 83.6% )",
+                "url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fG9yZ2FuaXplcnxlbnwwfHx8fDE2OTY5NzQ1NTg&ixlib=rb-4.0.3&q=80&w=1080')",
             }}
           >
             <div className="flex flex-col gap-4 lg:px-0 px-2 ">
@@ -271,20 +273,20 @@ function GetOrganizerById() {
                   Claim Ownership
                 </p>
                 <p
-                  className={`flex gap-1 bg-white hover:text-[#ff2459] ${
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
                     enquirySent
                       ? "text-[#ff2459] cursor-not-allowed"
                       : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                   }`}
                   onClick={() => {
-                      if (!isLogin) {
-                          toast.error("Please login first to send enquiry!", {
-                            transition: Zoom,
-                            hideProgressBar: true,
-                            autoClose: 2000,
-                          });
-                          return;
-                        }
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
                     if (!organizerEmail) {
                       toast.error("Organizer email not available.");
                       return;
@@ -299,7 +301,7 @@ function GetOrganizerById() {
                 </p>
                 <button
                   onClick={() => {
-                     if (!isLogin) {
+                    if (!isLogin) {
                       toast.error("Please login first to Add favorite!", {
                         transition: Zoom,
                         hideProgressBar: true,
@@ -343,13 +345,13 @@ function GetOrganizerById() {
                       Claim Ownership
                     </button>
                     <button
-                      className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4  hover:text-[#ff2459] ${
                         enquirySent
-                          ? "text-[#ff2459] cursor-not-allowed"
+                          ? "text-[#ff2459] cursor-not-allowed font-bold"
                           : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                       }`}
                       onClick={() => {
-                          if (!isLogin) {
+                        if (!isLogin) {
                           toast.error("Please login first to send enquiry!", {
                             transition: Zoom,
                             hideProgressBar: true,
@@ -367,19 +369,19 @@ function GetOrganizerById() {
                         }
                       }}
                     >
-                      <CiCircleInfo className="relative top-1 lg:text-base " />
+                      <CiCircleInfo className="relative top-1 lg:text-base" />
                       {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                     </button>
                     <button
                       onClick={() => {
-                         if (!isLogin) {
-                      toast.error("Please login first to Add favorite!", {
-                        transition: Zoom,
-                        hideProgressBar: true,
-                        autoClose: 2000,
-                      });
-                      return;
-                    }
+                        if (!isLogin) {
+                          toast.error("Please login first to Add favorite!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
                         toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
@@ -399,15 +401,17 @@ function GetOrganizerById() {
           )}
           <div className=" flex lg:flex-row flex-col py-3 ">
             <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
-              <div className="w-[100%] md:w-[80%] lg:w-[100%] max-w-[250px] md:max-w-[400px] lg:max-w-[180px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
+              <div className="w-full border border-gray-200 shadow max-w-[250px] md:max-w-[400px] lg:max-w-[180px] h-auto aspect-[5/5] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
                 {data.profileImage ? (
                   <img
                     src={data.profileImage}
-                    className="w-full h-auto object-contain"
+                    className="w-full h-full object-cover"
                     alt="Profile"
                   />
                 ) : (
-                  <span className="text-gray-500">No Image Available</span>
+                  <span className="text-gray-500 text-sm">
+                    No Image Available
+                  </span>
                 )}
               </div>
 
@@ -507,6 +511,13 @@ function GetOrganizerById() {
                 </button>
               </div>
             </div>
+
+            {hoveredTab && (
+              <div className="fixed bottom-1 left-2 text-xs text-white bg-gray-900 px-2 py-1 rounded shadow">
+                {`${HrefUrl}#${hoveredTab}`}
+              </div>
+            )}
+
             <div className="lg:w-[70%]  h-[500px] overflow-scroll scrollbar-hide rounded-lg">
               <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
                 <button
@@ -522,6 +533,8 @@ function GetOrganizerById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("about")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   ABOUT
                 </button>
@@ -538,6 +551,8 @@ function GetOrganizerById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("upcoming-event")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   UPCOMING EVENT
                 </button>
@@ -554,6 +569,8 @@ function GetOrganizerById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("facebook")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   FACEBOOK
                 </button>
@@ -570,6 +587,8 @@ function GetOrganizerById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("twitter")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   TWITTER
                 </button>
@@ -586,6 +605,8 @@ function GetOrganizerById() {
                     setYoutube(false);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("instagram")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   INSTAGRAM
                 </button>
@@ -602,6 +623,8 @@ function GetOrganizerById() {
                     setYoutube(true);
                     setStat(false);
                   }}
+                  onMouseEnter={() => setHoveredTab("youtube")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   YOUTUBE
                 </button>
@@ -616,9 +639,10 @@ function GetOrganizerById() {
                     setTwitter(false);
                     setInstagram(false);
                     setYoutube(false);
-
                     setStat(true);
                   }}
+                  onMouseEnter={() => setHoveredTab("stat")}
+                  onMouseLeave={() => setHoveredTab(null)}
                 >
                   STAT
                 </button>
@@ -730,12 +754,21 @@ function GetOrganizerById() {
                   )}
                 </p>
                 <p>{stat ? <OrganizerStats data={data} /> : ""}</p>
-              </div>              
-            </div>           
+              </div>
+            </div>
           </div>
           <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-5">
-        <MapContainer data={data} />
-      </div>
+            <MapContainer data={data} />
+          </div>
+
+          <div className="pl-8  md:w-[80%] md:ml-[25%]  pr-14 pb-2 w-full flex justify-end">
+            <FacebookComments
+              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+              numPosts={10}
+              width="850"
+            />
+            <hr />
+          </div>
 
           <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
             <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
@@ -833,7 +866,6 @@ function GetOrganizerById() {
               </div>
             </div>
           </div>
-         
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">
@@ -938,16 +970,7 @@ function GetOrganizerById() {
           </div>
         </div>
       </div>
-      
-      
 
-      <div className="pl-8 pr-16 pb-2 w-full flex justify-center">
-        <FacebookComments
-          dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-          numPosts={10}
-          width="850"
-        />
-      </div>
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}

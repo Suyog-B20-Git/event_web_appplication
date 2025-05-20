@@ -27,7 +27,7 @@ function EventHeading({ heading, startDate, endDate, by, category }) {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
     twitter: `https://twitter.com/intent/tweet?url=${currentUrl}`,
     messenger: `https://www.messenger.com/t/?link=${currentUrl}`,
-    instagram: `https://www.instagram.com/`, // No direct sharing, just opens Instagram
+    instagram: `https://www.instagram.com/`,
   };
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");

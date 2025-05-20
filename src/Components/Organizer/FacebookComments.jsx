@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-// src/FacebookComments.jsx
 import React, { useEffect } from "react";
 
 const FacebookComments = ({ dataHref, numPosts = 5, width }) => {
@@ -35,7 +33,6 @@ const FacebookComments = ({ dataHref, numPosts = 5, width }) => {
             xfbml: true,
             version: "v22.0",
           });
-          // Add a short delay to ensure DOM elements are ready
           setTimeout(parseFB, 100);
         }
       };
@@ -47,6 +44,7 @@ const FacebookComments = ({ dataHref, numPosts = 5, width }) => {
       data-href={dataHref}
       data-numposts={numPosts}
       data-width={width}
+      
     ></div>
   );
 };

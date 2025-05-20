@@ -165,7 +165,6 @@ function EventCardData({ data, heading }) {
            
               onClick={() => {
                 const path = `/events/${item.slug || "featured-event"}`;
-                console.log("Navigating to:", path, "with state ID:", item._id);
                 navigate(path, { state: item._id });
               }}      >
               <div className="h-32 w-full rounded-lg"

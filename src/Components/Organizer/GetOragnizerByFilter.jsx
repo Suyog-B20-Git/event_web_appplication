@@ -82,7 +82,6 @@ function GetOrganizerByFilter() {
     organizerData: [],
   };
   const data = store.organizerData;
-  console.log(data, "FilterOrganizer Data");
   const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,

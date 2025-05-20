@@ -16,7 +16,6 @@ import { getEventByFilter1 } from "../../redux/actions/master/Events/getEventByF
 function GetEventByFilter() {
   const location = useLocation();
   const value = location.state;
-  console.log(value);
 
   const filterValue = value?.value?.toLowerCase() || "";
  
@@ -44,7 +43,6 @@ function GetEventByFilter() {
     eventData: [],
   };
   const data = store.eventData;
-  console.log(data, "FilterEvent Data");
   const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect, useRef } from "react";
 
 const MapContainer = ({ data }) => {
@@ -7,9 +6,9 @@ const MapContainer = ({ data }) => {
   const GOOGLE_MAPS_API_KEY = "AIzaSyDBvQO-S7yEtX4__jyFra4HvGMz15MqGyE";
   const mapStyles = {
     height: window.innerWidth <= 768 ? "200px" : "400px",
-    width: "100%",
+    width: "90%",
+    padding: "10px",
   };
-  
 
   const defaultCenter = {
     lat: data ? Number(data.googleSearchLat) : 40.7127753,
@@ -17,10 +16,8 @@ const MapContainer = ({ data }) => {
   };
 
   useEffect(() => {
-    // Load the Google Maps JavaScript API
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=marker`;
-    // script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_MAP_API_KEY}&libraries=marker`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
@@ -41,12 +38,17 @@ const MapContainer = ({ data }) => {
     };
 
     return () => {
-      // Cleanup script to prevent memory leaks
       document.head.removeChild(script);
     };
   }, [data]);
 
-  return <div ref={mapRef} style={mapStyles} className="lg:m-0 m-0 mr-4 lg:w-full w-max"></div>;
+  return (
+    <div
+      ref={mapRef}
+      style={mapStyles}
+      className="ml-[5%] lg:p-5 mr-0 lg:w-full mt-5 mb-5 border border-gray-300 shadow w-max"
+    ></div>
+  );
 };
 
 export default MapContainer;
