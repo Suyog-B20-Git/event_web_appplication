@@ -111,6 +111,7 @@ function Routess() {
           <Route path="/city/events" element={<Viewall />} />
           <Route path="/filtered-events" element={<GetEventByFilter />} />
           <Route path="/events/:categoryname/:eventId" element={<FeaturedEvent />} />
+          <Route path="/events/live-music/:eventId" element={<FeaturedEvent />} />
           <Route path="/city/location" element={<SearchData />} />
           <Route path='event/:eventId' element={<FeaturedEvent />} />
           <Route path="/bookTicket" element={<BookTicket/>} />

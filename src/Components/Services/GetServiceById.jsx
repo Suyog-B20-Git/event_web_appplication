@@ -67,12 +67,12 @@ function GetServiceById() {
   const navigate = useNavigate();
   const location = useLocation();
   const [enquirySent, setEnquirySent] = useState(false);
+  const [ownershipEnquirySent, setOwnershipEnquirySent] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
   const [hoveredTab, setHoveredTab] = useState(null);
-  const HrefUrl = window.location.href; 
-
+  const HrefUrl = window.location.href;
 
   // get Upcoming Event Data
   useEffect(() => {
@@ -97,6 +97,7 @@ function GetServiceById() {
   }
 
   const data1 = upcomingEventData;
+  console.log("Upcoming Event Data:", data1);
 
   const store = useSelector((state) => state.getServiceByIdReducer) || {
     serviceData: [],
@@ -105,6 +106,8 @@ function GetServiceById() {
   const data = store.serviceData;
   const name = data.name;
   const email = data?.organizerEmail || data?.email;
+  const targetId = data?._id;
+  const modelName = "Service";
 
   const store1 = useSelector((state) => state.getFavouriteServiceReducer) || {
     favouriteServiceData: [],
@@ -126,6 +129,19 @@ function GetServiceById() {
   const handleEnquirySent = () => {
     setEnquirySent(true);
     setEnquiry(false);
+  };
+
+  useEffect(() => {
+    setOwnershipEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${targetId}`);
+    if (sent === "true") {
+      setOwnershipEnquirySent(true);
+    }
+  }, [targetId]);
+
+  const handleOwnershipEnquirySent = () => {
+    setOwnershipEnquirySent(true);
+    setOwnership(true);
   };
 
   useEffect(() => {
@@ -275,11 +291,27 @@ function GetServiceById() {
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
-                  className="flex gap-1 hover:text-[#ff2459] "
-                  onClick={() => setOwnership(!ownership)}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
+                    ownershipEnquirySent
+                      ? "text-[#ff2459] cursor-not-allowed"
+                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                  }`}
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    setOwnership(!ownership);
+                  }}
                 >
-                  <IoFlagSharp className="relative top-1 lg:text-base text-xs" />{" "}
-                  Claim Ownership
+                  <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
+                  {ownershipEnquirySent
+                    ? "Claim Enquiry Sent"
+                    : "Claim Ownership"}
                 </p>
                 <p
                   className={`flex gap-1 bg-white  hover:text-[#ff2459] ${
@@ -342,19 +374,32 @@ function GetServiceById() {
                     &times;
                   </button>
 
-                  <div className="flex flex-col gap-0 px-0 h-[170px] w-[300px] border rounded mt-6">
+                  <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-6">
                     <button
-                      className="flex gap-3 p-4 px-4 hover:text-white hover:bg-[#ff2459]"
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${
+                        ownershipEnquirySent
+                          ? "text-[#ff2459] cursor-not-allowed font-bold"
+                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                      }`}
                       onClick={() => {
+                        if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
                         setOwnership(!ownership);
-                        setIsPopUp(false);
                       }}
                     >
                       <IoFlagSharp className="relative top-1 lg:text-base" />
-                      Claim Ownership
+                      {ownershipEnquirySent
+                        ? "Claim Enquiry Sent"
+                        : "Claim Ownership"}
                     </button>
                     <button
-                      className={`flex gap-3 md:text-xs lg:text-xs ml-4  hover:text-[#ff2459] ${
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${
                         enquirySent
                           ? "text-[#ff2459] cursor-not-allowed font-bold"
                           : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
@@ -419,9 +464,11 @@ function GetServiceById() {
                     alt="Profile"
                   />
                 ) : (
-                  <span className="text-gray-500 text-sm">
-                    No Image Available
-                  </span>
+                  <img
+                     src="/assets/staticAssets/user-icon.png"
+                    className="w-full h-full object-cover"
+                    alt="user"
+                  />
                 )}
               </div>
 
@@ -430,49 +477,6 @@ function GetServiceById() {
                   <CiCircleCheck className="relative top-1 lg:text-lg" />
                   Follow
                 </button>
-                <div className="flex   gap-3 ">
-                  <button className="text-red-500 text-2xl">
-                    <a
-                      className="flex"
-                      href={data.instagramUrl ? data.instagramUrl : ""}
-                    >
-                      {data.instagramUrl ? (
-                        <FaInstagram className=" text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-
-                  <button className="text-red-500 text-2xl">
-                    <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                      {data.facebookUrl ? (
-                        <CiFacebook className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-
-                  <button
-                    onClick={() => toggleFavorite(data._id)}
-                    className={` text-2xl ${
-                      localIsFavorite ? "text-[#ff2459]" : "text-gray-400"
-                    }`}
-                  >
-                    <FaHeart />
-                  </button>
-
-                  <button className="text-red-500 text-2xl">
-                    <a href={data.twitterUrl ? data.twitterUrl : ""}>
-                      {data.twitterUrl ? (
-                        <FaSquareXTwitter className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-                </div>
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center">
@@ -480,59 +484,6 @@ function GetServiceById() {
                 <CiCircleCheck className="relative top-1 lg:text-lg" />
                 Follow
               </button>
-              <div className="flex   gap-5 ">
-                <button className="text-red-500 text-2xl">
-                  <a
-                    className="flex"
-                    href={data.instagramUrl ? data.instagramUrl : ""}
-                  >
-                    {data.instagramUrl ? (
-                      <FaInstagram className=" text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
-
-                <button className="text-red-500 text-2xl">
-                  <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                    {data.facebookUrl ? (
-                      <CiFacebook className="text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (!isLogin) {
-                      toast.error("Please login first to Add favorite!", {
-                        transition: Zoom,
-                        hideProgressBar: true,
-                        autoClose: 2000,
-                      });
-                      return;
-                    }
-                    toggleFavorite(data._id);
-                  }}
-                  className={`text-2xl ${
-                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-                  }`}
-                >
-                  <FaHeart />
-                </button>
-
-                <button className="text-red-500 text-2xl">
-                  <a href={data.twitterUrl ? data.twitterUrl : ""}>
-                    {data.twitterUrl ? (
-                      <FaSquareXTwitter className="text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
-              </div>
             </div>
 
             {hoveredTab && (
@@ -690,6 +641,11 @@ function GetServiceById() {
                         <div
                           key={index}
                           className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
+                          onClick={() => {
+                            navigate(`/events/live-music/${event._id}`, {
+                              state: event,
+                            });
+                          }}
                         >
                           {/* 🔹 Image Container*/}
                           <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
@@ -781,15 +737,16 @@ function GetServiceById() {
               </div>
             </div>
           </div>
-          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-5">
-            <MapContainer data={data} />
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-1">
+            <h1 className="font-semibold text-xl p-2 ml-2 pb-0 ">Location</h1>
+            <MapContainer className="mb-4" data={data} />
           </div>
 
-          <div className="pl-8 border border-gray shadow md:w-[70%] md:ml-[30%] pr-14 pb-2 w-full h-auto mb-5 flex justify-start overflow-y-scroll">
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-0 overflow-y-scroll scrollbar-hide">
             <FacebookComments
               dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
               numPosts={10}
-              width="750"
+              width="auto"
             />
             <hr />
           </div>
@@ -801,7 +758,7 @@ function GetServiceById() {
                   Service Category
                 </h1>
                 <section className="flex lg:flex-col flex-col md:flex-row overflow-x-scroll gap-2 pt-3 ">
-                  <div className="flex gap-2 ">
+                  <div className="flex gap-2">
                     <div
                       onClick={() => {
                         setCategory("anchor");
@@ -829,19 +786,18 @@ function GetServiceById() {
                     >
                       Entertainer
                     </div>
-                  </div>
-                  <div className="flex gap-2 ">
                     <div
                       onClick={() => {
                         setCategory("party supplies");
                         navigate("/Services", { state: category });
                       }}
-                      className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
+                      className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-3 text-xs "
                     >
                       Party Supplies
-                    </div>
+                    </div>{" "}
                   </div>
-                  <div className="flex gap-2 ">
+
+                  <div className="flex gap-2 flex-wrap ">
                     <div
                       onClick={() => {
                         setCategory("photography & videography");
@@ -851,8 +807,6 @@ function GetServiceById() {
                     >
                       Photography & Videography
                     </div>
-                  </div>
-                  <div className="flex gap-2 ">
                     <div
                       onClick={() => {
                         setCategory("promoters");
@@ -875,56 +829,50 @@ function GetServiceById() {
                 </section>
               </div>
               <div className="rounded border ">
-                <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
-                  Find Events
-                  <div className="flex  gap-2 text-xl">
-                    <button
+                <h1 className="text-lg font-medium text-gray-900 p-4 border-b flex justify-start ">
+                  Share
+                  <div className="flex ml-4 gap-4 mt-1 text-2xl ">
+                    <FaSquareFacebook
                       onClick={() => handleShare("facebook")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaSquareFacebook className="text-red-500 relative " />
-                    </button>
-                    <button
+                      className=" text-blue-600  relative "
+                    />
+                    <FaWhatsapp
                       onClick={() => handleShare("whatsapp")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaWhatsapp className="bg-red-500 text-white p-0.5" />
-                    </button>
-                    <button
+                      className=" text-green-600  relative "
+                    />
+                    <FaFacebookMessenger
                       onClick={() => handleShare("messenger")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaFacebookMessenger className="text-red-500" />
-                    </button>
-                    <button
+                      className=" text-blue-800  relative "
+                    />
+                    <FaSquareXTwitter
                       onClick={() => handleShare("twitter")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaSquareXTwitter className="text-red-500" />
-                    </button>
+                      className=" text-white-600 relative"
+                    />
                   </div>
                 </h1>
-                <div className="flex justify-center items-center ">
-                  <div className="flex  gap-5 p-3 overflow-x-scroll ">
-                    <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 ">
-                      <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
+                <hr />
+                <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
+                  Find Events
+                </h2>
+                <div className="flex  gap-5 p-3 overflow-x-scroll ">
+                  <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 ">
+                    <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
-                      <p>Today 0</p>
-                    </div>
-                    <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
+                    <p>Today 0</p>
+                  </div>
+                  <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+                    <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
 
-                      <p>Tommorrow 0</p>
-                    </div>
-                    <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
+                    <p>Tommorrow 0</p>
+                  </div>
+                  <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+                    <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
 
-                      <p className="text-sm p-1">This Weekend 0</p>
-                    </div>
-                    <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <CalendarCheck className="text-2xl text-white font-medium" />
-                      <p>Choose Date</p>
-                    </div>
+                    <p className="text-sm p-1">This Weekend 0</p>
+                  </div>
+                  <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
+                    <CalendarCheck className="text-2xl text-white font-medium" />
+                    <p>Choose Date</p>
                   </div>
                 </div>
               </div>
@@ -932,121 +880,117 @@ function GetServiceById() {
           </div>
         </div>
 
-        <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">
-          <div className="flex flex-col gap-2 px-2 shadow-md p-4">
-            <div className="grid grid-cols-3 gap-2 text-xl">
-              <button
-                onClick={() => handleShare("facebook")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareFacebook className="text-red-500 relative " />
-              </button>
-              <button
-                onClick={() => handleShare("whatsapp")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaWhatsapp className="bg-red-500 text-white p-0.5" />
-              </button>
-              <button
-                onClick={() => handleShare("messenger")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaFacebookMessenger className="text-red-500" />
-              </button>
-              <button
-                onClick={() => handleShare("twitter")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareXTwitter className="text-red-500" />
-              </button>
+        <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+            <div className=" p-3 shadow gap-2 ">
+              <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+                Share
+              </h1>
+              <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
+                <FaSquareFacebook
+                  onClick={() => handleShare("facebook")}
+                  className="text-blue-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#1877f2] transition duration-300"
+                />
+
+                <FaWhatsapp
+                  onClick={() => handleShare("whatsapp")}
+                  className="text-green-600 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#25D366] transition duration-300"
+                />
+
+                <FaFacebookMessenger
+                  onClick={() => handleShare("messenger")}
+                  className="text-blue-700 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#0084ff] transition duration-300"
+                />
+
+                <FaSquareXTwitter
+                  onClick={() => handleShare("twitter")}
+                  className="text-black-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#000000] transition duration-300"
+                />
+              </div>
             </div>
           </div>
-          <div className="rounded p-2 shadow ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
-              Service Category
-            </h1>
-            <section className="flex flex-col gap-2 pt-3 justify-center items-center">
-              <div className="flex flex-wrap gap-2 justify-center ">
-                <div
-                  onClick={() => {
-                    setCategory("anchor");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Anchor
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("decor");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Decor
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("entertainer");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Entertainer
-                </div>
-              </div>
 
-              <div className="flex gap-2 ">
-                <div
-                  onClick={() => {
-                    setCategory("photography & videography");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Photography & Videography
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+            <div className=" p-3  shadow gap-2 ">
+              <h1 className="text-lg font-medium text-gray-900 p-1 border-b ">
+                Services Category
+              </h1>
+              <section className="flex flex-wrap gap-3 p-3 justify-start items-start">
+                <div className="flex flex-wrap gap-4 justify-start ">
+                  <div
+                    onClick={() => {
+                      setCategory("anchor");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Anchor
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("decor");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Decor
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("entertainer");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Entertainer
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("promoters");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Promoters
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setCategory("photography & videography");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Photography & Videography
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("dance studio");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Dance Studio
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("party supplies");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer whitespace-nowrap bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Party Supplies
+                  </div>
                 </div>
-                <div
-                  onClick={() => {
-                    setCategory("promoters");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Promoters
-                </div>
-              </div>
-              <div className="flex gap-2 ">
-                <div
-                  onClick={() => {
-                    setCategory("dance studio");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Dance Studio
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("party supplies");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer whitespace-nowrap bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Party Supplies
-                </div>
-              </div>
-            </section>
+              </section>
+            </div>
           </div>
-          <div className="rounded border">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
+
+          <div className="border shadow w-[95%] ml-3">
+            <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
               Find Events
             </h1>
-            <div className="flex justify-center items-center ">
+            <div className="flex justify-center items-center border-b shadow-md ">
               <div className="grid grid-cols-2 gap-4 p-3 ">
                 <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
@@ -1078,6 +1022,9 @@ function GetServiceById() {
           setOwnership={setOwnership}
           name={data.name}
           ownership={ownership}
+          targetId={targetId}
+          modelName={modelName}
+          onOwnershipEnquirySent={handleOwnershipEnquirySent}
         />
       )}
       {enquiry && (

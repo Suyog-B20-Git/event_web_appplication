@@ -46,7 +46,7 @@ const MapContainer = ({ data }) => {
     <div
       ref={mapRef}
       style={mapStyles}
-      className="ml-[5%] lg:p-5 mr-0 lg:w-full mt-5 mb-5 border border-gray-300 shadow w-max"
+      className="ml-[5%] lg:p-5 mr-0 lg:w-full mt-2 mb-6 border border-gray-300 shadow w-max"
     ></div>
   );
 };

@@ -61,7 +61,7 @@ export const getUpcomingEventData = (setLoader) => {
 
     try {
       const response = await axios.get(Event.upcomingEvent);
-      console.log("response", response);
+      console.log("Upcomg Event response", response);
       dispatch({
         type: "GET_UPCOMING_EVENT",
         eventData: response.data.events, // Ensure the API actually returns this structure
@@ -82,16 +82,16 @@ export const getUpcomingEventData = (setLoader) => {
 };
 
 export const getUpcomingEventsDataForProfile = ({
-                                    page = 1,
-                                    limit = 10,
-                                    timezoneOffset = 0,
-                                    sortBy = "startDate",
-                                    sortOrder = "asc",
-                                    performer,
-                                    organizer,
-                                    venue,
-                                    setLoader, // A function to control loader visibility
-                                  }) => {
+  page = 1,
+  limit = 10,
+  timezoneOffset = 0,
+  sortBy = "startDate",
+  sortOrder = "asc",
+  performer,
+  organizer,
+  venue,
+  setLoader, // A function to control loader visibility
+}) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
 
@@ -121,13 +121,13 @@ export const getUpcomingEventsDataForProfile = ({
       });
     } catch (error) {
       console.error(
-          "API Error:",
-          error.response ? error.response.data : error.message
+        "API Error:",
+        error.response ? error.response.data : error.message
       );
       // Dispatch an empty payload or an error-specific payload as required
       dispatch({
         type: "GET_UPCOMING_EVENT",
-        eventData:[],
+        eventData: [],
       });
     } finally {
       setLoader(false); // Stop loading
