@@ -41,7 +41,7 @@ function Cards({ data, heading }) {
         </div>
 
         {/* Cards container with horizontal scrolling */}
-        <div className="  flex gap-9 overflow-x-auto lg:p-4 pt-2 relative lg:right-46   w-full">
+        <div className="  flex gap-9 overflow-x-auto overflow-y-hidden lg:p-4 pt-2 relative lg:right-46   w-full">
           {data.map((item, index) => (
             <div
               key={index}

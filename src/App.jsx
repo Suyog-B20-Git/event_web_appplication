@@ -17,6 +17,9 @@ import OwnerShipForm from "./Components/Organizer/OwnerShipForm";
 import { ContextProvider } from "./Components/Util/ContextProvider";
 import FeaturedEvent from "./LandingPages/FeaturedEvent";
 import MyBookings from "./Components/MyBookings";
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+
 
 
 function App() {

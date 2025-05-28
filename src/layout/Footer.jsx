@@ -3,6 +3,7 @@ import { FaFacebook, FaInstagram, FaXTwitter } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 function Footer() {
@@ -149,7 +150,10 @@ function Footer() {
             <i className="far fa-envelope-open text-orange-500 text-2xl"></i>
             <div>
               <h4 className="font-semibold text-lg">Mail us</h4>
-              <span>mail@info.com</span>
+
+              <Link to={"https://mail.google.com/Mail/"} className="hover:text-[#ff2459]">
+                mail@info.com
+                </Link>
             </div>
           </div>
         </div>
@@ -175,19 +179,19 @@ function Footer() {
             </p>
             <div className="mt-4 flex gap-4">
               <Link
-                to={"#"}
+                to={"https://twitter.com/"}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2459] text-white"
               >
                 <FaXTwitter />
               </Link>
               <Link
-                to={"#"}
+                to={"https://instagram.com/"}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2459] text-white"
               >
                 <FaInstagram />
               </Link>
               <Link
-                to={"#"}
+                to={"https://facebook.com/"}
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2459] text-white"
               >
                 <FaFacebook />
@@ -205,9 +209,10 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-[#ff2459]">
+                <Link to="/About" className="hover:text-[#ff2459]">
                   About
                 </Link>
+
               </li>
               <li>
                 <Link to="/services" className="hover:text-[#ff2459]">
@@ -215,19 +220,21 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/portfolio" className="hover:text-[#ff2459]">
-                  Blog
+                <Link to="/blog" className="hover:text-[#ff2459]">
+                   Blog
                 </Link>
+
               </li>
               <li>
-                <Link to="/contact" className="hover:text-[#ff2459]">
+                <Link to="/terms" className="hover:text-[#ff2459]">
                   Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link to="/team" className="hover:text-[#ff2459]">
+                <Link to="/organiser" className="hover:text-[#ff2459]">
                   Expert Event Organiser
                 </Link>
+
               </li>
             </ul>
           </div>

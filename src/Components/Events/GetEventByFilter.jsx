@@ -12,6 +12,7 @@ import { FaFacebookMessenger, FaInstagram } from "react-icons/fa";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import { FcLike } from "react-icons/fc";
 import { getEventByFilter1 } from "../../redux/actions/master/Events/getEventByFilter1";
+import CommonCalendar from "../CommonCalender";
 
 function GetEventByFilter() {
   const location = useLocation();
@@ -182,7 +183,7 @@ function GetEventByFilter() {
               </div>
             </h1>
             <div className="flex justify-center items-center ">
-              <div className="flex  gap-5 p-3  overflow-x-scroll ">
+              {/* <div className="flex  gap-5 p-3  overflow-x-scroll ">
                 <div className="bg-blue-600 rounded  h-28 min-w-28   text-white font-medium flex flex-col gap-2 items-start p-4 ">
                   <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
 
@@ -202,7 +203,8 @@ function GetEventByFilter() {
                   <CalendarCheck className="text-2xl text-white font-medium" />
                   <p>Choose Date</p>
                 </div>
-              </div>
+              </div> */}
+              <CommonCalendar />
             </div>
           </div>
         </div>
@@ -333,7 +335,7 @@ function GetEventByFilter() {
       Find Events
     </h1>
     <div className="flex justify-center items-center">
-      <div className="grid grid-cols-2 gap-4 p-3">
+      {/* <div className="grid grid-cols-2 gap-4 p-3">
         <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
           <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
           <p>Today 0</p>
@@ -350,7 +352,8 @@ function GetEventByFilter() {
           <CalendarCheck className="text-2xl text-white font-medium" />
           <p>Choose Date</p>
         </div>
-      </div>
+      </div> */}
+      <CommonCalendar />
     </div>
   </div>
 </div>

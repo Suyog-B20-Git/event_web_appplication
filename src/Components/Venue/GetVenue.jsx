@@ -18,6 +18,7 @@ import Select from "react-select";
 
 import { IoLogoWhatsapp, IoStarSharp } from "react-icons/io5";
 import { BsCalendar2DateFill } from "react-icons/bs";
+import { BsCalendar  } from "react-icons/bs";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import { FaShareAlt } from "react-icons/fa";
@@ -26,12 +27,23 @@ import Pagination from "../Pagination";
 import { getFavouriteVenueData } from "../../redux/actions/master/Venue/getFavouriteVenue";
 import { toast } from "react-toastify";
 import { postFavouriteVenue } from "../../redux/actions/master/Venue/postFavouriteVenueReducer";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import CommonCalendar from "../CommonCalender";
+
 
 function GetVenue() {
   const navigate = useNavigate();
   const location = useLocation();
   const value = location.state;
   const filterValue = value ? value.toLowerCase() : "";
+  const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const pickerRef = useRef(null);
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+    const getDayNumber = (date) => date.getDate();
   {
     /*header*/
   }
@@ -167,6 +179,29 @@ function GetVenue() {
       setCurrentPage(currentPage - 1);
     }
   };
+
+
+  ////////DATE PICKER/////////////
+  
+     useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+          setShowDatePicker(false);
+        }
+      };
+  
+      if (showDatePicker) {
+        document.addEventListener("mousedown", handleClickOutside);
+      } else {
+        document.removeEventListener("mousedown", handleClickOutside);
+      }
+  
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [showDatePicker]);
+  
+      const formatDate = (date) => date.toISOString().split("T")[0];
   // useEffect(() => {
   //   const handleScroll = (e) => {
   //     const scrollHeight = e.target.documentElement.scrollHeight;
@@ -313,28 +348,50 @@ function GetVenue() {
                 </button>
               </div>
             </h1>
-            <div className="flex justify-center items-center ">
-              <div className="flex  md:gap-7 gap-5 p-3 overflow-x-scroll ">
-                <div className="bg-blue-600 rounded h-28 min-w-28  text-white font-medium flex flex-col gap-2 items-start p-4 ">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Today 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
+            <div className="flex justify-center items-center flex-col relative">
+                          <div className="flex  md:gap-7 gap-5 p-3 overflow-x-scroll ">
+                           {/* <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 transition-transform hover:scale-105 cursor-pointer">
+                              </div> */}
+      {/* Calendar icon with date overlay */}
+                   <div className="relative w-10 h-10">
+                    </div>
+                  {/* <BsCalendar className="text-white text-s animate-pulse w-full h-full" /> */}
+                    
+                  
+              
+                            {/* <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white transition-transform hover:scale-105 cursor-pointer">
+                              <BsCalendar2DateFill className=" text-white text-2xl font-medium animate-pulse" />
+            
+                              <p>Tommorrow 0 {getDayNumber(tomorrow)}</p>
+                            </div>
+                            <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white transition-transform hover:scale-105 cursor-pointer">
+                              <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
+            
+                              <p className="text-sm p-1">These Weekend 0</p>
+                            </div> */}
+                            {/* <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white transition-transform hover:scale-105 cursor-pointer"
+                             onClick={() => setShowDatePicker(!showDatePicker)}
+                            >
+                              <CalendarCheck className="text-2xl text-white font-medium"
+                              onClick={() => setShowDatePicker(!showDatePicker)}
+                              />
+                              <p>Choose Date</p>
+                            </div> */}
+                          </div> 
+                          <CommonCalendar />
+                           {/* DatePicker pop-up */}
+                  {/* {showDatePicker && (
+                    <div className="absolute top-full left-0 mt-2 bg-white p-2 rounded shadow-lg z-50">
+                      <DatePicker
+                        selected={selectedDate}
+                        onChange={(date) => {
+                          setSelectedDate(date);
+                          setShowDatePicker(false);
+                        }}
+                        inline
+                      />
+                    </div>
+                  )} */}
             </div>
           </div>
         </div>
@@ -508,28 +565,46 @@ function GetVenue() {
             <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
               Find Events
             </h1>
-            <div className="flex justify-center items-center ">
-              <div className="grid grid-cols-2 gap-4 p-3 ">
-                <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Today 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
+           <div className="flex flex justify-center items-center flex-col relative-center items-center ">
+                         {/* <div className="grid grid-cols-2 gap-4 p-3 ">
+                           <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4 transition-transform hover:scale-105 cursor-pointer">
+                             <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
+           
+                             <p>Today 0</p>
+                           </div>
+                           <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white transition-transform hover:scale-105 cursor-pointer ">
+                             <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
+           
+                             <p>Tommorrow 0</p>
+                           </div>
+                           <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white transition-transform hover:scale-105 cursor-pointer">
+                             <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
+           
+                             <p className="text-sm p-1">These Weekend 0</p>
+                           </div>
+                           <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white transition-transform hover:scale-105 cursor-pointer"
+                           onClick={() => setShowDatePicker(!showDatePicker)}
+                           >
+                             <CalendarCheck className="text-2xl text-white font-medium" 
+                             onClick={() => setShowDatePicker(!showDatePicker)}
+                             />
+                             <p>Choose Date</p>
+                           </div>
+                         </div> */}
+                         <CommonCalendar />
+                               {/* DatePicker pop-up */}
+                 {/* {showDatePicker && (
+                   <div className="mt-4 p-absolute top-full left-0 mt-2 bg-white p-2 rounded shadow-lg z-50 z-50">
+                     <DatePicker
+                       selected={selectedDate}
+                       onChange={(date) => {
+                         setSelectedDate(date);
+                         setShowDatePicker(false);
+                       }}
+                       inline
+                     />
+                   </div>
+                 )} */}
             </div>
           </div>
         </div>

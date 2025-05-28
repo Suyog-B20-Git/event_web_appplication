@@ -3,7 +3,6 @@ import { CiFacebook } from "react-icons/ci";
 import { FaEye, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { FcLike } from "react-icons/fc";
-import { BsFire } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
 function CardData({ data, heading }) {
@@ -15,7 +14,6 @@ function CardData({ data, heading }) {
         {/* Header & View All */}
         <div className="flex justify-between">
           <div className="flex gap-2 lg:pl-3">
-            {/* <BsFire className="text-2xl relative top-1" /> */}
             <p className="font-bold font-sans lg:text-2xl">{heading}</p>
           </div>
           <button
@@ -27,7 +25,7 @@ function CardData({ data, heading }) {
         </div>
 
         {/* Horizontal scrollable card container */}
-        <div className="flex gap-9 overflow-x-auto lg:p-4 pt-2 w-full">
+        <div className="flex gap-9 overflow-x-auto overflow-y-hidden lg:p-4 pt-2 w-full">
           {data.map((item, index) => (
             <div
               key={index}
@@ -49,29 +47,35 @@ function CardData({ data, heading }) {
 
               {/* Text content */}
               <div className="p-2 flex flex-col gap-2">
-                <h1 className="font-medium text-lg capitalize flex items-center gap-2">
-                  {item.name}
-                  {(item.categories.includes("indoor") || item.categories.includes("outdoor")) && (
+                {/* Name & Views Row */}
+                <div className="flex justify-between items-center">
+                  <h1 className="font-medium text-lg capitalize">
+                    {item.name}
+                  </h1>
+                  {(item.categories.includes("indoor") ||
+                    item.categories.includes("outdoor")) && (
                     <span className="flex items-center text-gray-500 text-sm">
-                      <FaEye className="text-blue-600 mr-1" />
+                      <FaEye className="text-blue-600 text-[18px] mr-1" />
                       {item.visits}
                     </span>
                   )}
-                </h1>
+                </div>
 
+                {/* Address */}
                 <p className="text-sm text-gray-500">
                   {item.address}, {item.city}, {item.state}
                 </p>
 
                 {/* Social Links */}
-                <div className="flex items-center gap-3 pt-2 text-lg text-red-500">
+                <div className="flex justify-center items-center gap-4 pt-2 text-xl text-red-500">
                   {item.facebookUrl && (
                     <a
                       href={item.facebookUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="flex items-center justify-center w-6 h-6"
                     >
-                      <CiFacebook />
+                      <CiFacebook className="w-full h-full" />
                     </a>
                   )}
                   {item.instagramUrl && (
@@ -79,18 +83,22 @@ function CardData({ data, heading }) {
                       href={item.instagramUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="flex items-center justify-center w-6 h-6"
                     >
-                      <FaInstagram />
+                      <FaInstagram className="w-full h-full" />
                     </a>
                   )}
-                  <FcLike />
+                  <span className="flex items-center justify-center w-6 h-6">
+                    <FcLike className="w-full h-full" />
+                  </span>
                   {item.twitterUrl && (
                     <a
                       href={item.twitterUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="flex items-center justify-center w-6 h-6"
                     >
-                      <FaSquareXTwitter />
+                      <FaSquareXTwitter className="w-full h-full" />
                     </a>
                   )}
                 </div>
