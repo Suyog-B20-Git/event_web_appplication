@@ -48,6 +48,7 @@ import {
   getUpcomingEventsDataForProfile,
 } from "../../redux/actions/master/Events/UpcomingEvent";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
+import FollowButton from "../FollowButton.jsx";
 
 function GetVenueById() {
   const { venueId } = useParams();
@@ -462,7 +463,7 @@ function GetVenueById() {
                   />
                 ) : (
                   <img
-                     src="/assets/staticAssets/user-icon.png"
+                    src="/assets/staticAssets/user-icon.png"
                     className="w-full h-full object-cover"
                     alt="user"
                   />
@@ -470,17 +471,11 @@ function GetVenueById() {
               </div>
 
               <div className=" lg:flex gap-2 hidden justify-center">
-                <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                  <CiCircleCheck className="relative top-1 lg:text-lg" />
-                  Follow
-                </button>
+               <FollowButton targetId={targetId} modelName={modelName} />
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
-              <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                <CiCircleCheck className="relative top-1 lg:text-lg" />
-                Follow
-              </button>
+              <FollowButton targetId={targetId} modelName={modelName} variant="mobile"  />
             </div>
 
             {hoveredTab && (
@@ -837,11 +832,11 @@ function GetVenueById() {
             <MapContainer className="mb-4" data={data} />
           </div>
 
-           <div className="pl-8 border border-gray shadow md:w-[70%] md:ml-[30%] pr-14 pb-2 w-full h-auto mb-5 flex justify-start overflow-y-scroll">
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-0 overflow-y-scroll scrollbar-hide">
             <FacebookComments
               dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
               numPosts={10}
-              width="750"
+              width="auto"
             />
             <hr />
           </div>

@@ -53,9 +53,9 @@ function EventGallery({ data }) {
   }, [viewerOpen]);
 
   return (
-    <div className="w-full px-2">
+    <div className="w-full px-2 py-2">
       {data?.length > 0 && (
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-5xl mx-0">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-12 gap-5">
             {data.map((item, index) => (
               <div

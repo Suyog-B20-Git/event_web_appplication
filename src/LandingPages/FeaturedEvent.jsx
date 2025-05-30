@@ -24,7 +24,7 @@ import RegisterModal from "../Components/FeaturedEvent/RegisterModal";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { FaEye, FaHeart } from "react-icons/fa6";
 import { MdDateRange, MdOutlineMailOutline } from "react-icons/md";
-import { PiBuildingApartmentFill } from "react-icons/pi";
+import { PiBuildingApartmentFill, PiBookmarkThin  } from "react-icons/pi";
 import OrganiserContact from "../Components/FeaturedEvent/OrganiserContact";
 import { useDispatch, useSelector } from "react-redux";
 import Collapsible from "react-collapsible";
@@ -64,6 +64,28 @@ function FeaturedEvent() {
     eventData: [],
   };
   const receivedData = store.eventData;
+
+   const updateStartDateTime = new Date(receivedData.startDate).toLocaleString("en-IN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Kolkata", 
+      })
+
+   const updateEndDateTime = new Date(receivedData.endDate).toLocaleString("en-IN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Kolkata",
+      })   
+
+const youtubeVideoUrl = receivedData.youtubeVideoUrls
   const VenuesData = Array.isArray(receivedData?.venue)
     ? receivedData?.venue
     : receivedData?.venue
@@ -192,7 +214,11 @@ function FeaturedEvent() {
     setDate(formattedDate);
     setTime(formattedTime);
   };
-  const venueLocationData = receivedData.venue || {};
+
+  const googleLocation = {
+  lat: receivedData.venue?.googleSearchLat,
+  lng: receivedData.venue?.googleSearchLong,
+};
 
   const sectionRef = useRef(null);
   const LocationRef = useRef(null);
@@ -331,8 +357,8 @@ function FeaturedEvent() {
             {receivedData.name}
           </h1>
           <div className="flex gap-2 pb-3 pl-4 justify-start mt-0 sm:mt-4 ">
-            <div className="relative flex flex-col space-y-4 top-1 lg:text-2xl text-gray-600 ">
-              <TiBookmark />
+            <div className="relative flex flex-col space-y-4 top-0 lg:text-2xl text-gray-800 font-semibold">
+              <PiBookmarkThin />
               <CiCalendarDate />
               <CiLocationOn
                 onClick={() => {
@@ -347,15 +373,7 @@ function FeaturedEvent() {
               <p>{receivedData.category}</p>
               <p>
                 {receivedData?.startDate
-                  ? new Date(receivedData.startDate).toLocaleString(undefined, {
-                      year: "numeric",
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                      timeZone: "UTC",
-                    })
+                  ? updateStartDateTime
                   : "--"}
               </p>
               <p></p>
@@ -415,11 +433,11 @@ function FeaturedEvent() {
               <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
               <p className="font-semibold text-lg  ml-3 mb-6">
                 {receivedData?.startDate
-                  ? new Date(receivedData.startDate).toLocaleString()
+                  ? updateStartDateTime
                   : "-"}
               </p>
               <hr />
-              <div className="space-y-4">
+              <div className="space-y-4 ">
                 <div
                   onClick={() => {
                     setForm(!form), handleGetTicketClick();
@@ -427,28 +445,8 @@ function FeaturedEvent() {
                 >
                   {receivedData ? (
                     <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
-                    />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
-                    <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
-                    />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
-                    <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
+                      start={updateStartDateTime}
+                      eTime={updateEndDateTime}
                     />
                   ) : (
                     <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
@@ -518,12 +516,12 @@ function FeaturedEvent() {
                 </h1>
                 <MapContainer
                   className="p-4 ml-2"
-                  venueLocationData={venueLocationData}
+                  location={googleLocation}
                 />
               </div>
 
               <div className="px-0 sm:px-6 mb-3">
-                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
+                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-4">
                   Event Gallery
                 </h1>
                 {Array.isArray(receivedData?.media?.images) &&
@@ -536,11 +534,11 @@ function FeaturedEvent() {
                 )}
               </div>
 
-              <div className="px-0 sm:px-6 mb-0 lg:mt-10 sm:mt-4">
+              <div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
                 <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
-                  Watch Trailer
+                  Watch Videos
                 </h1>
-                <WatchTrailer />
+                <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
               </div>
             </div>
           </div>

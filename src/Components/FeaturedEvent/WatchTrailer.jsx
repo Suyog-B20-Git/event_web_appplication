@@ -1,23 +1,45 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 
-function WatchTrailer() {
+function WatchTrailer({ youtubeVideoUrl = [] }) {
+  const getEmbedUrl = (url) => {
+    try {
+      const videoId = new URL(url).searchParams.get("v");
+      return `https://www.youtube.com/embed/${videoId}`;
+    } catch (error) {
+      console.error("Invalid YouTube URL:", url);
+      return "";
+    }
+  };
+
   return (
     <center>
-      <div className="rounded-md bg-white shadow-lg  w-full p-1 mb-0 sm:p-8 flex flex-col justify-center ">
-        <div className="flex justify-center items-center">
-          <iframe
-            width="960"
-            height="370"
-            className="h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] "
-            src="https://www.youtube.com/embed/lD1X-ODWhvg?si=CbGzId282KczSEVj"
-            title="YouTube video player"
-            Border="10"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-          ></iframe>
-        </div>
-      </div>
+        {youtubeVideoUrl.length === 1 ? (
+          <div className="flex justify-center items-center w-full mb-3">
+            <iframe
+              className="lg:w-[700px] h-[220px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-lg"
+              src={getEmbedUrl(youtubeVideoUrl[0])}
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
+          </div>
+        ) : (
+          <div className="flex gap-6 overflow-x-auto scroll-hide px-2 w-full py-2">
+            {youtubeVideoUrl.map((url, index) => (
+              <iframe
+                key={index}
+                className="flex-none w-[300px] h-[180px] sm:w-[360px] sm:h-[220px] md:w-[400px] md:h-[250px] rounded-lg"
+                src={getEmbedUrl(url)}
+                title={`YouTube video ${index + 1}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            ))}
+          </div>
+        )}
     </center>
   );
 }

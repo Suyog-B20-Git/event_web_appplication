@@ -49,6 +49,7 @@ import {
   getUpcomingEventsDataForProfile,
 } from "../../redux/actions/master/Events/UpcomingEvent";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
+import FollowButton from "../FollowButton";
 
 function GetServiceById() {
   const { serviceId } = useParams();
@@ -473,17 +474,11 @@ function GetServiceById() {
               </div>
 
               <div className=" lg:flex gap-2 hidden justify-center">
-                <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                  <CiCircleCheck className="relative top-1 lg:text-lg" />
-                  Follow
-                </button>
+               <FollowButton targetId={targetId} modelName={modelName} />
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center">
-              <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                <CiCircleCheck className="relative top-1 lg:text-lg" />
-                Follow
-              </button>
+              <FollowButton targetId={targetId} modelName={modelName} variant="mobile"  />
             </div>
 
             {hoveredTab && (

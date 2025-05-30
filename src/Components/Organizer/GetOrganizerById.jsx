@@ -24,6 +24,7 @@ import {
   CiHeart,
   CiMenuKebab,
   CiFacebook,
+  CiCirclePlus,
 } from "react-icons/ci";
 import { BsCalendar2DateFill } from "react-icons/bs";
 
@@ -51,6 +52,8 @@ import {
 import { FaPhoneAlt } from "react-icons/fa";
 const baseUrl = import.meta.env.VITE_API_URL;
 import axios from "axios";
+import FollowButton from "../FollowButton";
+
 
 function GetOrganizerById() {
   const { organizerId } = useParams();
@@ -75,7 +78,6 @@ function GetOrganizerById() {
   const [showNumber, setShowNumber] = useState(false);
   const [hoveredTab, setHoveredTab] = useState(null);
   const HrefUrl = window.location.href;
-  const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
     dispatch(
@@ -165,84 +167,6 @@ function GetOrganizerById() {
     dispatch(getFavouriteOrganizerData(setLoading));
   };
 
-  const authToken = localStorage.getItem("authToken");
-  useEffect(() => { 
-
-  const fetchFollowings = async () => {
-    if (!authToken) return;
-
-    try {
-      const res = await axios.get(`${baseUrl}/api/following`, {
-        headers: {
-          Authorization: authToken,
-        },
-      });
-      console.log("response get following", res.data);
-      const followedOrganizers = res.data.followings?.filter(
-        (f) => f.modelName === "Organizer"
-      );
-
-      const isFollowed = followedOrganizers?.some(
-        (f) => f._id === targetId
-      );
-      console.log("isFollowd", isFollowed)
-      setIsFollowing(isFollowed);
-    } catch (err) {
-      console.error("Error fetching followings:", err);
-    }
-  };
-
-  fetchFollowings();
-}, [authToken]);
-
-
-  const handleFollowToggle = async () => {
-    const authToken = localStorage.getItem("authToken");
-    if (!authToken) {
-      console.error("No auth token found.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const config = {
-        headers: {
-          Authorization: authToken,
-        },
-      };
-
-      if (!isFollowing) {
-        const res = await axios.post(
-          `${baseUrl}/api/follow`,
-          {
-            modelName: modelName,
-            targetId: targetId,
-          },
-          config
-        );
-        console.log("Follow Response:", res.data);
-        setIsFollowing(true);
-        toast.success("Following");
-      } else {
-        const res = await axios.post(
-          `${baseUrl}/api/unfollow`,
-          {
-            modelName: modelName,
-            targetId: targetId,
-          },
-          config
-        );
-        console.log("Unfollow Response:", res.data);
-        setIsFollowing(false);
-        toast.error("Unfollowing");
-      }
-    } catch (err) {
-      console.error("Follow/Unfollow Error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const currentUrl = window.location.href;
   const shareUrls = {
@@ -546,23 +470,11 @@ function GetOrganizerById() {
               </div>
 
               <div className=" lg:flex gap-2 hidden justify-center">
-                <button
-                  onClick={handleFollowToggle}
-                  className={`px-2 lg:flex hidden gap-1 rounded-full p-1 lg:text-base text-sm ${
-                    isFollowing ? "bg-green-200 text-green-800" : "bg-gray-200"
-                  }`}
-                  disabled={loading}
-                >
-                  <CiCircleCheck className="relative top-1 lg:text-lg" />
-                  {isFollowing ? "Following" : "Follow web"}
-                </button>
+                <FollowButton targetId={targetId} modelName={modelName}  />
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
-              <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                <CiCircleCheck className="relative top-1 lg:text-lg" />
-                Follow mob
-              </button>
+              <FollowButton targetId={targetId} modelName={modelName} variant="mobile"  />
             </div>
 
             {hoveredTab && (
@@ -804,7 +716,7 @@ function GetOrganizerById() {
                 </p>
                 <p className="font-medium text-lg text-center ">
                   {youtube ? (
-                    <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
+                    <YouTubeProfile youtubeUrl={data.youtubeUrl} />
                   ) : (
                     <div></div>
                   )}

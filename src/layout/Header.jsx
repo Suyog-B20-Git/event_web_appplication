@@ -48,6 +48,12 @@ const Header = () => {
   const [searchValue, setSearchValue] = useState("All");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemRefs = useRef([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  useEffect(() => {
+  console.log("Selected Category Updated:", selectedCategory);
+}, [selectedCategory]);
+
 
   useEffect(() => {
     if (highlightedIndex >= 0 && itemRefs.current[highlightedIndex]) {
@@ -378,7 +384,7 @@ const Header = () => {
 
                 <img
                   src="/assets/staticAssets/logo.png"
-                  className="hidden md:block lg:w-[80%] md:w-[100%] w-auto"
+                  className="hidden md:block lg:w-[50%] md:w-[60%] w-auto"
                   // className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
                   alt="logo"
                   onClick={() => navigate("/home")}
@@ -602,7 +608,8 @@ const Header = () => {
                         <button
                           key={menuIndex}
                           onClick={() => {
-                            setRefresh((prev) => prev + 1);
+                             setSelectedCategory(menuItem.name);
+                            {console.log("Selected Category:", menuItem.name);}
                             navigate(menuItem.path, {
                               state: menuItem.name,
                             });

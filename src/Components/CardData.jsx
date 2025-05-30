@@ -22,7 +22,7 @@ function CardData({ data, heading }) {
           </div>
           <button
             onClick={() => navigate("/organizers")}
-            className="shadow-md lg:text-base text-sm p-2 font-medium"
+            className="shadow-md lg:text-base text-sm p-2 font-medium bg-[#ff2459] text-white hover:bg-pink-[#ff2459] rounded"
           >
             View All
           </button>
