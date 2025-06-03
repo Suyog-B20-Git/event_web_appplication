@@ -730,11 +730,15 @@ function GetOrganizerById() {
             <MapContainer className="mb-4" data={data} />
           </div>
 
+           <div className="lg:px-0 border border-gray ml-[3%] shadow-lg lg:w-[70%] lg:ml-[30%]  w-[92%] mb-1">
+            <h1 className="font-semibold text-xl p-2 ml-2 pb-0 ">FACEBOOK COMMENTS</h1>
+            <FacebookComments className="bg-black p-4 w-full overflow-x-auto"
+             dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/" />
+          </div>
+
           <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-0 overflow-y-scroll scrollbar-hide">
             <FacebookComments
               dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-              numPosts={10}
-              width="auto"
             />
             <hr />
           </div>

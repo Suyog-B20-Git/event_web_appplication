@@ -18,7 +18,8 @@ import { getCity } from "../redux/actions/master/location/City";
 import { getEventByFilter } from "../redux/actions/master/Events/getEventByFilter";
 import { VscFilterFilled } from "react-icons/vsc";
 import Pagination from "../Components/Pagination";
-import FollowButton from "../Components/FollowButton";
+import FollowEvent from "../Components/FollowEvent";
+
 
 const convertUTCToLocal = (utcString) => {
   if (!utcString) return "Invalid Date";
@@ -230,6 +231,8 @@ function Viewall() {
     return <Loading />;
   }
 
+  const selCategory = localStorage.getItem("selectedCategory");
+  
   return (
     <div className="flex justify-center items-center w-full pt-[87px] sm:pt-4">
       <div className="p-5 w-full max-w-[1340px]">
@@ -463,7 +466,7 @@ function Viewall() {
         {/* Cards container with horizontal scrolling */}
 
         <div className="flex justify-end items-center mr-3 pt-2">
-         <FollowButton   />
+         <FollowEvent modelName="Category" categoryType="Event" categoryName={selCategory}  />
          </div>
         <div className=" grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
           {data && data.length > 0 ? (

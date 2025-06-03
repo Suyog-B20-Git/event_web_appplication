@@ -29,6 +29,7 @@ import { CiSearch } from "react-icons/ci";
 import { CgProfile } from "react-icons/cg";
 import gsap from "gsap";
 import axios from "axios";
+import { toast } from "react-toastify";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const Header = () => {
@@ -50,8 +51,41 @@ const Header = () => {
   const itemRefs = useRef([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  useEffect(() => {
-  console.log("Selected Category Updated:", selectedCategory);
+useEffect(() => {
+  switch (selectedCategory) {
+    case "Business":
+      setSelectedCategory("business & seminars");
+      break;
+    case "Festivals":
+      setSelectedCategory("festivals");
+      break;
+    case "Live Music":
+      setSelectedCategory("live music");
+      break;
+    case "Nightlife and club":
+      setSelectedCategory("nightlife & club");
+      break;
+    case "Professional":
+      setSelectedCategory("professional");
+      break;
+    case "Social":
+      setSelectedCategory("social");
+      break;
+    case "Sport & Leisure":
+      setSelectedCategory("sport & leisure");
+      break;
+    case "Theatre & Arts":
+      setSelectedCategory("theatre & arts");
+      break;
+    case "all":
+      setSelectedCategory("all");
+      break;
+   
+    default:      
+      localStorage.removeItem("selectedCategory");
+      break;
+  }
+  localStorage.setItem("selectedCategory", selectedCategory);
 }, [selectedCategory]);
 
 
@@ -196,7 +230,6 @@ const Header = () => {
     const token = localStorage.getItem("authToken");
 
     if (!token) {
-      console.error("No auth token found");
       return;
     }
 
@@ -211,10 +244,9 @@ const Header = () => {
         setIsLog(false);
         navigate("/profile");
       } else {
-        console.error("Failed to fetch user:", response.data.message);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      toast.error(error.data.message || error.message);
     }
   }
 
@@ -417,7 +449,7 @@ const Header = () => {
                 />
               )}
 
-              <div class="relative flex items-center justify-end md:w-[65%] w-full p-2 mx-auto">
+              <div className="relative flex items-center justify-end md:w-[65%] w-full p-2 mx-auto">
                 {/* <div className="relative z-20 md:w-[65%] w-[96%] "> */}
                 {/* search bar */}
 
@@ -594,7 +626,12 @@ const Header = () => {
                 >
                   <button
                     className="font-medium lg:text-lg md:text-sm lg:mr-5 flex lg:gap-1 md:gap-0.5 relative z-60"
-                    onClick={() => navigate(item.path)}
+                    onClick={() => {
+                      navigate(item.path)
+                    if(item.path === "/events"){
+                      setSelectedCategory("all");
+                    }
+                    }}
                   >
                     <p className="relative top-1.5">{item.icon}</p> {item.name}
                   </button>
@@ -609,7 +646,6 @@ const Header = () => {
                           key={menuIndex}
                           onClick={() => {
                              setSelectedCategory(menuItem.name);
-                            {console.log("Selected Category:", menuItem.name);}
                             navigate(menuItem.path, {
                               state: menuItem.name,
                             });

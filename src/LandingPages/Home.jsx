@@ -216,27 +216,27 @@ function Home() {
       {data.length > 0 ? (
         <Cards data={data} heading={"TRENDING EVENTS"} />
       ) : (
-        setLoading(true)
+        <p></p>
       )}
       {data1.length > 0 ? (
         <Cards data={data1} heading={"UPCOMING EVENTS"} />
       ) : (
-        setLoading(true)
+       <p></p>
       )}
       {data2.length > 0 ? (
         <Cards data={data2} heading={"FEATURED EVENTS"} />
       ) : (
-        setLoading(true)
+       <p></p>
       )}
-      {data3.length > 0 ? (
+      {data3.length >= 0 ? (
         <CardData data={data3} heading={"ORGANIZERS"}/>
       ) : (
-        setLoading(true)
+       <p></p>
       )}
       {data5.length > 0 ? (
         <CardData data={data5} heading={"VENUES"}/>
       ) : (
-        setLoading(true)
+       <p></p>
       )} 
      
     </div>

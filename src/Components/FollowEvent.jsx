@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { CiCircleCheck, CiCirclePlus } from "react-icons/ci";
 import { toast } from "react-toastify";
-
 const baseUrl = import.meta.env.VITE_API_URL;
 
-const FollowButton = ({ targetId, modelName, variant = "desktop" }) => {
+const FollowEvent = ({
+  modelName,
+  categoryType,
+  categoryName,
+  variant = "desktop",
+}) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
   const authToken = localStorage.getItem("authToken");
@@ -22,20 +26,22 @@ const FollowButton = ({ targetId, modelName, variant = "desktop" }) => {
         });
 
         const followings = res.data.data || [];
-        const followedOrganizers = followings.filter(
-          (f) => f.modelName === modelName
+        const followedEvents = followings.some(
+          (f) =>
+            f.modelName === "Category" &&
+            f.categoryType === "Event" &&
+            f.name === categoryName
         );
 
-        const isFollowed = followedOrganizers.some((f) => f._id === targetId);
-
-        setIsFollowing(isFollowed);
+        setIsFollowing(followedEvents);
+        console.log("isFollowed:", followedEvents);
       } catch (err) {
         console.error("Error fetching followings:", err);
       }
     };
 
     fetchFollowings();
-  }, [authToken, targetId]);
+  }, [authToken, categoryName]);
 
   const handleFollowToggle = async () => {
     if (!authToken) {
@@ -50,14 +56,14 @@ const FollowButton = ({ targetId, modelName, variant = "desktop" }) => {
         },
       };
       const endpoint = isFollowing ? "unfollow" : "follow";
-      const res = 
       await axios.post(
         `${baseUrl}/api/${endpoint}`,
-        { modelName, targetId },
+        { modelName, categoryType, categoryName },
         config
       );
       setIsFollowing(!isFollowing);
       isFollowing ? toast.error("Unfollowed") : toast.success("Following");
+    } catch (err) {
       toast.error("Unable to follow/unfollow. Please try again.");
     } finally {
       setLoading(false);
@@ -76,25 +82,28 @@ const FollowButton = ({ targetId, modelName, variant = "desktop" }) => {
   const textColor = isFollowing ? "text-brown-600" : "text-gray-600";
 
   return (
-    <button
-      onClick={handleFollowToggle}
-      className={buttonClass}
-      disabled={loading}
-    >
-      {isFollowing ? (
-        <>
-          <CiCircleCheck className={`text-lg ${iconColor}`} />
-          <span className={textColor}>Following</span>
-        </>
-      ) : (
-        <>
-          <CiCirclePlus className={`text-lg ${iconColor}`} />
-          <span className={textColor}>Follow</span>
-        </>
+    <>
+      {categoryName !== "all" && (
+        <button
+          onClick={handleFollowToggle}
+          className={buttonClass}
+          disabled={loading}
+        >
+          {isFollowing ? (
+            <>
+              <CiCircleCheck className={`text-lg ${iconColor}`} />
+              <span className={textColor}>Following </span>
+            </>
+          ) : (
+            <>
+              <CiCirclePlus className={`text-lg ${iconColor}`} />
+              <span className={textColor}>Follow </span>
+            </>
+          )}
+        </button>
       )}
-    </button>
+    </>
   );
 };
 
-export default FollowButton;
-
+export default FollowEvent;
