@@ -64,7 +64,7 @@ const FollowEvent = ({
       setIsFollowing(!isFollowing);
       isFollowing ? toast.error("Unfollowed") : toast.success("Following");
     } catch (err) {
-      toast.error("Unable to follow/unfollow. Please try again.");
+      console.log("Unable to follow/unfollow. Please try again.", err);
     } finally {
       setLoading(false);
     }

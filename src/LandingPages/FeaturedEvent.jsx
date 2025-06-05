@@ -23,8 +23,12 @@ import Guest from "../Components/FeaturedEvent/Guest";
 import RegisterModal from "../Components/FeaturedEvent/RegisterModal";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { FaEye, FaHeart } from "react-icons/fa6";
-import { MdDateRange, MdOutlineMailOutline } from "react-icons/md";
-import { PiBuildingApartmentFill, PiBookmarkThin  } from "react-icons/pi";
+import {
+  MdDateRange,
+  MdOutlineMailOutline,
+  MdOutlineEventRepeat,
+} from "react-icons/md";
+import { PiBuildingApartmentFill, PiBookmarkThin } from "react-icons/pi";
 import OrganiserContact from "../Components/FeaturedEvent/OrganiserContact";
 import { useDispatch, useSelector } from "react-redux";
 import Collapsible from "react-collapsible";
@@ -65,27 +69,33 @@ function FeaturedEvent() {
   };
   const receivedData = store.eventData;
 
-   const updateStartDateTime = new Date(receivedData.startDate).toLocaleString("en-IN", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Asia/Kolkata", 
-      })
+  const updateStartDateTime = new Date(receivedData.startDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
 
-   const updateEndDateTime = new Date(receivedData.endDate).toLocaleString("en-IN", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-        timeZone: "Asia/Kolkata",
-      })   
+  const updateEndDateTime = new Date(receivedData.endDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
 
-const youtubeVideoUrl = receivedData.youtubeVideoUrls
+  const youtubeVideoUrl = receivedData.youtubeVideoUrls;
   const VenuesData = Array.isArray(receivedData?.venue)
     ? receivedData?.venue
     : receivedData?.venue
@@ -216,9 +226,9 @@ const youtubeVideoUrl = receivedData.youtubeVideoUrls
   };
 
   const googleLocation = {
-  lat: receivedData.venue?.googleSearchLat,
-  lng: receivedData.venue?.googleSearchLong,
-};
+    lat: receivedData.venue?.googleSearchLat,
+    lng: receivedData.venue?.googleSearchLong,
+  };
 
   const sectionRef = useRef(null);
   const LocationRef = useRef(null);
@@ -371,11 +381,7 @@ const youtubeVideoUrl = receivedData.youtubeVideoUrls
             </div>
             <div className="text-gray-600 md:text-base  text-xs font-medium space-y-4">
               <p>{receivedData.category}</p>
-              <p>
-                {receivedData?.startDate
-                  ? updateStartDateTime
-                  : "--"}
-              </p>
+              <p>{receivedData?.startDate ? updateStartDateTime : "--"}</p>
               <p></p>
               <p
                 onClick={() => {
@@ -417,7 +423,7 @@ const youtubeVideoUrl = receivedData.youtubeVideoUrls
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
-              by={receivedData.name}
+              by={receivedData?.organizer?.name || receivedData?.name || "-"}
               category={receivedData.category}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
@@ -432,30 +438,69 @@ const youtubeVideoUrl = receivedData.youtubeVideoUrls
               </p>
               <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
               <p className="font-semibold text-lg  ml-3 mb-6">
-                {receivedData?.startDate
-                  ? updateStartDateTime
-                  : "-"}
+                {receivedData?.startDate ? updateStartDateTime : "-"}
               </p>
               <hr />
               <div className="space-y-4 ">
-                <div
-                  onClick={() => {
-                    setForm(!form), handleGetTicketClick();
-                  }}
-                >
-                  {receivedData ? (
+                {receivedData?.ticketFormats?.length > 0 ? (
+                  <div
+                    onClick={() => {
+                      setForm(!form);
+                      handleGetTicketClick();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
                     <GetTicket
                       start={updateStartDateTime}
                       eTime={updateEndDateTime}
                     />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-gray-500 select-none">
+                    No tickets available for this event.
+                  </div>
+                )}
               </div>
             </div>
             <div className="w-full justify-start items-start gap-2 p-4">
-              <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
+              {/* Repeating Dates & Days */}
+
+              {Array.isArray(receivedData.repeatDates) &&
+                Array.isArray(receivedData.repeatDays) &&
+                receivedData.repeatDates.length > 0 &&
+                receivedData.repeatDates.length ===
+                  receivedData.repeatDays.length && (
+                  <div className="bg-white p-4 rounded-xl shadow border border-gray-200 overflow-x-auto">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MdOutlineEventRepeat className="text-3xl text-pink-600" />
+                      <h1 className="text-2xl font-bold text-gray-800">
+                        Repeating Events
+                      </h1>
+                    </div>
+                    <hr className="mb-4" />
+
+                    <h2 className="text-md font-semibold text-gray-700 mb-2">
+                      Repeats on:
+                    </h2>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {receivedData.repeatDates.map((date, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                        >
+                          {`Date: ${date} (${receivedData.repeatDays[idx]})`}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-lg font-semibold">
+                      <span className="font-medium text-gray-800">Time:</span>{" "}
+                      {receivedData.repeatStartTime} -{" "}
+                      {receivedData.repeatEndTime}
+                    </div>
+                  </div>
+                )}
+
+              <div className="bg-white p-4 mt-6 rounded-xl shadow-lg border border-gray-200">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
                   Event Description
                 </h2>
@@ -514,10 +559,7 @@ const youtubeVideoUrl = receivedData.youtubeVideoUrls
                 <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
                   Location
                 </h1>
-                <MapContainer
-                  className="p-4 ml-2"
-                  location={googleLocation}
-                />
+                <MapContainer className="p-4 ml-2" location={googleLocation} />
               </div>
 
               <div className="px-0 sm:px-6 mb-3">
@@ -573,7 +615,7 @@ const youtubeVideoUrl = receivedData.youtubeVideoUrls
 
                 {/* Organizer Name */}
                 <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                  {receivedData.organizer?.username || "Organizer Name"}
+                  {receivedData.organizer?.name || "Organizer Name"}
                 </p>
 
                 {/* Organizer Info */}

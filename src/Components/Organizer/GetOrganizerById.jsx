@@ -53,7 +53,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 const baseUrl = import.meta.env.VITE_API_URL;
 import axios from "axios";
 import FollowButton from "../FollowButton";
-
+import CommonCalendar from "../CommonCalendar";
 
 function GetOrganizerById() {
   const { organizerId } = useParams();
@@ -167,7 +167,6 @@ function GetOrganizerById() {
     dispatch(getFavouriteOrganizerData(setLoading));
   };
 
-
   const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
@@ -265,7 +264,16 @@ function GetOrganizerById() {
                 />
               </p>
               <p>
-                {data.city}, {data.state}, {data.country}
+                {["city", "state", "country"].every(
+                  (key) =>
+                    data[key] &&
+                    data[key].trim().toLowerCase() !== "not specified" &&
+                    data[key].trim() !== ""
+                )
+                  ? `${data.city}, ${data.state}, ${data.country}`
+                  : data.address?.trim()
+                  ? data.address
+                  : "not specified"}
               </p>
             </div>
             <div
@@ -470,11 +478,15 @@ function GetOrganizerById() {
               </div>
 
               <div className=" lg:flex gap-2 hidden justify-center">
-                <FollowButton targetId={targetId} modelName={modelName}  />
+                <FollowButton targetId={targetId} modelName={modelName} />
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
-              <FollowButton targetId={targetId} modelName={modelName} variant="mobile"  />
+              <FollowButton
+                targetId={targetId}
+                modelName={modelName}
+                variant="mobile"
+              />
             </div>
 
             {hoveredTab && (
@@ -631,10 +643,11 @@ function GetOrganizerById() {
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
                     {upcomingEventData.length > 0 ? (
                       upcomingEventData.map((event, index) => (
-                        <div
+                        <div  
                           key={index}
                           className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
-                        >
+                          onClick={() => navigate(`/events/${event.category.toLowerCase()}/${event._id}`, { state: event._id }) }
+                       >
                           {/* 🔹 Image Container*/}
                           <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
                             <img
@@ -730,16 +743,8 @@ function GetOrganizerById() {
             <MapContainer className="mb-4" data={data} />
           </div>
 
-           <div className="lg:px-0 border border-gray ml-[3%] shadow-lg lg:w-[70%] lg:ml-[30%]  w-[92%] mb-1">
-            <h1 className="font-semibold text-xl p-2 ml-2 pb-0 ">FACEBOOK COMMENTS</h1>
-            <FacebookComments className="bg-black p-4 w-full overflow-x-auto"
-             dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/" />
-          </div>
-
           <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-0 overflow-y-scroll scrollbar-hide">
-            <FacebookComments
-              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-            />
+            <FacebookComments dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/" />
             <hr />
           </div>
 
@@ -811,27 +816,7 @@ function GetOrganizerById() {
                 <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
                   Find Events
                 </h2>
-                <div className="flex  gap-5 p-3 overflow-x-scroll ">
-                  <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 ">
-                    <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                    <p>Today 0</p>
-                  </div>
-                  <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                    <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                    <p>Tommorrow 0</p>
-                  </div>
-                  <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                    <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                    <p className="text-sm p-1">This Weekend 0</p>
-                  </div>
-                  <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                    <CalendarCheck className="text-2xl text-white font-medium" />
-                    <p>Choose Date</p>
-                  </div>
-                </div>
+               <CommonCalendar /> 
               </div>
             </div>
           </div>
@@ -909,29 +894,7 @@ function GetOrganizerById() {
             <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
               Find Events
             </h1>
-            <div className="flex justify-center items-center border-b shadow-md ">
-              <div className="grid grid-cols-2 gap-4 p-3 ">
-                <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Today 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">This Weekend 0</p>
-                </div>
-                <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
+            <CommonCalendar /> 
           </div>
         </div>
       </div>

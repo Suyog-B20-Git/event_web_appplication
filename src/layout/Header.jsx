@@ -186,7 +186,7 @@ useEffect(() => {
         { name: "Outdoor", path: "/venues/outdoor" },
       ],
     },
-    { name: "Contact Us", path: "/contact-us", icon: <MdContactPhone /> },
+    { name: "Contact Us", path: "/contact", icon: <MdContactPhone /> },
   ];
 
   const [isLog, setIsLog] = useState(false);

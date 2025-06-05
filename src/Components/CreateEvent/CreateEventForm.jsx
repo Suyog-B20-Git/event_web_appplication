@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Select from "react-select";
-
+import DatePicker from "react-multi-date-picker";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
 import { GiPartyPopper } from "react-icons/gi";
@@ -34,9 +34,11 @@ export default function EventForm() {
   const seatingChartRef = useRef(null);
   const [selectedImages, setSelectedImages] = useState([]);
   const [inputKey, setInputKey] = useState(Date.now()); // Unique key for re-render
-
+  const [repeatDates, setRepeatDates] = useState([]);
+  const [repeatDatesRaw, setRepeatDatesRaw] = useState([]);
   const [query, setQuery] = useState("");
   const [performer, setPerformer] = useState("");
+  const [selectedPerformers, setSelectedPerformers] = useState([]);
   const dispatch = useDispatch();
   const [youtubeLinks, setYoutubeLinks] = useState([""]);
   const [performerFacebookLinks, setPerformerFacebookLinks] = useState([""]);
@@ -117,6 +119,29 @@ export default function EventForm() {
     setPerformerFacebookLinks(updatedLinks);
     setValue("performerFacebookLinks", updatedLinks); // Update form state
   };
+
+  //   const getRepeatDatesAndDays = (dates) => {
+  //   const repeatDates = dates.map((d) => parseInt(d.day));
+  //   const repeatDays = [
+  //     ...new Set(
+  //       dates.map((d) =>
+  //         new Date(d.year, d.month.number - 1, d.day).toLocaleDateString("en-US", {
+  //           weekday: "long",
+  //         })
+  //       )
+  //     ),
+  //   ];
+  //   return { repeatDates, repeatDays };
+  // };
+
+  // const repeatDays = [];
+
+  // repeatDatesRaw.forEach(dateObj => {
+  //   const date = dateObj.getDate(); // returns the day of month (e.g., 7, 8)
+  //   const day = dateObj.toLocaleString("en-US", { weekday: "long" }); // e.g., "Saturday"
+  //   repeatDates.push(date);
+  //   repeatDays.push(day);
+  // });
 
   const navigate = useNavigate();
   const {
@@ -320,11 +345,15 @@ export default function EventForm() {
   const onSubmit = (data) => {
     const formData = new FormData();
     const category = data.selectedEvent || data.category;
+    // const { repeatDates, repeatDays } = getRepeatDatesAndDays(repeatDatesRaw);
     data.category = category;
     formData.append("name", data.name);
     formData.append("category", category);
     formData.append("excerpt", data.excerpt);
-    formData.append( "disableEventAfterSoldOut", data.disableEventAfterSoldOut ?? false);
+    formData.append(
+      "disableEventAfterSoldOut",
+      data.disableEventAfterSoldOut ?? false
+    );
     formData.append("enableRatingReview", data.enableRatingReview);
     formData.append("isRepetitive", data.isRepetitive ?? false);
     formData.append("repetitiveType", data.repetitiveType);
@@ -335,15 +364,37 @@ export default function EventForm() {
     formData.append("facebookLink", data.facebookLink || "");
     formData.append("repeatExcept", data.repeatExcept ?? 1);
     formData.append("performers", data.performers || []);
-    formData.append("performerFacebookLinks", JSON.stringify(data.performerFacebookLinks));
-    formData.append( "repeatStartTime", data.repeatStartTime ? data.repeatStartTime : "" );
+    formData.append(
+      "performerFacebookLinks",
+      JSON.stringify(data.performerFacebookLinks)
+    );
+    formData.append(
+      "repeatStartTime",
+      data.repeatStartTime ? data.repeatStartTime : ""
+    );
+
+    const repeatDates = [];
+    const repeatDays = [];
+
+    repeatDatesRaw.forEach((dateObj) => {
+      const date = new Date(dateObj);
+      repeatDates.push(date.getDate());
+      repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
+    });
+
+    formData.append("repeatDates", repeatDates.join(",")); 
+    formData.append("repeatDays", repeatDays.join(","));
+
     formData.append("repeatEndTime", data.repeatEndTime);
     formData.append("facebookLink", data.facebookLink);
     formData.append("youtubeLinks", data.youtubeLinks);
     formData.append("startDate", `${data.startDate}T${data.startTime}`);
     formData.append("endDate", `${data.endDate}T${data.endTime}`);
     formData.append("description", data.description1);
-    formData.append("offlinePaymentInstructions", data.offlinePaymentInstructions);
+    formData.append(
+      "offlinePaymentInstructions",
+      data.offlinePaymentInstructions
+    );
     formData.append("eventTags", data.eventTag);
     const seoTags = data.seo.metaTags.join(",");
     formData.append("seo", JSON.stringify(seoTags));
@@ -418,7 +469,10 @@ export default function EventForm() {
     formData.append("name", data.name);
     formData.append("category", category);
     formData.append("excerpt", data.excerpt);
-    formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut ?? false);
+    formData.append(
+      "disableEventAfterSoldOut",
+      data.disableEventAfterSoldOut ?? false
+    );
     formData.append("enableRatingReview", data.enableRatingReview);
     formData.append("isRepetitive", data.isRepetitive ?? false);
     formData.append("repetitiveType", data.repetitiveType);
@@ -429,15 +483,36 @@ export default function EventForm() {
     formData.append("facebookLink", data.facebookLink || "");
     formData.append("repeatExcept", data.repeatExcept ?? 1);
     formData.append("performers", data.performers || []);
-    formData.append("performerFacebookLinks", JSON.stringify(data.performerFacebookLinks));
-    formData.append("repeatStartTime", data.repeatStartTime ? data.repeatStartTime : "" );
+    formData.append(
+      "performerFacebookLinks",
+      JSON.stringify(data.performerFacebookLinks)
+    );
+
+    const repeatDates = [];
+    const repeatDays = [];
+
+    repeatDatesRaw.forEach((dateObj) => {
+      const date = new Date(dateObj);
+      repeatDates.push(date.getDate());
+      repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
+    });
+
+    formData.append("repeatDates", repeatDates.join(",")); 
+    formData.append("repeatDays", repeatDays.join(","));
+    formData.append(
+      "repeatStartTime",
+      data.repeatStartTime ? data.repeatStartTime : ""
+    );
     formData.append("repeatEndTime", data.repeatEndTime);
     formData.append("facebookLink", data.facebookLink);
     formData.append("youtubeLinks", data.youtubeLinks);
     formData.append("startDate", `${data.startDate}T${data.startTime}`);
     formData.append("endDate", `${data.endDate}T${data.endTime}`);
     formData.append("description", data.description1);
-    formData.append("offlinePaymentInstructions", data.offlinePaymentInstructions);
+    formData.append(
+      "offlinePaymentInstructions",
+      data.offlinePaymentInstructions
+    );
     formData.append("eventTags", data.eventTag);
     const seoTags = data.seo.metaTags.join(",");
     formData.append("seo", JSON.stringify(seoTags));
@@ -731,14 +806,13 @@ export default function EventForm() {
                         getOptionValue={(option) => option.value}
                         onInputChange={(value) => setPerformer(value)}
                         onChange={(selectedOptions) => {
+                          setSelectedPerformers(selectedOptions);
                           const selectedIDs = selectedOptions
                             ? selectedOptions.map((option) => option.value)
                             : [];
                           field.onChange(selectedIDs);
                         }}
-                        value={performerOptions.filter((option) =>
-                          field.value?.includes(option.value)
-                        )}
+                        value={selectedPerformers}
                         noOptionsMessage={() => "Type... to see performers"}
                         className="w-full"
                       />
@@ -899,8 +973,7 @@ export default function EventForm() {
                       required: "End Date is required",
                       validate: (value) =>
                         !startDate ||
-                        value > startDate ||
-                        "End date must be after start date",
+                        value >= startDate                       
                     })}
                   />
                   {errors.endDate && (
@@ -1039,6 +1112,19 @@ export default function EventForm() {
                         ))}
                       </div>
                     </div>
+                    <div className="mb-4 col-span-4 w-full bg-blue-300 p-4 rounded-lg">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Select Repeating Dates
+                      </label>
+                      <DatePicker
+                        multiple
+                        value={repeatDatesRaw}
+                        onChange={setRepeatDatesRaw}
+                        format="YYYY-MM-DD"
+                        className="border mt-1 p-2 rounded-md w-[100%]"
+                        placeholder="Select Dates"
+                      />
+                    </div>
                     <div>
                       <label
                         htmlFor="RepeatStartTime"
@@ -1049,6 +1135,23 @@ export default function EventForm() {
                       <input
                         type="time"
                         className="mt-1 block w-full border rounded-md p-2"
+                        onClick={(e) => {
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                    }}
                         {...register("repeatStartTime", {
                           // required: "repeatStartTime is required",
                         })}
@@ -1066,6 +1169,23 @@ export default function EventForm() {
                       <input
                         type="time"
                         className="mt-1 block w-full border rounded-md p-2"
+                        onClick={(e) => {
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                    }}
                         {...register("repeatEndTime", {
                           required: "repeatEndTime is required",
                           validate: (value) => {

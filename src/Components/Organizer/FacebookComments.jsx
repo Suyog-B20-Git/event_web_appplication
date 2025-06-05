@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const FacebookComments = ({ dataHref, numPosts = 10, width }) => {
+const FacebookComments = ({ dataHref, numPosts = 10}) => {
  
   useEffect(() => {
     const parseFB = () => {
@@ -44,7 +44,7 @@ const FacebookComments = ({ dataHref, numPosts = 10, width }) => {
       className="fb-comments"
       data-href={dataHref}
       data-numposts={numPosts}
-      data-width={width}
+      data-width="100%"
       
     ></div>
   );

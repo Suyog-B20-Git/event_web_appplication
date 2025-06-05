@@ -208,7 +208,7 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="hover:text-[#ff2459]">
+                <Link to="/events" className="hover:text-[#ff2459]">
                   Events
                 </Link>
               </li>
@@ -218,7 +218,7 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-[#ff2459]">
+                <Link to="/terms" className="hover:text-[#ff2459]">
                   Terms & Conditions
                 </Link>
               </li>

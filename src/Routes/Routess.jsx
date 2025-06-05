@@ -5,7 +5,6 @@ import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer"; // Remove curly 
 import Index from "../Main/Index";
 import Home from "../LandingPages/Home";
 import { text_data } from "../Components/Events/menuData";
-
 import Viewall from "../LandingPages/Viewall";
 import CreateEvent from "../Components/CreateEvent/CreateEvent";
 import CreateEventForm from "../Components/CreateEvent/CreateEventForm";
@@ -32,6 +31,10 @@ import SearchData from "../Components/SearchData";
 import OAuthSuccess from "../Users/OAuthSuccess";
 import OAuthFailure from "../Users/OAuthFailure";
 import BookTicket from "../LandingPages/BookTicket";
+import Terms from "../Components/Home/Terms";
+import About from "../Components/Home/About";
+import ContactUs from "../Components/Home/ContactUs";
+
 
 function Routess() {
   return (
@@ -123,6 +126,9 @@ function Routess() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
           <Route path="/create-ticket" element={<CreateTicket />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Route>
 
         {/* </Route> */}

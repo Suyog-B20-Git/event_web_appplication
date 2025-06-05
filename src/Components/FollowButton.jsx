@@ -58,7 +58,6 @@ const FollowButton = ({ targetId, modelName, variant = "desktop" }) => {
       );
       setIsFollowing(!isFollowing);
       isFollowing ? toast.error("Unfollowed") : toast.success("Following");
-      toast.error("Unable to follow/unfollow. Please try again.");
     } finally {
       setLoading(false);
     }
