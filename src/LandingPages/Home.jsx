@@ -229,12 +229,12 @@ function Home() {
        <p></p>
       )}
       {data3.length >= 0 ? (
-        <CardData data={data3} heading={"ORGANIZERS"}/>
+        <CardData data={data3} heading={"ORGANIZERS"} navigation={"/organizers"}/>
       ) : (
        <p></p>
       )}
       {data5.length > 0 ? (
-        <CardData data={data5} heading={"VENUES"}/>
+        <CardData data={data5} heading={"VENUES"} navigation={"/venues"}/>
       ) : (
        <p></p>
       )} 

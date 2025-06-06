@@ -64,7 +64,7 @@ export const getEventByFilter1 = (setLoader,filter) => {
       console.log("response", response);
       dispatch({
         type: "GET_EVENT_BY_FILTER1",
-        eventData: response.data.events, // Ensure the API actually returns this structure
+        eventData: response?.data?.data?.events, // Ensure the API actually returns this structure
       });
     } catch (error) {
       console.error(

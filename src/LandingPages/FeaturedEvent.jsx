@@ -423,7 +423,7 @@ function FeaturedEvent() {
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
-              by={receivedData?.organizer?.name || receivedData?.name || "-"}
+              by={receivedData?.organizer?.name || receivedData?.organizer?.username || receivedData?.name || "-"}
               category={receivedData.category}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
@@ -615,7 +615,7 @@ function FeaturedEvent() {
 
                 {/* Organizer Name */}
                 <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                  {receivedData.organizer?.name || "Organizer Name"}
+                  {receivedData.organizer?.name || receivedData.organizer?.username || "Organizer Name"}
                 </p>
 
                 {/* Organizer Info */}

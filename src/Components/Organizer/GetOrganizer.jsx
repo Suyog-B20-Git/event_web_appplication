@@ -346,7 +346,7 @@ function GetOrganizer() {
         <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
           <div className=" p-3 shadow gap-2 ">
             <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
-              Share
+              Share WEBB
             </h1>
             <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
               <FaSquareFacebook
