@@ -16,10 +16,8 @@ const OAuthSuccess = () => {
       localStorage.setItem("authToken", token);
       localStorage.setItem("isLogin", JSON.stringify(true));
       toast.success("Login successful!", { position: "top-right" });
-      console.log("Token set in local storage:", token);
 
       const userData = jwt_decode(token);
-      console.log("Decoded user:", userData);
       localStorage.setItem("user", JSON.stringify(userData));
 
       navigate("/home");

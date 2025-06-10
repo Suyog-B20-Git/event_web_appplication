@@ -465,8 +465,9 @@ function FeaturedEvent() {
             <div className="w-full justify-start items-start gap-2 p-4">
               {/* Repeating Dates & Days */}
 
-              {Array.isArray(receivedData.repeatDates) &&
-                Array.isArray(receivedData.repeatDays) &&
+               
+              {Array.isArray(receivedData.repeatDates !=="null") &&
+                Array.isArray(receivedData.repeatDays !=="") &&
                 receivedData.repeatDates.length > 0 &&
                 receivedData.repeatDates.length ===
                   receivedData.repeatDays.length && (
@@ -499,6 +500,7 @@ function FeaturedEvent() {
                     </div>
                   </div>
                 )}
+              
 
               <div className="bg-white p-4 mt-6 rounded-xl shadow-lg border border-gray-200">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
@@ -511,10 +513,11 @@ function FeaturedEvent() {
               </div>
 
               <div className="p-3 px-0 sm:px-6 mt-4 rounded-xl">
+               
                 <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
                   Event Tags
                 </h2>
-                {Array.isArray(receivedData.eventTags) &&
+                {Array.isArray(receivedData.eventTags!=="undefined" || "null" || "") &&
                 receivedData.eventTags.length > 0 ? (
                   <div className="flex flex-wrap gap-3 mt-2">
                     {receivedData.eventTags.map((tag, index) => (
@@ -576,12 +579,21 @@ function FeaturedEvent() {
                 )}
               </div>
 
-              <div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
-                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
-                  Watch Videos
-                </h1>
-                <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
-              </div>
+<div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
+  {Array.isArray(receivedData.youtubeVideoUrls) && 
+   receivedData.youtubeVideoUrls.some(url => url && url.trim() !== "") ? (
+    <>
+      <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
+        Watch Videos
+      </h1>
+      <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
+    </>
+  ) : (
+    <p className="text-lg text-gray-600 mt-2">
+     
+    </p>
+  )}
+</div>
             </div>
           </div>
         </div>

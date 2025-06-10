@@ -14,7 +14,6 @@ export const getFavouriteServiceData = (setLoader) => {
       const response = await axiosInstance.get(
         `${Service.getFavouriteService}`
       );
-      // console.log("fav response", response);
       dispatch({
         type: "GET_FAVOURITE_SERVICE",
         payload: response.data.organizers, // Ensure the API actually returns this structure

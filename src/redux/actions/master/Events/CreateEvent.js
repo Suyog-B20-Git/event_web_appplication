@@ -6,10 +6,8 @@ import { Event } from "../../../Urls";
 export const createNewEvent = (data) => {
   const isLogin = JSON.parse(localStorage.getItem("isLogin"));
   const authToken = localStorage.getItem("authToken");
-  console.log("data:::", data);
  
   return async (dispatch) => {
-    console.log("Creating new event with data:", data);
     try {
       // const response = await axiosInstance.post(Event.createEvent, {
       //   data,

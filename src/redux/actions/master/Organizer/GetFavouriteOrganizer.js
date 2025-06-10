@@ -10,7 +10,6 @@ export const getFavouriteOrganizerData = (setLoader) => {
     setLoader(true); // Start loading
     try {
       const response = await axiosInstance.get(`${Organizer.getOrganizerFilter}favorites?page=1&limit=20`);
-      // console.log("fav response", response);
       dispatch({
         type: "GET_FAVOURITE_ORGANIZER",
         payload: response.data.organizers, // Ensure the API actually returns this structure

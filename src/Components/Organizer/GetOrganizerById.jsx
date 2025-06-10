@@ -106,7 +106,6 @@ function GetOrganizerById() {
   };
 
   const data = store.organizerData;
-  console.log("Organizer Dataa", data);
   const targetId = data?._id;
   const modelName = "Organizer";
   const organizerEmail = data?.email;

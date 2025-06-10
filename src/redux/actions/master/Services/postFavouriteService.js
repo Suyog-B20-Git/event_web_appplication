@@ -7,8 +7,6 @@ import { Zoom } from "react-toastify";
 import { Service } from "../../../Urls";
 
 export const postFavouriteService = (serviceId) => {
-  console.log("data.:::", serviceId);
-  console.log("post Service fav called")
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
@@ -40,7 +38,6 @@ export const postFavouriteService = (serviceId) => {
               autoClose: 2000,
             });
           }
-          console.log(response);
         }
       })
 

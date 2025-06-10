@@ -12,8 +12,6 @@ const TwitterEmbed = ({ twitterUrl }) => {
     }, []);
 
     var twitterId=    convertToTwitterUrlAndUsername(twitterUrl);
-    // twitterId ="elonmusk"
-    console.log("twitterId:", twitterId);
     return (
         <div>
             {/* Replace 'elonmusk' with your Twitter username */}

@@ -61,7 +61,6 @@ export const getEventByFilter1 = (setLoader,filter) => {
 
     try {
       const response = await axios.get(`${Event.getEventByFilter}category=${filter}&page=1&limit=9`);
-      console.log("response", response);
       dispatch({
         type: "GET_EVENT_BY_FILTER1",
         eventData: response?.data?.data?.events, // Ensure the API actually returns this structure

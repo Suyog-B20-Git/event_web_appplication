@@ -106,7 +106,6 @@ const MeditationForm = (data) => {
       setTicketFormat(resdata);
       if (!response.ok) throw new Error("Failed to fetch ticket format");
     } catch (err) {
-      console.log("error occurred while fetching ticket format", err);
     } finally {
       setLoading(false);
     }

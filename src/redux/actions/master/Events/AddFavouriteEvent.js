@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { Zoom } from "react-toastify";
 import { Event } from "../../../Urls";
 export const addFavouriteEvent = (eventId) => {
-  console.log("data.:::", eventId);
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
@@ -38,7 +37,6 @@ export const addFavouriteEvent = (eventId) => {
               autoClose: 2000,
             });
           }
-          console.log(response);
         }
       })
 

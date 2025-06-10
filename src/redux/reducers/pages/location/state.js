@@ -7,7 +7,6 @@ const initialState = {
   };
   
   const statesReducer = (state = initialState, action) => {
-    console.log("action..:", action);
     switch (action.type) {
       case "GET_STATE":
         return {

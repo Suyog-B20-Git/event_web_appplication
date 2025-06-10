@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { MdCancel } from "react-icons/md";
@@ -26,6 +28,7 @@ import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 import { useNavigate } from "react-router-dom";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 
 function CreatePage() {
@@ -76,8 +79,6 @@ function CreatePage() {
     { value: "Venue", label: "Venue" },
   ];
 
-  // const selectedCategory = watch("category");
-  // const selectedCategory = watch("category");
 useEffect(() => {
   const fetchSubCategories = async () => {
     if (!selectedCategory) {
@@ -86,10 +87,8 @@ useEffect(() => {
     }
 
     try {
-      // const response = await axios.get("http://localhost:5000/api/categories");
-      const response = await fetch(`http://localhost:5000/api/categories?type=${selectedCategory.value}`);
+      const response = await fetch(`${baseUrl}/api/categories?type=${selectedCategory.value}`);
        const data= await response.json(); 
-       console.log("Fetched subcategories for", selectedCategory.value, data); // check on console 
 
    const formatted =
      data.data?.map((sub) => ({
@@ -100,7 +99,6 @@ useEffect(() => {
 
       setSubCategoryList(formatted);
     } catch (error) {
-      console.error("Error fetching subcategories:", error);
       setSubCategoryList([]);
     }
   };
@@ -291,7 +289,7 @@ useEffect(() => {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (!file) {
-        console.error("No file selected");
+        toast.error("No file selected");
         return;
     }
 
@@ -307,7 +305,6 @@ useEffect(() => {
 
 
 const onSubmit = (data) => {
-  console.log("Organiser is fetching properly................", data)
   
   const token = localStorage.getItem("authToken");
   if (!token) {
@@ -348,9 +345,7 @@ const onSubmit = (data) => {
     const formData = new FormData();
     formData.append("profileImage", image);
     data.subCategory.forEach((subCategory) =>{
-    console.log("subCategory", subCategory);
     formData.append("categories[]", subCategory.toLowerCase())
-     console.log("subcategory", subCategory.toLowerCase());
   }
   );
     formData.append("country", selectedCountry?.label || "");
@@ -389,7 +384,6 @@ const onSubmit = (data) => {
 
     if (selectedCategory.value === "Organizer") {
       dispatch(createNewOrganizer(formData));
-      console.log("Organiser is fetching properly",formData)
       navigate("/home");
     }
 
@@ -416,7 +410,6 @@ const onSubmit = (data) => {
     }
 
   } catch (error) {
-    console.error("Submission failed:", error);
     alert("An error occurred during submission.");
   }
 };
@@ -543,7 +536,11 @@ const onSubmit = (data) => {
           <textarea
             id="name"
             name="listingDescription"
-            className="mt-1 block w-full border rounded-md p-2"
+            className="mt-1 block w-full border rounded-md p-2 resize-y"
+            onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
             placeholder="Enter Description"
             {...register("listingDescription", {
               required: "Listing description is required",
@@ -830,57 +827,6 @@ const onSubmit = (data) => {
           </div>
         )}
 
-        {/* {selectedCategory?.value !== "Venues" && (
-          <div className="mb-4 rounded-lg ">
-          <label className="block text-gray-700 font-semibold mb-2">Select Tag Keywords:</label>
-          <Select
-            isMulti
-            options={tagKeywordOptions[selectedCategory?.value] || []}
-            onChange={handleTagKeywordChange}
-            value={(tagKeywordOptions[selectedCategory?.value] || []).filter((opt) =>
-              selectedTagKeywords.includes(opt.value)
-            )}
-            className="mb-3"
-          />
-          
-          <div className="flex gap-2 max-w-[500px]">
-            <input
-              type="text"
-              value={customTag}
-              onChange={handleCustomTagChange}
-              placeholder="Type to add..."
-              className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-            />
-            <button 
-              type="button" 
-              onClick={addCustomTag}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-            >
-              Add
-            </button>
-          </div>
-
-          {selectedTagKeywords.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {selectedTagKeywords.map((tag, index) => (
-                <span 
-                  key={index} 
-                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm"
-                >
-                  {tag}
-                  <button 
-                    className="text-gray-800 hover:text-red-500 font-bold ml-2"
-                    onClick={() => handleTagRemove(tag)}
-                  >
-                    x
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-          </div>
-
-          )} */}
         {selectedCategory?.value !== "Venue" && (
           <div className="mb-4 rounded-lg">
             <label className="block text-gray-700 font-semibold mb-2">

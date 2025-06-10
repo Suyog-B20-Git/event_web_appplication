@@ -60,7 +60,6 @@ export const getPerformers = (performer) => {
       const response = await axios.get(
         `${Performer.getPerformer}?query=${performer}`
       );
-      console.log("response", response);
       dispatch({
         type: "GET_PERFORMER",
         performers: response.data, // Ensure the API actually returns this structure

@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import { Service } from "../../../Urls";
 
 export const createNewService = (data) => {
-  console.log("data.:::", data);
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); 
   return () => {
     axiosInstance
@@ -27,14 +26,7 @@ export const createNewService = (data) => {
             hideProgressBar: true,
             autoClose: 2000,
           });
-          //fixme use "CREATE_SERVICE" action or dispatch() when it is necessary and complete for now it works properly when commented
-          // if (isLogin) {
-          //   dispatch({
-          //     type: "CREATE_SERVICE",
-          //     payload: response.data,
-          //   });
-          // }
-          console.log(response);
+        
         }
       })
 

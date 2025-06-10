@@ -59,7 +59,6 @@ export const getRecentlyViewData = (setLoader) => {
 
     try {
       const response = await axiosInstance.get(Event.getRecentlyView);
-      console.log("RECENTVIEW response", response);
       dispatch({
         type: "GET_RECENTLY_VIEW",
         recentEventData: response.data.events, // Ensure the API actually returns this structure

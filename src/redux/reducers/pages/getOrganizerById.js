@@ -8,7 +8,6 @@ const initialState = {
   }
   
   const getOrganizerByIdReducer = (state = initialState,action) => {
-    console.log("action..:",action)
     switch (action.type) {
       case 'GET_ORGANIZER_BY_ID':
         return {

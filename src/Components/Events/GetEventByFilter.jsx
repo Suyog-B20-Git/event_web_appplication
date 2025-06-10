@@ -23,10 +23,8 @@ import CommonCalendar from "../CommonCalendar";
 function GetEventByFilter() {
   const location = useLocation();
   const value = location.state;
-  console.log("Location State:", value);
 
   const filterValue = value || "";
-  console.log("Filter Value:", filterValue);
 
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -52,7 +50,6 @@ function GetEventByFilter() {
     eventData: [],
   };
   const data = store.eventData;
-  console.log("DATAAA", data);
   const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,

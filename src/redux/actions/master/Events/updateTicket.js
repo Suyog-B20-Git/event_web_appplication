@@ -4,7 +4,6 @@ import { Zoom } from "react-toastify";
 import { Event } from "../../../Urls";
 
 export const postTicketData = (ticketData) => async (dispatch) => {
-  console.log("Sending ticketData:", ticketData); 
   try {
     dispatch({ type: "POST_TICKET_REQUEST" });
 

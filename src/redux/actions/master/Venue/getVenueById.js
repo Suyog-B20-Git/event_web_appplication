@@ -62,10 +62,9 @@ export const getVenueById= (id,setLoader) => {
       const response = await axios.get(
         `${Venue.postVenue}/${id}`
       );
-      console.log("response", response);
       dispatch({
         type: "GET_VENUE_BY_ID",
-        venueData: response.data, // Ensure the API actually returns this structure
+        venueData: response.data, 
       });
     } catch (error) {
       console.error(

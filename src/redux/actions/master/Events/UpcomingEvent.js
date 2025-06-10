@@ -61,7 +61,6 @@ export const getUpcomingEventData = (setLoader) => {
 
     try {
       const response = await axios.get(Event.upcomingEvent);
-      console.log("Upcomg Event response", response);
       dispatch({
         type: "GET_UPCOMING_EVENT",
         eventData: response.data.events, // Ensure the API actually returns this structure
@@ -112,7 +111,6 @@ export const getUpcomingEventsDataForProfile = ({
 
       // Make the API request using the provided query parameters
       const response = await axios.get(Event.upcomingEvent, { params });
-      console.log("Upcoming events response", response.data);
 
       // Dispatch the fetched data; you can adjust the payload structure if needed
       dispatch({

@@ -120,29 +120,6 @@ export default function EventForm() {
     setValue("performerFacebookLinks", updatedLinks); // Update form state
   };
 
-  //   const getRepeatDatesAndDays = (dates) => {
-  //   const repeatDates = dates.map((d) => parseInt(d.day));
-  //   const repeatDays = [
-  //     ...new Set(
-  //       dates.map((d) =>
-  //         new Date(d.year, d.month.number - 1, d.day).toLocaleDateString("en-US", {
-  //           weekday: "long",
-  //         })
-  //       )
-  //     ),
-  //   ];
-  //   return { repeatDates, repeatDays };
-  // };
-
-  // const repeatDays = [];
-
-  // repeatDatesRaw.forEach(dateObj => {
-  //   const date = dateObj.getDate(); // returns the day of month (e.g., 7, 8)
-  //   const day = dateObj.toLocaleString("en-US", { weekday: "long" }); // e.g., "Saturday"
-  //   repeatDates.push(date);
-  //   repeatDays.push(day);
-  // });
-
   const navigate = useNavigate();
   const {
     register,
@@ -188,7 +165,7 @@ export default function EventForm() {
     },
   });
 
-  const [eventTags, setEventTags] = useState([]);
+  const [eventTags, setEventTags] = useState([""]);
   const eventTag = watch("eventTag") || [];
 
   const handleKeyDown = (e) => {
@@ -382,7 +359,7 @@ export default function EventForm() {
       repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
     });
 
-    formData.append("repeatDates", repeatDates.join(",")); 
+    formData.append("repeatDates", repeatDates.join(","));
     formData.append("repeatDays", repeatDays.join(","));
 
     formData.append("repeatEndTime", data.repeatEndTime);
@@ -497,7 +474,7 @@ export default function EventForm() {
       repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
     });
 
-    formData.append("repeatDates", repeatDates.join(",")); 
+    formData.append("repeatDates", repeatDates.join(","));
     formData.append("repeatDays", repeatDays.join(","));
     formData.append(
       "repeatStartTime",
@@ -592,12 +569,12 @@ export default function EventForm() {
       totalTicketQuantity: Number(totalTicketQuantity),
       limitPerCustomer: Number(limitPerCustomer),
       description,
-      promoCodes: promoCodeArray,
+      promoCodes: promoCodeArray || [],
       isSale: isSale,
-      salePrice: Number(salePrice) || 0,
+      salePrice: Number(salePrice) || "",
       saleStartDate: new Date(saleStartDate).toISOString() || "",
       saleEndDate: new Date(saleEndDate).toISOString() || "",
-      soldOut: isSoldOut,
+      soldOut: isSoldOut || false,
       seatingPoints: [],
       bookedSeats: bookedSeatArray,
       noOfBookedSeats: bookedSeatArray.length,
@@ -702,8 +679,11 @@ export default function EventForm() {
                 <textarea
                   type="text"
                   id="description1"
-                  // name="description"
-                  className="mt-1 block w-full border rounded-md p-2"
+                  className="mt-1 block w-full border rounded-md p-2 resize-y"
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
                   placeholder="Enter Description"
                   {...register("description1", {
                     required: "Event description is required",
@@ -826,14 +806,14 @@ export default function EventForm() {
                   htmlFor="excerpt"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Excerpt(Short Info)*
+                  Excerpt(Short Info)
                 </label>
                 <input
                   type="text"
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter your excerpt"
                   {...register("excerpt", {
-                    required: " Excerpt is required",
+                   
                   })}
                 />
                 {errors.excerpt && (
@@ -971,9 +951,7 @@ export default function EventForm() {
                     }}
                     {...register("endDate", {
                       required: "End Date is required",
-                      validate: (value) =>
-                        !startDate ||
-                        value >= startDate                       
+                      validate: (value) => !startDate || value >= startDate,
                     })}
                   />
                   {errors.endDate && (
@@ -1031,7 +1009,7 @@ export default function EventForm() {
               </div>
               {/*IsRepeititive button*/}
               <div>
-                <h1 className="font-medium text-[#ff2459]">Repeitive Status</h1>
+                <h1 className="font-medium text-[#ff2459]">Repetitive Status</h1>
                 <div className="flex gap-2 items-center">
                   <div
                     onClick={() => setValue("isRepetitive", !isRepetitive)}
@@ -1136,22 +1114,22 @@ export default function EventForm() {
                         type="time"
                         className="mt-1 block w-full border rounded-md p-2"
                         onClick={(e) => {
-                      try {
-                        if (e.target.showPicker) {
-                          e.target.showPicker();
-                        }
-                      } catch (error) {}
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        try {
-                          if (e.target.showPicker) {
-                            e.target.showPicker();
+                          try {
+                            if (e.target.showPicker) {
+                              e.target.showPicker();
+                            }
+                          } catch (error) {}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            try {
+                              if (e.target.showPicker) {
+                                e.target.showPicker();
+                              }
+                            } catch (error) {}
                           }
-                        } catch (error) {}
-                      }
-                    }}
+                        }}
                         {...register("repeatStartTime", {
                           // required: "repeatStartTime is required",
                         })}
@@ -1170,22 +1148,22 @@ export default function EventForm() {
                         type="time"
                         className="mt-1 block w-full border rounded-md p-2"
                         onClick={(e) => {
-                      try {
-                        if (e.target.showPicker) {
-                          e.target.showPicker();
-                        }
-                      } catch (error) {}
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        try {
-                          if (e.target.showPicker) {
-                            e.target.showPicker();
+                          try {
+                            if (e.target.showPicker) {
+                              e.target.showPicker();
+                            }
+                          } catch (error) {}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            try {
+                              if (e.target.showPicker) {
+                                e.target.showPicker();
+                              }
+                            } catch (error) {}
                           }
-                        } catch (error) {}
-                      }
-                    }}
+                        }}
                         {...register("repeatEndTime", {
                           required: "repeatEndTime is required",
                           validate: (value) => {
@@ -1572,6 +1550,9 @@ export default function EventForm() {
                   onSubmit={handleCreateTicket}
                   className="w-full max-w-8xl px-1 sm:px-4 lg:px-8 xl:px-0 lg:ml-0 lg:mr-auto p-2 bg-gray-100 rounded-lg space-y-6"
                 >
+                  <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
+                    CREATE TICKET
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block mb-1 font-medium">Title*</label>
@@ -1629,8 +1610,24 @@ export default function EventForm() {
                       </label>
                       <input
                         type="number"
+                        min="0"
                         value={limitPerCustomer}
-                        onChange={(e) => setLimitPerCustomer(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "") {
+                            setLimitPerCustomer("");
+                          } else {
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue) && numValue >= 0) {
+                              setLimitPerCustomer(numValue);
+                            }
+                          }
+                        }}
+                        onBlur={(e) => {
+                          if (e.target.value === "") {
+                            setLimitPerCustomer(0);
+                          }
+                        }}
                         placeholder="Limit per customer"
                         required
                         className="w-full border border-gray-300 rounded-md px-4 py-2"

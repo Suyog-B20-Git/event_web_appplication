@@ -14,8 +14,6 @@ const ContactUs = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', form);
-    // You can integrate your API call or email service here
   };
 
   return (

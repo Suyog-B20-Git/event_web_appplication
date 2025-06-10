@@ -8,8 +8,6 @@ import { Venue } from "../../../Urls";
 
 
 export const postFavouriteVenue = (venueId) => {
-  console.log("data.:::", venueId);
-  console.log("post Venue fav called")
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
@@ -41,7 +39,6 @@ export const postFavouriteVenue = (venueId) => {
               autoClose: 2000,
             });
           }
-          console.log(response);
         }
       })
 

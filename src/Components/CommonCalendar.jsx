@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Calendar, CalendarCheck } from "lucide-react";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-const baseURI = import.meta.env.VITE_API_URL;
+  import { useLocation } from "react-router-dom";
+
 
 const CustomDateIcon = ({ date, bgColor }) => (
   <div
@@ -46,48 +46,37 @@ const CustomDateIcon = ({ date, bgColor }) => (
 );
 
 // Simple Calendar Component (replacing react-calendar)
-const SimpleCalendar = ({
-  value,
-  onChange,
-  tileContent,
-  tileDisabled,
+const SimpleCalendar = ({ 
+  value, 
+  onChange, 
+  tileContent, 
+  tileDisabled, 
   showNavigation = true,
   activeStartDate,
-  restrictToWeek = false,
+  restrictToWeek = false ,
   getEventsForDate,
   // eventDays,
   hoveredDate,
-  setHoveredDate,
+  setHoveredDate
 }) => {
-  const [currentDate, setCurrentDate] = useState(
-    activeStartDate || value || new Date()
-  );
+  const [currentDate, setCurrentDate] = useState(activeStartDate || value || new Date());
+  
+    const hasEventOnDate = (date) => {
+  if (typeof getEventsForDate === "function") {
+    const eventsOnDate = getEventsForDate(date);
+    return Array.isArray(eventsOnDate) && eventsOnDate.length > 0;
+  }
+  return false;
+};
 
-  const hasEventOnDate = (date) => {
-    if (typeof getEventsForDate === "function") {
-      const eventsOnDate = getEventsForDate(date);
-      return Array.isArray(eventsOnDate) && eventsOnDate.length > 0;
-    }
-    return false;
-  };
 
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
   ];
-
+  
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
+  
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -95,52 +84,49 @@ const SimpleCalendar = ({
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-
+    
     const days = [];
-
+    
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-
+    
     // Add all days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
-
+ 
     return days;
   };
-
+  
   const days = getDaysInMonth(currentDate);
-
+  
   const handlePrevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-    );
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   };
-
+  
   const handleNextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-    );
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
-
+  
   const handleDateClick = (date) => {
-    if (date && (!tileDisabled || !tileDisabled({ date, view: "month" }))) {
+    if (date && (!tileDisabled || !tileDisabled({ date, view: 'month' }))) {
       onChange(date);
     }
   };
-
+  
   const isSelected = (date) => {
     if (!date || !value) return false;
     return date.toDateString() === value.toDateString();
   };
-
+  
   const isDisabled = (date) => {
     if (!date || !tileDisabled) return false;
-    return tileDisabled({ date, view: "month" });
+    return tileDisabled({ date, view: 'month' });
   };
 
+  
   return (
     <div
       className="calendar-container"
@@ -245,7 +231,7 @@ const SimpleCalendar = ({
                   backgroundColor: isSelected(date)
                     ? "#2563eb" //Blue color
                     : hasEventOnDate(date)
-                    ? "#6c3483" //purple color
+                    ? "#6c3483"//purple color
                     : "transparent",
                   color:
                     isSelected(date) || hasEventOnDate(date) ? "white" : "#333",
@@ -308,8 +294,9 @@ const CommonCalendar = () => {
   const [showTomorrowCalendar, setShowTomorrowCalendar] = useState(false);
   const navigate = useNavigate();
 
-  // inside CommonCalendar component
-  const location = useLocation();
+
+
+const location = useLocation();
 
   const today = new Date();
   const tomorrow = new Date(today);
@@ -343,25 +330,25 @@ const CommonCalendar = () => {
     }
   }, [events]);
 
+
   const { monday, sunday } = getWeekRange(today);
 
-  const formatDateYMD = (date) => {
-    const tzOffset = date.getTimezoneOffset() * 60000;
-    return new Date(date.getTime() - tzOffset).toISOString().split("T")[0];
-  };
+ const formatDateYMD = (date) => {
+  const tzOffset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - tzOffset).toISOString().split("T")[0];
+};
 
   // API call function with error handling
   const fetchEventData = async (url, description) => {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch ${description}: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`Failed to fetch ${description}: ${response.status} ${response.statusText}`);
       }
       const data = await response.json();
       return data;
     } catch (err) {
+      console.error(`Error fetching ${description}:`, err);
       throw err;
     }
   };
@@ -375,11 +362,12 @@ const CommonCalendar = () => {
 
         const todayStr = formatDateYMD(today);
         const tomorrowStr = formatDateYMD(tomorrow);
-        const tomorrowEndStr = formatDateYMD(tomorrowEndDate);
+        const tomorrowEndStr= formatDateYMD(tomorrowEndDate);
         const mondayStr = formatDateYMD(monday);
         const sundayStr = formatDateYMD(sunday);
 
-        const baseUrl = `${baseURI}/api/event/filter`;
+
+        const baseUrl = "http://localhost:5000/api/event/filter";
 
         // Construct URLs for different date ranges
         const todayUrl = `${baseUrl}?startDate=${todayStr}&endDate=${tomorrowStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`;
@@ -395,6 +383,7 @@ const CommonCalendar = () => {
             fetchEventData(weekUrl, "week events"),
             fetchEventData(allEventsUrl, "all events"),
           ]);
+
 
         const todayEventData = getEventsArray(todayData);
         const uniqueTodayEvents = [];
@@ -414,32 +403,37 @@ const CommonCalendar = () => {
         }
         setHighlightedTodayEvents(uniqueTodayEvents);
         setTodayCount(uniqueTodayEvents.length);
-        const todayCountFromAPI = Array.isArray(todayData?.data)
-          ? todayData.data.length
-          : 0;
-        setTodayCount(todayCountFromAPI);
+const todayCountFromAPI = Array.isArray(todayData?.data) ? todayData.data.length : 0;
+setTodayCount(todayCountFromAPI);
+        // const simplifiedTomorrowEvents = tomorrowEventData.map((event) => ({
+        //   date: new Date(event.startDate).toISOString().split("T")[0],
+        //   name: event.name,
+        //   id: event._id,
+        //   category: event.category.toLowerCase(),
+        // }));
+        // setHighlightedTomorrowEvents(simplifiedTomorrowEvents);
 
-        const tomorrowEventData = getEventsArray(tomorrowData);
-        const uniqueTomorrowEvents = [];
-        const seenTomorrow = new Set();
+      //  Tomorrow Data  
+const tomorrowEventData = getEventsArray(tomorrowData);
+const uniqueTomorrowEvents = [];
+const seenTomorrow = new Set();
 
-        for (const event of tomorrowEventData) {
-          const key = `${event._id}-${event.startDate}`;
-          if (!seenTomorrow.has(key)) {
-            seenTomorrow.add(key);
-            uniqueTomorrowEvents.push({
-              date: new Date(event.startDate).toISOString().split("T")[0],
-              name: event.name,
-              id: event._id,
-              category: event.category?.toLowerCase(),
-            });
-          }
-        }
-        setHighlightedTomorrowEvents(uniqueTomorrowEvents);
-        setTomorrowCount(uniqueTomorrowEvents.length);
-        const tomorrowCountFromAPI = Array.isArray(tomorrowData?.data)
-          ? tomorrowData.data.length
-          : 0;
+for (const event of tomorrowEventData) {
+  const key = `${event._id}-${event.startDate}`;
+  if (!seenTomorrow.has(key)) {
+    seenTomorrow.add(key);
+    uniqueTomorrowEvents.push({
+      date: new Date(event.startDate).toISOString().split("T")[0],
+      name: event.name,
+      id: event._id,
+      category: event.category?.toLowerCase() ,
+    });
+  }
+}
+setHighlightedTomorrowEvents(uniqueTomorrowEvents);
+setTomorrowCount(uniqueTomorrowEvents.length);
+const tomorrowCountFromAPI = Array.isArray(tomorrowData?.data) ? tomorrowData.data.length : 0;
+
 
         const weekEventData = weekData?.data?.events || [];
         const simplifiedWeekEvents = weekEventData.map((event) => ({
@@ -460,41 +454,40 @@ const CommonCalendar = () => {
           return 0;
         };
 
-        setTodayCount(getTotalCount(todayData));
+                setTodayCount(getTotalCount(todayData));
         setTomorrowCount(getTotalCount(tomorrowData));
         setWeekCount(getTotalCount(weekData));
         setEvents(getEventsArray(allEventData));
         const arr = setEvents(getEventsArray(allEventData));
+     
+
         const rawEvents = arr?.data?.events || [];
         const simplifiedEvents = rawEvents.map((event) => ({
           date: new Date(event.startDate).toISOString().split("T")[0],
           name: event.name,
         }));
+
+       
       } catch (err) {
-        setError(err.message || "Failed to fetch event data");
+        console.error("Error fetching event data:", err);
+        setError(err.message || 'Failed to fetch event data');
 
-        const rawEvents = weekData?.data?.events || [];
+const rawEvents = weekData?.data?.events || [];
 
-        const simplifiedEvents = rawEvents.map((event) => ({
-          date: new Date(event.startDate).toISOString().split("T")[0],
-          name: event.name,
-        }));
-
+const simplifiedEvents = rawEvents.map((event) => ({
+  date: new Date(event.startDate).toISOString().split("T")[0],
+  name: event.name
+}));
+      
         const mockEvents = [
           { title: "Team Meeting", startDate: today.toISOString() },
           { title: "Project Review", startDate: today.toISOString() },
           { title: "Client Call", startDate: tomorrow.toISOString() },
           { title: "Workshop", startDate: new Date(2025, 4, 30).toISOString() },
-          {
-            title: "Conference",
-            startDate: new Date(2025, 5, 15).toISOString(),
-          },
-          {
-            title: "Training Session",
-            startDate: new Date(2025, 5, 20).toISOString(),
-          },
+          { title: "Conference", startDate: new Date(2025, 5, 15).toISOString() },
+          { title: "Training Session", startDate: new Date(2025, 5, 20).toISOString() },
         ];
-
+        
         setEvents(mockEvents);
         setTodayCount(1);
         setTomorrowCount(2);
@@ -504,12 +497,12 @@ const CommonCalendar = () => {
       }
     };
     const getEventsArray = (data) => {
-      if (data?.data?.docs && Array.isArray(data.data.docs))
-        return data.data.docs;
-      if (data?.data && Array.isArray(data.data)) return data.data;
-      if (Array.isArray(data)) return data;
-      return [];
-    };
+          if (data?.data?.docs && Array.isArray(data.data.docs))
+            return data.data.docs;
+          if (data?.data && Array.isArray(data.data)) return data.data;
+          if (Array.isArray(data)) return data;
+          return [];
+        };
 
     fetchCounts();
   }, []);
@@ -561,39 +554,42 @@ const CommonCalendar = () => {
   };
 
   const tileDisabledToday = ({ date, view }) => {
-    return view === "month" && date.toDateString() !== today.toDateString();
-  };
+  return view === "month" && date.toDateString() !== today.toDateString();
+};
 
-  const tileDisabledTomorrow = ({ date, view }) => {
-    return view === "month" && date.toDateString() !== tomorrow.toDateString();
-  };
+const tileDisabledTomorrow = ({ date, view }) => {
+  return view === "month" && date.toDateString() !== tomorrow.toDateString();
+};
 
-  // const hasEventOnDate = (date) => {
-  //   return getEventsForDate(date).length > 0;
-  // };
+// const hasEventOnDate = (date) => {
+//   return getEventsForDate(date).length > 0;
+// };
 
-  // purple highlight tomorrow if event exists
+// purple highlight tomorrow if event exists
 
-  const hasEventOnDate = (date) => {
-    const formattedDate = formatDateYMD(date);
-    return (
-      highlightedTodayEvents.some((event) => event.date === formattedDate) ||
-      highlightedTomorrowEvents.some((event) => event.date === formattedDate) ||
-      highlightedEvents.some((event) => event.date === formattedDate)
-    );
-  };
+const hasEventOnDate = (date) => {
+  const formattedDate = formatDateYMD(date);
+  return (
+    highlightedTodayEvents.some(event => event.date === formattedDate) ||
+    highlightedTomorrowEvents.some(event => event.date === formattedDate) ||
+    highlightedEvents.some(event => event.date === formattedDate)
+  );
+};
 
-  
-  const tileContent = ({ date, view }) => {
+
+
+  const tileContent = ({date, view }) => {
     if (view !== "month") return null;
     const dailyEvents = getEventsForDate(date);
     const isHovered = hoveredDate === date.toDateString();
 
-    const getSelectedDate = (date) => {
-      setSelectedDate(date);
-    };
-    // disable rest of dates in calender (today /tomorrow)
+const getSelectedDate = (date) => {
+  setSelectedDate(date);
+ 
+};
+// disable rest of dates in calender (today /tomorrow)
 
+    
     return (
       <div
         style={{ position: "relative", width: "100%" }}
@@ -645,6 +641,7 @@ const CommonCalendar = () => {
               {dailyEvents.map((event, idx) => (
                 <li
                   key={idx}
+
                   style={{
                     marginBottom: "8px",
                     padding: "6px",
@@ -654,17 +651,18 @@ const CommonCalendar = () => {
                     cursor: "pointer",
                   }}
                   //  onClick={() => window.location.href = `/event/${event.id}`}>
-
+                  
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (event.category && event.id) {
-                      navigate(`/events/${event.category}/${event.id}`, {
-                        state: event.id,
-                      });
-                    } else {
-                      alert(
-                        "This event is missing a category. Cannot navigate."
+                     if (event.category && event.id) {
+                      navigate(`/events/${event.category}/${event.id}`,
+                        {
+                          state:event.id,
+                      }
                       );
+                    } else {
+                      console.warn("Missing event data:", event);
+                      alert("This event is missing a category. Cannot navigate.");
                     }
                   }}
                 >
@@ -680,25 +678,24 @@ const CommonCalendar = () => {
         )}
       </div>
     );
-  };
+};
 
   const tileDisabled = ({ date, view }) =>
     view === "month" &&
     (date.getTime() < monday.getTime() || date.getTime() > sunday.getTime());
 
-  const boxClasses =
-    "rounded-md h-28 w-28 text-white font-medium flex flex-col justify-center items-center gap-2 p-2 transition-transform hover:scale-105 cursor-pointer";
+  const boxClasses = "rounded-md h-28 w-28 min-w-24 text-white font-medium flex flex-col justify-center items-center gap-2 p-2 transition-transform hover:scale-105 cursor-pointer";
 
-  //   if (loading) {
-  //     return (
-  //       <div className="flex flex-col items-center w-full p-4">
-  //         <div className="text-center">
-  //           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-  //           <p className="text-gray-600">Loading events...</p>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center w-full p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center w-full p-4">
@@ -708,7 +705,9 @@ const CommonCalendar = () => {
         </div>
       )}
 
-      <div className="flex flex-wrap justify-center gap-4">
+ <div className="overflow-x-auto scrollbar-hide w-full">
+  <div className="flex gap-4 px-4 py-4 md:flex-nowrap lg:grid lg:grid-cols-2 lg:gap-6 lg:px-0 lg:py-0 justify-center max-w-md mx-auto">
+
         <div
           className={`${boxClasses} bg-blue-600`}
           onClick={() => {
@@ -717,6 +716,7 @@ const CommonCalendar = () => {
             setShowChooseDateCalendar(false);
           }}
         >
+         
           <CustomDateIcon date={today.getDate()} bgColor="#2563EB" />
           <p className="text-center text-sm mt-1">
             Today {loading ? "..." : todayCount} {/* today count */}
@@ -761,7 +761,7 @@ const CommonCalendar = () => {
           <p className="text-center text-sm">Choose Date</p>
         </div>
       </div>
-
+</div>
       {/* Week Calendar Modal */}
       {showWeekCalendar && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
@@ -785,68 +785,68 @@ const CommonCalendar = () => {
               getEventsForDate={getEventsForDate}
               eventDays={eventDays}
               hoveredDate={hoveredDate}
-              hasEventOnDate={hasEventOnDate}
+               hasEventOnDate={hasEventOnDate}
               setHoveredDate={setHoveredDate}
             />
           </div>
         </div>
       )}
-      {/* Today Calendar Modal */}
-      {showTodayCalendar && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div
-            ref={todayPickerRef}
-            className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4"
-          >
-            <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">
-              Events for Today
-            </h3>
-            <SimpleCalendar
-              value={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
-                setShowTodayCalendar(false);
-              }}
-              tileContent={tileContent}
-              tileDisabled={tileDisabledToday}
-              showNavigation={false}
-              activeStartDate={today}
-              getEventsForDate={getEventsForTodayDate}
-              hoveredDate={hoveredDate}
-              hasEventOnDate={hasEventOnDate}
-              setHoveredDate={setHoveredDate}
-            />
-          </div>
-        </div>
-      )}
-      {/* tomorrow Calendar Modal */}
-      {showTomorrowCalendar && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div
-            ref={tomorrowPickerRef}
-            className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4"
-          >
-            <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">
-              Events for Tomorrow
-            </h3>
-            <SimpleCalendar
-              value={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
-                setShowTomorrowCalendar(false);
-              }}
-              tileContent={tileContent}
-              tileDisabled={tileDisabledTomorrow}
-              showNavigation={false}
-              activeStartDate={tomorrow}
-              getEventsForDate={getEventsForTomorrowDate}
-              hoveredDate={hoveredDate}
-              setHoveredDate={setHoveredDate}
-              hasEventOnDate={hasEventOnDate}
-            />
-          </div>
-        </div>
-      )}
+       {/* Today Calendar Modal */}
+{showTodayCalendar && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div
+       ref={todayPickerRef} 
+      className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4"
+    >
+      <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">
+        Events for Today
+      </h3>
+      <SimpleCalendar
+        value={selectedDate}
+        onChange={(date) => {
+          setSelectedDate(date);
+          setShowTodayCalendar(false);
+        }}
+        tileContent={tileContent}
+        tileDisabled={tileDisabledToday}
+        showNavigation={false}
+        activeStartDate={today}
+        getEventsForDate={getEventsForTodayDate}
+        hoveredDate={hoveredDate}
+         hasEventOnDate={hasEventOnDate}
+        setHoveredDate={setHoveredDate}
+      />
+    </div>
+  </div>
+)}
+ {/* tomorrow Calendar Modal */}
+{showTomorrowCalendar && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div
+      ref={tomorrowPickerRef}
+      className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4"
+    >
+      <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">
+        Events for Tomorrow
+      </h3>
+      <SimpleCalendar
+        value={selectedDate}
+        onChange={(date) => {
+          setSelectedDate(date);
+          setShowTomorrowCalendar(false);
+        }}
+        tileContent={tileContent}
+        tileDisabled={tileDisabledTomorrow}
+        showNavigation={false}
+        activeStartDate={tomorrow}
+        getEventsForDate={getEventsForTomorrowDate}
+        hoveredDate={hoveredDate}
+        setHoveredDate={setHoveredDate}
+        hasEventOnDate={hasEventOnDate}
+      />
+    </div>
+  </div>
+)}
 
       {showChooseDateCalendar && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
@@ -868,7 +868,7 @@ const CommonCalendar = () => {
               getEventsForDate={getEventsForDate}
               eventDays={eventDays}
               hoveredDate={hoveredDate}
-              hasEventOnDate={hasEventOnDate}
+               hasEventOnDate={hasEventOnDate}
               setHoveredDate={setHoveredDate}
             />
           </div>

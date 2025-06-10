@@ -34,7 +34,6 @@ const FollowEvent = ({
         );
 
         setIsFollowing(followedEvents);
-        console.log("isFollowed:", followedEvents);
       } catch (err) {
         console.error("Error fetching followings:", err);
       }
@@ -64,7 +63,7 @@ const FollowEvent = ({
       setIsFollowing(!isFollowing);
       isFollowing ? toast.error("Unfollowed") : toast.success("Following");
     } catch (err) {
-      console.log("Unable to follow/unfollow. Please try again.", err);
+      toast.error("Unable to follow/unfollow. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -15,7 +15,6 @@ export const getFavouriteVenueData = (setLoader) => {
       const response = await axiosInstance.get(
         `${Venue.getFavouriteVenue}`
       );
-      // console.log("fav response", response);
       dispatch({
         type: "GET_FAVOURITE_VENUE",
         payload: response.data.organizers, // Ensure the API actually returns this structure

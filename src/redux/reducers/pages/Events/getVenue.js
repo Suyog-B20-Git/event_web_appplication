@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const venuesReducer = (state = initialState, action) => {
-  console.log("action..:", action);
   switch (action.type) {
     case "GET_VENUE":
       return {

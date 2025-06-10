@@ -104,7 +104,6 @@ function GetPerformerById() {
   }
 
   const data1 = upcomingEventData;
-  console.log("Upcoming Event Data:", data1);
 
   const store = useSelector((state) => state.getPerformerByIdReducer) || {
     performerData: [],

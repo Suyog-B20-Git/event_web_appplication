@@ -8,7 +8,6 @@ const initialState = {
   }
   
   const getServiceByIdReducer = (state = initialState,action) => {
-    console.log("action..:",action)
     switch (action.type) {
       case 'GET_SERVICE_BY_ID':
         return {

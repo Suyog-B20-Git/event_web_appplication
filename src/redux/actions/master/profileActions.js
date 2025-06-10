@@ -7,14 +7,9 @@ import { axiosInstance } from "../../../../utility/utils";
 export const updateUserProfile = (formData, token) => async (dispatch) => {
   try {
     dispatch({ type: "UPDATE_USER_REQUEST" });
-
-    console.log("Sending FormData:", formData);
-    console.log("Sending Token:", token);
-
     const response = await axiosInstance.put("/api/auth/update", formData);
     
     
-    console.log("Profile update response:", response);
 
     if (response.data.status) {
       toast.success("Profile updated successfully!", { autoClose: 2000 });

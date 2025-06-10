@@ -5,7 +5,6 @@ import { Zoom } from "react-toastify";
 import { Organizer } from "../../../Urls";
 
 export const removeFavouriteOrganizer = (organizerId) => {
-  console.log("Removing organizer from favourites:", organizerId);
   const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   return (dispatch) => {

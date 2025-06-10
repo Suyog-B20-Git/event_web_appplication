@@ -118,7 +118,6 @@ export const getOrganizer = (setLoader, filter, page, category) => {
 
     try {
       const response = await axios.get(`${api}`);
-      // console.log("response", response);
       dispatch({
         type: "GET_ORGANIZER",
         organizerData: response.data.organizers, // Ensure the API actually returns this structure
@@ -139,62 +138,3 @@ export const getOrganizer = (setLoader, filter, page, category) => {
     }
   };
 };
-
-// import axios from "axios";
-// import { Organizer } from "../../../Urls";
-
-// let api = `${Organizer.getOrganizerFilter}filter`;
-
-// export const getOrganizer = (setLoader, filter, page = 1, limit = 10) => {
-//   return async (dispatch) => {
-//     setLoader(true); // Start loading
-
-//     // let api = `${baseApi}?page=${page}&limit=${limit}`;
-//     // if (filter) {
-//     //   api += `&sortOrder=${
-//     //     filter === "title asc"
-//     //       ? "asc"
-//     //       : `${filter === "alphabetical" ? "asc" : "desc"}`
-//     //   }`;
-//     // }
-//     switch (filter) {
-//       case "title asc":
-//         api = `${api}?page=${page}&limit=${limit}&sortOrder=asc`;
-//         break;
-
-//       case "title desc":
-//         api = `${api}?page=${page}&limit=${limit}&sortOrder=desc`;
-//         break;
-
-//       case "alphabetical":
-//         api = `${api}?page=${page}&limit=${limit}&sortOrder=asc`;
-//         break;
-
-//       default:
-//         api = ` ${api}?page=${page}&limit=${limit}`;
-//         break;
-//     }
-
-//     try {
-//       const response = await axios.get(api);
-//       console.log("API Response:", response);
-
-//       dispatch({
-//         type: "GET_ORGANIZER",
-//         organizerData: response.data.organizers || [], // Ensure correct data structure
-//         page,
-//       });
-//     } catch (error) {
-//       console.error(
-//         "API Error:",
-//         error.response ? error.response.data : error.message
-//       );
-//       dispatch({
-//         type: "GET_ORGANIZER",
-//         organizerData: [],
-//       });
-//     } finally {
-//       setLoader(false); // Stop loading
-//     }
-//   };
-// };
