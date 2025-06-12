@@ -30,9 +30,11 @@ return (
                                 alt={item.name}
                                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-125"
                             />
+                            {item.type &&(
                             <h3 className="absolute top-2 right-2 text-white bg-red-500 px-2 py-1 rounded-full text-sm">
                                 {item.type}
                             </h3>
+                            )}
                         </div>
 
                         <div className="p-2 flex flex-col gap-2">

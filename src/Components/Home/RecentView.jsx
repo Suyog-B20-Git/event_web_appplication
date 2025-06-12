@@ -25,7 +25,7 @@ function RecentView() {
   }
 return (
   <div className="flex justify-center items-center overflow-hidden">
-    <div className="lg:p-12 lg:pt-10 pt-5 p-5 w-full max-w-[1340px]">
+    <div className="lg:p-12 lg:pt-10 pt-5 p-5 w-full max-w-[1320px]">
       {data.length > 0 && (
         <>
           {/* Heading */}

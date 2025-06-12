@@ -136,6 +136,7 @@ useEffect(() => {
       { value: "Band", label: "Band" },
       { value: "Disc Jockey", label: "Disc Jockey" },
       { value: "Sound Artist", label: "Sound Artist" },
+      { value: "Stand up Comedian", label: "Stand up Comedian" },
     ],
     Service: [
       { value: "Photography", label: "Photography" },
@@ -304,7 +305,7 @@ useEffect(() => {
     }
 
 
-const onSubmit = (data) => {
+const onSubmit = async (data) => {
   
   const token = localStorage.getItem("authToken");
   if (!token) {
@@ -378,7 +379,6 @@ const onSubmit = (data) => {
       formData.append("cloudSoundUrl", data.cloudSoundUrl);
       formData.append("spotifyUrl", data.spotifyUrl);
       dispatch(createNewPerformer(formData));
-
       navigate("/home");
     }
 

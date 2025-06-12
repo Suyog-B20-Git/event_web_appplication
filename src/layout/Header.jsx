@@ -400,11 +400,11 @@ useEffect(() => {
   };
 
   return (
-    <div className="bg-gray-900 text-white p-1 fixed w-full z-30">
+    <div className="bg-gray-900 text-white p-1 fixed w-full z-40">
       <div>
-        <div className="lg:w-[100%] w-[100%]  lg:h-[140px] inset-0 z-60 items-center justify-center bg-opacity-50 relative">
+        <div className="lg:w-[100%] w-[100%]  lg:h-[140px] inset-0 z-60 items-center justify-center  relative">
           {/* first div */}
-          <div className="flex w-[100%] md:h-[80px] h-[80px]  lg:h-[80px]  inset-0 z-60 items-center justify-center bg-opacity-50 relative ">
+          <div className="flex w-[100%] md:h-[80px] h-[60px]  lg:h-[80px]  inset-0 z-60 items-center justify-center bg-opacity-50 relative ">
             {/* <div className="flex justify-between  items-center  lg:w-[60%] w-[100%] "> */}
             <div className="flex items-center justify-between w-full lg:h-[100px] px-4">
               {/* <div
