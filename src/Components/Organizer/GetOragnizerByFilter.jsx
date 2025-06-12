@@ -32,11 +32,8 @@ function GetOrganizerByFilter() {
     { value: "title asc", label: "Title ascending" },
     { value: "title desc", label: "Title descending" },
   ];
-  const [selectedOption, setSelectedOption] = useState("");
-  console.log(
-    "selected option",
-    selectedOption.value ? selectedOption.value : ""
-  );
+  const [selectedOption, etSelectedOption] = useState("");
+ 
   const customStyles = {
     control: (base) => ({
       ...base,

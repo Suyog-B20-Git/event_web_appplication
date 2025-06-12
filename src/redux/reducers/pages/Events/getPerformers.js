@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const performersReducer = (state = initialState, action) => {
-  console.log("action..:", action);
   switch (action.type) {
     case "GET_PERFORMER":
       return {

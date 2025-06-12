@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import Select from "react-select";
-
+import DatePicker from "react-multi-date-picker";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
 import { GiPartyPopper } from "react-icons/gi";
 import { FcViewDetails } from "react-icons/fc";
-import { MdAccountCircle, MdCancel } from "react-icons/md";
+import {
+  MdAccountCircle,
+  MdCancel,
+  MdSentimentSatisfied,
+} from "react-icons/md";
 import { alpha, styled } from "@mui/material/styles";
 import { pink } from "@mui/material/colors";
 import { getVenue } from "../../redux/actions/master/Events/GetVenue";
@@ -19,6 +23,8 @@ import { postTicketData } from "../../redux/actions/master/Events/updateTicket";
 import { toast } from "react-toastify";
 const baseUrl = import.meta.env.VITE_API_URL;
 import axios from "axios";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
 
 export default function EventForm() {
   const [tagInput, setTagInput] = useState("");
@@ -28,32 +34,31 @@ export default function EventForm() {
   const seatingChartRef = useRef(null);
   const [selectedImages, setSelectedImages] = useState([]);
   const [inputKey, setInputKey] = useState(Date.now()); // Unique key for re-render
-
+  const [repeatDates, setRepeatDates] = useState([]);
+  const [repeatDatesRaw, setRepeatDatesRaw] = useState([]);
   const [query, setQuery] = useState("");
   const [performer, setPerformer] = useState("");
+  const [selectedPerformers, setSelectedPerformers] = useState([]);
   const dispatch = useDispatch();
-  const [youtubeLinks, setYoutubeLinks] = useState([""]); 
-  const [performerFacebookLinks, setPerformerFacebookLinks] = useState([""]); 
-  const [showTicketForm, setShowTicketForm] = useState(false); 
+  const [youtubeLinks, setYoutubeLinks] = useState([""]);
+  const [performerFacebookLinks, setPerformerFacebookLinks] = useState([""]);
+  const [showTicketForm, setShowTicketForm] = useState(false);
 
- const selectedRadio = localStorage.getItem("selectedRadio");
- const [title, setTitle] = useState("");
- const [price, setPrice] = useState("");
- const [order, setOrder] = useState("");
- const [totalTicketQuantity, setTotalTicketQuantity] = useState("");
- const [limitPerCustomer, setLimitPerCustomer] = useState("");
- const [description, setDescription] = useState("");
- const [promoCodes, setPromoCodes] = useState("");
- const [bookedSeats, setBookedSeats] = useState("");
- const [saleStartDate, setSaleStartDate] = useState("");
- const [saleEndDate, setSaleEndDate] = useState("");
- const [salePrice, setSalePrice] = useState("");
- const [isDonation, setIsDonation] = useState(false);
- const [isSoldOut, setIsSoldOut] = useState(false);
- const [isSale, setIsSale] = useState(false);
- 
-
-
+  const selectedRadio = localStorage.getItem("selectedRadio");
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [order, setOrder] = useState("");
+  const [totalTicketQuantity, setTotalTicketQuantity] = useState("");
+  const [limitPerCustomer, setLimitPerCustomer] = useState("");
+  const [description, setDescription] = useState("");
+  const [promoCodes, setPromoCodes] = useState("");
+  const [bookedSeats, setBookedSeats] = useState("");
+  const [saleStartDate, setSaleStartDate] = useState("");
+  const [saleEndDate, setSaleEndDate] = useState("");
+  const [salePrice, setSalePrice] = useState("");
+  const [isDonation, setIsDonation] = useState(false);
+  const [isSoldOut, setIsSoldOut] = useState(false);
+  const [isSale, setIsSale] = useState(false);
 
   // Fetch API data whenever `query` updates
   useEffect(() => {
@@ -87,11 +92,11 @@ export default function EventForm() {
     setYoutubeLinks(updatedLinks);
     setValue("youtubeLinks", updatedLinks); // Update React Hook Form state
   };
-  
+
   const handleAddLink = () => {
     setYoutubeLinks([...youtubeLinks, ""]); // Add an empty input field
   };
-  
+
   const handleRemoveLink = (index) => {
     const updatedLinks = youtubeLinks.filter((_, i) => i !== index);
     setYoutubeLinks(updatedLinks);
@@ -101,20 +106,20 @@ export default function EventForm() {
   const handleAddPerformerLink = () => {
     setPerformerFacebookLinks([...performerFacebookLinks, ""]); // Add new input
   };
-  
+
   const handleRemovePerformerLink = (index) => {
     const updatedLinks = performerFacebookLinks.filter((_, i) => i !== index);
     setPerformerFacebookLinks(updatedLinks);
     setValue("performerFacebookLinks", updatedLinks); // Update form state
   };
-  
+
   const handlePerformerLinkChange = (index, value) => {
     const updatedLinks = [...performerFacebookLinks];
     updatedLinks[index] = value;
     setPerformerFacebookLinks(updatedLinks);
     setValue("performerFacebookLinks", updatedLinks); // Update form state
   };
-  
+
   const navigate = useNavigate();
   const {
     register,
@@ -136,7 +141,7 @@ export default function EventForm() {
       shortUrl: "",
       startDate: "",
       endDate: "",
-      disableEventAfterSoldOut: false, // Default value
+      disableEventAfterSoldOut: false,
       isRepetitive: false,
       isPublish: false,
       enableRatingReview: false,
@@ -150,36 +155,40 @@ export default function EventForm() {
 
       eventTag: [],
       repeatExcept: [],
-
+      youtubeLinks: [""],
       media: {
         thumbnailImage: null,
         posterImage: null,
         seatingChartImage: null,
         images: [],
-        youtubeLinks: [""], 
-      }, // Default media object
+      },
     },
   });
 
-  const [eventTags, setEventTags] = useState([]); // Local state to manage tags
-  const eventTag = watch("eventTag") || []; // ✅ Prevents `undefined` error
+  const [eventTags, setEventTags] = useState([""]);
+  const eventTag = watch("eventTag") || [];
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && tagInput.trim() !== "") {
       e.preventDefault();
 
-      const updatedTags = [...eventTags, tagInput.trim()];
+      const newTags = tagInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+
+      const updatedTags = [...eventTags, ...newTags];
       setEventTags(updatedTags);
-      setValue("eventTag", updatedTags); // ✅ Updates React Hook Form state
-      clearErrors("eventTag"); // ✅ Clears validation errors (if any)
-      setTagInput(""); // ✅ Reset input field
+      setValue("eventTag", updatedTags);
+      clearErrors("eventTag");
+      setTagInput("");
     }
   };
 
   const removeTag = (index) => {
     const updatedTags = eventTags.filter((_, i) => i !== index);
     setEventTags(updatedTags);
-    setValue("eventTag", updatedTags); // ✅ Updates form state
+    setValue("eventTag", updatedTags);
   };
 
   const [ticketFormat, setTicketFormat] = useState(false);
@@ -189,7 +198,6 @@ export default function EventForm() {
 
     if (storedData) {
       const parsedData = JSON.parse(storedData);
-
       if (parsedData.eventType == "Public") {
         setValue("isPublish", true);
         // return;
@@ -217,7 +225,6 @@ export default function EventForm() {
   const [thumnPreview, setThumnPreview] = useState(null);
   const [posterPreview, setPosterPreview] = useState(null);
   const [seatingChartPreview, setSeatingChartPreview] = useState(null);
-  
 
   const handleImagesChange1 = (e) => {
     const files = Array.from(e.target.files);
@@ -226,20 +233,23 @@ export default function EventForm() {
         file,
         preview: URL.createObjectURL(file),
       }));
-      setSelectedImages((prev) => [...prev, ...newImages]);
+
+      const updatedImages = [...selectedImages, ...newImages];
+      setSelectedImages(updatedImages);
+      setValue("media.images", updatedImages);
     }
   };
-  
+
   const removeImage1 = (index) => {
     const updatedImages = selectedImages.filter((_, i) => i !== index);
     setSelectedImages(updatedImages);
-  
+
     // If no images remain, reset the input field
     if (updatedImages.length === 0) {
       setInputKey(Date.now()); // Forces re-render of input field
     }
   };
-  
+
   const [repeatExceptList, setRepeatExceptList] = useState([]);
   const handleAddRepeatExcept = (e) => {
     if (e.key === "Enter" && e.target.value.trim() !== "") {
@@ -278,102 +288,143 @@ export default function EventForm() {
   const media = watch("media"); // Watching media state
   const enableRatingReview = watch("enableRatingReview"); // Watching media state
   const repetitiveType = watch("repetitiveType");
- 
-
 
   useEffect(() => {
     if (watch("venue") || watch("facebookLink")) {
       clearErrors(["venue", "facebookLink"]);
     }
   }, [watch("venue"), watch("facebookLink"), clearErrors]);
-  
+
   useEffect(() => {
-    if ((!watch("performers") || watch("performers").length === 0) &&
-        (!watch("performerFacebookLinks") || watch("performerFacebookLinks"))) {
-      setError("performers", { type: "manual", message: "Either Performers or Performers Facebook Link is required." });
-      setError("performerFacebookLinks", { type: "manual", message: "Either Performers or Performers Facebook Link is required." });
+    if (
+      (!watch("performers") || watch("performers").length === 0) &&
+      (!watch("performerFacebookLinks") || watch("performerFacebookLinks"))
+    ) {
+      setError("performers", {
+        type: "manual",
+        message: "Either Performers or Performers Facebook Link is required.",
+      });
+      setError("performerFacebookLinks", {
+        type: "manual",
+        message: "Either Performers or Performers Facebook Link is required.",
+      });
     } else {
       clearErrors("performers");
       clearErrors("performerFacebookLinks");
     }
-  }, [watch("performers"), watch("performerFacebookLinks"), setError, clearErrors]);
-  
- 
-  const onSubmit = (data) => { 
-    const formData = new FormData();    
+  }, [
+    watch("performers"),
+    watch("performerFacebookLinks"),
+    setError,
+    clearErrors,
+  ]);
+
+  const onSubmit = (data) => {
+    const formData = new FormData();
     const category = data.selectedEvent || data.category;
+    // const { repeatDates, repeatDays } = getRepeatDatesAndDays(repeatDatesRaw);
     data.category = category;
     formData.append("name", data.name);
     formData.append("category", category);
-    formData.append("eventUrl", data.eventUrl);
-    formData.append("shortUrl", data.shortUrl);
     formData.append("excerpt", data.excerpt);
-    formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut);
+    formData.append(
+      "disableEventAfterSoldOut",
+      data.disableEventAfterSoldOut ?? false
+    );
     formData.append("enableRatingReview", data.enableRatingReview);
-    formData.append("isRepetitive", data.isRepetitive);
+    formData.append("isRepetitive", data.isRepetitive ?? false);
     formData.append("repetitiveType", data.repetitiveType);
-    formData.append("isPublish", data.isPublish);
-    formData.append("isSeasonal", data.isSeasonal);
-    formData.append("isOnline", data.isOnline);
-    formData.append("venue", data.venue || ""); 
+    formData.append("isPublish", data.isPublish ?? true);
+    formData.append("isSeasonal", data.isSeasonal ?? false);
+    formData.append("isOnline", data.isOnline ?? true);
+    formData.append("venue", data.venue || "");
     formData.append("facebookLink", data.facebookLink || "");
-    formData.append("repeatExcept", data.repeatExcept);
+    formData.append("repeatExcept", data.repeatExcept ?? 1);
     formData.append("performers", data.performers || []);
-    formData.append("performerFacebookLinks", JSON.stringify(data.performerFacebookLinks));
-    formData.append("repeatStartTime", data.repeatStartTime ? data.repeatStartTime : "");
+    formData.append(
+      "performerFacebookLinks",
+      JSON.stringify(data.performerFacebookLinks)
+    );
+    formData.append(
+      "repeatStartTime",
+      data.repeatStartTime ? data.repeatStartTime : ""
+    );
+
+    const repeatDates = [];
+    const repeatDays = [];
+
+    repeatDatesRaw.forEach((dateObj) => {
+      const date = new Date(dateObj);
+      repeatDates.push(date.getDate());
+      repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
+    });
+
+    formData.append("repeatDates", repeatDates.join(","));
+    formData.append("repeatDays", repeatDays.join(","));
+
     formData.append("repeatEndTime", data.repeatEndTime);
     formData.append("facebookLink", data.facebookLink);
-    formData.append("youtubeLink", data.youtubeLink);
+    formData.append("youtubeLinks", data.youtubeLinks);
     formData.append("startDate", `${data.startDate}T${data.startTime}`);
     formData.append("endDate", `${data.endDate}T${data.endTime}`);
-    formData.append("description", data.description);
-    formData.append("offlinePaymentInstructions",data.offlinePaymentInstructions );
+    formData.append("description", data.description1);
+    formData.append(
+      "offlinePaymentInstructions",
+      data.offlinePaymentInstructions
+    );
     formData.append("eventTags", data.eventTag);
-    formData.append("seo", JSON.stringify(data.seo));
+    const seoTags = data.seo.metaTags.join(",");
+    formData.append("seo", JSON.stringify(seoTags));
 
-    if (data.media?.thumbnailImage) {
-      formData.append("thumbnailImage", data.media.thumbnailImage);
+    const thumbnailImage = data.media?.thumbnailImage;
+    const posterImage = data.media?.posterImage;
+    const seatingChartImage = data.media?.seatingChartImage;
+
+    if (thumbnailImage) {
+      formData.append("thumbnailImage", thumbnailImage);
     }
-    if (data.media?.posterImage) {
-      formData.append("posterImage", data.media.posterImage);
+    if (posterImage) {
+      formData.append("posterImage", posterImage);
     }
-    if (data.media?.seatingChartImage) {
-      formData.append("seatingChartImage", data.media.seatingChartImage);
+    if (seatingChartImage) {
+      formData.append("seatingChartImage", seatingChartImage);
     }
+
     if (data.media?.images?.length > 0) {
       data.media.images.forEach((image) => {
-        formData.append("images", image.file); 
+        const fileToUpload = image.file instanceof File ? image.file : image;
+        if (fileToUpload instanceof File) {
+          formData.append("images", fileToUpload);
+        } else {
+        }
       });
-    }   
+    }
 
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
     const authToken = localStorage.getItem("authToken");
 
-    if(!isLogin || !authToken){
-      localStorage.setItem("eventData", JSON.stringify({...data}));
+    if (!isLogin || !authToken) {
+      localStorage.setItem("eventData", JSON.stringify({ ...data }));
       toast.error("Please log in to create an event.");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");
       return;
     }
-    try{
-      dispatch(
-        createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-      );
+    try {
+      for (let [key, value] of formData.entries()) {
+      }
+      dispatch(createNewEvent(formData));
       reset();
       setThumnPreview(null);
       setPosterPreview(null);
       setSeatingChartPreview(null);
       localStorage.removeItem("eventData");
-      navigate("/home");  
+      navigate("/home");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.message || error?.message || "Something went wrong!";
+      toast.error(errorMessage);
     }
-      catch (error) {
-        const errorMessage =
-          error?.response?.message ||
-          error?.message ||
-          "Something went wrong!";
-        toast.error(errorMessage);
-      }
   };
 
   useEffect(() => {
@@ -388,16 +439,90 @@ export default function EventForm() {
     window.scrollTo(0, 0);
   }, []);
 
-  
   const handleNextClick = handleSubmit(async (data) => {
+    const formData = new FormData();
     const category = data.selectedEvent || data.category;
     data.category = category;
+    formData.append("name", data.name);
+    formData.append("category", category);
+    formData.append("excerpt", data.excerpt);
+    formData.append(
+      "disableEventAfterSoldOut",
+      data.disableEventAfterSoldOut ?? false
+    );
+    formData.append("enableRatingReview", data.enableRatingReview);
+    formData.append("isRepetitive", data.isRepetitive ?? false);
+    formData.append("repetitiveType", data.repetitiveType);
+    formData.append("isPublish", data.isPublish ?? true);
+    formData.append("isSeasonal", data.isSeasonal ?? false);
+    formData.append("isOnline", data.isOnline ?? true);
+    formData.append("venue", data.venue || "");
+    formData.append("facebookLink", data.facebookLink || "");
+    formData.append("repeatExcept", data.repeatExcept ?? 1);
+    formData.append("performers", data.performers || []);
+    formData.append(
+      "performerFacebookLinks",
+      JSON.stringify(data.performerFacebookLinks)
+    );
+
+    const repeatDates = [];
+    const repeatDays = [];
+
+    repeatDatesRaw.forEach((dateObj) => {
+      const date = new Date(dateObj);
+      repeatDates.push(date.getDate());
+      repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
+    });
+
+    formData.append("repeatDates", repeatDates.join(","));
+    formData.append("repeatDays", repeatDays.join(","));
+    formData.append(
+      "repeatStartTime",
+      data.repeatStartTime ? data.repeatStartTime : ""
+    );
+    formData.append("repeatEndTime", data.repeatEndTime);
+    formData.append("facebookLink", data.facebookLink);
+    formData.append("youtubeLinks", data.youtubeLinks);
+    formData.append("startDate", `${data.startDate}T${data.startTime}`);
+    formData.append("endDate", `${data.endDate}T${data.endTime}`);
+    formData.append("description", data.description1);
+    formData.append(
+      "offlinePaymentInstructions",
+      data.offlinePaymentInstructions
+    );
+    formData.append("eventTags", data.eventTag);
+    const seoTags = data.seo.metaTags.join(",");
+    formData.append("seo", JSON.stringify(seoTags));
+
+    const thumbnailImage = data.media?.thumbnailImage;
+    const posterImage = data.media?.posterImage;
+    const seatingChartImage = data.media?.seatingChartImage;
+
+    if (thumbnailImage) {
+      formData.append("thumbnailImage", thumbnailImage);
+    }
+    if (posterImage) {
+      formData.append("posterImage", posterImage);
+    }
+    if (seatingChartImage) {
+      formData.append("seatingChartImage", seatingChartImage);
+    }
+
+    if (data.media?.images?.length > 0) {
+      data.media.images.forEach((image) => {
+        const fileToUpload = image.file instanceof File ? image.file : image;
+        if (fileToUpload instanceof File) {
+          formData.append("images", fileToUpload);
+        } else {
+        }
+      });
+    }
 
     localStorage.setItem("eventFormData", JSON.stringify(data));
-  
+
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
     const token = localStorage.getItem("authToken");
-  
+
     if (!isLogin || !token) {
       localStorage.setItem("eventData", JSON.stringify({ ...data }));
       toast.error("Please login to continue");
@@ -405,38 +530,37 @@ export default function EventForm() {
       navigate("/login?redirectTo=/submit-event");
       return;
     }
-  
+
     try {
-      const response = await dispatch(
-        createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-      );
+      for (let [key, value] of formData.entries()) {
+      }
+      const response = await dispatch(createNewEvent(formData));
       const eventId4 = response?.event._id;
       localStorage.setItem("createdEventId", eventId4);
       setShowTicketForm(true);
     } catch (error) {
       toast.error("Failed to create event.");
-      console.error(error);
     }
-  });  
-  
+  });
+
   const handleCreateTicket = async (e) => {
     e.preventDefault();
-  
-    const event = localStorage.getItem("createdEventId");  
+
+    const event = localStorage.getItem("createdEventId");
     if (!event) {
       toast.error("Event ID not found. Please create the event first.");
       return;
     }
-  
-    const promoCodeArray = promoCodes
-  .split(',')
-  .map(code => code.trim())
-  .filter(Boolean);
 
-  const bookedSeatArray = bookedSeats
-  .split(',')
-  .map(seat => parseInt(seat.trim(), 10))
-  .filter(n => !isNaN(n));
+    const promoCodeArray = promoCodes
+      .split(",")
+      .map((code) => code.trim())
+      .filter(Boolean);
+
+    const bookedSeatArray = bookedSeats
+      .split(",")
+      .map((seat) => parseInt(seat.trim(), 10))
+      .filter((n) => !isNaN(n));
 
     const ticketData = {
       event,
@@ -445,40 +569,80 @@ export default function EventForm() {
       totalTicketQuantity: Number(totalTicketQuantity),
       limitPerCustomer: Number(limitPerCustomer),
       description,
-      promoCodes: promoCodeArray,
+      promoCodes: promoCodeArray || [],
       isSale: isSale,
-      salePrice: Number(salePrice),
-      saleStartDate: new Date(saleStartDate).toISOString(),
-      saleEndDate: new Date(saleEndDate).toISOString(),
-      soldOut: isSoldOut,
-      seatingPoints: [], 
-      bookedSeats: bookedSeatArray, 
+      salePrice: Number(salePrice) || "",
+      saleStartDate: new Date(saleStartDate).toISOString() || "",
+      saleEndDate: new Date(saleEndDate).toISOString() || "",
+      soldOut: isSoldOut || false,
+      seatingPoints: [],
+      bookedSeats: bookedSeatArray,
       noOfBookedSeats: bookedSeatArray.length,
     };
-  
+
     try {
       const token = localStorage.getItem("authToken");
-      const response = await axios.post(`${baseUrl}/api/ticketFormat`, ticketData, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      const response = await axios.post(
+        `${baseUrl}/api/ticketFormat`,
+        ticketData,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
       toast.success("Ticket created successfully!");
       navigate("/dashboard");
     } catch (error) {
       toast.error("Failed to create ticket.");
-      console.error("Ticket creation failed:", error);
     }
   };
-   
-  
+
+  // copy Enter Name to meta title
+
+  const [metaTitleEdited, setMetaTitleEdited] = useState(false);
+  const name = watch("name") || "";
+  const metaTitle = watch("seo.metaTitle") || "";
+
+  useEffect(() => {
+    if (!metaTitleEdited && name !== metaTitle) {
+      setValue("seo.metaTitle", name);
+    }
+  }, [name, metaTitleEdited, metaTitle, setValue]);
+
+  // copy Enter Description to Meta Description
+  const [metaDescEdited, setMetaDescEdited] = useState(false);
+  const description1 = watch("description1") || "";
+  const metaDescription = watch("seo.metaDescription") || "";
+
+  useEffect(() => {
+    if (!metaDescEdited && description1 !== metaDescription) {
+      setValue("seo.metaDescription", description1);
+    }
+  }, [description1, metaDescEdited, metaDescription, setValue]);
+
+  // Copy Event Tag into Meta Tag
+  const [metaTagsManuallyEdited, setMetaTagsManuallyEdited] = useState(false);
+  const metaTags = watch("seo.metaTags") || [];
+
+  // eventTags is already declared somewhere in your component, just use it here
+
+  useEffect(() => {
+    if (
+      !metaTagsManuallyEdited &&
+      JSON.stringify(eventTags) !== JSON.stringify(metaTags)
+    ) {
+      setValue("seo.metaTags", eventTags);
+    }
+  }, [eventTags, metaTags, metaTagsManuallyEdited, setValue]);
+
   return (
-      <div className="lg:h-auto md:mb-0 pt-20 md:pt-0 lg:pt-4">
-      <div className="flex flex-col lg:flex-row w-full min-h-screen"> 
-      <div className="pb-4 w-full lg:pr-3 lg:h-auto">
-      {/* <div className="flex flex-col gap-1 lg:pr-10"></div> */}
-      <div className="w-full p-6 lg:pl-10 lg:pr-10 bg-gray-100 rounded-xl shadow-md">
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <div className="lg:h-auto md:mb-0 pt-20 md:pt-0 lg:pt-4">
+      <div className="flex flex-col lg:flex-row w-full min-h-screen">
+        <div className="pb-4 w-full lg:pr-3 lg:h-auto">
+          {/* <div className="flex flex-col gap-1 lg:pr-10"></div> */}
+          <div className="w-full p-6 lg:pl-10 lg:pr-10 bg-gray-100 rounded-xl shadow-md">
+            <form onSubmit={handleSubmit(onSubmit)}>
               <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
                 Event Registration
               </h2>
@@ -513,250 +677,143 @@ export default function EventForm() {
                   Enter Description*
                 </label>
                 <textarea
-                  id="name"
-                  name="description"
-                  className="mt-1 block w-full border rounded-md p-2"
+                  type="text"
+                  id="description1"
+                  className="mt-1 block w-full border rounded-md p-2 resize-y"
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
                   placeholder="Enter Description"
-                  {...register("description", {
+                  {...register("description1", {
                     required: "Event description is required",
                   })}
                 ></textarea>
                 {errors.description && (
                   <p className="text-red-600 text-sm px-2">
-                    {errors.description.message}*
+                    {errors.description1.message}*
                   </p>
                 )}
               </div>
 
-
-        <div className="flex items-center justify-center h-full mb-4 ">
-          {/* Venue Field */}
-          <div className="w-1/2 flex flex-col justify-center gap-2">
-            <label htmlFor="venue" className="block text-sm font-medium text-gray-700">
-              Venue
-            </label>
-            <Controller
-              name="venue"
-              control={control}
-              rules={{
-                validate: (value) => {
-                  if (!value && !watch("facebookLink")) {
-                    return "Either Venue or Facebook Link is required.";
-                  }
-                  return true;
-                },
-              }}
-              render={({ field, fieldState }) => (
-                <>
-                  <Select
-                    {...field}
-                    isClearable
-                    options={options}
-                    placeholder="Search venue..."
-                    getOptionLabel={(option) => option.label}
-                    getOptionValue={(option) => option.value}
-                    onInputChange={(value, { action }) => {
-                      if (action === "input-change") {
-                        setQuery(value);
-                      }
-                      if (action === "input-blur" || action === "menu-close") {
-                        setQuery("");
-                      }
+              <div className="flex items-center  h-full mb-4 ">
+                {/* Venue Field */}
+                <div className="w-full flex flex-col justify-center gap-2">
+                  <label
+                    htmlFor="venue"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Venue
+                  </label>
+                  <Controller
+                    name="venue"
+                    control={control}
+                    rules={{
+                      validate: (value) => {
+                        if (!value && !watch("facebookLink")) {
+                          return "Either Venue ";
+                        }
+                        return true;
+                      },
                     }}
-                    onChange={(selectedOption) => {
-                      field.onChange(selectedOption ? selectedOption.value : null);
-                    }}
-                    value={options.find((option) => option.value === field.value) || null}
-                    noOptionsMessage={() => "Type... to see Venues"}
-                    isDisabled={!!watch("facebookLink")} // Disable when Facebook Link is entered
-                    className={watch("facebookLink") ? "bg-gray-200 cursor-not-allowed" : ""}
-                  />
-                  <p className="text-red-500 text-sm min-h-[1rem]">{fieldState.error?.message}</p>
-                </>
-              )}
-            />
-          </div>
-
-          {/* OR separator */}
-          <div className="px-4 flex items-center justify-center">
-            <span className="text-gray-500 font-semibold ">or</span>
-          </div>
-
-          {/* Facebook Link Field */}
-          <div className="w-1/2 flex flex-col justify-center gap-1">
-            <label htmlFor="facebookLink" className="block text-sm font-medium text-gray-700">
-              Facebook Link
-            </label>
-            <input
-              type="url"
-              id="facebookLink"
-              name="facebookLink"
-              className={`mt-1 block w-full border rounded-md p-2 ${
-                watch("venue") ? "bg-gray-200 cursor-not-allowed" : ""
-              }`}
-              placeholder="Enter your Facebook link"
-              {...register("facebookLink", {
-                validate: (value) => {
-                  if (!value && !watch("venue")) {
-                    return "Either Facebook Link or Venue is required.";
-                  }
-                  return true;
-                },
-              })}
-              disabled={!!watch("venue")} // Disable when Venue is selected
-            />
-            <p className="text-red-500 text-sm min-h-[1rem]">{errors.facebookLink?.message}</p>
-          </div>
-        </div>
-
-
-            <div className="flex items-start justify-center h-full mb-4 gap-4">
-              {/* Performers Select */}
-              <div className="w-1/2 flex flex-col gap-2">
-                <label htmlFor="performer" className="block text-sm font-medium text-gray-700">
-                  Performers
-                </label>
-
-                <Controller
-                  name="performers"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      isMulti
-                      options={performerOptions}
-                      placeholder="Select performers..."
-                      getOptionLabel={(option) => option.label}
-                      getOptionValue={(option) => option.value}
-                      onInputChange={(value) => setPerformer(value)}
-                      onChange={(selectedOptions) => {
-                        const selectedIDs = selectedOptions
-                          ? selectedOptions.map((option) => option.value)
-                          : [];
-                        field.onChange(selectedIDs);
-                      }}
-                      value={performerOptions.filter((option) => field.value?.includes(option.value))}
-                      noOptionsMessage={() => "Type... to see performers"}
-                      className="w-full"
-                    />
-                  )}
-                />
-              </div>
-
-              {/* OR Separator */}
-              <div className="flex items-center justify-center">
-                <span className="text-gray-500 font-semibold mt-8">or</span>
-              </div>
-
-              {/* Performers Facebook Link */}
-              <div className="w-1/2 flex flex-col gap-2">
-                <label htmlFor="performerfacebookLink" className="block text-sm font-medium text-gray-700">
-                  Performers Facebook Link
-                </label>
-
-                {performerFacebookLinks.map((link, index) => (
-                  <div key={index} className="flex gap-2 items-center">
-                    <Controller
-                      name={`performerFacebookLinks[${index}]`}
-                      control={control}
-                      defaultValue={link}
-                      render={({ field }) => (
-                        <input
-                          type="url"
-                          className="block w-full border rounded-md p-2"
-                          placeholder="Enter performer Facebook link"
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Select
                           {...field}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                            handlePerformerLinkChange(index, e.target.value);
+                          isClearable
+                          options={options}
+                          placeholder="Search venue..."
+                          getOptionLabel={(option) => option.label}
+                          getOptionValue={(option) => option.value}
+                          onInputChange={(value, { action }) => {
+                            if (action === "input-change") {
+                              setQuery(value);
+                            }
+                            if (
+                              action === "input-blur" ||
+                              action === "menu-close"
+                            ) {
+                              setQuery("");
+                            }
                           }}
+                          onChange={(selectedOption) => {
+                            field.onChange(
+                              selectedOption ? selectedOption.value : null
+                            );
+                          }}
+                          value={
+                            options.find(
+                              (option) => option.value === field.value
+                            ) || null
+                          }
+                          noOptionsMessage={() => "Type... to see Venues"}
+                          isDisabled={!!watch("facebookLink")} // Disable when Facebook Link is entered
+                          className={
+                            watch("facebookLink")
+                              ? "bg-gray-200 cursor-not-allowed"
+                              : ""
+                          }
                         />
-                      )}
-                    />
-
-                    {index > 0 && (
-                      <button
-                        type="button"
-                        className="text-red-600 font-bold px-2"
-                        onClick={() => handleRemovePerformerLink(index)}
-                      >
-                        ✕
-                      </button>
+                        <p className="text-red-500 text-sm min-h-[1rem]">
+                          {fieldState.error?.message}
+                        </p>
+                      </>
                     )}
-                  </div>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={handleAddPerformerLink}
-                  className="mt-2 bg-red-500 text-white px-2 py-1 rounded-md w-fit text-sm"
-                >
-                  + Add More
-                </button>
-              </div>
-            </div>
-
-        
-              {/*Event Url */}
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-12 mb-4">
-                <div>
-                  <label
-                    htmlFor="eventUrl"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Event Url*
-                  </label>
-                  <input
-                    type="url"
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder="Enter your Event link"
-                    {...register("eventUrl", {
-                      required: "Event Url is required",
-                    })}
                   />
-                  {errors.eventUrl && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.eventUrl.message}*
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="shortUrl"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Short Url*
-                  </label>
-                  <input
-                    type="url"
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder="Enter your short link"
-                    {...register("shortUrl", {
-                      required: "Short Url is required",
-                    })}
-                  />
-                  {errors.shortUrl && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.shortUrl.message}*
-                    </p>
-                  )}
                 </div>
               </div>
 
-              {/*excerpt*/}
+              <div className="flex items-start h-full mb-4 gap-4">
+                {/* Performers Select */}
+                <div className="w-full flex flex-col gap-2">
+                  <label
+                    htmlFor="performer"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Performers
+                  </label>
+
+                  <Controller
+                    name="performers"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        isMulti
+                        options={performerOptions}
+                        placeholder="Select performers..."
+                        getOptionLabel={(option) => option.label}
+                        getOptionValue={(option) => option.value}
+                        onInputChange={(value) => setPerformer(value)}
+                        onChange={(selectedOptions) => {
+                          setSelectedPerformers(selectedOptions);
+                          const selectedIDs = selectedOptions
+                            ? selectedOptions.map((option) => option.value)
+                            : [];
+                          field.onChange(selectedIDs);
+                        }}
+                        value={selectedPerformers}
+                        noOptionsMessage={() => "Type... to see performers"}
+                        className="w-full"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+
               <div className="mb-4">
                 <label
                   htmlFor="excerpt"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Excerpt(Short Info)*
+                  Excerpt(Short Info)
                 </label>
                 <input
                   type="text"
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter your excerpt"
                   {...register("excerpt", {
-                    required: " Excerpt is required",
+                   
                   })}
                 />
                 {errors.excerpt && (
@@ -787,7 +844,7 @@ export default function EventForm() {
               </div>
 
               {/* Start and End Date */}
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4  mb-4">
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
                 <div>
                   <label
                     htmlFor="startDate"
@@ -799,7 +856,27 @@ export default function EventForm() {
                     type="date"
                     id="startDate"
                     name="startDate"
-                    className="mt-1  block w-full border rounded-md p-2"
+                    className="mt-1 block w-full border rounded-md p-2 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onClick={(e) => {
+                      // Only open picker on actual clicks (user gesture)
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      // Open picker on Enter/Space (these are valid user gestures)
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                      // Allow normal typing for other keys
+                    }}
                     {...register("startDate", {
                       required: "Start Date is required",
                     })}
@@ -809,11 +886,29 @@ export default function EventForm() {
                       {errors.startDate.message}*
                     </p>
                   )}
+
                   <input
                     type="time"
                     id="startTime"
                     name="startTime"
-                    className="mt-2 block w-full border rounded-md p-2"
+                    className="mt-2 block w-full border rounded-md p-2 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onClick={(e) => {
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                    }}
                     {...register("startTime", {
                       required: "Start Time is required",
                     })}
@@ -824,6 +919,7 @@ export default function EventForm() {
                     </p>
                   )}
                 </div>
+
                 <div>
                   <label
                     htmlFor="endDate"
@@ -835,13 +931,27 @@ export default function EventForm() {
                     type="date"
                     id="endDate"
                     name="endDate"
-                    className="mt-1  block w-full border rounded-md p-2"
+                    className="mt-1 block w-full border rounded-md p-2 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onClick={(e) => {
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                    }}
                     {...register("endDate", {
                       required: "End Date is required",
-                      validate: (value) =>
-                        !startDate ||
-                        value > startDate ||
-                        "End date must be after start date",
+                      validate: (value) => !startDate || value >= startDate,
                     })}
                   />
                   {errors.endDate && (
@@ -849,11 +959,29 @@ export default function EventForm() {
                       {errors.endDate.message}*
                     </p>
                   )}
+
                   <input
                     type="time"
                     id="endTime"
                     name="endTime"
-                    className=" mt-2 block w-full border rounded-md p-2"
+                    className="mt-2 block w-full border rounded-md p-2 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onClick={(e) => {
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                    }}
                     {...register("endTime", {
                       required: "End time is required",
                       validate: (value) => {
@@ -879,10 +1007,9 @@ export default function EventForm() {
                   )}
                 </div>
               </div>
-
               {/*IsRepeititive button*/}
               <div>
-                <h1 className="font-medium text-[#ff2459]">Repeitive Status</h1>
+                <h1 className="font-medium text-[#ff2459]">Repetitive Status</h1>
                 <div className="flex gap-2 items-center">
                   <div
                     onClick={() => setValue("isRepetitive", !isRepetitive)}
@@ -898,19 +1025,6 @@ export default function EventForm() {
                   </div>
                   <p>Is Event Repetitive</p>
                 </div>
-
-                {/* <FormGroup className="mb-2 lg:ml-3">
-                  <FormControlLabel
-                    control={
-                      <PinkSwitch
-                        checked={isRepetitive}
-                        size="small"
-                        onClick={() => setValue("isRepetitive", !isRepetitive)}
-                      />
-                    }
-                    label=" Is Event Repetitive"
-                  />
-                </FormGroup> */}
 
                 {isRepetitive && (
                   <div className="bg-white p-4 shadow rounded-lg gap-5 grid  lg:grid-cols-2 grid-cols-1">
@@ -939,25 +1053,6 @@ export default function EventForm() {
                         </p>
                       )}
                     </div>
-
-                    {/* <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Repetitive Except
-                      </label>
-                      <input
-                        type="number"
-                        className="mt-1 block w-full border rounded-md p-2"
-                        placeholder="Enter repeat except "
-                        {...register("repeatExcept", {
-                          required: "Repeat Except required",
-                        })}
-                      />
-                      {errors.except && (
-                        <p className="text-red-600 text-sm px-2">
-                          {errors.repeatExcept.message}*
-                        </p>
-                      )}
-                    </div> */}
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700">
                         Repetitive Except
@@ -995,6 +1090,19 @@ export default function EventForm() {
                         ))}
                       </div>
                     </div>
+                    <div className="mb-4 col-span-4 w-full bg-blue-300 p-4 rounded-lg">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Select Repeating Dates
+                      </label>
+                      <DatePicker
+                        multiple
+                        value={repeatDatesRaw}
+                        onChange={setRepeatDatesRaw}
+                        format="YYYY-MM-DD"
+                        className="border mt-1 p-2 rounded-md w-[100%]"
+                        placeholder="Select Dates"
+                      />
+                    </div>
                     <div>
                       <label
                         htmlFor="RepeatStartTime"
@@ -1005,6 +1113,23 @@ export default function EventForm() {
                       <input
                         type="time"
                         className="mt-1 block w-full border rounded-md p-2"
+                        onClick={(e) => {
+                          try {
+                            if (e.target.showPicker) {
+                              e.target.showPicker();
+                            }
+                          } catch (error) {}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            try {
+                              if (e.target.showPicker) {
+                                e.target.showPicker();
+                              }
+                            } catch (error) {}
+                          }
+                        }}
                         {...register("repeatStartTime", {
                           // required: "repeatStartTime is required",
                         })}
@@ -1022,6 +1147,23 @@ export default function EventForm() {
                       <input
                         type="time"
                         className="mt-1 block w-full border rounded-md p-2"
+                        onClick={(e) => {
+                          try {
+                            if (e.target.showPicker) {
+                              e.target.showPicker();
+                            }
+                          } catch (error) {}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            try {
+                              if (e.target.showPicker) {
+                                e.target.showPicker();
+                              }
+                            } catch (error) {}
+                          }
+                        }}
                         {...register("repeatEndTime", {
                           required: "repeatEndTime is required",
                           validate: (value) => {
@@ -1038,83 +1180,10 @@ export default function EventForm() {
                         </p>
                       )}
                     </div>
-
-                    {/* <div>
-                      <FormGroup className=" ">
-                        <FormControlLabel
-                          control={
-                            <PinkSwitch
-                              checked={isSeasonal}
-                              size="small"
-                              onClick={() =>
-                                setValue("isSeasonal", !isSeasonal)
-                              }
-                            />
-                          }
-                          label="Is seasonal"
-                        />
-                      </FormGroup>
-                    </div> */}
-                    {/* {repetitiveType != "Daily" && (
-                      <div className="flex gap-2 items-center">
-                        <div
-                          onClick={() => setValue("isSeasonal", !isSeasonal)}
-                          className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
-                            isSeasonal ? "bg-[#ff2459]" : "bg-gray-300"
-                          }`}
-                        >
-                          <div
-                            className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
-                              isSeasonal ? "translate-x-6" : ""
-                            }`}
-                          />
-                        </div>
-                        <p>Is Seasonal</p>
-                      </div>
-                    )} */}
                   </div>
                 )}
               </div>
 
-              {/* Input Field for Tags */}
-              {/* <div className="mt-4">
-                <label
-                  htmlFor="EventTag"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  EventTag
-                </label>
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type a tag and press Enter"
-                  className=" mt-1 block w-full border rounded-md p-2"
-                />
-
-              
-                <input type="hidden" {...register("eventTag")} />
-
-           
-                <div className="flex flex-wrap mt-2">
-                  {eventTag.map((tag, index) => (
-                    <div
-                      key={index}
-                      className="bg-blue-500 text-white px-2 py-1 rounded flex items-center m-1"
-                    >
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(index)}
-                        className="ml-2 text-gray-800 hover:text-red-500"
-                      >
-                        <MdCancel />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div> */}
               <div className="mt-4">
                 <label
                   htmlFor="EventTag"
@@ -1176,19 +1245,20 @@ export default function EventForm() {
                       alt="Thumbnail Preview"
                       className="w-16 h-16 object-cover rounded"
                     />
-                 <button
-                  type="button"
-                  onClick={() => {
-                    setThumbnailImage(null);
-                    setThumnPreview(null);
-                    setValue("media.thumbnailImage", null);
-                    if (thumbnailRef.current) thumbnailRef.current.value = "";
-                  }}
-                  className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
-                >
-                  <MdCancel />
-                </button>
-             </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setThumbnailImage(null);
+                        setThumnPreview(null);
+                        setValue("media.thumbnailImage", null);
+                        if (thumbnailRef.current)
+                          thumbnailRef.current.value = "";
+                      }}
+                      className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
+                    >
+                      <MdCancel />
+                    </button>
+                  </div>
                 )}
                 {errors.media?.thumbnailImage && (
                   <p className="text-red-500 text-sm">
@@ -1201,40 +1271,43 @@ export default function EventForm() {
               <div className="mb-4">
                 <label className="block font-medium">Poster Image:</label>
                 <input
-                type="file"
-                accept="image/*"
-                ref={posterInputRef}
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    setPosterImage(file);
-                    setValue(`media.posterImage`, file);
-                    setPosterPreview(URL.createObjectURL(file));
-                  }
-                }}
-                className="border p-2 rounded w-full"
-              />
+                  type="file"
+                  accept="image/*"
+                  ref={posterInputRef}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setPosterImage(file);
+                      setValue(`media.posterImage`, file);
+                      setPosterPreview(URL.createObjectURL(file));
+                    }
+                  }}
+                  className="border p-2 rounded w-full"
+                />
 
-              {media?.posterImage && (
-                <div className="mt-2 relative">
-                  <img src={posterPreview} alt="Poster Preview" className="w-16 h-16 object-cover rounded" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPosterImage(null);
-                      setPosterPreview(null);
-                      setValue("media.posterImage", null);
-                      if (posterInputRef.current) {
-                        posterInputRef.current.value = "";  // Reset file input
-                      }
-                    }}
-                    className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
-                  >
-                    <MdCancel />
-                  </button>
-                </div>
-              )}
-
+                {media?.posterImage && (
+                  <div className="mt-2 relative">
+                    <img
+                      src={posterPreview}
+                      alt="Poster Preview"
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPosterImage(null);
+                        setPosterPreview(null);
+                        setValue("media.posterImage", null);
+                        if (posterInputRef.current) {
+                          posterInputRef.current.value = ""; // Reset file input
+                        }
+                      }}
+                      className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
+                    >
+                      <MdCancel />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* seating Chart Image Upload */}
@@ -1283,42 +1356,44 @@ export default function EventForm() {
                 )}
               </div>
 
-          {/* select images*/}
-          <div>
-            <div className="mb-4">
-              <label className="block font-medium">Select Images:</label>
-              <input
-                key={inputKey} // Ensures a fresh input when resetting
-                type="file"
-                accept="image/*"
-                multiple
-                ref={fileInputRef}
-                onChange={handleImagesChange1}
-                className="border p-2 rounded w-full"
-              />
-              <p className="text-gray-600">{selectedImages.length} file(s) selected</p>
-            </div>
-
-            {/* Image Previews */}
-            <div className="grid grid-cols-8 gap-4">
-              {selectedImages.map((image, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={image.preview}
-                    alt={`Uploaded ${index}`}
-                    className="w-16 h-16 object-cover rounded"
+              {/* select images*/}
+              <div>
+                <div className="mb-4">
+                  <label className="block font-medium">Select Images:</label>
+                  <input
+                    key={inputKey} // Ensures a fresh input when resetting
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    ref={fileInputRef}
+                    onChange={handleImagesChange1}
+                    className="border p-2 rounded w-full"
                   />
-                  <button
-                    type="button"
-                    onClick={() => removeImage1(index)}
-                    className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
-                  >
-                    <MdCancel />
-                  </button>
+                  <p className="text-gray-600">
+                    {selectedImages.length} file(s) selected
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
+
+                {/* Image Previews */}
+                <div className="grid grid-cols-8 gap-4">
+                  {selectedImages.map((image, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={image.preview}
+                        alt={`Uploaded ${index}`}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage1(index)}
+                        className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
+                      >
+                        <MdCancel />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/*Youtube video Link*/}
               <div className="mt-6">
@@ -1338,7 +1413,9 @@ export default function EventForm() {
                           className="block w-full border rounded-md p-2"
                           placeholder="Enter YouTube video link"
                           value={link}
-                          onChange={(e) => handleLinkChange(index, e.target.value)}
+                          onChange={(e) =>
+                            handleLinkChange(index, e.target.value)
+                          }
                         />
                       )}
                     />
@@ -1363,7 +1440,6 @@ export default function EventForm() {
                 </button>
               </div>
 
-
               {/*Seo*/}
               <div className="mb-4 mt-4 grid lg:grid-cols-2 grid-cols-1 gap-4">
                 <div>
@@ -1380,6 +1456,7 @@ export default function EventForm() {
                     {...register("seo.metaTitle", {
                       required: "Meta Title is required",
                     })}
+                    onChange={() => setMetaTitleEdited(true)}
                   />
                   {errors.seo?.metaTitle && (
                     <p className="text-red-600 text-sm px-2">
@@ -1398,9 +1475,18 @@ export default function EventForm() {
                     type="text"
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder="Enter your Meta Tags"
-                    {...register("seo.metaTags", {
-                      required: "Meta Tag is required",
-                    })}
+                    // {...register("seo.metaTags", {
+                    //   required: "Meta Tag is required",
+                    // })}
+                    value={metaTags.join(", ")}
+                    onChange={(e) => {
+                      setMetaTagsManuallyEdited(true);
+                      const tagsArray = e.target.value
+                        .split(",")
+                        .map((tag) => tag.trim())
+                        .filter(Boolean);
+                      setValue("seo.metaTags", tagsArray);
+                    }}
                   />
                   {errors.seo?.metaTags && (
                     <p className="text-red-600 text-sm px-2">
@@ -1416,11 +1502,16 @@ export default function EventForm() {
                     Meta Description*
                   </label>
                   <textarea
+                    id="metaDescription"
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder="Enter your Meta description"
                     {...register("seo.metaDescription", {
                       required: "Meta Description is required",
                     })}
+                    onChange={(e) => {
+                      setMetaDescEdited(true);
+                      setValue("seo.metaDescription", e.target.value);
+                    }}
                   />
                   {errors.seo?.metaDescription && (
                     <p className="text-red-600 text-sm px-2">
@@ -1454,171 +1545,205 @@ export default function EventForm() {
                 </div>
               </div>
 
-            { showTicketForm && selectedRadio === "Tickets" && (
-              <form onSubmit={handleCreateTicket} 
-  className="w-full max-w-8xl px-1 sm:px-4 lg:px-8 xl:px-0 lg:ml-0 lg:mr-auto p-2 bg-gray-100 rounded-lg space-y-6"
-  >
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <label className="block mb-1 font-medium">Title*</label>
-      <input
-        type="text"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        placeholder="Ticket Title"
-        required
-        className="w-full border border-gray-300 rounded-md px-4 py-2"
-      />
-    </div>
+              {showTicketForm && selectedRadio === "Tickets" && (
+                <form
+                  onSubmit={handleCreateTicket}
+                  className="w-full max-w-8xl px-1 sm:px-4 lg:px-8 xl:px-0 lg:ml-0 lg:mr-auto p-2 bg-gray-100 rounded-lg space-y-6"
+                >
+                  <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
+                    CREATE TICKET
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block mb-1 font-medium">Title*</label>
+                      <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Ticket Title"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-    <div>
-      <label className="block mb-1 font-medium">Price*</label>
-      <input
-        type="number"
-        value={price}
-        onChange={e => setPrice(e.target.value)}
-        placeholder="Ticket Price"
-        required
-        className="w-full border border-gray-300 rounded-md px-4 py-2"
-      />
-    </div>
+                    <div>
+                      <label className="block mb-1 font-medium">Price*</label>
+                      <input
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="Ticket Price"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-    <div>
-      <label className="block mb-1 font-medium">Order*</label>
-      <input
-        type="text"
-        value={order}
-        onChange={e => setOrder(e.target.value)}
-        placeholder="Display Order"
-        required
-        className="w-full border border-gray-300 rounded-md px-4 py-2"
-      />
-    </div>
+                    <div>
+                      <label className="block mb-1 font-medium">Order*</label>
+                      <input
+                        type="text"
+                        value={order}
+                        onChange={(e) => setOrder(e.target.value)}
+                        placeholder="Display Order"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-    <div>
-      <label className="block mb-1 font-medium">Total Ticket Quantity*</label>
-      <input
-        type="number"
-        value={totalTicketQuantity}
-        onChange={e => setTotalTicketQuantity(e.target.value)}
-        placeholder="Total Quantity"
-        required
-        className="w-full border border-gray-300 rounded-md px-4 py-2"
-      />
-    </div>
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Total Ticket Quantity*
+                      </label>
+                      <input
+                        type="number"
+                        value={totalTicketQuantity}
+                        onChange={(e) => setTotalTicketQuantity(e.target.value)}
+                        placeholder="Total Quantity"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-    <div>
-      <label className="block mb-1 font-medium">Limit Per Customer*</label>
-      <input
-        type="number"
-        value={limitPerCustomer}
-        onChange={e => setLimitPerCustomer(e.target.value)}
-        placeholder="Limit per customer"
-        className="w-full border border-gray-300 rounded-md px-4 py-2"
-      />
-    </div>
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Limit Per Customer*
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={limitPerCustomer}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "") {
+                            setLimitPerCustomer("");
+                          } else {
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue) && numValue >= 0) {
+                              setLimitPerCustomer(numValue);
+                            }
+                          }
+                        }}
+                        onBlur={(e) => {
+                          if (e.target.value === "") {
+                            setLimitPerCustomer(0);
+                          }
+                        }}
+                        placeholder="Limit per customer"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-    <div>
-      <label className="block mb-1 font-medium">Sale Price*</label>
-      <input
-        type="number"
-        value={salePrice}
-        onChange={e => setSalePrice(e.target.value)}
-        placeholder="Optional Sale Price"
-        className="w-full border border-gray-300 rounded-md px-4 py-2"
-      />
-    </div>
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Sale Price
+                      </label>
+                      <input
+                        type="number"
+                        value={salePrice}
+                        onChange={(e) => setSalePrice(e.target.value)}
+                        placeholder="Optional Sale Price"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-    <div>
-      <label className="block mb-1 font-medium">Sale Start Date*</label>
-      <input
-        type="datetime-local"
-        value={saleStartDate}
-        onChange={e => setSaleStartDate(e.target.value)}
-        className="w-full border border-gray-300 rounded-md px-4 py-2"
-      />
-    </div>
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Sale Start Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={saleStartDate}
+                        onChange={(e) => setSaleStartDate(e.target.value)}
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-    <div>
-      <label className="block mb-1 font-medium">Sale End Date*</label>
-      <input
-        type="datetime-local"
-        value={saleEndDate}
-        onChange={e => setSaleEndDate(e.target.value)}
-        className="w-full border border-gray-300 rounded-md px-4 py-2"
-      />
-    </div>
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Sale End Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={saleEndDate}
+                        onChange={(e) => setSaleEndDate(e.target.value)}
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-    <div>
-    <label className="block mb-1 font-medium">Promo Codes*</label>
-    <input
-      type="text"
-      value={promoCodes}
-      onChange={e => setPromoCodes(e.target.value)}
-      placeholder="Comma separated promo codes (e.g. VIP32,EARLYBIRD)"
-      className="w-full border border-gray-300 rounded-md px-4 py-2"
-    />
-  </div>
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Promo Codes
+                      </label>
+                      <input
+                        type="text"
+                        value={promoCodes}
+                        onChange={(e) => setPromoCodes(e.target.value)}
+                        placeholder="Comma separated promo codes (e.g. VIP32,EARLYBIRD)"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
 
-  <div>
-    <label className="block mb-1 font-medium">Booked Seats*</label>
-    <input
-      type="text"
-      value={bookedSeats}
-      onChange={e => setBookedSeats(e.target.value)}
-      placeholder="Comma separated seat numbers (e.g. 1,2,3)"
-      className="w-full border border-gray-300 rounded-md px-4 py-2"
-    />
-  </div>
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Booked Seats
+                      </label>
+                      <input
+                        type="text"
+                        value={bookedSeats}
+                        onChange={(e) => setBookedSeats(e.target.value)}
+                        placeholder="Comma separated seat numbers (e.g. 1,2,3)"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+                  </div>
 
-  </div>
+                  <div>
+                    <label className="block mb-1 font-medium">
+                      Description*
+                    </label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Enter ticket description"
+                      rows={4}
+                      required
+                      className="w-full border border-gray-300 rounded-md px-4 py-2"
+                    />
+                  </div>
 
-  <div>
-    <label className="block mb-1 font-medium">Description*</label>
-    <textarea
-      value={description}
-      onChange={e => setDescription(e.target.value)}
-      placeholder="Enter ticket description"
-      rows={4}
-      required
-      className="w-full border border-gray-300 rounded-md px-4 py-2"
-    />
-  </div>
+                  <div className="flex flex-wrap gap-6 items-center">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isDonation}
+                        onChange={(e) => setIsDonation(e.target.checked)}
+                        className="accent-blue-500"
+                      />
+                      <span>Is Donation</span>
+                    </label>
 
-  <div className="flex flex-wrap gap-6 items-center">
-    <label className="flex items-center gap-2">
-      <input
-        type="checkbox"
-        checked={isDonation}
-        onChange={e => setIsDonation(e.target.checked)}
-        className="accent-blue-500"
-      />
-      <span>Is Donation</span>
-    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isSoldOut}
+                        onChange={(e) => setIsSoldOut(e.target.checked)}
+                        className="accent-red-500"
+                      />
+                      <span>Is Sold Out</span>
+                    </label>
+                  </div>
 
-    <label className="flex items-center gap-2">
-      <input
-        type="checkbox"
-        checked={isSoldOut}
-        onChange={e => setIsSoldOut(e.target.checked)}
-        className="accent-red-500"
-      />
-      <span>Is Sold Out</span>
-    </label>
-  </div>
+                  <button
+                    type="submit"
+                    onClick={handleCreateTicket}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+                  >
+                    Create Ticket
+                  </button>
+                </form>
+              )}
 
-  <button
-    type="submit"
-    onClick={handleCreateTicket}
-    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
-  >
-    Create Ticket
-  </button>
-</form>
-
-            )}
-               
-              
               <div className="flex justify-around p-0">
                 <Button
                   text={"Previous"}

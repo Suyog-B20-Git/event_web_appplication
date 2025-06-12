@@ -12,7 +12,25 @@ const MapContainer = ({ location }) => {
     width: "100%",
   };
 
-  const defaultLocation = { lat: 40.7127753, lng: -74.0059728 }; // New York
+  const isValidLocation =
+  location &&
+  !isNaN(parseFloat(location.lat)) &&
+  !isNaN(parseFloat(location.lng));
+
+const parsedLocation = isValidLocation
+  ? {
+      lat: parseFloat(location.lat),
+      lng: parseFloat(location.lng),
+    }
+  : {
+      lat: 40.7127753,
+      lng: -74.0059728,
+    };
+
+
+  const defaultLocation = (location?.lat && location?.lng)
+  ? { lat: location.lat, lng: location.lng }
+  : { lat: 40.7127753, lng: -74.0059728 }; // Default to New York
 
   // Load Google Maps script and initialize map
   useEffect(() => {
@@ -45,22 +63,24 @@ const MapContainer = ({ location }) => {
   }, []);
 
   // Update marker and center when location is selected
-  useEffect(() => {
-    if (mapInstanceRef.current && location) {
-      mapInstanceRef.current.setCenter(location);
+useEffect(() => {
+  if (mapInstanceRef.current && isValidLocation) {
+    mapInstanceRef.current.setCenter(parsedLocation);
 
-      if (markerRef.current) {
-        markerRef.current.position = location;
-      } else {
-        const { AdvancedMarkerElement } = window.google.maps.marker;
-        markerRef.current = new AdvancedMarkerElement({
-          position: location,
-          map: mapInstanceRef.current,
-          title: "Selected Marker",
-        });
-      }
+    if (markerRef.current) {
+      markerRef.current.position = parsedLocation;
+    } else {
+      const { AdvancedMarkerElement } = window.google.maps.marker;
+      markerRef.current = new AdvancedMarkerElement({
+        position: parsedLocation,
+        map: mapInstanceRef.current,
+        title: "Selected Marker",
+      });
     }
-  }, [location]);
+  }
+}, [location]);
+
+
 
   return <div ref={mapRef} style={mapStyles}></div>;
 };

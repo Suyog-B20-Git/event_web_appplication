@@ -53,7 +53,6 @@ function Register() {
             },
           }
         );
-        console.log("REGISTER response", response);
   
         if (response.data.statusCode === 201) {
           toast.success("Registration successful!", {

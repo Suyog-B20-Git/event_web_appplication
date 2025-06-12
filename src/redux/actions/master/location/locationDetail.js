@@ -60,7 +60,6 @@ export const getLocationDetails = (place_id) => {
       const response = await axios.get(
         `http://localhost:5000/api/location/locationDetails?place_id=${place_id}`
       );
-      console.log("response", response);
       dispatch({
         type: "GET_LOCATION_DETAILS",
         locationDetails: response.data, // Ensure the API actually returns this structure

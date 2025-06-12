@@ -14,7 +14,6 @@ export const getFavouritePerformerData = (setLoader) => {
       const response = await axiosInstance.get(
         `${Performer.getFavouritePerformer}`
       );
-      // console.log("fav response", response);
       dispatch({
         type: "GET_FAVOURITE_PERFORMER",
         payload: response.data.organizers, 

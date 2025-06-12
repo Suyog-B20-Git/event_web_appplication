@@ -23,8 +23,12 @@ import Guest from "../Components/FeaturedEvent/Guest";
 import RegisterModal from "../Components/FeaturedEvent/RegisterModal";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { FaEye, FaHeart } from "react-icons/fa6";
-import { MdDateRange, MdOutlineMailOutline } from "react-icons/md";
-import { PiBuildingApartmentFill } from "react-icons/pi";
+import {
+  MdDateRange,
+  MdOutlineMailOutline,
+  MdOutlineEventRepeat,
+} from "react-icons/md";
+import { PiBuildingApartmentFill, PiBookmarkThin } from "react-icons/pi";
 import OrganiserContact from "../Components/FeaturedEvent/OrganiserContact";
 import { useDispatch, useSelector } from "react-redux";
 import Collapsible from "react-collapsible";
@@ -64,6 +68,34 @@ function FeaturedEvent() {
     eventData: [],
   };
   const receivedData = store.eventData;
+
+  const updateStartDateTime = new Date(receivedData.startDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
+
+  const updateEndDateTime = new Date(receivedData.endDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
+
+  const youtubeVideoUrl = receivedData.youtubeVideoUrls;
   const VenuesData = Array.isArray(receivedData?.venue)
     ? receivedData?.venue
     : receivedData?.venue
@@ -192,7 +224,11 @@ function FeaturedEvent() {
     setDate(formattedDate);
     setTime(formattedTime);
   };
-  const venueLocationData = receivedData.venue || {};
+
+  const googleLocation = {
+    lat: receivedData.venue?.googleSearchLat,
+    lng: receivedData.venue?.googleSearchLong,
+  };
 
   const sectionRef = useRef(null);
   const LocationRef = useRef(null);
@@ -331,8 +367,8 @@ function FeaturedEvent() {
             {receivedData.name}
           </h1>
           <div className="flex gap-2 pb-3 pl-4 justify-start mt-0 sm:mt-4 ">
-            <div className="relative flex flex-col space-y-4 top-1 lg:text-2xl text-gray-600 ">
-              <TiBookmark />
+            <div className="relative flex flex-col space-y-4 top-0 lg:text-2xl text-gray-800 font-semibold">
+              <PiBookmarkThin />
               <CiCalendarDate />
               <CiLocationOn
                 onClick={() => {
@@ -345,19 +381,7 @@ function FeaturedEvent() {
             </div>
             <div className="text-gray-600 md:text-base  text-xs font-medium space-y-4">
               <p>{receivedData.category}</p>
-              <p>
-                {receivedData?.startDate
-                  ? new Date(receivedData.startDate).toLocaleString(undefined, {
-                      year: "numeric",
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                      timeZone: "UTC",
-                    })
-                  : "--"}
-              </p>
+              <p>{receivedData?.startDate ? updateStartDateTime : "--"}</p>
               <p></p>
               <p
                 onClick={() => {
@@ -399,7 +423,7 @@ function FeaturedEvent() {
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
-              by={receivedData.name}
+              by={receivedData?.organizer?.name || receivedData?.organizer?.username || receivedData?.name || "-"}
               category={receivedData.category}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
@@ -414,50 +438,71 @@ function FeaturedEvent() {
               </p>
               <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
               <p className="font-semibold text-lg  ml-3 mb-6">
-                {receivedData?.startDate
-                  ? new Date(receivedData.startDate).toLocaleString()
-                  : "-"}
+                {receivedData?.startDate ? updateStartDateTime : "-"}
               </p>
               <hr />
-              <div className="space-y-4">
-                <div
-                  onClick={() => {
-                    setForm(!form), handleGetTicketClick();
-                  }}
-                >
-                  {receivedData ? (
+              <div className="space-y-4 ">
+                {receivedData?.ticketFormats?.length > 0 ? (
+                  <div
+                    onClick={() => {
+                      setForm(!form);
+                      handleGetTicketClick();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
                     <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
+                      start={updateStartDateTime}
+                      eTime={updateEndDateTime}
                     />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
-                    <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
-                    />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
-                    <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
-                    />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-gray-500 select-none">
+                    No tickets available for this event.
+                  </div>
+                )}
               </div>
             </div>
             <div className="w-full justify-start items-start gap-2 p-4">
-              <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
+              {/* Repeating Dates & Days */}
+
+               
+              {Array.isArray(receivedData.repeatDates !=="null") &&
+                Array.isArray(receivedData.repeatDays !=="") &&
+                receivedData.repeatDates.length > 0 &&
+                receivedData.repeatDates.length ===
+                  receivedData.repeatDays.length && (
+                  <div className="bg-white p-4 rounded-xl shadow border border-gray-200 overflow-x-auto">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MdOutlineEventRepeat className="text-3xl text-pink-600" />
+                      <h1 className="text-2xl font-bold text-gray-800">
+                        Repeating Events
+                      </h1>
+                    </div>
+                    <hr className="mb-4" />
+
+                    <h2 className="text-md font-semibold text-gray-700 mb-2">
+                      Repeats on:
+                    </h2>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {receivedData.repeatDates.map((date, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                        >
+                          {`Date: ${date} (${receivedData.repeatDays[idx]})`}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-lg font-semibold">
+                      <span className="font-medium text-gray-800">Time:</span>{" "}
+                      {receivedData.repeatStartTime} -{" "}
+                      {receivedData.repeatEndTime}
+                    </div>
+                  </div>
+                )}
+              
+
+              <div className="bg-white p-4 mt-6 rounded-xl shadow-lg border border-gray-200">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
                   Event Description
                 </h2>
@@ -468,10 +513,11 @@ function FeaturedEvent() {
               </div>
 
               <div className="p-3 px-0 sm:px-6 mt-4 rounded-xl">
+               
                 <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
                   Event Tags
                 </h2>
-                {Array.isArray(receivedData.eventTags) &&
+                {Array.isArray(receivedData.eventTags!=="undefined" || "null" || "") &&
                 receivedData.eventTags.length > 0 ? (
                   <div className="flex flex-wrap gap-3 mt-2">
                     {receivedData.eventTags.map((tag, index) => (
@@ -516,14 +562,11 @@ function FeaturedEvent() {
                 <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
                   Location
                 </h1>
-                <MapContainer
-                  className="p-4 ml-2"
-                  venueLocationData={venueLocationData}
-                />
+                <MapContainer className="p-4 ml-2" location={googleLocation} />
               </div>
 
               <div className="px-0 sm:px-6 mb-3">
-                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
+                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-4">
                   Event Gallery
                 </h1>
                 {Array.isArray(receivedData?.media?.images) &&
@@ -536,12 +579,21 @@ function FeaturedEvent() {
                 )}
               </div>
 
-              <div className="px-0 sm:px-6 mb-0 lg:mt-10 sm:mt-4">
-                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
-                  Watch Trailer
-                </h1>
-                <WatchTrailer />
-              </div>
+<div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
+  {Array.isArray(receivedData.youtubeVideoUrls) && 
+   receivedData.youtubeVideoUrls.some(url => url && url.trim() !== "") ? (
+    <>
+      <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
+        Watch Videos
+      </h1>
+      <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
+    </>
+  ) : (
+    <p className="text-lg text-gray-600 mt-2">
+     
+    </p>
+  )}
+</div>
             </div>
           </div>
         </div>
@@ -575,7 +627,7 @@ function FeaturedEvent() {
 
                 {/* Organizer Name */}
                 <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                  {receivedData.organizer?.username || "Organizer Name"}
+                  {receivedData.organizer?.name || receivedData.organizer?.username || "Organizer Name"}
                 </p>
 
                 {/* Organizer Info */}

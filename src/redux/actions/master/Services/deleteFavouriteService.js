@@ -5,7 +5,6 @@ import { Zoom } from "react-toastify";
 import { Service } from "../../../Urls";
 
 export const deleteFavouriteService = (serviceId) => {
-  console.log("Removing Service from favourites:", serviceId);
   const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   return (dispatch) => {

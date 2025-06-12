@@ -34,7 +34,7 @@ function Cards({ data, heading }) {
           </div>
           <button
             onClick={() => navigate("/events")}
-            className="shadow-md lg:text-base text-sm p-2  font-medium"
+            className="shadow-md lg:text-base text-sm p-2  font-medium bg-[#ff2459] text-white rounded"
           >
             View All
           </button>

@@ -7,8 +7,6 @@ import { Zoom } from "react-toastify";
 import { Performer } from "../../../Urls";
 
 export const postFavouritePerformer = (performerId) => {
-  console.log("data.:::", performerId);
-  console.log("post Performer fav called")
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
@@ -40,7 +38,6 @@ export const postFavouritePerformer = (performerId) => {
               autoClose: 2000,
             });
           }
-          console.log(response);
         }
       })
 

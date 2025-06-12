@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const upcomingEventReducer = (state = initialState, action) => {
-  console.log("action..:", action);
   switch (action.type) {
     case "GET_UPCOMING_EVENT":
       return {

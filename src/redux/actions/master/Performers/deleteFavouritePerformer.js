@@ -5,7 +5,6 @@ import { Zoom } from "react-toastify";
 import { Performer } from "../../../Urls";
 
 export const deleteFavouritePerformer = (performerId) => {
-  console.log("Removing performer from favourites:", performerId);
   const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   return (dispatch) => {
@@ -17,7 +16,6 @@ export const deleteFavouritePerformer = (performerId) => {
       })
       .then((response) => {
         const resData = response.data;
-        console.log("resData", resData);
 
         if (!resData.status) {
           toast.error(resData.message || "Something went wrong!", {

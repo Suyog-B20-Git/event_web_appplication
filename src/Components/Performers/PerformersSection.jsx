@@ -153,7 +153,7 @@ const PerformersSection = ({ performerIds }) => {
                   style={{ width: "270px", maxWidth: "calc(100vw - 40px)" }}
                 >
                   <img
-                    src={performer.image || "/placeholder.jpg"}
+                    src={performer.profileImage || "/placeholder.jpg"}
                     alt={performer.name || "Performer"}
                     className="w-full h-48 object-cover rounded-lg mb-3"
                     loading="lazy"

@@ -7,27 +7,34 @@ import EventCardData from "../EventCardData";
 import { CalendarCheck } from "lucide-react";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { BsCalendar2DateFill } from "react-icons/bs";
-import { FaSquareFacebook, FaSquareXTwitter } from "react-icons/fa6";
-import { FaFacebookMessenger, FaInstagram } from "react-icons/fa";
+import {
+  FaFacebookMessenger,
+  FaHeart,
+  FaInstagram,
+  FaSquareFacebook,
+  FaSquareXTwitter,
+  FaWhatsapp,
+} from "react-icons/fa6";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import { FcLike } from "react-icons/fc";
 import { getEventByFilter1 } from "../../redux/actions/master/Events/getEventByFilter1";
+import CommonCalendar from "../CommonCalendar";
 
 function GetEventByFilter() {
   const location = useLocation();
   const value = location.state;
 
-  const filterValue = value?.value?.toLowerCase() || "";
- 
+  const filterValue = value || "";
+
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [category, setCategory] = useState("");
-  const [heading, setHeading] = useState("")
+  const [heading, setHeading] = useState("");
   // Fetch data when `filterValue` is available
   useEffect(() => {
     if (filterValue) {
       dispatch(getEventByFilter1(setLoading, filterValue));
-      setHeading(filterValue)
+      setHeading(filterValue);
     }
   }, [dispatch, filterValue]);
 
@@ -35,7 +42,7 @@ function GetEventByFilter() {
   useEffect(() => {
     if (category) {
       dispatch(getEventByFilter1(setLoading, category));
-      setHeading(category)
+      setHeading(category);
     }
   }, [dispatch, category]);
 
@@ -150,58 +157,32 @@ function GetEventByFilter() {
             </section>
           </div>
           <div className="rounded border ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex  justify-between">
-              Find Events
-              <div className="flex  gap-2 text-xl">
-                <button
+            <h1 className="text-lg font-medium text-gray-900 p-4 border-b flex justify-start ">
+              Share
+              <div className="flex ml-4 gap-4 mt-1 text-2xl ">
+                <FaSquareFacebook
                   onClick={() => handleShare("facebook")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaSquareFacebook className="text-blue-700 relative " />
-                </button>
-                <button
+                  className=" text-blue-600  relative "
+                />
+                <FaWhatsapp
                   onClick={() => handleShare("whatsapp")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <IoLogoWhatsapp className="text-green-600" />
-                </button>
-                <button
+                  className=" text-green-600  relative "
+                />
+                <FaFacebookMessenger
                   onClick={() => handleShare("messenger")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaFacebookMessenger className="text-red-500" />
-                </button>
-                <button
+                  className=" text-blue-800  relative "
+                />
+                <FaSquareXTwitter
                   onClick={() => handleShare("twitter")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaSquareXTwitter className="" />
-                </button>
+                  className=" text-white-600 relative"
+                />
               </div>
             </h1>
-            <div className="flex justify-center items-center ">
-              <div className="flex  gap-5 p-3  overflow-x-scroll ">
-                <div className="bg-blue-600 rounded  h-28 min-w-28   text-white font-medium flex flex-col gap-2 items-start p-4 ">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Today 0</p>
-                </div>
-                <div className="bg-orange-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">This Weekend 0</p>
-                </div>
-                <div className="bg-green-600  rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
+            <hr />
+            <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
+              Find Events
+            </h2>
+             <CommonCalendar /> 
           </div>
         </div>
 
@@ -216,143 +197,118 @@ function GetEventByFilter() {
         </div>
       </div>
       <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
-      <div className="flex flex-col gap-2 px-2 shadow-md p-4">
-          <div className="grid grid-cols-3 gap-2 text-xl">
-            <button
-              onClick={() => handleShare("facebook")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareFacebook className="text-blue-700 relative " />
-            </button>
-            <button
-              onClick={() => handleShare("whatsapp")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <IoLogoWhatsapp className="text-green-600" />
-            </button>
-            <button
-              onClick={() => handleShare("messenger")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaFacebookMessenger className="text-red-500" />
-            </button>
-            <button
-              onClick={() => handleShare("twitter")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareXTwitter className="" />
-            </button>
-          </div>
-        </div>
-        <div className="lg:flex hidden flex-col gap-5 rounded pt-5 justify-center bg-white shadow-md  mx-auto ">
-  <div className="rounded p-2 shadow">
-    <h1 className="text-lg font-medium text-gray-900 p-4 border-b">
-      Event Category
-    </h1>
-    <section className="flex flex-col gap-2 p-3 justify-center items-center">
-      <div className="flex gap-2 flex-wrap justify-center">
-        <div
-          onClick={() => {
-            setCategory("festival");
-          }}
-          className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-        >
-          Festival
-        </div>
-        <div
-          onClick={() => {
-            setCategory("live music");
-          }}
-          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-        >
-          Live Music
-        </div>
-        <div
-          onClick={() => {
-            setCategory("business");
-          }}
-          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-        >
-          Business
-        </div>
-        <div
-          onClick={() => {
-            setCategory("professional");
-          }}
-          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-        >
-          Professional
-        </div>
-      </div>
-      <div className="flex gap-2 flex-wrap justify-center">
-        <div
-          onClick={() => {
-            setCategory("nightlife & club");
-          }}
-          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-        >
-          Nightlife & Club
-        </div>
-        <div
-          onClick={() => {
-            setCategory("sport & leisure");
-          }}
-          className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-        >
-          Sport & Leisure
-        </div>
-        <div className="flex gap-2">
-          <div
-            onClick={() => {
-              setCategory("social");
-            }}
-            className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-          >
-            Social
-          </div>
-        </div>
-      </div>
-      <div
-        onClick={() => {
-          setCategory("theatre & arts");
-        }}
-        className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
-      >
-        Theatre & Arts
-      </div>
-    </section>
-  </div>
-  <div className="rounded border">
-    <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
-      Find Events
-    </h1>
-    <div className="flex justify-center items-center">
-      <div className="grid grid-cols-2 gap-4 p-3">
-        <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
-          <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-          <p>Today 0</p>
-        </div>
-        <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-          <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-          <p>Tommorrow 0</p>
-        </div>
-        <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-          <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-          <p className="text-sm p-1">This Weekend 0</p>
-        </div>
-        <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-          <CalendarCheck className="text-2xl text-white font-medium" />
-          <p>Choose Date</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+        <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+          <div className=" p-3 shadow gap-2 ">
+            <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+              Share
+            </h1>
+            <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
+              <FaSquareFacebook
+                onClick={() => handleShare("facebook")}
+                className="text-blue-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#1877f2] transition duration-300"
+              />
 
+              <FaWhatsapp
+                onClick={() => handleShare("whatsapp")}
+                className="text-green-600 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#25D366] transition duration-300"
+              />
+
+              <FaFacebookMessenger
+                onClick={() => handleShare("messenger")}
+                className="text-blue-700 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#0084ff] transition duration-300"
+              />
+
+              <FaSquareXTwitter
+                onClick={() => handleShare("twitter")}
+                className="text-black-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#000000] transition duration-300"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+          <div className=" p-3  shadow gap-2 ">
+            <h1 className="text-lg font-medium text-gray-900 p-1 border-b ">
+              Events Category
+            </h1>
+
+            <section className="flex flex-wrap gap-3 p-3 justify-start items-start">
+              <div className="flex gap-4 flex-wrap justify-center">
+                <div
+                  onClick={() => {
+                    setCategory("business");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+                >
+                  Business
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("festival");
+                  }}
+                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+                >
+                  Festival
+                </div>
+                <div
+                  onClick={() => {
+                    setCategory("live music");
+                  }}
+                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+                >
+                  Live Music
+                </div>
+              </div>
+              <div
+                onClick={() => {
+                  setCategory("nightlife & club");
+                }}
+                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+              >
+                Nightlife & Club
+              </div>
+              <div
+                onClick={() => {
+                  setCategory("professional");
+                }}
+                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+              >
+                Professional
+              </div>
+              <div
+                onClick={() => {
+                  setCategory("social");
+                }}
+                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+              >
+                Social
+              </div>
+              <div
+                onClick={() => {
+                  setCategory("sport & leisure");
+                }}
+                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+              >
+                Sport & Leisure
+              </div>
+
+              <div
+                onClick={() => {
+                  setCategory("theatre & arts");
+                }}
+                className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white w-max rounded-full font-medium p-1 px-4 text-xs"
+              >
+                Theatre & Arts
+              </div>
+            </section>
+          </div>
+        </div>
+        <div className="border shadow w-[95%] ml-3 mb-5">
+          <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
+            Find Events
+          </h1>
+          <CommonCalendar />
+        </div>
       </div>
     </div>
   );

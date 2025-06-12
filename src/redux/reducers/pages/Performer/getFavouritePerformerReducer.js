@@ -8,7 +8,6 @@ const initialState = {
   };
   
   const getFavoritePerformerReducer = (state = initialState,action) => {
-    // console.log("fav org list ..:",action.payload)
     switch (action.type) {
       case 'GET_FAVOURITE_PERFORMER':
         return {

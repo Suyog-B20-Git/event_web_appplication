@@ -6,7 +6,7 @@ import { FcLike } from "react-icons/fc";
 import { BsFire } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
-function CardData({ data, heading }) {
+function CardData({ data, heading, navigation }) {
   const navigate = useNavigate();
 
   const dataArray = Array.isArray(data) ? data : data ? [data] : [];
@@ -21,8 +21,8 @@ function CardData({ data, heading }) {
             <p className="font-bold font-sans lg:text-2xl">{heading}</p>
           </div>
           <button
-            onClick={() => navigate("/organizers")}
-            className="shadow-md lg:text-base text-sm p-2 font-medium"
+            onClick={() => navigate(navigation)}
+            className="shadow-md lg:text-base text-sm p-2 font-medium bg-[#ff2459] text-white rounded"
           >
             View All
           </button>

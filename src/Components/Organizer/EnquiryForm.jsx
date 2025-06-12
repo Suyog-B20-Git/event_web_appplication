@@ -14,7 +14,7 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
   } = useForm();
 
   const [loading, setLoading] = useState(false);
-  const modalRef = useRef(null);
+  const modalRef = useRef(null); 
 
   useEffect(() => {
     const handleClickOutside = (event) => {

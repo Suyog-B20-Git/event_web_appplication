@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 
-const FacebookComments = ({ dataHref, numPosts = 5, width }) => {
+const FacebookComments = ({ dataHref, numPosts = 10}) => {
+ 
   useEffect(() => {
     const parseFB = () => {
       if (window.FB) {
@@ -8,7 +9,6 @@ const FacebookComments = ({ dataHref, numPosts = 5, width }) => {
       }
     };
     const appId = "2099487807026347";
-    console.log(import.meta.env);
     if (window.FB) {
       parseFB();
     } else {
@@ -43,7 +43,7 @@ const FacebookComments = ({ dataHref, numPosts = 5, width }) => {
       className="fb-comments"
       data-href={dataHref}
       data-numposts={numPosts}
-      data-width={width}
+      data-width="100%"
       
     ></div>
   );

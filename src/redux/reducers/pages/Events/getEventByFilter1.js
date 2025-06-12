@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const getEventByFilter1Reducer = (state = initialState, action) => {
-  console.log("action..:", action);
   switch (action.type) {
     case "GET_EVENT_BY_FILTER1":
       return {

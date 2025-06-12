@@ -6,7 +6,6 @@ import { axiosInstance } from "../../../../../utility/utils";
 import { toast } from "react-toastify";
 import { Venue } from "../../../Urls";
 export const createNewVenue = (data) => {
-  console.log("data.:::", data);
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
@@ -26,14 +25,6 @@ export const createNewVenue = (data) => {
             hideProgressBar: true,
             autoClose: 2000,
           });
-          //fixme use "CREATE_VENUE" action when it is necessary and complete
-          // if (isLogin) {
-          //   dispatch({
-          //     type: "CREATE_VENUE",
-          //     payload: response.data,
-          //   });
-          // }
-          console.log(response);
         }
       })
 

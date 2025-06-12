@@ -9,14 +9,14 @@ import { CiTwitter } from "react-icons/ci";
 const convertUTCToLocal = (utcString) => {
   if (!utcString) return "Invalid Date";
   const date = new Date(utcString);
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString("en-IN", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
-    timeZone:"UTC",
+    timeZone:"Asia/Kolkata",
   });
 };
 

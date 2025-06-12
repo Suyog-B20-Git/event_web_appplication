@@ -61,7 +61,6 @@ export const getPerformerById= (id,setLoader) => {
       const response = await axios.get(
         `${Performer.postPerformer}/${id}`
       );
-      console.log("response", response);
       dispatch({
         type: "GET_PERFORMER_BY_ID",
         performerData: response.data,

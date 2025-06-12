@@ -1,447 +1,586 @@
-/* eslint-disable react/prop-types */
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { FaWifi } from "react-icons/fa6";
-import { LuClock3 } from "react-icons/lu";
-import { MdEvent } from "react-icons/md";
-import Button from "../Button";
-import { useNavigate } from "react-router-dom";
-import { IoTimeOutline } from "react-icons/io5";
-import { BiSolidDrink } from "react-icons/bi";
-
-import Guest from "./Guest";
-
-import LoginModal from "./LoginModal";
-import RegisterModal from "./RegisterModal";
-import { Context } from "../Util/ContextProvider";
-const TicketForm = ({ type, price, onQuantityChange, addTicket }) => {
-  // const [quantity, setQuantity] = useState(0);
-
-  const [formData, setFormData] = useState({
-    quantity: 0,
-    promoCode: "",
-    attendees: [],
-  });
-
-  // const handleChange = (e) => {
-  //   const newQuantity = Number(e.target.value);
-  //   setQuantity(newQuantity);
-  //   onQuantityChange(newQuantity); // Notify the parent component
-  // };
-
-  const handleQuantityChange = (e) => {
-    const newQuantity = Number(e.target.value);
-    setFormData((prev) => ({
-      ...prev,
-      quantity: newQuantity,
-      attendees: Array(newQuantity).fill({ name: "", phone: "", email: "" }), // Reset attendees list
-    }));
-    onQuantityChange(newQuantity);
-  };
-  // Handle promo code input
-  const handlePromoCodeChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      promoCode: e.target.value,
-    }));
-  };
-
-  // Handle attendee input change
-  const handleAttendeeChange = (index, field, value) => {
-    const updatedAttendees = [...formData.attendees];
-    updatedAttendees[index] = { ...updatedAttendees[index], [field]: value };
-    setFormData((prev) => ({
-      ...prev,
-      attendees: updatedAttendees,
-    }));
-  };
-
-  // Handle form submission
-  const handleSubmit = () => {
-    const postData = {
-      ticketType: type,
-      price,
-      quantity: formData.quantity,
-      promoCode: formData.promoCode,
-      totalCost: (price * formData.quantity).toFixed(2),
-      attendees: formData.attendees,
-    };
-    addTicket(postData); // Store data in Context
-  };
-
-  return (
-    <div className="w-full border p-2 rounded-lg mb-2 flex flex-col gap-6 sm:gap-4">
-      <div className="flex flex-wrap sm:flex-nowrap gap-6 sm:gap-24">
-        <div className="flex flex-col w-full sm:w-[30%]">
-          <h3 className="font-semibold text-lg">{type}</h3>
-          <p className="text-gray-600 text-sm">{price} USD</p>
-          <div className="flex pt-2">
-            <input
-              type="text"
-              placeholder="Enter Promo code"
-              value={formData.promoCode}
-              onChange={handlePromoCodeChange}
-              className="p-1 text-sm rounded-lg border-2 w-full sm:w-auto bg-gray-100"
-            />
-            <button className="bg-green-200 ml-2 rounded-md text-xs w-20 p-1.5">
-              Apply
-            </button>
-          </div>
-        </div>
-        <div className="w-full sm:w-[50%]">
-          <div className="mt-8">
-            <label className="block text-sm font-medium">Select Quantity</label>
-            {/* <select
-              className="border rounded p-1 w-2/3 mt-1"
-              value={quantity}
-              onChange={handleChange}
-            >
-              {[...Array(6).keys()].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select> */}
-            <select
-              className="border rounded p-1 w-2/3 mt-1 bg-gray-100"
-              value={formData.quantity}
-              onChange={handleQuantityChange}
-            >
-              {[...Array(6).keys()].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="w-full sm:w-[20%] flex justify-end">
-          {/* <p className="text-gray-600">{(price * quantity).toFixed(2)} USD</p> */}
-          <p className="text-gray-600">
-            {(price * formData.quantity).toFixed(2)} USD
-          </p>
-        </div>
-      </div>
-
-      <div>
-        {[...Array(formData.quantity)].map((_, index) => (
-          <div key={index} className="mt-1">
-            <h4 className="text-sm font-medium">Attendee {index + 1}</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-1">
-              <input
-                type="text"
-                placeholder="Name"
-                className="border rounded p-1 w-full text-sm"
-                value={formData.attendees[index]?.name || ""}
-                onChange={(e) =>
-                  handleAttendeeChange(index, "name", e.target.value)
-                }
-              />
-              <input
-                type="text"
-                placeholder="Phone"
-                className="border rounded p-1 w-full text-sm"
-                value={formData.attendees[index]?.phone || ""}
-                onChange={(e) =>
-                  handleAttendeeChange(index, "phone", e.target.value)
-                }
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="border rounded p-1 w-full text-sm"
-                value={formData.attendees[index]?.email || ""}
-                onChange={(e) =>
-                  handleAttendeeChange(index, "email", e.target.value)
-                }
-              />
-            </div>
-          </div>
-        ))}
-        <div className="flex gap-0 p-0 justify-between">
-          <p className="text-[#ff2459] font-semibold text-sm p-0 px-0 mt-2">
-            Show Ticket Info
-          </p>
-          <button
-            onClick={handleSubmit}
-            className="capitalize text-xs px-2 p-1 rounded bg-[#ff2459] text-white font-medium mt-2"
-          >
-            Save Data
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-import { useForm } from "react-hook-form";
-import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
+import React, { useState, useEffect } from "react";
+import {
+  User,
+  Mail,
+  Phone,
+  Tag,
+  Calendar,
+  MapPin,
+  Plus,
+  Trash2,
+} from "lucide-react";
 const baseUrl = import.meta.env.VITE_API_URL;
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const MeditationForm = ({ data }) => {
+const MeditationForm = (data) => {
+  const [ticketFormat, setTicketFormat] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  const eventId = data._id;
-  const modalRef = useRef(null);
+  const [customerDetails, setCustomerDetails] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
 
-  const { form, setForm, showTimer, setShowTimer, setLogin } =
-    useContext(Context);
-  const { addTicket, ticket } = useContext(Context);
-  const [time, setTime] = useState(5 * 60);
+  const [selectedQuantity, setSelectedQuantity] = useState(0);
+  const [selectedPromoCode, setSelectedPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [attendees, setAttendees] = useState([]);
+
+  const ticketFormatId = data?.data.ticketFormats;
+  const eventId = data?.data._id;
+  const eventName = data?.data.name;
+  const eventShortDemo = data?.data.excerpt || "Event Booking";
+  const eventDescription = data?.data.description;
+  const eventAddress =
+    data?.data?.venue?.city &&
+    data?.data?.venue?.state &&
+    data?.data?.venue?.country
+      ? `${data.data.venue.city}, ${data.data.venue.state}, ${data.data.venue.country}`
+      : "Not Available";
+
+  const updateStartDateTime = new Date(data?.data.startDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
+
+  const updateEndDateTime = new Date(data?.data.endDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
+
+  const authToken = localStorage.getItem("authToken");
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(interval);
+    fetchTicketFormat();
   }, []);
-  // Calculate minutes and seconds
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
 
-  const tickets = [
-    { type: "Free", price: 0 },
-    { type: "Early Bird", price: 10 },
-    { type: "Regular", price: 20 },
-    { type: "VIP", price: 50 },
-  ];
+  useEffect(() => {
+    if (selectedQuantity > attendees.length) {
+      const newAttendees = [...attendees];
+      for (let i = attendees.length; i < selectedQuantity; i++) {
+        newAttendees.push({
+          name: "",
+          email: "",
+          phoneNumber: "",
+        });
+      }
+      setAttendees(newAttendees);
+    } else if (selectedQuantity < attendees.length) {
+      setAttendees(attendees.slice(0, selectedQuantity));
+    }
+  }, [selectedQuantity]);
 
-  const handleQuantityChange = (quantity) => {
-    setShowTimer(quantity > 0);
+  const fetchTicketFormat = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${baseUrl}/api/ticketFormat/${ticketFormatId}`,
+        {
+          headers: {
+            Authorization: authToken,
+          },
+        }
+      );
+      const resdata = response.data;
+      setTicketFormat(resdata);
+      if (!response.ok) throw new Error("Failed to fetch ticket format");
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
+  const calculateDiscount = (promoCode) => {
+    if (!promoCode) return 0;
 
-  const formDataRef = useRef(new FormData());
-
-  const onSubmit = (data) => {
-    const newFormData = new FormData();
-    newFormData.append("name", data.name);
-    newFormData.append("email", data.email);
-    newFormData.append("phoneNo", data.phone);
-
-    formDataRef.current = newFormData;
+    // Extract discount percentage from promo code
+    const match = promoCode.match(/\d+/);
+    return match ? parseInt(match[0]) : 0;
   };
 
-  const handleCheckout = async () => {
-    const name = formDataRef.current.get("name");
-    const email = formDataRef.current.get("email");
-    const phone = formDataRef.current.get("phoneNo");
+  const handlePromoCodeChange = (code) => {
+    setSelectedPromoCode(code);
+    setPromoDiscount(calculateDiscount(code));
+  };
 
-    if (email && phone && name) {
-      const ticketPayload = {
+  const calculateTotal = () => {
+    const basePrice = ticketFormat?.price || 0;
+    const discount = promoDiscount;
+    const discountAmount = (basePrice * discount) / 100;
+    const priceAfterDiscount = basePrice - discountAmount;
+    return priceAfterDiscount * selectedQuantity;
+  };
+
+  const updateAttendee = (index, field, value) => {
+    const updatedAttendees = [...attendees];
+    updatedAttendees[index] = {
+      ...updatedAttendees[index],
+      [field]: value,
+    };
+    setAttendees(updatedAttendees);
+  };
+
+  const generateSeatNumbers = (quantity) => {
+    // Generate sequential seat numbers starting from last booked seat + 1
+    const startSeat = (ticketFormat?.noOfBookedSeats || 0) + 1;
+    return Array.from({ length: quantity }, (_, i) => startSeat + i);
+  };
+
+  const validateAttendees = () => {
+    for (let i = 0; i < attendees.length; i++) {
+      const attendee = attendees[i];
+      if (!attendee.name || !attendee.email || !attendee.phoneNumber) {
+        return `Please fill in all details for attendee ${i + 1}`;
+      }
+
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(attendee.email)) {
+        return `Please enter a valid email for attendee ${i + 1}`;
+      }
+    }
+    return null;
+  };
+
+  const handleSubmit = async () => {
+    if (
+      !customerDetails.name ||
+      !customerDetails.email ||
+      !customerDetails.phone
+    ) {
+      toast.error("Please fill in all customer details");
+      return;
+    }
+
+    if (selectedQuantity === 0) {
+      toast.error("Please select at least one ticket");
+      return;
+    }
+
+    const attendeeValidationError = validateAttendees();
+    if (attendeeValidationError) {
+      toast.error(attendeeValidationError);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const bookingData = {
         event: eventId,
-        price: 0,
+        customerName: customerDetails.name,
+        customerEmail: customerDetails.email,
+        customerPhoneNumber: customerDetails.phone,
+        price: calculateTotal(),
         currency: "INR",
         booking: [
           {
-            ticketFormat: "67cc43c646bed332e54cd29a",
-            promocode: "FREE50",
-            bookedSeatNos: [1],
-            attendees: [
-              {
-                name: name,
-                email: email,
-                phoneNumber: "+91" + phone,
-              },
-            ],
-            bookedDate: new Date().toISOString(),
+            ticketFormat: ticketFormatId,
+            promocode: selectedPromoCode,
+            bookedSeatNos: generateSeatNumbers(selectedQuantity),
+            attendees: attendees,
           },
         ],
       };
 
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(`${baseUrl}/api/ticket`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-          body: JSON.stringify(ticketPayload),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          toast.success("Ticket booked successfully!");
-          navigate("/dashboard");
-          setLogin(true);
-          setForm(false);
-          reset();
-        } else {
-          toast.error(data.message || "Booking failed!");
-        }
-      } catch (error) {
-        console.error("Error during ticket creation:", error);
-        toast.error("Something went wrong. Please try again.");
-      }
-    } else {
-      toast.error("Please enter customer details before proceeding!", {
-        position: "top-right",
+      const response = await axios.post(`${baseUrl}/api/ticket`, bookingData, {
+        headers: {
+          Authorization: authToken,
+        },
       });
-
-      if (modalRef.current) {
-        modalRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      const responseData = response.data;
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Ticket booked successfully!");
+        setCustomerDetails({ name: "", email: "", phone: "" });
+        setSelectedQuantity(0);
+        setSelectedPromoCode("");
+        setPromoDiscount(0);
+        setAttendees([]);
+        navigate("/dashboard");
+      } else {
+        toast.error("Booking failed. Please try again.");
       }
+    } catch (err) {
+      toast.error("Booking failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div
-      ref={modalRef}
-      className="lg:w-[full] mt-[22%] lg:p-4 overflow-y-auto mx-1 sm:mx-2 p-0 md:p-0 sm:p-0 pt-0 sm:px-1 sm:mt-0 sm:w-auto mb-4 overflow-x-auto"
-    >
-      <h1 className="text-2xl lg:text-3xl font-bold text-center mb-2 w-full">
-        {data.name}
-      </h1>
-      <p className="text-center flex gap-1 text-gray-600 mb-2 justify-center">
-        <FaWifi className="relative top-1 text-[#ff2459]" /> Online |{" "}
-        <MdEvent className="relative top-1 text-[#ff2459]" />
-        {data.start} | <LuClock3 className="relative top-1 text-[#ff2459]" />
-        {data.startTime}
-      </p>
-
-      {showTimer && (
-        <div className="p-2 rounded bg-red-50 text-red-600 text-sm text-center font-semibold mb-1 flex justify-between">
-          <p>Please Checkout within</p>
-          {/*Timer */}
-          <p className="flex gap-2">
-            <IoTimeOutline className="relative top-1" />
-            {minutes.toString().padStart(2, "0")}:
-            {seconds.toString().padStart(2, "0")}
-          </p>
+  if (loading && !ticketFormat) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading ticket information...</p>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      <div>
-        <form onSubmit={handleSubmit(onSubmit)} className="p-0">
-          <h1 className="p-1 px-0 font-medium text-lg">Customer Details</h1>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border p-3 rounded-lg">
-            {/* Name Input */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm md:text-base">Name :</label>
-              <input
-                type="text"
-                className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
-                {...register("name", { required: "Name is required" })}
-              />
-              {errors.name && (
-                <p className="text-red-500 text-xs">{errors.name.message}*</p>
-              )}
-            </div>
-
-            {/* Email Input */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm md:text-base">Email :</label>
-              <input
-                type="email"
-                className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                    message: "Invalid email format",
-                  },
-                })}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-xs">{errors.email.message}*</p>
-              )}
-            </div>
-
-            {/* Phone Number Input */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm md:text-base">Phone Number :</label>
-              <input
-                type="tel"
-                className="border p-1 rounded text-sm md:text-base bg-gray-100 text-gray-700"
-                {...register("phone", {
-                  required: "Phone number is required",
-                  pattern: {
-                    value: /^[6-9]\d{9}$/,
-                    message: "Invalid phone number (must be 10 digits)",
-                  },
-                  minLength: {
-                    value: 10,
-                    message: "Phone number must be 10 digits",
-                  },
-                  maxLength: {
-                    value: 10,
-                    message: "Phone number must be 10 digits",
-                  },
-                })}
-              />
-              {errors.phone && (
-                <p className="text-red-500 text-xs">{errors.phone.message}*</p>
-              )}
+  return (
+    <div className=" bg-gray-50 py-[25%] sm:py-8">
+      <div className="lg:w-[80%] mx-auto px-0 sm:px-1 lg:px-8">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white p-3 sm:p-4">
+            <h1 className="text-xl sm:text-2xl font-bold mb-2">
+              {eventName || ticketFormat?.title}
+            </h1>
+            {/* Event Details - Responsive Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{eventShortDemo}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{eventAddress}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{updateStartDateTime} - {updateEndDateTime}</span>
+              </div>
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="pt-2 flex justify-center md:justify-end">
+          <div className="p-4 sm:p-6">
+            {error && (
+              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                {success}
+              </div>
+            )}
+
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-800">
+                Customer Details
+              </h2>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Name *
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      value={customerDetails.name}
+                      onChange={(e) =>
+                        setCustomerDetails({
+                          ...customerDetails,
+                          name: e.target.value,
+                        })
+                      }
+                      className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                      placeholder="Enter your name"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email *
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="email"
+                      value={customerDetails.email}
+                      onChange={(e) =>
+                        setCustomerDetails({
+                          ...customerDetails,
+                          email: e.target.value,
+                        })
+                      }
+                      className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number *
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <input
+                      type="tel"
+                      value={customerDetails.phone}
+                      onChange={(e) =>
+                        setCustomerDetails({
+                          ...customerDetails,
+                          phone: e.target.value,
+                        })
+                      }
+                      className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                      placeholder="Enter phone number"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Ticket Selection */}
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-800">
+                Tickets
+              </h2>
+
+              <div className="border rounded-lg p-4 bg-gray-100">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-800 mb-1">
+                      {ticketFormat?.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {ticketFormat?.description}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Available:{" "}
+                      {ticketFormat?.totalTicketQuantity -
+                        ticketFormat?.noOfBookedSeats}{" "}
+                      tickets
+                    </p>
+                  </div>
+                  <div className="text-left sm:text-right flex-shrink-0">
+                    <p className="text-xl font-bold text-gray-800">
+                      ₹{ticketFormat?.price}
+                    </p>
+                    <p className="text-sm text-gray-500">per ticket</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Select Quantity (Max {ticketFormat?.limitPerCustomer})
+                  </label>
+                  <select
+                    value={selectedQuantity}
+                    onChange={(e) =>
+                      setSelectedQuantity(parseInt(e.target.value))
+                    }
+                    className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 text-sm w-full sm:w-auto"
+                  >
+                    {Array.from(
+                      { length: (ticketFormat?.limitPerCustomer || 4) + 1 },
+                      (_, i) => (
+                        <option key={i} value={i}>
+                          {i}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Promo Code */}
+            {ticketFormat?.promoCodes && ticketFormat.promoCodes.length > 0 && (
+              <div className="mb-6 sm:mb-8">
+                <h2 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-800">
+                  Promo Code
+                </h2>
+                <div className="relative">
+                  <Tag className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <select
+                    value={selectedPromoCode}
+                    onChange={(e) => handlePromoCodeChange(e.target.value)}
+                    className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 text-sm"
+                  >
+                    <option value="">Select a promo code</option>
+                    {ticketFormat.promoCodes.map((code) => (
+                      <option key={code} value={code}>
+                        {code} ({calculateDiscount(code)}% off)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {/* Attendees Details */}
+            {selectedQuantity > 0 && (
+              <div className="mb-6 sm:mb-8">
+                <h2 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-800">
+                  Attendees Details ({selectedQuantity}{" "}
+                  {selectedQuantity === 1 ? "ticket" : "tickets"})
+                </h2>
+                <div className="space-y-4 sm:space-y-6">
+                  {attendees.map((attendee, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg p-4 bg-gray-50"
+                    >
+                      <h3 className="font-medium text-gray-800 mb-3 sm:mb-4">
+                        Attendee {index + 1}
+                      </h3>
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Name *
+                          </label>
+                          <div className="relative">
+                            <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <input
+                              type="text"
+                              value={attendee.name}
+                              onChange={(e) =>
+                                updateAttendee(index, "name", e.target.value)
+                              }
+                              className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                              placeholder="Attendee name"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Email *
+                          </label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <input
+                              type="email"
+                              value={attendee.email}
+                              onChange={(e) =>
+                                updateAttendee(index, "email", e.target.value)
+                              }
+                              className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                              placeholder="Attendee email"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Phone Number *
+                          </label>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <input
+                              type="tel"
+                              value={attendee.phoneNumber}
+                              onChange={(e) =>
+                                updateAttendee(
+                                  index,
+                                  "phoneNumber",
+                                  e.target.value
+                                )
+                              }
+                              className="pl-10 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                              placeholder="+91xxxxxxxxxx"
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Cart Total */}
+            <div className="mb-6 sm:mb-8 bg-green-50 p-4 rounded-lg">
+              <h2 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-800">
+                Cart Total
+              </h2>
+              <div className="space-y-2 text-sm sm:text-base">
+                <div className="flex justify-between">
+                  <span>Total Tickets:</span>
+                  <span>{selectedQuantity}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span>
+                    ₹
+                    {((ticketFormat?.price || 0) * selectedQuantity).toFixed(2)}
+                  </span>
+                </div>
+                {promoDiscount > 0 && (
+                  <div className="flex justify-between text-green-900 font-semibold">
+                    <span>Discount ({promoDiscount}%):</span>
+                    <span>
+                      -₹
+                      {(
+                        ((ticketFormat?.price || 0) *
+                          selectedQuantity *
+                          promoDiscount) /
+                        100
+                      ).toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                <hr className="my-2" />
+                <div className="flex justify-between font-bold text-base sm:text-lg">
+                  <span>Total Order:</span>
+                  <span>₹{calculateTotal().toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Method */}
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-lg font-semibold mb-3 sm:mb-4 text-gray-800">
+                Payment
+              </h2>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="free"
+                  name="payment"
+                  defaultChecked
+                  className="mr-3 w-4 h-4"
+                />
+                <label htmlFor="free" className="text-sm sm:text-base">
+                  Free (Free checkout)
+                </label>
+              </div>
+            </div>
+
+            {/* Checkout Button */}
             <button
-              type="submit"
-              className="bg-[#ff2459] text-white rounded px-2 py-1 text-xs font-semibold hover:bg-red-600 transition"
+              type="button"
+              onClick={handleSubmit}
+              disabled={loading || selectedQuantity === 0}
+              className="w-full bg-red-500 text-white py-3 sm:py-4 px-6 rounded-lg font-semibold text-base sm:text-lg hover:bg-red-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
             >
-              Save Data
+              {loading ? "Processing..." : "Checkout"}
             </button>
           </div>
-        </form>
-      </div>
-
-      <div className=" rounded-lg w-full">
-        <p className="font-semibold text-lg">Tickets</p>
-        {tickets.map((ticket) => (
-          <TicketForm
-            key={ticket.type}
-            type={ticket.type}
-            price={ticket.price}
-            addTicket={addTicket}
-            onQuantityChange={handleQuantityChange}
-          />
-        ))}
-
-        <div className="border-2 p-2 rounded-lg mt-2">
-          <p className="font-semibold text-lg">Cart Total :</p>
-          <div className="flex justify-between mt-1 text-gray-600">
-            <span>Total Tickets :</span>
-            <span>0</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>Total Order :</span>
-            <span>0.00 USD</span>
-          </div>
         </div>
-
-        {showTimer && (
-          <div className="mt-2 p-2">
-            <h1 className="font-medium">Payment</h1>
-            <div className="flex gap-2 items-center">
-              <div className="h-4 w-4 rounded-full bg-[#ff2459] border-2"></div>
-              <p className="flex items-center">
-                <BiSolidDrink className="relative mr-1" />
-                Free (Free checkout)
-              </p>
-            </div>
-            <div className="bg-white m-3">
-              <Button
-                text={"checkout"}
-                variant={"primary"}
-                rounded={"rounded-xl"}
-                width={"w-full"}
-                textSize={"text-lg"}
-                onClick={handleCheckout}
-              />
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
