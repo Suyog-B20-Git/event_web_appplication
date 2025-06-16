@@ -11,7 +11,7 @@ import {
   FaInstagram,
   FaSquareFacebook,
   FaSquareXTwitter,
-  FaWhatsapp
+  FaWhatsapp,
 } from "react-icons/fa6";
 import Select from "react-select";
 import { IoLogoWhatsapp, IoStarSharp } from "react-icons/io5";
@@ -21,13 +21,17 @@ import { CalendarCheck } from "lucide-react";
 import Pagination from "../Pagination";
 import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
 import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
-import { toast } from "react-toastify";
+import { removeFavouriteOrganizer } from "../../redux/actions/master/Organizer/removeFavouriteOrganizer";
+import { toast, Zoom } from "react-toastify";
+import CommonCalendar from "../CommonCalendar";
 
 function GetOrganizer() {
   const navigate = useNavigate();
   const location = useLocation();
   const value = location.state;
   const filterValue = value ? value.toLowerCase() : "";
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
+
   {
     /*header*/
   }
@@ -40,10 +44,6 @@ function GetOrganizer() {
     { value: "title desc", label: "Title descending" },
   ];
   const [selectedOption, setSelectedOption] = useState("");
-  console.log(
-    "selected option",
-    selectedOption.value ? selectedOption.value : ""
-  );
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -96,50 +96,32 @@ function GetOrganizer() {
 
   const data1 = store.organizerData;
   const data = [...new Set(data1)];
-  // console.log(data, "OragnizerData....");
-  
+
   const store1 = useSelector((state) => state.getFavoriteOrganizerReducer) || {
     favouriteOrganizerData: [],
   };
-  const favouriteOragnizer = store1.favouriteOrganizerData;
+  const favouriteOrganizer = store1.favouriteOrganizerData;
 
-  // const isFavourite = favouriteOragnizer.some((event) => event._id === oId);
-  const isFavourite = (id) => {
-    return favouriteOragnizer.some((fav) => fav._id === id);
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+
+  const isFavoriteOrganizer = (id) => {
+    return favouriteOrganizer.some((fav) => fav._id === id);
   };
-  useEffect(() => {
-    dispatch(getFavouriteOrganizerData(setLoading)); // Fetch favorites on mount
-  }, [dispatch]);
 
-  useEffect(() => {
-    favouriteOragnizer.forEach((item) => {
-      isFavourite(item._id);
-    });
-  }, [favouriteOragnizer]); // Add dependency to re-run when favorite data updates
-
-  const checkFavourite = (id) => {
-    if (favouriteOragnizer.some((fav) => fav._id === id)) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    }
-  };
-  const handleFavourite = (id) => {
-    if (isFavourite(id)) {
-      return;
+  const toggleFavorite = (id) => {
+    if (isFavoriteOrganizer(id)) {
+      dispatch(removeFavouriteOrganizer(id));
+      dispatch(getFavouriteOrganizerData(setLoading));
     } else {
       dispatch(postFavouriteOrganizer(id));
-
       dispatch(getFavouriteOrganizerData(setLoading));
     }
+    dispatch(getFavouriteOrganizerData(setLoading));
   };
+
+  useEffect(() => {
+    dispatch(getFavouriteOrganizerData(setLoading));
+  }, [dispatch]);
 
   const currentUrl = window.location.href;
   const shareUrls = {
@@ -179,7 +161,6 @@ function GetOrganizer() {
       <div className="p-2 lg:w-[75%] w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
           <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 ">
-            {/* {filterValue ? filterValue : category ? category : "  Oraganizer"} */}
             Organizers
           </h1>
 
@@ -231,58 +212,32 @@ function GetOrganizer() {
             </section>
           </div>
           <div className="rounded border ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex  justify-between">
-              Find Events
-              <div className="flex  gap-2 text-xl">
-                <button
+            <h1 className="text-lg font-medium text-gray-900 p-4 border-b flex justify-start ">
+              Share
+              <div className="flex ml-4 gap-4 mt-1 text-2xl ">
+                <FaSquareFacebook
                   onClick={() => handleShare("facebook")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaSquareFacebook className="text-red-500 relative " />
-                </button>
-                <button
+                  className=" text-blue-600  relative "
+                />
+                <FaWhatsapp
                   onClick={() => handleShare("whatsapp")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaWhatsapp className="bg-red-500 text-white" />
-                </button>
-                <button
+                  className=" text-green-600  relative "
+                />
+                <FaFacebookMessenger
                   onClick={() => handleShare("messenger")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaFacebookMessenger className="text-red-500" />
-                </button>
-                <button
+                  className=" text-blue-800  relative "
+                />
+                <FaSquareXTwitter
                   onClick={() => handleShare("twitter")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaSquareXTwitter className="text-red-500" />
-                </button>
+                  className=" text-white-600 relative"
+                />
               </div>
             </h1>
-            <div className="flex justify-center items-center ">
-              <div className="flex  gap-5 p-3  overflow-x-scroll ">
-                <div className="bg-blue-600 rounded  h-28 min-w-28   text-white font-medium flex flex-col gap-2 items-start p-4 ">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Todays 0</p>
-                </div>
-                <div className="bg-orange-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600  rounded  h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
+            <hr />
+            <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
+              Find Events
+            </h2>
+            <CommonCalendar /> 
           </div>
         </div>
 
@@ -296,7 +251,7 @@ function GetOrganizer() {
                 <div
                   onClick={() => {
                     navigate(`/Organizer/${item._id}`, {
-                      state: item._id,
+                      state: item,
                     });
                   }}
                   className="h-40 md:h-36 lg:h-40 w-full overflow-hidden"
@@ -344,11 +299,20 @@ function GetOrganizer() {
                     </button>
                     <button
                       onClick={() => {
-                        handleFavourite(item._id);
-                        checkFavourite(item._id);
+                        if (!isLogin) {
+                          toast.error("Please login first to Add favorite!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        toggleFavorite(item._id);
                       }}
                       className={`flex gap-1 text-xs font-bold cursor-pointer ${
-                        isFavourite(item._id) ? "text-[#ff2459]" : "text-gray-200"
+                        isFavoriteOrganizer(item._id)
+                          ? "text-red-500"
+                          : "text-gray-200"
                       }`}
                     >
                       <FaHeart className="text-lg" />
@@ -364,9 +328,6 @@ function GetOrganizer() {
                       </a>
                     </button>
                   </p>
-                  {/* <p className="flex gap-2 pr-5">
-                  5 <IoStarSharp className="relative top-1 text-yellow-400" />
-                </p> */}
                 </div>
               </div>
             );
@@ -382,46 +343,43 @@ function GetOrganizer() {
         </div>
       </div>
       <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
-      <div className="flex flex-col gap-2 px-2 shadow-md p-4">
-          <div className="grid grid-cols-3 gap-2 text-xl">
-            <button
-              onClick={() => handleShare("facebook")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareFacebook className="text-red-500 relative " />
-            </button>
-            <button
-              onClick={() => handleShare("whatsapp")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaWhatsapp className="bg-red-500 text-white" />
-            </button>
-            <button
-              onClick={() => handleShare("messenger")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaFacebookMessenger className="text-red-500" />
-            </button>
-            <button
-              onClick={() => handleShare("twitter")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareXTwitter className="text-red-500" />
-            </button>
+        <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+          <div className=" p-3 shadow gap-2 ">
+            <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+              Share WEBB
+            </h1>
+            <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
+              <FaSquareFacebook
+                onClick={() => handleShare("facebook")}
+                className="text-blue-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#1877f2] transition duration-300"
+              />
+
+              <FaWhatsapp
+                onClick={() => handleShare("whatsapp")}
+                className="text-green-600 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#25D366] transition duration-300"
+              />
+
+              <FaFacebookMessenger
+                onClick={() => handleShare("messenger")}
+                className="text-blue-700 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#0084ff] transition duration-300"
+              />
+
+              <FaSquareXTwitter
+                onClick={() => handleShare("twitter")}
+                className="text-black-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#000000] transition duration-300"
+              />
+            </div>
           </div>
         </div>
-        <div className="lg:flex hidden flex-col gap-5 rounded pt-5 justify-center bg-white shadow-md  mx-auto ">
-          <div className="rounded p-2 shadow ">
-            <h1 className="text-lg font-medium text-gray-900 p-4 border-b ">
+
+        <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+          <div className=" p-3  shadow gap-2 ">
+            <h1 className="text-lg font-medium text-gray-900 p-1 border-b ">
               Organizer Category
             </h1>
-            <section className="flex flex-col gap-2 p-3 justify-center items-center">
-            <div className="flex gap-2 flex-wrap justify-center">
-            <div
+            <section className="flex flex-wrap gap-3 pt-5 p-2  justify-start items-start">
+              <div className="flex gap-2 flex-wrap justify-center">
+                <div
                   onClick={() => {
                     setCategory("event planner");
                   }}
@@ -448,34 +406,12 @@ function GetOrganizer() {
               </div>
             </section>
           </div>
-          <div className="rounded border">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
-              Find Events
-            </h1>
-            <div className="flex justify-center items-center ">
-              <div className="grid grid-cols-2 gap-4 p-3 ">
-                <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Todays 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
+        <div className="border shadow w-[95%] ml-3">
+          <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
+            Find Events
+          </h1>
+          <CommonCalendar /> 
         </div>
       </div>
     </div>
@@ -483,112 +419,3 @@ function GetOrganizer() {
 }
 
 export default GetOrganizer;
-
-// import React, { useEffect, useRef, useState, useCallback } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import { getOrganizer } from "../../redux/actions/master/Organizer/getOrganiser";
-// import Loading from "../Loading";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import { FcLike } from "react-icons/fc";
-// import { CiFacebook } from "react-icons/ci";
-// import {
-//   FaInstagram,
-//   FaSquareXTwitter,
-// } from "react-icons/fa6";
-
-// function GetOrganizer() {
-//   const [category, setCategory] = useState("");
-//   const location = useLocation();
-//   const category1 = location.state;
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-//   const [loading, setLoading] = useState(false);
-//   const [pageNo, setPageNo] = useState(1);
-
-//   useEffect(() => {
-//     dispatch(
-//       getOrganizer(setLoading, "", pageNo, category1 || category || "")
-//     );
-//   }, [dispatch, pageNo, category1, category]);
-
-//   const store = useSelector((state) => state.getOrganizerReducer) || {
-//     organizerData: [],
-//   };
-//   const data = [...new Set(store.organizerData)];
-//   console.log(data, "OrganizerData....");
-
-//   const observerRef = useRef();
-
-//   // Intersection Observer with proper clean-up
-//   const lastElementRef = useCallback(
-//     (node) => {
-//       if (loading) return;
-
-//       if (observerRef.current) observerRef.current.disconnect();
-
-//       observerRef.current = new IntersectionObserver(
-//         (entries) => {
-//           if (entries[0].isIntersecting) {
-//             setPageNo((prevPage) => prevPage + 1);
-//           }
-//         },
-//         { rootMargin: "330px" } // Adjusting for footer height
-//       );
-
-//       if (node) observerRef.current.observe(node);
-//     },
-//     [loading]
-//   );
-
-//   if (loading && pageNo === 1) {
-//     return <Loading />;
-//   }
-
-//   return (
-//     <div className="flex lg:flex-row flex-col gap-2 lg:pt-0 md:pt-0 pt-20">
-//       <div className="p-2 lg:w-[75%] w-full">
-//         <div className="grid lg:grid-cols-3 md:grid-cols-3 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
-//           {data.map((item, index) => (
-//             <div
-//               key={index}
-//               className="flex flex-col pb-5 shadow-md rounded border"
-//               onClick={() => navigate("/getOrganizerById", { state: item._id })}
-//             >
-//               <div className="h-40 md:h-36 lg:w-[303px] w-full overflow-hidden">
-//                 <img
-//                   src={item.profileImage}
-//                   className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
-//                   alt={item.name}
-//                 />
-//               </div>
-//               <div className="p-2">
-//                 <h1 className="font-medium text-lg capitalize">{item.name}</h1>
-//                 <section className="text-sm text-gray-500">
-//                   {item.address}, {item.city}, {item.state}
-//                 </section>
-//               </div>
-//               <div className="flex justify-between">
-//                 <p className="flex gap-2 p-1 px-3 text-lg">
-//                   <a href={item.facebookUrl || "#"}>
-//                     {item.facebookUrl && <CiFacebook className="text-red-500" />}
-//                   </a>
-//                   <a href={item.instagramUrl || "#"}>
-//                     {item.instagramUrl && <FaInstagram className="text-red-500" />}
-//                   </a>
-//                   <FcLike />
-//                   <a href={item.twitterUrl || "#"}>
-//                     {item.twitterUrl && <FaSquareXTwitter className="text-red-500" />}
-//                   </a>
-//                 </p>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//         {/* Infinite Scroll Trigger */}
-//         <div ref={lastElementRef} className="h-10"></div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default GetOrganizer;

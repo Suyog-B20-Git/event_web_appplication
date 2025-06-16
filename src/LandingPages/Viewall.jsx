@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import { BsFire } from "react-icons/bs";
-import { CiLocationOn } from "react-icons/ci";
+import { CiLocationOn, CiCirclePlus } from "react-icons/ci";
 import { FaEye } from "react-icons/fa";
 import { MdEvent } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,8 +18,9 @@ import { getCity } from "../redux/actions/master/location/City";
 import { getEventByFilter } from "../redux/actions/master/Events/getEventByFilter";
 import { VscFilterFilled } from "react-icons/vsc";
 import Pagination from "../Components/Pagination";
+import FollowEvent from "../Components/FollowEvent";
 
-// Function to convert UTC to local time
+
 const convertUTCToLocal = (utcString) => {
   if (!utcString) return "Invalid Date";
   const date = new Date(utcString);
@@ -29,12 +30,17 @@ const convertUTCToLocal = (utcString) => {
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true, // Change to false if you prefer 24-hour format
+    hour12: true,
+    timeZone: "UTC",
   });
 };
 
-
 function Viewall() {
+  //new code
+  const category1 = "";
+  const location = useLocation();
+  const value = location.state;
+  const filterValue = value?.toLowerCase() || "";
   const [filter, setFilter] = useState(false);
   const options = [
     { value: "all", label: "All" },
@@ -44,8 +50,8 @@ function Viewall() {
     { value: "nightlife and club", label: "Nightlife & Club" },
     { value: "professional", label: "Professional" },
     { value: "social", label: "Social" },
-    { value: "sports  and leisure", label: "Sports & Leisure" },
-    { value: "theatre and arts", label: "Theatre and Arts" },
+    { value: "sport & leisure", label: "Sport & Leisure" },
+    { value: "theatre & arts", label: "Theatre & Arts" },
   ];
   const priceOptions = [
     { value: "free", label: "Free" },
@@ -53,8 +59,6 @@ function Viewall() {
   ];
   const [selectedOption, setSelectedOption] = useState("");
   const category = selectedOption.value ? selectedOption.value : "";
-
-  console.log(selectedOption);
   const [price, setPrice] = useState("");
   const priceType = price.value;
   const [country, setCountry] = useState("");
@@ -92,6 +96,7 @@ function Viewall() {
       getEventByFilter(
         setLoading,
         category,
+        filterValue,
         priceType,
         searchEvent,
         countryFilter,
@@ -102,12 +107,13 @@ function Viewall() {
         currentPage
       )
     ); // Call API when component mounts
-  }, [dispatch, currentPage]);
+  }, [dispatch, currentPage, category, filterValue]);
 
   const handleApi = () => {
     dispatch(
       getEventByFilter(
         setLoading,
+        filterValue,
         category,
         priceType,
         searchEvent,
@@ -124,7 +130,6 @@ function Viewall() {
     filterEventData: [],
   };
   const data = store.filterEventData;
-  // console.log(data);
   const totalPages = store.totalPages;
 
   const handleNextPage = () => {
@@ -206,7 +211,6 @@ function Viewall() {
     value: item,
     label: item,
   }));
-  // console.log(selectedCity, selectedState, selectedCountry);
   const reset = () => {
     setStartDate("");
     setEndDate("");
@@ -222,38 +226,17 @@ function Viewall() {
     handleApi();
   };
 
-  console.log(
-    category,
-    startDate,
-    endDate,
-    countryFilter,
-    cityFilter,
-    stateFilter
-  );
-
-  // const isDisabled = () => {
-  //   return !(
-  //     category ||
-  //     priceType ||
-  //     searchEvent ||
-  //     countryFilter ||
-  //     cityFilter ||
-  //     stateFilter ||
-  //     startDate ||
-  //     endDate ||
-  //     currentPage
-  //   );
-  // };
-
   const navigate = useNavigate();
   if (loading) {
     return <Loading />;
   }
 
+  const selCategory = localStorage.getItem("selectedCategory");
+  
   return (
     <div className="flex justify-center items-center w-full pt-[87px] sm:pt-4">
-  <div className="p-5 w-full max-w-[1340px]">
-  <div className="flex justify-between">
+      <div className="p-5 w-full max-w-[1340px]">
+        <div className="flex justify-between">
           <div className="flex gap-2 lg:pl-3">
             <BsFire className="text-2xl relative top-0" />
             <p className="font-bold font-sans lg:text-2xl">EVENTS</p>
@@ -275,7 +258,8 @@ function Viewall() {
               onClick={reset}
               className="flex gap-1 lg:text-base md:text-base text-xs font-medium text-[#ff2459] border border-[#ff2459] p-1 rounded"
             >
-              <IoIosRefresh className="text-[#ff2459] relative top-1" /> Refresh Filters
+              <IoIosRefresh className="text-[#ff2459] relative top-1" /> Refresh
+              Filters
             </button>
             {/* <button
               onClick={handleApi}
@@ -480,6 +464,10 @@ function Viewall() {
           </div>
         )}
         {/* Cards container with horizontal scrolling */}
+
+        <div className="flex justify-end items-center mr-3 pt-2">
+         <FollowEvent modelName="Category" categoryType="Event" categoryName={selCategory}  />
+         </div>
         <div className=" grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
           {data && data.length > 0 ? (
             data.map((item, index) => (
@@ -494,7 +482,8 @@ function Viewall() {
                   <div
                     style={{
                       backgroundImage: `url(${
-                        item.media?.thumbnailImage || "assets/staticAssets/fallback-image.jpg"
+                        item.media?.thumbnailImage ||
+                        "assets/staticAssets/fallback-image.jpg"
                       })`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "cover",
@@ -526,7 +515,8 @@ function Viewall() {
                       <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                         <CiLocationOn className="relative top-1" />
                         <span>
-                          {item.venue?.city} - {item.venue?.country}
+                          {item.venueDetails?.city} -{" "}
+                          {item.venueDetails?.country}
                         </span>
                       </p>
                     </div>
@@ -538,8 +528,8 @@ function Viewall() {
                       </button> */}
                       <button
                         className="relative  hover:text-white rounded shadow lg:p-2 p-2 lg:m-0 mr-1 lg:text-sm text-xs bg-white transition-all duration-300 
-  before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-[#ff2459] before:transition-all before:duration-300 
-  hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
+                                   before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-[#ff2459] before:transition-all before:duration-300 
+                                   hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
                       >
                         <p className="relative "> BUY NOW</p>
                       </button>
@@ -549,7 +539,7 @@ function Viewall() {
               </div>
             ))
           ) : (
-            <div>No Date found</div>
+            <div>No Data found</div>
           )}
         </div>
         <div className="pb-3 ">

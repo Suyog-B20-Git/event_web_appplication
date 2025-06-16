@@ -39,12 +39,12 @@ const Sidebar = ({ setShowPopup }) => {
 
   const menuItems = [
     { name: "Home", icon: <IoMdHome />, path: "/home" },
-    { name: "Create Event", icon: <MdEvent />, path: "/createEvent" },
-    { name: "Create Page", icon: <MdDashboard />, path: "/createPage" },
+    { name: "Create Event", icon: <MdEvent />, path: "/create-event" },
+    { name: "Create Page", icon: <MdDashboard />, path: "/create-page" },
     {
       name: "Event",
-      path: "/viewAll",
-      filterPath: "/getEventByFilter",
+      path: "/events",
+      filterPath: "/filtered-events",
       icon: <MdEvent />,
       subMenu: [
         { name: "Business" },
@@ -63,9 +63,9 @@ const Sidebar = ({ setShowPopup }) => {
       filterPath: "/Organizers",
       icon: <GrGroup />,
       subMenu: [
-        { name: "Event Planner" },
-        { name: "Wedding Planner" },
-        { name: "Adventure" },
+        { name: "Event Planner" , path: "/Organizers/event-planner"},
+        { name: "Wedding Planner", path: "/Organizers/wedding-planner"},
+        { name: "Adventure", path: "/Organizers/adventure"},
       ],
     },
     {

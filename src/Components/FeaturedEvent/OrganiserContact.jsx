@@ -1,167 +1,27 @@
-// import React, { useState } from "react";
-// import { MdCancel } from "react-icons/md";
-// import Button from "../Button";
-
-// function OrganiserContact({ isFormOpen, setIsFormOpen, name }) {
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     email: "",
-//     phone: "",
-//     subject: "",
-//     message: "",
-//   });
-//   const [data, setData] = useState([]);
-//   const inputfield = [
-//     {
-//       label: "Full Name",
-//       min: 3,
-//       max: 30,
-//       type: "text",
-//       value: formData.name,
-//       name: "name",
-//     },
-//     {
-//       label: "Your Email",
-//       type: "email",
-//       value: formData.email,
-//       name: "email",
-//     },
-//     {
-//       label: "Contact Number",
-//       type: "tel",
-//       value: formData.phone,
-//       name: "phone",
-//       //  pattern:"^[6-9]\d{9}$"
-//     },
-//     {
-//       label: "Subject",
-//       type: "text",
-//       value: formData.subject,
-//       name: "subject",
-//       min: 3,
-//       max: 30,
-//     },
-//   ];
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData({ ...formData, [name]: value });
-//   };
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-
-//     setData([...data, formData]);
-//     setFormData({
-//       name: "",
-//       email: "",
-//       phone: "",
-//       subject: "",
-//       message: "",
-//     });
-//   };
-//   return (
-//     <div className="fixed w-full inset-0 flex flex-col items-center   justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
-//       <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
-      
-//     <div className="lg:max-w-[650px] md:max-w-[500px] lg:max-h-[600px] ">
-//       <p className="flex justify-between gap-3 p-2 ">
-//         <h1 className="font-semibold  text-2xl">
-//           Inquiry for{" "}
-//           <span className="text-[#ff2459]  text-sm">
-//             Event Name - Event Location -Event Header - date
-//             Event Name - Event Location -Event Header - date
-//           </span>
-//         </h1>
-//         <button onClick={() => setIsFormOpen(false)}>
-//           <MdCancel className="lg:text-lg text-2xl hover:text-gray-800 text-gray-500" />
-//         </button>
-//       </p>
-//       <form onSubmit={handleSubmit} className="p-2 flex flex-col gap-3">
-//         <hr />
-//         {inputfield.map((item, index) => {
-//           return (
-//             <div key={index} className="flex flex-col gap-2 ">
-//               <label
-//                 className="block font-medium text-gray-700"
-//                 htmlFor={item.name}
-//               >
-//                 {item.label}
-//               </label>
-//               <input
-//                 type={item.type}
-//                 value={item.value}
-//                 onChange={handleChange}
-//                 name={item.name}
-//                 minLength={item.min}
-//                 maxLength={item.max}
-//                 pattern={item.pattern}
-//                 className="w-full bg-gray-100 rounded-lg p-1"
-//                 required
-//               />
-//             </div>
-//           );
-//         })}
-//         <label htmlFor="mesage" className="block font-medium text-gray-700">
-//           Message
-//         </label>
-//         <textarea
-//           name="message"
-//           value={formData.message}
-//           onChange={handleChange}
-//           minLength={3}
-//           maxLength={40}
-//           required
-//           className="w-full bg-gray-100 rounded-lg p-1"
-//         ></textarea>
-//         <div className="flex gap-2 justify-end mt-2">
-//           {/* <Button
-//             variant={"normal"}
-//             textSize={"text-base"}
-//             text={"CANCEL"}
-//             rounded={"rounded-full"}
-//           />
-//           <Button
-//             variant={"primary"}
-//             textSize={"text-base"}
-//             text={"SEND"}
-//             rounded={"rounded-full"}
-//           /> */}
-//           <button
-//             onClick={() => setIsFormOpen(false)}
-//             className="rounded-lg p-1 text-gray-900 font-medium bg-gray-300 px-4"
-//           >
-//             CANCEL
-//           </button>
-
-//           <button className="rounded-lg p-1 text-white font-medium bg-[#ff2459] px-4">
-//             SEND
-//           </button>
-//         </div>
-//       </form>
-//     </div>
-//     </div>
-//       </div>
-//   );
-// }
-
-// export default OrganiserContact;
-
-
-
 import React, { useState } from "react";
 import { MdCancel } from "react-icons/md";
+import { toast } from "react-toastify";
+import axios from "axios";
+const baseUrl = import.meta.env.VITE_API_URL;
 
-function OrganiserContact({ isFormOpen, setIsFormOpen, name }) {
+function OrganiserContact({
+  isFormOpen,
+  setIsFormOpen,
+  OrganizerName,
+  OrganizerEmail,
+}) {
+ 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    subject: "",
-    message: "",
+    subject: "I want to know more about this event",
+    message:
+      "Hello, I would like to enquire more about this listing. Please let me know how can I get in touch with you. Waiting for your prompt reply?",
   });
 
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const inputFields = [
     { label: "Full Name", min: 3, max: 30, type: "text", name: "name" },
@@ -175,30 +35,50 @@ function OrganiserContact({ isFormOpen, setIsFormOpen, name }) {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setData([...data, formData]);
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    const payload = {
+      to: OrganizerEmail,
+      eventName: OrganizerName,
+      fullName: formData.name,
+      email: formData.email,
+      contactNumber: formData.phone,
+      subject: formData.subject,
+      message: formData.message,
+    };
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${baseUrl}/api/enquiries`, payload);
+      toast.success("Message sent successfully!");
+      setData([...data, formData]);
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setIsFormOpen(false);
+    } catch (error) {
+      toast.error("Error sending Message. Please try again later.");
+      console.error(
+        "Error submitting Message:",
+        error.response?.data || error.message
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="fixed w-full inset-0 flex flex-col items-center   justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
       <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-[90%] md:max-w-[550px] lg:max-w-[600px]">
-        {/* Header */}
         <div className="flex justify-between items-center pb-3">
           <h1 className="font-semibold text-lg md:text-xl">
-            Enquiry for{" "}
-            <span className="text-[#ff2459] ">
-              Event 
-            </span>
+            Enquiry for <span className="text-[#ff2459] ">Event</span>
           </h1>
-          <button 
-            onClick={() => setIsFormOpen(false)} 
+          <button
+            onClick={() => setIsFormOpen(false)}
             className="text-gray-500 text-3xl hover:text-red-500 "
           >
             &times;
           </button>
-
         </div>
 
         {/* Form */}
@@ -244,9 +124,33 @@ function OrganiserContact({ isFormOpen, setIsFormOpen, name }) {
             </button>
             <button
               type="submit"
-              className="rounded-lg px-4 py-2 text-white bg-[#ff2459] font-medium"
+              disabled={loading}
+              className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              SEND
+              {loading && (
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8z"
+                  />
+                </svg>
+              )}
+              {loading ? "Sending..." : "SEND"}
             </button>
           </div>
         </form>

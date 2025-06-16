@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const getRecentlyViewReducer = (state = initialState, action) => {
-  console.log("action..:", action);
   switch (action.type) {
     case "GET_RECENTLY_VIEW":
       return {

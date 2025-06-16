@@ -52,76 +52,8 @@ export const updateLiftType = (data, props, setisLoader) => {
   };
 };
 
-// export const getEventData = () => {
-//   return (dispatch) => {
-//     axiosInstance
-//       .get("http://dev.eventsnode.com:3000/api/event")
-//       .then((response) => {
-//         if (!response.data.status) {
-//           toast.error(response.data.message, {
-//             transition: Zoom,
-//             hideProgressBar: true,
-//             autoClose: 2000,
-//           });
-//         } else {
-//           toast.success(response.data.message, {
-//             transition: Zoom,
-//             hideProgressBar: true,
-//             autoClose: 2000,
-//           });
-//           dispatch({
-//             type: "GET_EVENT",
-//             payload: response.data,
-//           });
-//         }
-//       })
-//       .catch((error) => {
-//         toast.error(
-//           error.response && error.response.data
-//             ? error.response.data.message
-//             : "Something went wrong!",
-//           { transition: Zoom, hideProgressBar: false, autoClose: 2000 }
-//         );
-//       });
-//   };
-// };
+
 import axios from "axios";
-// export const getEventData = () => {
-//   return async (dispatch) => {
-//     try {
-//       const response = await axios.get("http://dev.eventsnode.com:3000/api/event");
-//       console.log("resi",response)
-//       if (!response.data.status) {
-//         toast.error(response.data.message,{
-//           transition: Zoom,
-//           hideProgressBar: true,
-//           autoClose: 2000,
-//         });
-//       } else {
-//         toast.success("Events Fetched Successfully!",{
-//           transition: Zoom,
-//           hideProgressBar: true,
-//           autoClose: 2000,
-//         });
-
-//         dispatch({
-//           type: "GET_EVENT",
-//           payload: response.data.events, // Assuming API returns events in `response.data.events`
-//         });
-//       }
-//     } catch (error) {
-//       toast.error(error.response?.data?.message || "Something went wrong!",{
-//         transition: Zoom,
-//         hideProgressBar: false,
-//         autoClose: 2000,
-//       });
-//     }
-//   };
-// };
-
-// import axios from "axios";
-
-// const PORT = import.meta.env.VITE_API_PORT;
 import { Event } from "../../../Urls";
 export const getEventData = (setLoader) => {
   return async (dispatch) => {
@@ -129,7 +61,6 @@ export const getEventData = (setLoader) => {
 
     try {
       const response = await axios.get(Event.getAllEvents);
-      console.log("response", response);
       dispatch({
         type: "GET_EVENT",
         eventData: response.data.events, // Ensure the API actually returns this structure

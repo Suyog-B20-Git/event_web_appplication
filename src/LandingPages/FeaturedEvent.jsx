@@ -14,42 +14,107 @@ import { CiCalendarDate, CiLocationOn } from "react-icons/ci";
 import GetTicket from "../Components/FeaturedEvent/GetTicket";
 import EventGallery from "../Components/FeaturedEvent/EventGallery";
 import MeditationForm from "../Components/FeaturedEvent/MeditationForm";
-
+import PerformersSection from "../Components/Performers/PerformersSection";
 import { TiBookmark } from "react-icons/ti";
-import { useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Context } from "../Components/Util/ContextProvider";
 import LoginModal from "../Components/FeaturedEvent/LoginModal";
 import Guest from "../Components/FeaturedEvent/Guest";
 import RegisterModal from "../Components/FeaturedEvent/RegisterModal";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { FaEye, FaHeart } from "react-icons/fa6";
-import { MdDateRange, MdOutlineMailOutline } from "react-icons/md";
-import { PiBuildingApartmentFill } from "react-icons/pi";
+import {
+  MdDateRange,
+  MdOutlineMailOutline,
+  MdOutlineEventRepeat,
+} from "react-icons/md";
+import { PiBuildingApartmentFill, PiBookmarkThin } from "react-icons/pi";
 import OrganiserContact from "../Components/FeaturedEvent/OrganiserContact";
 import { useDispatch, useSelector } from "react-redux";
-import { getEventById } from "../redux/actions/master/Events/getEventById";
+import Collapsible from "react-collapsible";
+import {
+  getEventById,
+  getEventByCategoryAndSlug,
+  getEventBySlug,
+} from "../redux/actions/master/Events/getEventById";
 import MapContainer from "../Components/CreatePage/MapComponent";
 import EnquiryForm from "../Components/Organizer/EnquiryForm";
 import { addFavouriteEvent } from "../redux/actions/master/Events/AddFavouriteEvent";
 import getFavoriteEventReducer from "../redux/reducers/pages/Events/getFavoriteEvent";
 import { getFavouriteEventData } from "../redux/actions/master/Events/GetFavouriteEvent";
-import { toast } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteFavouriteEvent } from "../redux/actions/master/Events/deleteFavouriteEvent";
+import fallbackImage from "/public/assets/staticAssets/fallback-image.jpg";
+import VenueData from "../Components/FeaturedEvent/VenueData";
 
 function FeaturedEvent() {
+  const {
+    categoryname: urlCategory,
+    slug: urlSlug,
+    eventId: eventId,
+  } = useParams();
+  const navigate = useNavigate();
   const [enquiry, setEnquiry] = useState(false);
   const location = useLocation();
   const id = location.state;
-  console.log(id);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [showNumber, setShowNumber] = useState(false);
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
+  const [enquirySent, setEnquirySent] = useState(false);
+
   const store = useSelector((state) => state.getEventByIdReducer) || {
     eventData: [],
   };
   const receivedData = store.eventData;
-  console.log(receivedData);
 
+  const updateStartDateTime = new Date(receivedData.startDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
+
+  const updateEndDateTime = new Date(receivedData.endDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
+
+  const youtubeVideoUrl = receivedData.youtubeVideoUrls;
+  const VenuesData = Array.isArray(receivedData?.venue)
+    ? receivedData?.venue
+    : receivedData?.venue
+    ? [receivedData.venue]
+    : [];
+  const thumbnailImage = receivedData?.media?.thumbnailImage;
+  const posterImage = receivedData?.media?.posterImage;
+  const phoneNumber = receivedData?.organizer?.phoneNumber?.trim();
+  const hasPhoneNumber = phoneNumber !== "" && phoneNumber !== undefined;
+  const organizerEmail = receivedData?.organizer?.email?.trim();
+  const togglePhone = () => {
+    if (hasPhoneNumber) {
+      setShowNumber((prev) => !prev);
+    }
+  };
+
+  const categoryname = urlCategory || receivedData?.category || "all-events";
+  const slug = urlSlug || receivedData?.slug || "featured-event";
+  const eventid = eventId || receivedData?._id || "null";
   const store1 = useSelector((state) => state.getFavoriteEventReducer) || {
     favouriteEventData: [],
   };
@@ -62,44 +127,72 @@ function FeaturedEvent() {
   const isFavourite = favouriteEvent.some(
     (event) => event._id === receivedData?._id
   );
-  const checkFavourite = (id) => {
-    if (isFavourite) {
-      // toast.warning("Already added to favorites!", {
-      //   position: "top-right",
-      //   autoClose: 2000, // Closes after 2 seconds
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      //   theme: "colored",
-      // });
-      dispatch(deleteFavouriteEvent(id));
-      dispatch(getFavouriteEventData(setLoading));
 
-      // favouriteEvent=deletedFavouriteEvent;
+  const name = receivedData.name;
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
-      // window.location.reload();
+  useEffect(() => {
+    setEnquirySent(false);
+
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    if (sent === "true") {
+      setEnquirySent(true);
     }
+  }, [name]);
+
+  const handleEnquirySent = () => {
+    setEnquirySent(true);
+    setEnquiry(false);
   };
 
   useEffect(() => {
-    dispatch(getEventById(id, setLoading));
-    dispatch(getFavouriteEventData(setLoading));
+    setLocalIsFavorite(isFavourite);
+  }, [isFavourite]);
 
-  }, [dispatch]);
-
-  const handleFavourite = (id) => {
-    if (isFavourite) {
-      return;
+  const toggleFavorite = (id) => {
+    if (localIsFavorite) {
+      setLocalIsFavorite(false);
+      dispatch(deleteFavouriteEvent(id));
     } else {
+      setLocalIsFavorite(true);
       dispatch(addFavouriteEvent(id));
-      dispatch(getFavouriteEventData(setLoading));
     }
+
+    dispatch(getFavouriteEventData(setLoading));
   };
 
+  const handleGetTicketClick = () => {
+    navigate("/bookTicket", {
+      state: { data: receivedData },
+    });
+  };
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getEventById(id, setLoading));
+    } else if (slug) {
+      dispatch(getEventBySlug(slug, setLoading));
+    }
+    dispatch(getFavouriteEventData(setLoading));
+  }, [dispatch, id, slug]);
+
+  useEffect(() => {
+    if (receivedData && receivedData.category && receivedData._id) {
+      const newPath = `/events/${(receivedData.category || "").toLowerCase()}/${
+        receivedData._id
+      }`;
+      const currentPath = window.location.pathname;
+
+      if (currentPath !== newPath) {
+        navigate(newPath, {
+          state: id,
+          replace: true,
+        });
+      }
+    }
+  }, [receivedData, navigate, id]);
+
   const [modal, setModal] = useState(false);
-  // const [form, setForm] = useState(false);
   const {
     form,
     setForm,
@@ -116,37 +209,29 @@ function FeaturedEvent() {
     receivedData.startDate && extractDateAndTime();
   }, []);
 
-  console.log("Received Data:", receivedData);
-console.log("Organizer Data:", receivedData.organizer);
-console.log("Phone:", receivedData.organizer?.mobileNumber);
-
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(null);
 
   const extractDateAndTime = () => {
     const date = new Date(receivedData.startDate);
 
-    // Extract date in YYYY-MM-DD format
     const formattedDate = date.toISOString().split("T")[0];
-
-    // Extract time in 12-hour format (HH:MM AM/PM)
     const formattedTime = date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, // Ensures 12-hour format
+      hour12: true,
     });
-
     setDate(formattedDate);
     setTime(formattedTime);
   };
 
-  const loc = {
-    lat: receivedData?.venue?.googleSearchLat || 40.7127753,
-    lng: receivedData?.venue?.googleSearchLong || -74.0059728,
+  const googleLocation = {
+    lat: receivedData.venue?.googleSearchLat,
+    lng: receivedData.venue?.googleSearchLong,
   };
-  console.log(receivedData);
 
   const sectionRef = useRef(null);
+  const LocationRef = useRef(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const addToCalendar = () => {
@@ -162,9 +247,9 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
 
     const startDate = new Date(receivedData.startDate)
       .toISOString()
-      .replace(/-|:|\.\d+/g, ""); // Format: YYYYMMDDTHHMMSSZ
+      .replace(/-|:|\.\d+/g, "");
     const endDate = new Date(
-      new Date(receivedData.startDate).getTime() + 2 * 60 * 60 * 1000 // Assuming a 2-hour event
+      new Date(receivedData.startDate).getTime() + 2 * 60 * 60 * 1000
     )
       .toISOString()
       .replace(/-|:|\.\d+/g, "");
@@ -174,6 +259,11 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
     window.open(googleCalendarUrl, "_blank");
   };
 
+  const formatImageUrl = (url) => {
+    if (!url) return null;
+    return url.replace(/\\/g, "/");
+  };
+
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-4 ">
@@ -181,14 +271,16 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
           className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px] mt-20 sm:mt-0 relative"
           style={{
             backgroundImage: `url(${
-              receivedData.media?.thumbnailImage || "assets/staticAssets/fallback-image.jpg"
+              formatImageUrl(posterImage) ||
+              formatImageUrl(thumbnailImage) ||
+              "assets/staticAssets/fallback-image.jpg"
             })`,
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
           }}
         >
-         <div className="absolute top-4 right-2 bg-white/70 rounded-lg p-2 flex gap-4 block md:block lg:hidden">
+          <div className="absolute top-4 right-2 bg-white/70 rounded-lg p-2 flex gap-4 block md:block lg:hidden">
             <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900">
               <FaEye className="relative top-0.5 text-blue-600" />
               <span>Total {receivedData.visits}</span>
@@ -201,26 +293,53 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
 
           <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
             <p
-              onClick={() => setEnquiry(!enquiry)}
-              className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
+              onClick={() => {
+                if (!isLogin) {
+                  toast.error("Please login first to send enquiry!", {
+                    transition: Zoom,
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                  });
+                  return;
+                }
+                if (!organizerEmail) {
+                  toast.error("Organizer email not available.");
+                  return;
+                }
+                if (!enquirySent) {
+                  setEnquiry(!enquiry);
+                }
+              }}
+              className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
+                enquirySent
+                  ? "text-[#ff2459] cursor-not-allowed"
+                  : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+              }`}
             >
-              {" "}
-              <IoIosInformationCircleOutline className="text-lg " />
-              Send Enquiry
+              <IoIosInformationCircleOutline className="text-lg" />
+              {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
             </p>
 
             <button
               onClick={() => {
-                handleFavourite(receivedData._id);
-                checkFavourite(receivedData._id);
+                if (!isLogin) {
+                  toast.error("Please login first to Add favorite!", {
+                    transition: Zoom,
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                  });
+                  return;
+                }
+                toggleFavorite(receivedData._id);
               }}
-              className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer ${
-                isFavourite ? "text-[#ff2459]" : "text-gray-900"
+              className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer hover:text-[#ff2459] ${
+                localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
               }`}
             >
               <FaHeart className="text-lg" />
-              {isFavourite ? "Added to Favourites" : "Add To Favourite"}
+              {localIsFavorite ? "Added to Favourites" : "Add To Favourite"}
             </button>
+
             <p
               onClick={addToCalendar}
               className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
@@ -230,75 +349,60 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
             </p>
 
             <div className="hidden md:hidden lg:flex gap-4">
-              <p className="flex gap-1 text-xs font-bold text-gray-900 cursor-pointer">
+              <p className="flex gap-1 text-xs font-bold text-gray-900 ">
                 <FaEye className="relative top-0.5 text-blue-600" />
                 <span>Total {receivedData.visits}</span>
               </p>
-              <p className="flex gap-1 text-xs font-bold text-gray-900 cursor-pointer">
+              <p className="flex gap-1 text-xs font-bold text-gray-900 ">
                 <FaEye className="relative top-0.5 text-blue-600" />
                 <span>Daily {receivedData.dailyVisits}</span>
               </p>
             </div>
-
           </div>
         </div>
-        
+
         <div className="rounded-xl lg:m-0 m-2 lg:p-4 p-2  shadow-lg lg:w-[20%] ">
           <h1 className="font-bold flex justify-start break-words text-xl p-2 mt-0 sm:mt-4 ">
             {" "}
             {receivedData.name}
           </h1>
           <div className="flex gap-2 pb-3 pl-4 justify-start mt-0 sm:mt-4 ">
-            <div className="relative flex flex-col space-y-4 top-1 lg:text-2xl text-gray-600 ">
-              <TiBookmark />
+            <div className="relative flex flex-col space-y-4 top-0 lg:text-2xl text-gray-800 font-semibold">
+              <PiBookmarkThin />
               <CiCalendarDate />
-              <CiLocationOn />
+              <CiLocationOn
+                onClick={() => {
+                  LocationRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                  });
+                }}
+              />
             </div>
             <div className="text-gray-600 md:text-base  text-xs font-medium space-y-4">
               <p>{receivedData.category}</p>
-              {/* <p>{receivedData.startDate}</p> */}
-              <p >
-                {date} - {time}
-              </p>
+              <p>{receivedData?.startDate ? updateStartDateTime : "--"}</p>
               <p></p>
-              <p>
-                {" "}
-                {receivedData.venue?.city || "-"} -{" "}
-                {receivedData.venue?.country || "-"}
+              <p
+                onClick={() => {
+                  LocationRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                  });
+                }}
+              >
+                {receivedData.venue?.city && receivedData.venue?.country
+                  ? `${receivedData.venue.city} - ${receivedData.venue.country}`
+                  : receivedData.venue?.name || "Not Available"}
               </p>
             </div>
           </div>
           <hr />
           <div className="pt-2 flex justify-between gap-2 lg:pt-3 md:p-2 px-3 mt-0 sm:mt-6">
             <p className="lg:text-xl text-base font-bold">$99 onwards </p>
-
-            {/* <button
+            <button
               onClick={() => {
                 setModal(true);
-                sectionRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "nearest",
-                });
-              }}
-              className="relative lg:text-lg text-xs overflow-hidden font-medium rounded-md p-2 px-4 bg-[#ff2459] hover:text-black  text-white   transition-all duration-300 before:absolute before:top-0 before:left-0 before:w-0 before:h-full before:bg-pink-400 hover:before:w-full before:transition-all before:duration-300"
-              // className="lg:text-lg text-xs bg-[#ff2459] text-white font-medium rounded-md p-2 px-4"
-            >
-              Get Ticket
-            </button> */}
-            <button
-              // onClick={() => {
-              //   if (receivedData.isRepetitive) {
-              //     setModal(true);
-              //     sectionRef.current?.scrollIntoView({
-              //       behavior: "smooth",
-              //       block: "nearest",
-              //     });
-              //   } else {
-              //     setForm(!form);
-              //   }
-              // }}
-              onClick={() => {
-                setModal(true); // Ensure the form is open
                 sectionRef.current?.scrollIntoView({
                   behavior: "smooth",
                   block: "nearest",
@@ -310,195 +414,292 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
             >
               <p className="relative">Get Ticket</p>
             </button>
-            
           </div>
-          {/* <div className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm w-full  mt-2">
-
-            <div className="flex items-center  space-x-3">
-              <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="w-5 h-5 text-gray-600"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17 20h5v-2a4 4 0 00-5-4M9 20H4v-2a4 4 0 015-4m9-7a4 4 0 11-8 0 4 4 0 018 0zM12 11a9 9 0 00-9 9v2h18v-2a9 9 0 00-9-9z"
-                  />
-                </svg>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-800">
-                  Invite your friends
-                </h3>
-                <p className="text-xs text-gray-500">
-                  and enjoy a shared experience
-                </p>
-              </div>
-            </div>
-
-            <button className="flex items-center justify-center w-8 h-8 text-gray-400 transition hover:text-gray-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="w-5 h-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div> */}
         </div>
       </div>
 
-      <div className="lg:p-10 p-3 flex lg:flex-row md:flex-row flex-col w-full gap-4">
-        <div className="lg:w-[90%] md:w-[90%]  ">
+      <div className="lg:flex p-3 mt-5 flex lg:flex-row md:flex-row flex-col  gap-7">
+        <div className="lg:w-[80%] md:w-[90%]  ">
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
-              by={receivedData.name}
+              by={receivedData?.organizer?.name || receivedData?.organizer?.username || receivedData?.name || "-"}
+              category={receivedData.category}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
             />
           ) : (
             <EventHeading heading={"No Event data"} by={"-"} startDate={"-"} />
           )}
-            <div className="border-2 m-1 mt-4 sm:mt-6 rounded-lg ">
-              <div ref={sectionRef} className="p-2 pb-3">
-                <p className="font-semibold text-base lg:text-3xl px-3">
-                  Get Tickets Now
-                </p>
-                <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
-                <p className="font-semibold text-lg  ml-3 mb-6">
-             {receivedData?.startDate
-                ? new Date(receivedData.startDate).toLocaleString()
-                : "-"}                
-                </p>
-                <hr />
-                <div className="space-y-4">
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
+          <div className="border-2 m-1 mt-4 sm:mt-6 rounded-lg">
+            <div ref={sectionRef} className="p-2 pb-3">
+              <p className="font-semibold text-base lg:text-3xl px-3">
+                Get Tickets Now
+              </p>
+              <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
+              <p className="font-semibold text-lg  ml-3 mb-6">
+                {receivedData?.startDate ? updateStartDateTime : "-"}
+              </p>
+              <hr />
+              <div className="space-y-4 ">
+                {receivedData?.ticketFormats?.length > 0 ? (
+                  <div
+                    onClick={() => {
+                      setForm(!form);
+                      handleGetTicketClick();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
                     <GetTicket
-                    start={new Date(receivedData.startDate).toLocaleString()}
-                    eTime={new Date(receivedData.endDate).toLocaleString()}
+                      start={updateStartDateTime}
+                      eTime={updateEndDateTime}
                     />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
-                    <GetTicket
-                    start={new Date(receivedData.startDate).toLocaleString()}
-                    eTime={new Date(receivedData.endDate).toLocaleString()}
-                    />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
-                    <GetTicket
-                    start={new Date(receivedData.startDate).toLocaleString()}
-                    eTime={new Date(receivedData.endDate).toLocaleString()}
-                    />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-gray-500 select-none">
+                    No tickets available for this event.
+                  </div>
+                )}
               </div>
             </div>
+            <div className="w-full justify-start items-start gap-2 p-4">
+              {/* Repeating Dates & Days */}
+
+               
+              {Array.isArray(receivedData.repeatDates !=="null") &&
+                Array.isArray(receivedData.repeatDays !=="") &&
+                receivedData.repeatDates.length > 0 &&
+                receivedData.repeatDates.length ===
+                  receivedData.repeatDays.length && (
+                  <div className="bg-white p-4 rounded-xl shadow border border-gray-200 overflow-x-auto">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MdOutlineEventRepeat className="text-3xl text-pink-600" />
+                      <h1 className="text-2xl font-bold text-gray-800">
+                        Repeating Events
+                      </h1>
+                    </div>
+                    <hr className="mb-4" />
+
+                    <h2 className="text-md font-semibold text-gray-700 mb-2">
+                      Repeats on:
+                    </h2>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {receivedData.repeatDates.map((date, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                        >
+                          {`Date: ${date} (${receivedData.repeatDays[idx]})`}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-lg font-semibold">
+                      <span className="font-medium text-gray-800">Time:</span>{" "}
+                      {receivedData.repeatStartTime} -{" "}
+                      {receivedData.repeatEndTime}
+                    </div>
+                  </div>
+                )}
+              
+
+              <div className="bg-white p-4 mt-6 rounded-xl shadow-lg border border-gray-200">
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
+                  Event Description
+                </h2>
+                <hr />
+                <p className="text-lg text-gray-600 mt-2">
+                  {receivedData.description || "Description not available."}
+                </p>
+              </div>
+
+              <div className="p-3 px-0 sm:px-6 mt-4 rounded-xl">
+               
+                <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
+                  Event Tags
+                </h2>
+                {Array.isArray(receivedData.eventTags!=="undefined" || "null" || "") &&
+                receivedData.eventTags.length > 0 ? (
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {receivedData.eventTags.map((tag, index) => (
+                      <Button
+                        key={index}
+                        text={tag}
+                        variant={"primary"}
+                        textSize={"text-sm"}
+                        rounded={"rounded-2xl"}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-lg text-gray-600 mt-2">
+                    No Tags available
+                  </p>
+                )}
+              </div>
+
+              <div className="bg-white p-4 mt-4 rounded-xl shadow-lg border border-gray-200">
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
+                  Event Performers
+                </h2>
+                <hr />
+                <p className="text-lg text-gray-600 mt-2">
+                  <PerformersSection performerIds={receivedData.performers} />
+                </p>
+              </div>
+
+              <div className="p-4 px-0 sm:px-6 mt-3 rounded-xl">
+                <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
+                  Events Venue
+                </h2>
+                {VenuesData && VenuesData.length > 0 ? (
+                  <VenueData data={VenuesData} />
+                ) : (
+                  <p className="text-gray-500 lg:ml-5">Not Available.</p>
+                )}
+              </div>
+
+              <div ref={LocationRef} className="px-0 sm:px-6 mb-3 mt-4">
+                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
+                  Location
+                </h1>
+                <MapContainer className="p-4 ml-2" location={googleLocation} />
+              </div>
+
+              <div className="px-0 sm:px-6 mb-3">
+                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-4">
+                  Event Gallery
+                </h1>
+                {Array.isArray(receivedData?.media?.images) &&
+                receivedData.media.images.length > 0 ? (
+                  <EventGallery data={receivedData.media.images} />
+                ) : (
+                  <p className="text-lg text-gray-600 mt-2">
+                    No images available
+                  </p>
+                )}
+              </div>
+
+<div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
+  {Array.isArray(receivedData.youtubeVideoUrls) && 
+   receivedData.youtubeVideoUrls.some(url => url && url.trim() !== "") ? (
+    <>
+      <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
+        Watch Videos
+      </h1>
+      <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
+    </>
+  ) : (
+    <p className="text-lg text-gray-600 mt-2">
+     
+    </p>
+  )}
+</div>
             </div>
+          </div>
         </div>
 
-        <div className="lg:w-[20%] md:w-[90%] flex flex-col gap-2">
-        <div className="p-4 flex flex-col items-center w-full border rounded-xl">
+        <div className="lg:flex-1 md:w-full w-full flex flex-col gap-3">
+          <div className="p-4 flex flex-col items-center w-full border rounded-xl">
             {/* Title */}
             <h1 className="text-xl font-semibold text-left px-6 pb-3 lg:pb-5">
-              Organiser
+              Organizer
             </h1>
 
             {/* Organizer Image */}
-            <div className="flex flex-col items-center w-full">
-              <div className="h-20 w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
-                {receivedData.organizer?.name?.charAt(0) || ""}
+            <Collapsible
+              trigger={
+                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
+                  View Organizer Details
+                </div>
+              }
+              triggerWhenOpen={
+                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
+                  Hide Organizer Details
+                </div>
+              }
+              className=""
+            >
+              {" "}
+              <div className="flex flex-col items-center w-full">
+                <div className="h-20 w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
+                  {receivedData.organizer?.username?.charAt(0) || ""}
+                </div>
+
+                {/* Organizer Name */}
+                <p className="font-semibold lg:text-base text-sm pt-2 text-center">
+                  {receivedData.organizer?.name || receivedData.organizer?.username || "Organizer Name"}
+                </p>
+
+                {/* Organizer Info */}
+                <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-2 gap-2 pt-4 text-center">
+                  <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
+                    <PiBuildingApartmentFill className="text-lg" />
+                    {receivedData.venue?.city || "-"},{" "}
+                    {receivedData.venue?.country || "-"}
+                  </p>
+                  <p
+                    className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1 cursor-pointer"
+                    onClick={togglePhone}
+                  >
+                    <FaPhoneAlt className="text-lg" />
+                    {hasPhoneNumber
+                      ? showNumber
+                        ? phoneNumber
+                        : "View Contact"
+                      : "Not available"}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm md:text-xs lg:text-xs whitespace-nowrap">
+                    <MdOutlineMailOutline className="text-base min-w-[1rem]" />
+                    <span>
+                      {receivedData.organizer?.email || "Not available"}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Contact Organizer Button */}
+                <button
+                  onClick={() => {
+                    if (!organizerEmail) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    setIsFormOpen(true);
+                  }}
+                  className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
+                >
+                  <IoIosContact className="text-xl" />
+                  Contact Organizer
+                </button>
               </div>
-
-              {/* Organizer Name */}
-              <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                {receivedData.organizer?.name || "Organizer Name"}
-              </p>
-
-              {/* Organizer Info */}
-              <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-2 gap-2 pt-4 text-center">
-                <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
-                  <PiBuildingApartmentFill className="text-lg" />
-                  {receivedData.venue?.city || "-"}, {receivedData.venue?.country || "-"}
-                </p>
-                <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
-                  <FaPhoneAlt className="text-lg" />
-                  {receivedData.organizer?.mobileNumber || "Not available"}
-                </p>
-                <p className="flex items-center  lg:text-xs md:text-xs text-sm gap-1">
-                  <MdOutlineMailOutline className="text-lg" />
-                  {receivedData.organizer?.email || "Not available"}
-                </p>
-              </div>
-
-              {/* Contact Organizer Button */}
-              <button
-                onClick={() => setIsFormOpen(true)}
-                className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
-              >
-                <IoIosContact className="text-xl" />
-                Contact Organizer
-              </button>
-            </div>
+            </Collapsible>
           </div>
 
           <div className="border-2 rounded-xl p-2 flex flex-col items-center">
-            <p className="font-semibold">Google Location</p>
+            <button
+              onClick={() => {
+                LocationRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "nearest",
+                });
+              }}
+              className="font-semibold"
+            >
+              Google Location
+            </button>
             <p className="flex font-semibold ">
               {/* <CiLocationOn className="relative top-1 text-pink-500" />  {receivedData.venue.googleSearchLocation ? receivedData.venue.googleSearchLocation :""} */}
             </p>
             {/* <p className="text-gray-400 ">Goa, india</p> */}
           </div>
-          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2 items-center">
-            <p className="text-gray-400">Page visited By </p>
-            <p className="font-semibold">{receivedData.dailyVisits} Times</p>
+          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2  items-center">
+            <p className="text-gray-400 ml-2">Page visited By </p>
+            <p className="font-semibold ml-2">
+              {receivedData.dailyVisits} Times
+            </p>
           </div>
         </div>
       </div>
       <div className="px-3 sm:px-10 py-2 ">
-        {/* <Overview />
-        <EventInfo /> */}
-        <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
-        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">Event Description</h2>
-          <p className="text-lg text-gray-600 mt-2">{receivedData.description || "Description not available."}</p>
-        </div>
-        <div>
-          
-          <h1 className="text-2xl sm:text-3xl text-gray-900 font-semibold pt-10 p-4 pl-0">
-            Location
-          </h1>
-
-          {loc && <MapContainer location={loc} />}
-        </div>
-        <EventGallery data={receivedData?.media?.images || []} />
-
-        {/* <Sponsors /> */}
-        <WatchTrailer />
         {/* <Speakers />
         <Dj /> */}
         {/* <RatingReview /> */}
@@ -510,50 +711,17 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
               <OrganiserContact
                 isFormOpen={isFormOpen}
                 setIsFormOpen={setIsFormOpen}
+                OrganizerName={name}
+                OrganizerEmail={organizerEmail}
               />
             </div>
           </div>
         </div>
       )}
-      {/*show Meditation Form */}
-      {form && (
-        <div className="w-[45%] ">
-          <div className="fixed w-full backdrop-blur-md bg-black/50  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 py-4 ">
-            <div className="bg-white p-1 rounded-lg   shadow-lg  lg:w-[full]">
-              <div className="flex justify-end relative lg:right-0 right-16  ">
-                <button
-                  className="hover:text-[#ff2459] text-black text-lg font-bold relative lg:left-0 left-12 w-[max-content] mr-0 sm:mr-6"
-                  onClick={() => setForm(!form)}
-                >
-                  ✕
-                </button>
-              </div>
-              <MeditationForm data={receivedData} />
-            </div>
-          </div>
-        </div>
-      )}
+
       {login && (
         <div className="fixed w-full lg:h-[120vh] pt-[40px] p-10  h-[100vh]  inset-0 flex flex-col items-center justify-center z-70 bg-white/30 overflow-x-hidden">
           <div className="bg-white p-6 rounded-lg shadow-lg  overflow-y-scroll scrollbar-hide  lg:w-[full] w-[max-content]">
-            {/* <p className="flex items-center text-lg font-medium lg:p-0 p-4">
-              {account ? (
-                ""
-              ) : guest ? (
-                <h2
-                  className=" text-3xl  md:text-2xl font-semibold"
-                  style={{
-                    textDecoration: "underline",
-                    textDecorationColor: "#FF2459",
-                    color: "#FF2459",
-                  }}
-                >
-                Checkout as Guest
-                </h2>
-              ) : (
-                ""
-              )}
-            </p> */}
             <div className="flex justify-end lg:p-0 mt-3 relative lg:bottom-3 -bottom-8">
               <Button
                 text={"X"}
@@ -607,7 +775,9 @@ console.log("Phone:", receivedData.organizer?.mobileNumber);
       {enquiry && (
         <EnquiryForm
           setEnquiry={setEnquiry}
-          name={receivedData.name}
+          onEnquirySent={handleEnquirySent}
+          name={name}
+          email={organizerEmail}
           enquiry={enquiry}
         />
       )}

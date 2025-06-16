@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { alpha, styled } from "@mui/material/styles";
 import { pink } from "@mui/material/colors";
@@ -6,11 +6,29 @@ import { IoTicket } from "react-icons/io5";
 import { RiSimCardLine } from "react-icons/ri";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { MdCancel, MdDelete, MdModeEditOutline } from "react-icons/md";
-function CreateTicket() {
-  const [getTicket, setGetTicket] = useState(false);
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from "react-redux";
+import {postTicketData } from "../../redux/actions/master/Events/updateTicket";
+import { useParams } from "react-router-dom";
 
-  const [formData, setFormdata] = useState([]);
-  const [editIndex, setEditIndex] = useState(null); // Track the index of the item being edited
+
+function CreateTicket() {
+  const dispatch = useDispatch();
+  const { eventId } = useParams();
+
+    const [title, setTitle] = useState("");
+    const [price, setPrice] = useState(0);
+    const [order, setOrder] = useState(1);
+    const [description, setDescription] = useState("");
+    const [totalTicketQuantity, setTotalTicketQuantity] = useState(0);
+    const [limitPerCustomer, setLimitPerCustomer] = useState(1);
+    const [saleStartDate, setSaleStartDate] = useState("");
+    const [saleEndDate, setSaleEndDate] = useState("");
+    const [salePrice, setSalePrice] = useState(null);
+    const [formData, setFormdata] = useState([]);
+    const [editIndex, setEditIndex] = useState(null); // Track the index of the item being edited
+  
   const {
     handleSubmit,
     watch,
@@ -24,26 +42,99 @@ function CreateTicket() {
       isDonation: false,
     },
   });
-  const startDate = watch("saleStartDate"); // Watch start date to validate end date
-  const endDate = watch("saleEndDate"); // Watch start date to validate end date
+  const [getTicket, setGetTicket] = useState(false);
 
+  const header = ["Title", "Price", "Qty", "Order", "Actions"];
+  const isSoldOut = watch("isSoldOut"); 
+  const isDonation = watch("isDonation"); 
+  const today = new Date().toISOString().split("T")[0]; 
+
+  const startDate = watch("saleStartDate"); 
+  const endDate = watch("saleEndDate");
+  useEffect(() => {
+  }, [eventId]);
+  
   const onSubmit = (data) => {
+    const {
+      title,
+      price,
+      order,
+      description,
+      totalTicketQuantity,
+      limitPerCustomer,
+      saleStartDate,
+      saleEndDate,
+      salePrice,
+      isDonation,
+      isSoldOut,
+    } = data;
+  
+    if (!title || !description || price <= 0 || totalTicketQuantity <= 0 || !saleStartDate || !saleEndDate) {
+      toast.error("Please fill all required fields before submitting.");
+      return;
+    }
+  
+    const ticketData = {
+      title,
+      price,
+      order,
+      description,
+      totalTicketQuantity,
+      limitPerCustomer,
+      saleStartDate,
+      saleEndDate,
+      salePrice,
+      isDonation,
+      isSoldOut,
+      eventId,
+    };
+  
+    dispatch(postTicketData(ticketData));
+  
     if (editIndex !== null) {
-      // If editing, update the existing item
       setFormdata((prevFormData) => {
         const updatedData = [...prevFormData];
-        updatedData[editIndex] = data;
+        updatedData[editIndex] = ticketData;
         return updatedData;
       });
-      setEditIndex(null); // Reset edit state
+      toast.success("Ticket updated successfully!");
+      setEditIndex(null);
     } else {
-      // If adding a new item
-      setFormdata((prevFormData) => [...prevFormData, data]);
+      setFormdata((prevFormData) => [...prevFormData, ticketData]);
+      // toast.success("Ticket created successfully!");
     }
-
+  
     setGetTicket(false);
     reset();
   };
+  
+  useEffect(() => {
+  }, [eventId]);
+   
+  useEffect(() => {
+    document.body.style.overflow = getTicket ? "hidden" : "auto";
+    return () => (document.body.style.overflow = "auto");
+  }, [getTicket]);
+  
+
+  // const onSubmit = (data) => {
+  //   if (editIndex !== null) {
+  //     // If editing, update the existing item
+  //     setFormdata((prevFormData) => {
+  //       const updatedData = [...prevFormData];
+  //       updatedData[editIndex] = data;
+  //       return updatedData;
+  //     });
+  //     setEditIndex(null); // Reset edit state
+  //   } else {
+  //     // If adding a new item
+  //     setFormdata((prevFormData) => [...prevFormData, data]);
+  //   }
+
+  //   setGetTicket(false);
+  //   reset();
+  // };
+
   const PinkSwitch = styled(Switch)(({ theme }) => ({
     "& .MuiSwitch-switchBase.Mui-checked": {
       color: "#ff2459",
@@ -55,21 +146,20 @@ function CreateTicket() {
       backgroundColor: pink[600],
     },
   }));
+
   const handleDelete = (index) => {
     setFormdata((prevFormData) =>
       prevFormData.filter((item, i) => i !== index)
     );
   };
+
   const handleEdit = (index) => {
     const item = formData[index];
     Object.keys(item).forEach((key) => setValue(key, item[key])); // Populate form fields
     setEditIndex(index);
     setGetTicket(true);
   };
-  const header = ["Title", "Price", "Qty", "Order", "Actions"];
-  const isSoldOut = watch("isSoldOut"); // Watch state
-  const isDonation = watch("isDonation"); // Watch state
-  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  
   return (
     <div className="p-6 lg:p-10 md:pt-10 pt-28 overflow-auto">
       <button
@@ -515,212 +605,3 @@ function CreateTicket() {
 }
 
 export default CreateTicket;
-
-// import React, { useState } from "react";
-// import { useForm } from "react-hook-form";
-// import { IoTicket } from "react-icons/io5";
-// import { MdDelete, MdModeEditOutline } from "react-icons/md";
-
-// function CreateTicket() {
-//   const [getTicket, setGetTicket] = useState(false);
-//   const [formData, setFormData] = useState([]);
-//   const [editIndex, setEditIndex] = useState(null); // Track the index of the item being edited
-
-//   const {
-//     handleSubmit,
-//     watch,
-//     register,
-//     setValue,
-//     reset,
-//     formState: { errors },
-//   } = useForm({
-//     defaultValues: {
-//       isSoldOut: false,
-//       isDonation: false,
-//     },
-//   });
-
-//   const onSubmit = (data) => {
-//     if (editIndex !== null) {
-//       // If editing, update the existing item
-//       const updatedData = [...formData];
-//       updatedData[editIndex] = data;
-//       setFormData(updatedData);
-//       setEditIndex(null); // Reset edit state
-//     } else {
-//       // If adding a new item
-//       setFormData([...formData, data]);
-//     }
-//     setGetTicket(false);
-//     reset();
-//   };
-
-//   const handleDelete = (index) => {
-//     setFormData((prevFormData) => prevFormData.filter((_, i) => i !== index));
-//   };
-
-//   const handleEdit = (index) => {
-//     const item = formData[index];
-//     Object.keys(item).forEach((key) => setValue(key, item[key])); // Populate form fields
-//     setEditIndex(index);
-//     setGetTicket(true);
-//   };
-
-//   const header = ["Title", "Price", "Qty", "Order", "Actions"];
-
-//   return (
-//     <div className="p-10 lg:pt-10 pt-28">
-//       <button
-//         onClick={() => {
-//           setGetTicket(true);
-//           setEditIndex(null); // Reset edit state for new entry
-//           reset(); // Clear form fields
-//         }}
-//         className="flex gap-1 p-2 px-2 rounded text-white font-medium bg-[#ff2459]"
-//       >
-//         <IoTicket className="relative top-1" />
-//         Create Ticket
-//       </button>
-
-//       <div className="pt-5 flex lg:flex-col flex-row">
-//         <header className="grid lg:grid-cols-5 bg-gray-100 p-2">
-//           {header.map((item, index) => (
-//             <div key={index} className="font-bold p-1">
-//               {item}
-//             </div>
-//           ))}
-//         </header>
-//         <section className="p-2">
-//           {formData.map((item, index) => (
-//             <div key={index} className="p-1 grid lg:grid-cols-5 gap-2">
-//               <div>{item.title}</div>
-//               <div>{item.price}</div>
-//               <div>{item.totalTicketQuantity}</div>
-//               <div>{item.order}</div>
-//               <div className="flex gap-3">
-//                 <div
-//                   className="flex gap-1 rounded p-1 bg-orange-300 px-3 whitespace-nowrap cursor-pointer"
-//                   onClick={() => handleEdit(index)}
-//                 >
-//                   <MdModeEditOutline className="relative top-1" />
-//                   Edit
-//                 </div>
-//                 <div
-//                   onClick={() => handleDelete(index)}
-//                   className="flex gap-1 rounded p-1 bg-red-400 px-3 whitespace-nowrap cursor-pointer"
-//                 >
-//                   <MdDelete className="relative top-1" />
-//                   Delete
-//                 </div>
-//               </div>
-//             </div>
-//           ))}
-//         </section>
-//       </div>
-
-//       {getTicket && (
-//         <div className="fixed w-full bg-white/30 backdrop-blur-md inset-0 flex flex-col items-center overflow-y-scroll z-40">
-//           <div className="bg-white p-2 rounded-lg shadow-lg lg:w-[full]">
-//             <div className="flex justify-between relative lg:right-0 right-16 mb-3">
-//               <h1 className="text-xl font-semibold">
-//                 {editIndex !== null ? "Edit Ticket" : "Create Ticket"}
-//               </h1>
-//               <button
-//                 className="bg-[#ff2459] relative lg:left-0 left-10 w-[max-content] p-1 px-2 text-white"
-//                 onClick={() => setGetTicket(false)}
-//               >
-//                 X
-//               </button>
-//             </div>
-//             <hr />
-//             <form
-//               onSubmit={handleSubmit(onSubmit)}
-//               className="flex flex-col gap-5 p-5 w-[600px]"
-//             >
-//               <div className="flex flex-col gap-1">
-//                 <label className="block text-sm font-medium text-gray-700">
-//                   Title*
-//                 </label>
-//                 <input
-//                   type="text"
-//                   className="focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 block w-full border rounded-md p-2"
-//                   placeholder="Title"
-//                   {...register("title", { required: "Title is required" })}
-//                 />
-//                 {errors.title && (
-//                   <p className="text-red-600 text-sm px-2">{errors.title.message}*</p>
-//                 )}
-//               </div>
-
-//               <div className="flex flex-col gap-1">
-//                 <label className="block text-sm font-medium text-gray-700">
-//                   Price(INR)*
-//                 </label>
-//                 <input
-//                   type="number"
-//                   className="focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 block w-full border rounded-md p-2"
-//                   placeholder="0000"
-//                   {...register("price", {
-//                     required: "Price is required",
-//                     min: { value: 1, message: "Price must be greater than 0" },
-//                     valueAsNumber: true,
-//                   })}
-//                 />
-//                 {errors.price && (
-//                   <p className="text-red-600 text-sm px-2">{errors.price.message}*</p>
-//                 )}
-//               </div>
-
-//               <div className="flex flex-col gap-1">
-//                 <label className="block text-sm font-medium text-gray-700">
-//                   Total Ticket Quantity*
-//                 </label>
-//                 <input
-//                   type="number"
-//                   className="focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 block w-full border rounded-md p-2"
-//                   placeholder="0000"
-//                   {...register("totalTicketQuantity", {
-//                     required: "Total Ticket Quantity is required",
-//                     min: { value: 1, message: "Must be greater than 0" },
-//                     valueAsNumber: true,
-//                   })}
-//                 />
-//                 {errors.totalTicketQuantity && (
-//                   <p className="text-red-600 text-sm px-2">{errors.totalTicketQuantity.message}*</p>
-//                 )}
-//               </div>
-
-//               <div className="flex flex-col gap-1">
-//                 <label className="block text-sm font-medium text-gray-700">
-//                   Order*
-//                 </label>
-//                 <input
-//                   type="number"
-//                   className="focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300 block w-full border rounded-md p-2"
-//                   placeholder="0000"
-//                   {...register("order", {
-//                     required: "Order is required",
-//                     min: { value: 1, message: "Must be greater than 0" },
-//                     valueAsNumber: true,
-//                   })}
-//                 />
-//                 {errors.order && (
-//                   <p className="text-red-600 text-sm px-2">{errors.order.message}*</p>
-//                 )}
-//               </div>
-
-//               <button
-//                 type="submit"
-//                 className="bg-[#ff2459] text-white p-2 rounded-md"
-//               >
-//                 {editIndex !== null ? "Update Ticket" : "Create Ticket"}
-//               </button>
-//             </form>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default CreateTicket;

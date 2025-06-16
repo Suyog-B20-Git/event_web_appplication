@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Select from "react-select";
-
+import DatePicker from "react-multi-date-picker";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
 import { GiPartyPopper } from "react-icons/gi";
 import { FcViewDetails } from "react-icons/fc";
-import { MdAccountCircle, MdCancel } from "react-icons/md";
+import {
+  MdAccountCircle,
+  MdCancel,
+  MdSentimentSatisfied,
+} from "react-icons/md";
 import { alpha, styled } from "@mui/material/styles";
 import { pink } from "@mui/material/colors";
 import { getVenue } from "../../redux/actions/master/Events/GetVenue";
@@ -15,13 +19,47 @@ import { useForm, Controller } from "react-hook-form";
 import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
+import { postTicketData } from "../../redux/actions/master/Events/updateTicket";
 import { toast } from "react-toastify";
+const baseUrl = import.meta.env.VITE_API_URL;
+import axios from "axios";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+
 export default function EventForm() {
   const [tagInput, setTagInput] = useState("");
-
+  const fileInputRef = useRef(null);
+  const thumbnailRef = useRef(null);
+  const posterInputRef = useRef(null);
+  const seatingChartRef = useRef(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [inputKey, setInputKey] = useState(Date.now()); // Unique key for re-render
+  const [repeatDates, setRepeatDates] = useState([]);
+  const [repeatDatesRaw, setRepeatDatesRaw] = useState([]);
   const [query, setQuery] = useState("");
   const [performer, setPerformer] = useState("");
+  const [selectedPerformers, setSelectedPerformers] = useState([]);
   const dispatch = useDispatch();
+  const [youtubeLinks, setYoutubeLinks] = useState([""]);
+  const [performerFacebookLinks, setPerformerFacebookLinks] = useState([""]);
+  const [showTicketForm, setShowTicketForm] = useState(false);
+
+  const selectedRadio = localStorage.getItem("selectedRadio");
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [order, setOrder] = useState("");
+  const [totalTicketQuantity, setTotalTicketQuantity] = useState("");
+  const [limitPerCustomer, setLimitPerCustomer] = useState("");
+  const [description, setDescription] = useState("");
+  const [promoCodes, setPromoCodes] = useState("");
+  const [bookedSeats, setBookedSeats] = useState("");
+  const [saleStartDate, setSaleStartDate] = useState("");
+  const [saleEndDate, setSaleEndDate] = useState("");
+  const [salePrice, setSalePrice] = useState("");
+  const [isDonation, setIsDonation] = useState(false);
+  const [isSoldOut, setIsSoldOut] = useState(false);
+  const [isSale, setIsSale] = useState(false);
+
   // Fetch API data whenever `query` updates
   useEffect(() => {
     if (query) {
@@ -34,7 +72,6 @@ export default function EventForm() {
 
   const store = useSelector((state) => state.venuesReducer) || { venues: [] };
   const data = store?.venues || []; // Ensure data is always an array
-  // console.log(data);
   const options = data.map((venue) => ({
     value: venue._id,
     label: venue.name,
@@ -44,11 +81,44 @@ export default function EventForm() {
     performers: [],
   };
   const data1 = store1?.performers || []; // Ensure data is always an array
-  // console.log(data1);
   const performerOptions = data1.map((performer) => ({
     value: performer._id,
     label: performer.name,
   })); // Convert API response to Select format
+
+  const handleLinkChange = (index, value) => {
+    const updatedLinks = [...youtubeLinks];
+    updatedLinks[index] = value;
+    setYoutubeLinks(updatedLinks);
+    setValue("youtubeLinks", updatedLinks); // Update React Hook Form state
+  };
+
+  const handleAddLink = () => {
+    setYoutubeLinks([...youtubeLinks, ""]); // Add an empty input field
+  };
+
+  const handleRemoveLink = (index) => {
+    const updatedLinks = youtubeLinks.filter((_, i) => i !== index);
+    setYoutubeLinks(updatedLinks);
+    setValue("youtubeLinks", updatedLinks); // Update form state
+  };
+
+  const handleAddPerformerLink = () => {
+    setPerformerFacebookLinks([...performerFacebookLinks, ""]); // Add new input
+  };
+
+  const handleRemovePerformerLink = (index) => {
+    const updatedLinks = performerFacebookLinks.filter((_, i) => i !== index);
+    setPerformerFacebookLinks(updatedLinks);
+    setValue("performerFacebookLinks", updatedLinks); // Update form state
+  };
+
+  const handlePerformerLinkChange = (index, value) => {
+    const updatedLinks = [...performerFacebookLinks];
+    updatedLinks[index] = value;
+    setPerformerFacebookLinks(updatedLinks);
+    setValue("performerFacebookLinks", updatedLinks); // Update form state
+  };
 
   const navigate = useNavigate();
   const {
@@ -71,7 +141,7 @@ export default function EventForm() {
       shortUrl: "",
       startDate: "",
       endDate: "",
-      disableEventAfterSoldOut: false, // Default value
+      disableEventAfterSoldOut: false,
       isRepetitive: false,
       isPublish: false,
       enableRatingReview: false,
@@ -85,36 +155,40 @@ export default function EventForm() {
 
       eventTag: [],
       repeatExcept: [],
-
+      youtubeLinks: [""],
       media: {
         thumbnailImage: null,
         posterImage: null,
         seatingChartImage: null,
         images: [],
-        youtubeUrl: "",
-      }, // Default media object
+      },
     },
   });
 
-  const [eventTags, setEventTags] = useState([]); // Local state to manage tags
-  const eventTag = watch("eventTag") || []; // ✅ Prevents `undefined` error
+  const [eventTags, setEventTags] = useState([""]);
+  const eventTag = watch("eventTag") || [];
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && tagInput.trim() !== "") {
       e.preventDefault();
 
-      const updatedTags = [...eventTags, tagInput.trim()];
+      const newTags = tagInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+
+      const updatedTags = [...eventTags, ...newTags];
       setEventTags(updatedTags);
-      setValue("eventTag", updatedTags); // ✅ Updates React Hook Form state
-      clearErrors("eventTag"); // ✅ Clears validation errors (if any)
-      setTagInput(""); // ✅ Reset input field
+      setValue("eventTag", updatedTags);
+      clearErrors("eventTag");
+      setTagInput("");
     }
   };
 
   const removeTag = (index) => {
     const updatedTags = eventTags.filter((_, i) => i !== index);
     setEventTags(updatedTags);
-    setValue("eventTag", updatedTags); // ✅ Updates form state
+    setValue("eventTag", updatedTags);
   };
 
   const [ticketFormat, setTicketFormat] = useState(false);
@@ -124,7 +198,6 @@ export default function EventForm() {
 
     if (storedData) {
       const parsedData = JSON.parse(storedData);
-
       if (parsedData.eventType == "Public") {
         setValue("isPublish", true);
         // return;
@@ -141,22 +214,9 @@ export default function EventForm() {
       // ✅ Ensure `category` is always set
       if (parsedData.selectedEvent) {
         setValue("category", parsedData.selectedEvent);
-        console.log("Setting category:", parsedData.selectedEvent);
       }
     }
   }, [setValue]);
-
-  // const PinkSwitch = styled(Switch)(({ theme }) => ({
-  //   "& .MuiSwitch-switchBase.Mui-checked": {
-  //     color: "#ff2459",
-  //     "&:hover": {
-  //       backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
-  //     },
-  //   },
-  //   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-  //     backgroundColor: pink[600],
-  //   },
-  // }));
 
   // image input
   const [thumbnailImage, setThumbnailImage] = useState(null);
@@ -168,20 +228,26 @@ export default function EventForm() {
 
   const handleImagesChange1 = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
+    if (files.length) {
+      const newImages = files.map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
 
-    const existingImages = watch("media.images") || []; // Use watch to access current state
-    setValue("media.images", [...existingImages, ...newImages]);
+      const updatedImages = [...selectedImages, ...newImages];
+      setSelectedImages(updatedImages);
+      setValue("media.images", updatedImages);
+    }
   };
 
-  // Fix removeImage1
   const removeImage1 = (index) => {
-    const updatedImages =
-      watch("media.images")?.filter((_, i) => i !== index) || [];
-    setValue("media.images", updatedImages);
+    const updatedImages = selectedImages.filter((_, i) => i !== index);
+    setSelectedImages(updatedImages);
+
+    // If no images remain, reset the input field
+    if (updatedImages.length === 0) {
+      setInputKey(Date.now()); // Forces re-render of input field
+    }
   };
 
   const [repeatExceptList, setRepeatExceptList] = useState([]);
@@ -222,116 +288,361 @@ export default function EventForm() {
   const media = watch("media"); // Watching media state
   const enableRatingReview = watch("enableRatingReview"); // Watching media state
   const repetitiveType = watch("repetitiveType");
+
+  useEffect(() => {
+    if (watch("venue") || watch("facebookLink")) {
+      clearErrors(["venue", "facebookLink"]);
+    }
+  }, [watch("venue"), watch("facebookLink"), clearErrors]);
+
+  useEffect(() => {
+    if (
+      (!watch("performers") || watch("performers").length === 0) &&
+      (!watch("performerFacebookLinks") || watch("performerFacebookLinks"))
+    ) {
+      setError("performers", {
+        type: "manual",
+        message: "Either Performers or Performers Facebook Link is required.",
+      });
+      setError("performerFacebookLinks", {
+        type: "manual",
+        message: "Either Performers or Performers Facebook Link is required.",
+      });
+    } else {
+      clearErrors("performers");
+      clearErrors("performerFacebookLinks");
+    }
+  }, [
+    watch("performers"),
+    watch("performerFacebookLinks"),
+    setError,
+    clearErrors,
+  ]);
+
   const onSubmit = (data) => {
-    console.log(data);
-    // console.log(data.media.thumbnailImage);
     const formData = new FormData();
-    console.log("category", data.category);
-    console.log("eventTags", data.eventTags);
-
+    const category = data.selectedEvent || data.category;
+    // const { repeatDates, repeatDays } = getRepeatDatesAndDays(repeatDatesRaw);
+    data.category = category;
     formData.append("name", data.name);
-    formData.append("category", data.category ? data.category : "");
-
-    formData.append("eventUrl", data.eventUrl);
-    formData.append("shortUrl", data.shortUrl);
+    formData.append("category", category);
     formData.append("excerpt", data.excerpt);
-    formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut);
+    formData.append(
+      "disableEventAfterSoldOut",
+      data.disableEventAfterSoldOut ?? false
+    );
     formData.append("enableRatingReview", data.enableRatingReview);
-    formData.append("isRepetitive", data.isRepetitive);
+    formData.append("isRepetitive", data.isRepetitive ?? false);
     formData.append("repetitiveType", data.repetitiveType);
-    formData.append("isPublish", data.isPublish);
-    formData.append("isSeasonal", data.isSeasonal);
-    formData.append("isOnline", data.isOnline);
-    formData.append("venue", data.venue);
-    formData.append("repeatExcept", data.repeatExcept);
-    formData.append("performers", data.performers);
-    formData.append("performerLink", data.performerLink);
+    formData.append("isPublish", data.isPublish ?? true);
+    formData.append("isSeasonal", data.isSeasonal ?? false);
+    formData.append("isOnline", data.isOnline ?? true);
+    formData.append("venue", data.venue || "");
+    formData.append("facebookLink", data.facebookLink || "");
+    formData.append("repeatExcept", data.repeatExcept ?? 1);
+    formData.append("performers", data.performers || []);
+    formData.append(
+      "performerFacebookLinks",
+      JSON.stringify(data.performerFacebookLinks)
+    );
     formData.append(
       "repeatStartTime",
       data.repeatStartTime ? data.repeatStartTime : ""
     );
+
+    const repeatDates = [];
+    const repeatDays = [];
+
+    repeatDatesRaw.forEach((dateObj) => {
+      const date = new Date(dateObj);
+      repeatDates.push(date.getDate());
+      repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
+    });
+
+    formData.append("repeatDates", repeatDates.join(","));
+    formData.append("repeatDays", repeatDays.join(","));
+
     formData.append("repeatEndTime", data.repeatEndTime);
     formData.append("facebookLink", data.facebookLink);
-    formData.append("youtubeLink", data.youtubeLink);
+    formData.append("youtubeLinks", data.youtubeLinks);
     formData.append("startDate", `${data.startDate}T${data.startTime}`);
     formData.append("endDate", `${data.endDate}T${data.endTime}`);
-    formData.append("description", data.description);
+    formData.append("description", data.description1);
     formData.append(
       "offlinePaymentInstructions",
       data.offlinePaymentInstructions
     );
-    formData.append("eventTags", data.eventTag); // ✅ Fix key name
-    formData.append("seo", JSON.stringify(data.seo));
+    formData.append("eventTags", data.eventTag);
+    const seoTags = data.seo.metaTags.join(",");
+    formData.append("seo", JSON.stringify(seoTags));
 
-    if (data.media?.thumbnailImage) {
-      formData.append("thumbnailImage", data.media.thumbnailImage);
+    const thumbnailImage = data.media?.thumbnailImage;
+    const posterImage = data.media?.posterImage;
+    const seatingChartImage = data.media?.seatingChartImage;
+
+    if (thumbnailImage) {
+      formData.append("thumbnailImage", thumbnailImage);
     }
-    if (data.media?.posterImage) {
-      formData.append("posterImage", data.media.posterImage);
+    if (posterImage) {
+      formData.append("posterImage", posterImage);
     }
-    if (data.media?.seatingChartImage) {
-      formData.append("seatingChartImage", data.media.seatingChartImage);
+    if (seatingChartImage) {
+      formData.append("seatingChartImage", seatingChartImage);
     }
 
-    // 🔹 Append Images Array (Multiple Images)
     if (data.media?.images?.length > 0) {
       data.media.images.forEach((image) => {
-        formData.append("images", image.file); // ✅ Correct field name
+        const fileToUpload = image.file instanceof File ? image.file : image;
+        if (fileToUpload instanceof File) {
+          formData.append("images", fileToUpload);
+        } else {
+        }
       });
     }
 
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-    if (isLogin) {
-      dispatch(
-        createNewEvent(formData, thumbnailImage, posterImage, seatingChartImage)
-        // createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-        // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
-      );
+    const authToken = localStorage.getItem("authToken");
 
+    if (!isLogin || !authToken) {
+      localStorage.setItem("eventData", JSON.stringify({ ...data }));
+      toast.error("Please log in to create an event.");
+      localStorage.setItem("redirectAfterLogin", "/submit-event");
+      navigate("/login?redirectTo=/submit-event");
+      return;
+    }
+    try {
+      for (let [key, value] of formData.entries()) {
+      }
+      dispatch(createNewEvent(formData));
       reset();
       setThumnPreview(null);
       setPosterPreview(null);
       setSeatingChartPreview(null);
       localStorage.removeItem("eventData");
       navigate("/home");
-    } else {
-      // navigate("/login");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.message || error?.message || "Something went wrong!";
+      toast.error(errorMessage);
     }
   };
+
+  useEffect(() => {
+    const savedData = localStorage.getItem("eventData");
+    if (savedData) {
+      reset(JSON.parse(savedData));
+      localStorage.removeItem("eventData");
+    }
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleNextClick = handleSubmit(
-    (data) => {
-      console.log("Form data:", data);
-      const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-      if (isLogin) {
-        dispatch(
-          createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-          // createNewEvent(data,data.media.thumbnailImage,data.media.posterImage,data.media.seatingChartImage)
-        );
+  const handleNextClick = handleSubmit(async (data) => {
+    const formData = new FormData();
+    const category = data.selectedEvent || data.category;
+    data.category = category;
+    formData.append("name", data.name);
+    formData.append("category", category);
+    formData.append("excerpt", data.excerpt);
+    formData.append(
+      "disableEventAfterSoldOut",
+      data.disableEventAfterSoldOut ?? false
+    );
+    formData.append("enableRatingReview", data.enableRatingReview);
+    formData.append("isRepetitive", data.isRepetitive ?? false);
+    formData.append("repetitiveType", data.repetitiveType);
+    formData.append("isPublish", data.isPublish ?? true);
+    formData.append("isSeasonal", data.isSeasonal ?? false);
+    formData.append("isOnline", data.isOnline ?? true);
+    formData.append("venue", data.venue || "");
+    formData.append("facebookLink", data.facebookLink || "");
+    formData.append("repeatExcept", data.repeatExcept ?? 1);
+    formData.append("performers", data.performers || []);
+    formData.append(
+      "performerFacebookLinks",
+      JSON.stringify(data.performerFacebookLinks)
+    );
 
-        reset();
-        setThumnPreview(null);
-        setPosterPreview(null);
-        setSeatingChartPreview(null);
-        localStorage.removeItem("eventData");
-        navigate("/createTicket");
-      }
-    },
-    (errors) => {
-      toast.error("Please fill in all required fields.");
+    const repeatDates = [];
+    const repeatDays = [];
+
+    repeatDatesRaw.forEach((dateObj) => {
+      const date = new Date(dateObj);
+      repeatDates.push(date.getDate());
+      repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
+    });
+
+    formData.append("repeatDates", repeatDates.join(","));
+    formData.append("repeatDays", repeatDays.join(","));
+    formData.append(
+      "repeatStartTime",
+      data.repeatStartTime ? data.repeatStartTime : ""
+    );
+    formData.append("repeatEndTime", data.repeatEndTime);
+    formData.append("facebookLink", data.facebookLink);
+    formData.append("youtubeLinks", data.youtubeLinks);
+    formData.append("startDate", `${data.startDate}T${data.startTime}`);
+    formData.append("endDate", `${data.endDate}T${data.endTime}`);
+    formData.append("description", data.description1);
+    formData.append(
+      "offlinePaymentInstructions",
+      data.offlinePaymentInstructions
+    );
+    formData.append("eventTags", data.eventTag);
+    const seoTags = data.seo.metaTags.join(",");
+    formData.append("seo", JSON.stringify(seoTags));
+
+    const thumbnailImage = data.media?.thumbnailImage;
+    const posterImage = data.media?.posterImage;
+    const seatingChartImage = data.media?.seatingChartImage;
+
+    if (thumbnailImage) {
+      formData.append("thumbnailImage", thumbnailImage);
     }
-  );
+    if (posterImage) {
+      formData.append("posterImage", posterImage);
+    }
+    if (seatingChartImage) {
+      formData.append("seatingChartImage", seatingChartImage);
+    }
+
+    if (data.media?.images?.length > 0) {
+      data.media.images.forEach((image) => {
+        const fileToUpload = image.file instanceof File ? image.file : image;
+        if (fileToUpload instanceof File) {
+          formData.append("images", fileToUpload);
+        } else {
+        }
+      });
+    }
+
+    localStorage.setItem("eventFormData", JSON.stringify(data));
+
+    const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+    const token = localStorage.getItem("authToken");
+
+    if (!isLogin || !token) {
+      localStorage.setItem("eventData", JSON.stringify({ ...data }));
+      toast.error("Please login to continue");
+      localStorage.setItem("redirectAfterLogin", "/submit-event");
+      navigate("/login?redirectTo=/submit-event");
+      return;
+    }
+
+    try {
+      for (let [key, value] of formData.entries()) {
+      }
+      const response = await dispatch(createNewEvent(formData));
+      const eventId4 = response?.event._id;
+      localStorage.setItem("createdEventId", eventId4);
+      setShowTicketForm(true);
+    } catch (error) {
+      toast.error("Failed to create event.");
+    }
+  });
+
+  const handleCreateTicket = async (e) => {
+    e.preventDefault();
+
+    const event = localStorage.getItem("createdEventId");
+    if (!event) {
+      toast.error("Event ID not found. Please create the event first.");
+      return;
+    }
+
+    const promoCodeArray = promoCodes
+      .split(",")
+      .map((code) => code.trim())
+      .filter(Boolean);
+
+    const bookedSeatArray = bookedSeats
+      .split(",")
+      .map((seat) => parseInt(seat.trim(), 10))
+      .filter((n) => !isNaN(n));
+
+    const ticketData = {
+      event,
+      title,
+      price: Number(price),
+      totalTicketQuantity: Number(totalTicketQuantity),
+      limitPerCustomer: Number(limitPerCustomer),
+      description,
+      promoCodes: promoCodeArray || [],
+      isSale: isSale,
+      salePrice: Number(salePrice) || "",
+      saleStartDate: new Date(saleStartDate).toISOString() || "",
+      saleEndDate: new Date(saleEndDate).toISOString() || "",
+      soldOut: isSoldOut || false,
+      seatingPoints: [],
+      bookedSeats: bookedSeatArray,
+      noOfBookedSeats: bookedSeatArray.length,
+    };
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
+        `${baseUrl}/api/ticketFormat`,
+        ticketData,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+      toast.success("Ticket created successfully!");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Failed to create ticket.");
+    }
+  };
+
+  // copy Enter Name to meta title
+
+  const [metaTitleEdited, setMetaTitleEdited] = useState(false);
+  const name = watch("name") || "";
+  const metaTitle = watch("seo.metaTitle") || "";
+
+  useEffect(() => {
+    if (!metaTitleEdited && name !== metaTitle) {
+      setValue("seo.metaTitle", name);
+    }
+  }, [name, metaTitleEdited, metaTitle, setValue]);
+
+  // copy Enter Description to Meta Description
+  const [metaDescEdited, setMetaDescEdited] = useState(false);
+  const description1 = watch("description1") || "";
+  const metaDescription = watch("seo.metaDescription") || "";
+
+  useEffect(() => {
+    if (!metaDescEdited && description1 !== metaDescription) {
+      setValue("seo.metaDescription", description1);
+    }
+  }, [description1, metaDescEdited, metaDescription, setValue]);
+
+  // Copy Event Tag into Meta Tag
+  const [metaTagsManuallyEdited, setMetaTagsManuallyEdited] = useState(false);
+  const metaTags = watch("seo.metaTags") || [];
+
+  // eventTags is already declared somewhere in your component, just use it here
+
+  useEffect(() => {
+    if (
+      !metaTagsManuallyEdited &&
+      JSON.stringify(eventTags) !== JSON.stringify(metaTags)
+    ) {
+      setValue("seo.metaTags", eventTags);
+    }
+  }, [eventTags, metaTags, metaTagsManuallyEdited, setValue]);
 
   return (
     <div className="lg:h-auto md:mb-0 pt-20 md:pt-0 lg:pt-4">
-      <div className="flex flex-col lg:flex-row lg:h-screen w-full">
-      <div className="flex flex-col pb-4 overflow-y-scroll w-full lg:w-full lg:pr-3 lg:h-auto">
-      <div className="flex flex-col gap-1 lg:pr-10"></div>
-      <div className="w-full p-6 lg:pl-10 lg:pr-10 bg-gray-100 rounded-xl shadow-md">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex flex-col lg:flex-row w-full min-h-screen">
+        <div className="pb-4 w-full lg:pr-3 lg:h-auto">
+          {/* <div className="flex flex-col gap-1 lg:pr-10"></div> */}
+          <div className="w-full p-6 lg:pl-10 lg:pr-10 bg-gray-100 rounded-xl shadow-md">
+            <form onSubmit={handleSubmit(onSubmit)}>
               <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
                 Event Registration
               </h2>
@@ -366,262 +677,143 @@ export default function EventForm() {
                   Enter Description*
                 </label>
                 <textarea
-                  id="name"
-                  name="description"
-                  className="mt-1 block w-full border rounded-md p-2"
+                  type="text"
+                  id="description1"
+                  className="mt-1 block w-full border rounded-md p-2 resize-y"
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
                   placeholder="Enter Description"
-                  {...register("description", {
+                  {...register("description1", {
                     required: "Event description is required",
                   })}
                 ></textarea>
                 {errors.description && (
                   <p className="text-red-600 text-sm px-2">
-                    {errors.description.message}*
+                    {errors.description1.message}*
                   </p>
                 )}
               </div>
 
-              {/* select Category
-              <div className="mb-4">
-                <label
-                  htmlFor="category"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Select Category
-                </label>
-                <select
-                  id="state"
-                  name="state"
-                  className="mt-1 block w-full border rounded-md p-2"
-                  {...register("category", {
-                    required: "category is required",
-                  })}
-                >
-                  <option value="">Select Category</option>
-                  <option value="Music & concert">Music & concert</option>
-                  <option value="Business">Business</option>
-                  <option value="Fiteness & Yoga">Fiteness & Yoga</option>
-                  <option value="Travelling & Trekking">
-                    Travelling & Trekking
-                  </option>
-                  <option value="Sport & fitness">Sport & fitness</option>
-                  <option value="Education & Classes">
-                    Education & Classes
-                  </option>
-                  <option value="    Charity & Non-profit">
-                    Charity & Non-profit
-                  </option>
-                </select>
-              </div> */}
-
-              {/* Venue and Performer */}
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
-                <div>
+              <div className="flex items-center  h-full mb-4 ">
+                {/* Venue Field */}
+                <div className="w-full flex flex-col justify-center gap-2">
                   <label
                     htmlFor="venue"
-                    className="block text-sm mb-1 font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Venue
                   </label>
-
                   <Controller
                     name="venue"
                     control={control}
                     rules={{
-                      required: "Please select an venue",
+                      validate: (value) => {
+                        if (!value && !watch("facebookLink")) {
+                          return "Either Venue ";
+                        }
+                        return true;
+                      },
                     }}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        isClearable // Enables "X" button to clear input
-                        options={options}
-                        placeholder="Search venue..."
-                        getOptionLabel={(option) => option.label} // Show venue name
-                        getOptionValue={(option) => option.value} // Ensure unique selection by ID
-                        onInputChange={(value, { action }) => {
-                          if (action === "input-change") {
-                            setQuery(value); // Update search query
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Select
+                          {...field}
+                          isClearable
+                          options={options}
+                          placeholder="Search venue..."
+                          getOptionLabel={(option) => option.label}
+                          getOptionValue={(option) => option.value}
+                          onInputChange={(value, { action }) => {
+                            if (action === "input-change") {
+                              setQuery(value);
+                            }
+                            if (
+                              action === "input-blur" ||
+                              action === "menu-close"
+                            ) {
+                              setQuery("");
+                            }
+                          }}
+                          onChange={(selectedOption) => {
+                            field.onChange(
+                              selectedOption ? selectedOption.value : null
+                            );
+                          }}
+                          value={
+                            options.find(
+                              (option) => option.value === field.value
+                            ) || null
                           }
-                          if (
-                            action === "input-blur" ||
-                            action === "menu-close"
-                          ) {
-                            setQuery(""); // Clear input when dropdown closes
+                          noOptionsMessage={() => "Type... to see Venues"}
+                          isDisabled={!!watch("facebookLink")} // Disable when Facebook Link is entered
+                          className={
+                            watch("facebookLink")
+                              ? "bg-gray-200 cursor-not-allowed"
+                              : ""
                           }
-                        }}
-                        onChange={(selectedOption) => {
-                          field.onChange(
-                            selectedOption ? selectedOption.value : null
-                          ); // Store only ID
-                        }}
-                        value={
-                          options.find(
-                            (option) => option.value === field.value
-                          ) || null
-                        } // Maintain selected value
-                        noOptionsMessage={() => "Type... to see Venues"} // Show message when no options
-                      />
+                        />
+                        <p className="text-red-500 text-sm min-h-[1rem]">
+                          {fieldState.error?.message}
+                        </p>
+                      </>
                     )}
                   />
-
-                  {errors.venue && (
-                    <p className="text-red-500 text-sm">
-                      {errors.venue.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="facebookLink"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Facebook Link
-                  </label>
-                  <input
-                    type="url"
-                    id="facebookLink"
-                    name="facebookLink"
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder="Enter your Facebook link"
-                    {...register("facebookLink", {
-                      required: "facebook link is required",
-                    })}
-                  />
-                  {errors.facebookLink && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.facebookLink.message}*
-                    </p>
-                  )}
                 </div>
               </div>
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
 
-                <div>
+              <div className="flex items-start h-full mb-4 gap-4">
+                {/* Performers Select */}
+                <div className="w-full flex flex-col gap-2">
                   <label
                     htmlFor="performer"
-                    className="block text-sm mb-1 font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700"
                   >
                     Performers
                   </label>
 
                   <Controller
-                    name="performers" // Store selected performers in useForm
+                    name="performers"
                     control={control}
-                    rules={{ required: "Please select at least one performer" }}
                     render={({ field }) => (
                       <Select
                         {...field}
-                        isMulti // Allow multiple selection
+                        isMulti
                         options={performerOptions}
                         placeholder="Select performers..."
-                        getOptionLabel={(option) => option.label} // Display performer name
-                        getOptionValue={(option) => option.value} // Ensure unique selection by ID
-                        onInputChange={(value) => setPerformer(value)} // Update search query
+                        getOptionLabel={(option) => option.label}
+                        getOptionValue={(option) => option.value}
+                        onInputChange={(value) => setPerformer(value)}
                         onChange={(selectedOptions) => {
+                          setSelectedPerformers(selectedOptions);
                           const selectedIDs = selectedOptions
                             ? selectedOptions.map((option) => option.value)
                             : [];
-                          field.onChange(selectedIDs); // Store only performer IDs in useForm
-                          console.log("Selected Performer IDs:", selectedIDs); // Debugging
+                          field.onChange(selectedIDs);
                         }}
-                        value={performerOptions.filter((option) =>
-                          field.value?.includes(option.value)
-                        )} // Ensure proper selection
-                        noOptionsMessage={() => "Type... to see performers"} // Show message when no options
+                        value={selectedPerformers}
+                        noOptionsMessage={() => "Type... to see performers"}
+                        className="w-full"
                       />
                     )}
                   />
-
-                  {errors.performers && (
-                    <p className="text-red-500 text-sm">
-                      {errors.performers.message}
-                    </p>
-                  )}
-                </div>
-                {/*youtube url*/}
-                <div>
-                  <label
-                    htmlFor="youtube url"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Youtube Url
-                  </label>
-                  <input
-                    type="url"
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder="Enter your Youtube url"
-                    {...register("youtubeLink", {
-                      required: "youtube link is required",
-                    })}
-                  />
-                  {errors.youtubeLink && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.youtubeLink.message}*
-                    </p>
-                  )}
                 </div>
               </div>
 
-              {/*Event Url */}
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
-                <div>
-                  <label
-                    htmlFor="eventUrl"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Event url
-                  </label>
-                  <input
-                    type="url"
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder="Enter your Event link"
-                    {...register("eventUrl", {
-                      required: "Event url is required",
-                    })}
-                  />
-                  {errors.eventUrl && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.eventUrl.message}*
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="shortUrl"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Short Url
-                  </label>
-                  <input
-                    type="url"
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder="Enter your short link"
-                    {...register("shortUrl", {
-                      required: "shortUrl is required",
-                    })}
-                  />
-                  {errors.shortUrl && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.shortUrl.message}*
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/*excerpt*/}
               <div className="mb-4">
                 <label
                   htmlFor="excerpt"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Excerpt
+                  Excerpt(Short Info)
                 </label>
                 <input
                   type="text"
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter your excerpt"
                   {...register("excerpt", {
-                    required: "Event url is required",
+                   
                   })}
                 />
                 {errors.excerpt && (
@@ -652,7 +844,7 @@ export default function EventForm() {
               </div>
 
               {/* Start and End Date */}
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4  mb-4">
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
                 <div>
                   <label
                     htmlFor="startDate"
@@ -664,9 +856,29 @@ export default function EventForm() {
                     type="date"
                     id="startDate"
                     name="startDate"
-                    className="mt-1  block w-full border rounded-md p-2"
+                    className="mt-1 block w-full border rounded-md p-2 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onClick={(e) => {
+                      // Only open picker on actual clicks (user gesture)
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      // Open picker on Enter/Space (these are valid user gestures)
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                      // Allow normal typing for other keys
+                    }}
                     {...register("startDate", {
-                      required: "startDate is required",
+                      required: "Start Date is required",
                     })}
                   />
                   {errors.startDate && (
@@ -674,13 +886,31 @@ export default function EventForm() {
                       {errors.startDate.message}*
                     </p>
                   )}
+
                   <input
                     type="time"
                     id="startTime"
                     name="startTime"
-                    className="mt-6 block w-full border rounded-md p-2"
+                    className="mt-2 block w-full border rounded-md p-2 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onClick={(e) => {
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                    }}
                     {...register("startTime", {
-                      required: "startTime is required",
+                      required: "Start Time is required",
                     })}
                   />
                   {errors.startTime && (
@@ -689,6 +919,7 @@ export default function EventForm() {
                     </p>
                   )}
                 </div>
+
                 <div>
                   <label
                     htmlFor="endDate"
@@ -700,13 +931,27 @@ export default function EventForm() {
                     type="date"
                     id="endDate"
                     name="endDate"
-                    className="mt-1  block w-full border rounded-md p-2"
+                    className="mt-1 block w-full border rounded-md p-2 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onClick={(e) => {
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                    }}
                     {...register("endDate", {
-                      required: "endDate is required",
-                      validate: (value) =>
-                        !startDate ||
-                        value > startDate ||
-                        "End date must be after start date",
+                      required: "End Date is required",
+                      validate: (value) => !startDate || value >= startDate,
                     })}
                   />
                   {errors.endDate && (
@@ -714,11 +959,29 @@ export default function EventForm() {
                       {errors.endDate.message}*
                     </p>
                   )}
+
                   <input
                     type="time"
                     id="endTime"
                     name="endTime"
-                    className=" mt-6 block w-full border rounded-md p-2"
+                    className="mt-2 block w-full border rounded-md p-2 cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    onClick={(e) => {
+                      try {
+                        if (e.target.showPicker) {
+                          e.target.showPicker();
+                        }
+                      } catch (error) {}
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        try {
+                          if (e.target.showPicker) {
+                            e.target.showPicker();
+                          }
+                        } catch (error) {}
+                      }
+                    }}
                     {...register("endTime", {
                       required: "End time is required",
                       validate: (value) => {
@@ -744,10 +1007,9 @@ export default function EventForm() {
                   )}
                 </div>
               </div>
-
               {/*IsRepeititive button*/}
               <div>
-                <h1 className="font-medium text-[#ff2459]">Repeitive Status</h1>
+                <h1 className="font-medium text-[#ff2459]">Repetitive Status</h1>
                 <div className="flex gap-2 items-center">
                   <div
                     onClick={() => setValue("isRepetitive", !isRepetitive)}
@@ -763,19 +1025,6 @@ export default function EventForm() {
                   </div>
                   <p>Is Event Repetitive</p>
                 </div>
-
-                {/* <FormGroup className="mb-2 lg:ml-3">
-                  <FormControlLabel
-                    control={
-                      <PinkSwitch
-                        checked={isRepetitive}
-                        size="small"
-                        onClick={() => setValue("isRepetitive", !isRepetitive)}
-                      />
-                    }
-                    label=" Is Event Repetitive"
-                  />
-                </FormGroup> */}
 
                 {isRepetitive && (
                   <div className="bg-white p-4 shadow rounded-lg gap-5 grid  lg:grid-cols-2 grid-cols-1">
@@ -804,25 +1053,6 @@ export default function EventForm() {
                         </p>
                       )}
                     </div>
-
-                    {/* <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Repetitive Except
-                      </label>
-                      <input
-                        type="number"
-                        className="mt-1 block w-full border rounded-md p-2"
-                        placeholder="Enter repeat except "
-                        {...register("repeatExcept", {
-                          required: "Repeat Except required",
-                        })}
-                      />
-                      {errors.except && (
-                        <p className="text-red-600 text-sm px-2">
-                          {errors.repeatExcept.message}*
-                        </p>
-                      )}
-                    </div> */}
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700">
                         Repetitive Except
@@ -860,6 +1090,19 @@ export default function EventForm() {
                         ))}
                       </div>
                     </div>
+                    <div className="mb-4 col-span-4 w-full bg-blue-300 p-4 rounded-lg">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Select Repeating Dates
+                      </label>
+                      <DatePicker
+                        multiple
+                        value={repeatDatesRaw}
+                        onChange={setRepeatDatesRaw}
+                        format="YYYY-MM-DD"
+                        className="border mt-1 p-2 rounded-md w-[100%]"
+                        placeholder="Select Dates"
+                      />
+                    </div>
                     <div>
                       <label
                         htmlFor="RepeatStartTime"
@@ -870,6 +1113,23 @@ export default function EventForm() {
                       <input
                         type="time"
                         className="mt-1 block w-full border rounded-md p-2"
+                        onClick={(e) => {
+                          try {
+                            if (e.target.showPicker) {
+                              e.target.showPicker();
+                            }
+                          } catch (error) {}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            try {
+                              if (e.target.showPicker) {
+                                e.target.showPicker();
+                              }
+                            } catch (error) {}
+                          }
+                        }}
                         {...register("repeatStartTime", {
                           // required: "repeatStartTime is required",
                         })}
@@ -887,6 +1147,23 @@ export default function EventForm() {
                       <input
                         type="time"
                         className="mt-1 block w-full border rounded-md p-2"
+                        onClick={(e) => {
+                          try {
+                            if (e.target.showPicker) {
+                              e.target.showPicker();
+                            }
+                          } catch (error) {}
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            try {
+                              if (e.target.showPicker) {
+                                e.target.showPicker();
+                              }
+                            } catch (error) {}
+                          }
+                        }}
                         {...register("repeatEndTime", {
                           required: "repeatEndTime is required",
                           validate: (value) => {
@@ -903,89 +1180,16 @@ export default function EventForm() {
                         </p>
                       )}
                     </div>
-
-                    {/* <div>
-                      <FormGroup className=" ">
-                        <FormControlLabel
-                          control={
-                            <PinkSwitch
-                              checked={isSeasonal}
-                              size="small"
-                              onClick={() =>
-                                setValue("isSeasonal", !isSeasonal)
-                              }
-                            />
-                          }
-                          label="Is seasonal"
-                        />
-                      </FormGroup>
-                    </div> */}
-                    {/* {repetitiveType != "Daily" && (
-                      <div className="flex gap-2 items-center">
-                        <div
-                          onClick={() => setValue("isSeasonal", !isSeasonal)}
-                          className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
-                            isSeasonal ? "bg-[#ff2459]" : "bg-gray-300"
-                          }`}
-                        >
-                          <div
-                            className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
-                              isSeasonal ? "translate-x-6" : ""
-                            }`}
-                          />
-                        </div>
-                        <p>Is Seasonal</p>
-                      </div>
-                    )} */}
                   </div>
                 )}
               </div>
 
-              {/* Input Field for Tags */}
-              {/* <div className="mt-4">
-                <label
-                  htmlFor="EventTag"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  EventTag
-                </label>
-                <input
-                  type="text"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type a tag and press Enter"
-                  className=" mt-1 block w-full border rounded-md p-2"
-                />
-
-              
-                <input type="hidden" {...register("eventTag")} />
-
-           
-                <div className="flex flex-wrap mt-2">
-                  {eventTag.map((tag, index) => (
-                    <div
-                      key={index}
-                      className="bg-blue-500 text-white px-2 py-1 rounded flex items-center m-1"
-                    >
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(index)}
-                        className="ml-2 text-gray-800 hover:text-red-500"
-                      >
-                        <MdCancel />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div> */}
               <div className="mt-4">
                 <label
                   htmlFor="EventTag"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  EventTag
+                  Event Tag
                 </label>
                 <input
                   type="text"
@@ -1022,20 +1226,19 @@ export default function EventForm() {
                 <input
                   type="file"
                   accept="image/*"
-                  // onChange={(e) => handleImageChange(e, "thumbnailImage")}
+                  ref={thumbnailRef}
                   onChange={(e) => {
                     const file = e.target.files[0];
                     if (file) {
                       setThumbnailImage(file);
                       setValue(`media.thumbnailImage`, file);
                       const imageUrl = URL.createObjectURL(file);
-
                       setThumnPreview(imageUrl);
                     }
                   }}
                   className="border p-2 rounded w-full"
                 />
-                {media.thumbnailImage && (
+                {media?.thumbnailImage && (
                   <div className="mt-2 relative">
                     <img
                       src={thumnPreview}
@@ -1044,8 +1247,14 @@ export default function EventForm() {
                     />
                     <button
                       type="button"
-                      onClick={() => setThumnPreview(null)}
-                      className="absolute top-0 left-[44px]  text-red-600  p-1 rounded-full"
+                      onClick={() => {
+                        setThumbnailImage(null);
+                        setThumnPreview(null);
+                        setValue("media.thumbnailImage", null);
+                        if (thumbnailRef.current)
+                          thumbnailRef.current.value = "";
+                      }}
+                      className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
                     >
                       <MdCancel />
                     </button>
@@ -1064,19 +1273,19 @@ export default function EventForm() {
                 <input
                   type="file"
                   accept="image/*"
-                  // onChange={(e) => handleImageChange(e, "posterImage")}
+                  ref={posterInputRef}
                   onChange={(e) => {
                     const file = e.target.files[0];
                     if (file) {
                       setPosterImage(file);
                       setValue(`media.posterImage`, file);
-                      const imageUrl = URL.createObjectURL(file);
-                      setPosterPreview(imageUrl);
+                      setPosterPreview(URL.createObjectURL(file));
                     }
                   }}
                   className="border p-2 rounded w-full"
                 />
-                {media.posterImage && (
+
+                {media?.posterImage && (
                   <div className="mt-2 relative">
                     <img
                       src={posterPreview}
@@ -1085,9 +1294,15 @@ export default function EventForm() {
                     />
                     <button
                       type="button"
-                      // onClick={() => removeImage("posterImage")}
-                      onClick={() => setPosterPreview(null)}
-                      className="absolute top-0 left-[44px]  text-red-600 p-1 rounded-full"
+                      onClick={() => {
+                        setPosterImage(null);
+                        setPosterPreview(null);
+                        setValue("media.posterImage", null);
+                        if (posterInputRef.current) {
+                          posterInputRef.current.value = ""; // Reset file input
+                        }
+                      }}
+                      className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
                     >
                       <MdCancel />
                     </button>
@@ -1103,6 +1318,7 @@ export default function EventForm() {
                 <input
                   type="file"
                   accept="image/*"
+                  ref={(ref) => (fileInputRef.current = ref)}
                   // onChange={(e) => handleImageChange(e, "seatingChartImage")}
                   onChange={(e) => {
                     const file = e.target.files[0];
@@ -1116,7 +1332,7 @@ export default function EventForm() {
                   }}
                   className="border p-2 rounded w-full"
                 />
-                {media.seatingChartImage && (
+                {media?.seatingChartImage && (
                   <div className="mt-2 relative">
                     <img
                       src={seatingChartPreview}
@@ -1126,7 +1342,12 @@ export default function EventForm() {
                     <button
                       type="button"
                       // onClick={() => removeImage("seatingChartImage")}
-                      onClick={() => setSeatingChartPreview(null)}
+                      onClick={() => {
+                        setSeatingChartImage(null);
+                        setSeatingChartPreview(null);
+                        setValue("media.seatingChartImage", null);
+                        fileInputRef.current.value = "";
+                      }}
                       className="absolute top-0 left-[44px]  text-red-600 p-1 rounded-full"
                     >
                       <MdCancel />
@@ -1135,22 +1356,27 @@ export default function EventForm() {
                 )}
               </div>
 
-              {/*images*/}
+              {/* select images*/}
               <div>
                 <div className="mb-4">
                   <label className="block font-medium">Select Images:</label>
                   <input
+                    key={inputKey} // Ensures a fresh input when resetting
                     type="file"
                     accept="image/*"
                     multiple
+                    ref={fileInputRef}
                     onChange={handleImagesChange1}
                     className="border p-2 rounded w-full"
                   />
+                  <p className="text-gray-600">
+                    {selectedImages.length} file(s) selected
+                  </p>
                 </div>
 
                 {/* Image Previews */}
-                <div className="grid grid-cols-3 gap-2">
-                  {media.images.map((image, index) => (
+                <div className="grid grid-cols-8 gap-4">
+                  {selectedImages.map((image, index) => (
                     <div key={index} className="relative">
                       <img
                         src={image.preview}
@@ -1169,30 +1395,49 @@ export default function EventForm() {
                 </div>
               </div>
 
-              {/*performer Link*/}
-              <div className="mt-4">
-                <div></div>
-                <div>
-                  <label
-                    htmlFor="shortUrl"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Performer Link
-                  </label>
-                  <input
-                    type="url"
-                    className="mt-1 block w-full border rounded-md p-2"
-                    placeholder="Enter performer link"
-                    {...register("performerLink", {
-                      required: "performerLink is required",
-                    })}
-                  />
-                  {errors.performerLink && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.performerLink.message}*
-                    </p>
-                  )}
-                </div>
+              {/*Youtube video Link*/}
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700">
+                  YouTube Video Links
+                </label>
+
+                {youtubeLinks.map((link, index) => (
+                  <div key={index} className="flex gap-2 items-center mt-2">
+                    <Controller
+                      name={`youtubeLinks.${index}`}
+                      control={control}
+                      render={({ field }) => (
+                        <input
+                          {...field}
+                          type="url"
+                          className="block w-full border rounded-md p-2"
+                          placeholder="Enter YouTube video link"
+                          value={link}
+                          onChange={(e) =>
+                            handleLinkChange(index, e.target.value)
+                          }
+                        />
+                      )}
+                    />
+                    {index > 0 && (
+                      <button
+                        type="button"
+                        className="text-red-600 font-bold px-2"
+                        onClick={() => handleRemoveLink(index)}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={handleAddLink}
+                  className="mt-2 bg-red-500 text-white px-2 py-1 rounded-md w-fit text-sm inline-flex items-center"
+                >
+                  + Add More
+                </button>
               </div>
 
               {/*Seo*/}
@@ -1202,7 +1447,7 @@ export default function EventForm() {
                     htmlFor="metaTitle"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Meta Title
+                    Meta Title*
                   </label>
                   <input
                     type="text"
@@ -1211,6 +1456,7 @@ export default function EventForm() {
                     {...register("seo.metaTitle", {
                       required: "Meta Title is required",
                     })}
+                    onChange={() => setMetaTitleEdited(true)}
                   />
                   {errors.seo?.metaTitle && (
                     <p className="text-red-600 text-sm px-2">
@@ -1223,15 +1469,24 @@ export default function EventForm() {
                     htmlFor="metaTags"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Meta Tag
+                    Meta Tag*
                   </label>
                   <input
                     type="text"
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder="Enter your Meta Tags"
-                    {...register("seo.metaTags", {
-                      required: "Meta Tag is required",
-                    })}
+                    // {...register("seo.metaTags", {
+                    //   required: "Meta Tag is required",
+                    // })}
+                    value={metaTags.join(", ")}
+                    onChange={(e) => {
+                      setMetaTagsManuallyEdited(true);
+                      const tagsArray = e.target.value
+                        .split(",")
+                        .map((tag) => tag.trim())
+                        .filter(Boolean);
+                      setValue("seo.metaTags", tagsArray);
+                    }}
                   />
                   {errors.seo?.metaTags && (
                     <p className="text-red-600 text-sm px-2">
@@ -1244,14 +1499,19 @@ export default function EventForm() {
                     htmlFor="metaDescription"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Meta Description
+                    Meta Description*
                   </label>
                   <textarea
+                    id="metaDescription"
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder="Enter your Meta description"
                     {...register("seo.metaDescription", {
                       required: "Meta Description is required",
                     })}
+                    onChange={(e) => {
+                      setMetaDescEdited(true);
+                      setValue("seo.metaDescription", e.target.value);
+                    }}
                   />
                   {errors.seo?.metaDescription && (
                     <p className="text-red-600 text-sm px-2">
@@ -1284,49 +1544,212 @@ export default function EventForm() {
                   <p>Disable Event after sold out</p>
                 </div>
               </div>
-              {/* <div className="mb-4 mt-4">
-                <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        {...register("enableRatingReview")}
-                        defaultChecked={false}
-                        size="small"
-                        sx={{ "& .MuiSvgIcon-root": { fontSize: 16 } }} // Adjusts icon size
-                        onChange={() =>
-                          setValue("enableRatingReview", !enableRatingReview)
-                        }
-                      />
-                    }
-                    label="Enable Rating Review"
-                    componentsProps={{ typography: { fontSize: "12px" } }} // Reduces label size
-                  />
-                </FormGroup>
-              </div> */}
 
-              {/* Submit Button */}
-
-              {/* <div className="flex justify-around p-4">
-                <Button
-                  text={"previous"}
-                  variant={"normal"}
-                  rounded={"rounded-lg"}
-                  onClick={() => navigate("/createEvent")}
-                />
-                <button
-                  // onClick={() => navigate("/login")}
-                  className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
+              {showTicketForm && selectedRadio === "Tickets" && (
+                <form
+                  onSubmit={handleCreateTicket}
+                  className="w-full max-w-8xl px-1 sm:px-4 lg:px-8 xl:px-0 lg:ml-0 lg:mr-auto p-2 bg-gray-100 rounded-lg space-y-6"
                 >
-                  Next
-                </button>
-              </div> */}
+                  <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
+                    CREATE TICKET
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block mb-1 font-medium">Title*</label>
+                      <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Ticket Title"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">Price*</label>
+                      <input
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="Ticket Price"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">Order*</label>
+                      <input
+                        type="text"
+                        value={order}
+                        onChange={(e) => setOrder(e.target.value)}
+                        placeholder="Display Order"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Total Ticket Quantity*
+                      </label>
+                      <input
+                        type="number"
+                        value={totalTicketQuantity}
+                        onChange={(e) => setTotalTicketQuantity(e.target.value)}
+                        placeholder="Total Quantity"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Limit Per Customer*
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={limitPerCustomer}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "") {
+                            setLimitPerCustomer("");
+                          } else {
+                            const numValue = parseFloat(value);
+                            if (!isNaN(numValue) && numValue >= 0) {
+                              setLimitPerCustomer(numValue);
+                            }
+                          }
+                        }}
+                        onBlur={(e) => {
+                          if (e.target.value === "") {
+                            setLimitPerCustomer(0);
+                          }
+                        }}
+                        placeholder="Limit per customer"
+                        required
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Sale Price
+                      </label>
+                      <input
+                        type="number"
+                        value={salePrice}
+                        onChange={(e) => setSalePrice(e.target.value)}
+                        placeholder="Optional Sale Price"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Sale Start Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={saleStartDate}
+                        onChange={(e) => setSaleStartDate(e.target.value)}
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Sale End Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={saleEndDate}
+                        onChange={(e) => setSaleEndDate(e.target.value)}
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Promo Codes
+                      </label>
+                      <input
+                        type="text"
+                        value={promoCodes}
+                        onChange={(e) => setPromoCodes(e.target.value)}
+                        placeholder="Comma separated promo codes (e.g. VIP32,EARLYBIRD)"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-medium">
+                        Booked Seats
+                      </label>
+                      <input
+                        type="text"
+                        value={bookedSeats}
+                        onChange={(e) => setBookedSeats(e.target.value)}
+                        placeholder="Comma separated seat numbers (e.g. 1,2,3)"
+                        className="w-full border border-gray-300 rounded-md px-4 py-2"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block mb-1 font-medium">
+                      Description*
+                    </label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Enter ticket description"
+                      rows={4}
+                      required
+                      className="w-full border border-gray-300 rounded-md px-4 py-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap gap-6 items-center">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isDonation}
+                        onChange={(e) => setIsDonation(e.target.checked)}
+                        className="accent-blue-500"
+                      />
+                      <span>Is Donation</span>
+                    </label>
+
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={isSoldOut}
+                        onChange={(e) => setIsSoldOut(e.target.checked)}
+                        className="accent-red-500"
+                      />
+                      <span>Is Sold Out</span>
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    onClick={handleCreateTicket}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+                  >
+                    Create Ticket
+                  </button>
+                </form>
+              )}
 
               <div className="flex justify-around p-0">
                 <Button
                   text={"Previous"}
                   variant={"normal"}
                   rounded={"rounded-lg"}
-                  onClick={() => navigate("/createEvent")}
+                  onClick={() => navigate("/create-event")}
                 />
                 {ticketFormat ? (
                   <button
@@ -1352,1183 +1775,3 @@ export default function EventForm() {
     </div>
   );
 }
-
-// import React, { useEffect, useState } from "react";
-// import Select from "react-select";
-
-// import { useNavigate } from "react-router-dom";
-// import Button from "../Button";
-// import { GiPartyPopper } from "react-icons/gi";
-// import { FcViewDetails } from "react-icons/fc";
-// import { MdAccountCircle, MdCancel } from "react-icons/md";
-// import { alpha, styled } from "@mui/material/styles";
-// import { pink } from "@mui/material/colors";
-// import { getVenue } from "../../redux/actions/master/Events/GetVenue";
-// import { getPerformers } from "../../redux/actions/master/Events/GetPerformer";
-// import Photo1 from "./Photo1";
-// import { useForm, Controller } from "react-hook-form";
-// import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
-// import { useDispatch, useSelector } from "react-redux";
-// import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
-// import { toast } from "react-toastify";
-// export default function EventForm() {
-//   const [tagInput, setTagInput] = useState("");
-//   const [query, setQuery] = useState("");
-//   const [performer, setPerformer] = useState("");
-//   const dispatch = useDispatch();
-//   // Fetch API data whenever `query` updates
-//   useEffect(() => {
-//     if (query) {
-//       dispatch(getVenue(query.toLowerCase())); // Dispatch Redux action to fetch data
-//     }
-//     if (performer) {
-//       dispatch(getPerformers(performer.toLowerCase()));
-//     }
-//   }, [dispatch, query, performer]);
-
-//   const store = useSelector((state) => state.venuesReducer) || { venues: [] };
-//   const data = store?.venues || []; // Ensure data is always an array
-//   // console.log(data);
-//   const options = data.map((venue) => ({
-//     value: venue._id,
-//     label: venue.name,
-//   })); // Convert API response to Select format
-
-//   const store1 = useSelector((state) => state.performersReducer) || {
-//     performers: [],
-//   };
-//   const data1 = store1?.performers || []; // Ensure data is always an array
-//   // console.log(data1);
-//   const performerOptions = data1.map((performer) => ({
-//     value: performer._id,
-//     label: performer.name,
-//   })); // Convert API response to Select format
-
-//   const navigate = useNavigate();
-//   const {
-//     register,
-//     handleSubmit,
-//     watch,
-//     reset,
-//     setValue,
-//     control,
-//     setError,
-//     clearErrors,
-
-//     formState: { errors },
-//   } = useForm({
-//     defaultValues: {
-//       name: "",
-//       category: "",
-//       eventUrl: "",
-//       shortUrl: "",
-//       startDate: "",
-//       endDate: "",
-//       disableEventAfterSoldOut: false, // Default value
-//       isRepetitive: false,
-//       isPublish: false,
-//       enableRatingReview: false,
-//       isSeasonal: false,
-//       isOnline: false,
-//       seo: {
-//         metaTitle: "",
-//         metaTags: "",
-//         metaDescription: "",
-//       },
-
-//       eventTag: [],
-
-//       // media: {
-//       //   thumbnailImage: null,
-//       //   posterImage: null,
-//       //   seatingChartImage: null,
-//       //   images: [],
-//       //   youtubeUrl: "",
-//       // }, // Default media object
-//       thumbnailImage: null,
-//       posterImage: null,
-//       seatingChartImage: null,
-//     },
-//   });
-
-//   useEffect(() => {
-//     const storedData = localStorage.getItem("eventData");
-
-//     if (storedData) {
-//       const parsedData = JSON.parse(storedData);
-
-//       if (parsedData.eventType == "Public") {
-//         setValue("isPublish", true);
-//       } else {
-//         setValue("isPublish", false);
-//       }
-//       if (parsedData.selectedRadio == "Tickets") {
-//         setValue("isOnline", true);
-//       } else {
-//         setValue("isOnline", false);
-//       }
-//       setValue("category", parsedData.selectedEvent);
-//     }
-//   }, [setValue]);
-
-//   const PinkSwitch = styled(Switch)(({ theme }) => ({
-//     "& .MuiSwitch-switchBase.Mui-checked": {
-//       color: "#ff2459",
-//       "&:hover": {
-//         backgroundColor: alpha(pink[600], theme.palette.action.hoverOpacity),
-//       },
-//     },
-//     "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-//       backgroundColor: pink[600],
-//     },
-//   }));
-//   const eventTag = watch("eventTag"); // Watch tag values
-
-//   // Add tag when Enter or Comma is pressed
-//   const handleKeyDown = (e) => {
-//     if (e.key === "Enter" || e.key === ",") {
-//       e.preventDefault();
-//       const newTag = tagInput.trim();
-
-//       if (newTag && !eventTag.includes(newTag)) {
-//         setValue("eventTag", [...eventTag, newTag]); // Update tags array
-//       }
-//       setTagInput(""); // Clear input
-//     }
-//   };
-
-//   // Remove tag function
-//   const removeTag = (index) => {
-//     setValue(
-//       "eventTag",
-//       eventTag.filter((_, i) => i !== index)
-//     );
-//   };
-
-//   // image input
-//   const [thumbnailImage, setThumbnailImage] = useState(null);
-//   const [posterImage, setPosterImage] = useState(null);
-//   const [seatingChartImage, setSeatingChartImage] = useState(null);
-//   const [thumnPreview, setThumnPreview] = useState(null);
-//   const [posterPreview, setPosterPreview] = useState(null);
-//   const [seatingChartPreview, setSeatingChartPreview] = useState(null);
-//   // const handleImageChange = (e, type) => {
-//   //   const file = e.target.files[0];
-//   //   if (file) {
-//   //     setValue(`media.${type}`, file);
-//   //     const imageUrl = URL.createObjectURL(file);
-//   //     if (type === "thumbnailImage") {
-//   //       setThumnPreview(imageUrl);
-//   //     }
-//   //     if (type === "posterImage") {
-//   //       setPosterPreview(imageUrl);
-//   //     }
-//   //     if (type === "seatingChartImage") {
-//   //       setSeatingChartPreview(imageUrl);
-//   //     }
-//   //   }
-//   // };
-//   // const removeImage = (type) => {
-//   //   setValue(`media.${type}`, null);
-//   // };
-
-//   const handleImagesChange1 = (e) => {
-//     const files = Array.from(e.target.files);
-//     const newImages = files.map((file) => ({
-//       file,
-//       preview: URL.createObjectURL(file),
-//     }));
-
-//     const existingImages = watch("media.images") || []; // Use watch to access current state
-//     setValue("media.images", [...existingImages, ...newImages]);
-//   };
-
-//   // Fix removeImage1
-//   const removeImage1 = (index) => {
-//     const updatedImages =
-//       watch("media.images")?.filter((_, i) => i !== index) || [];
-//     setValue("media.images", updatedImages);
-//   };
-
-//   // Watching values
-
-//   const startDate = watch("startDate");
-//   const endDate = watch("endDate");
-//   const startTime = watch("startTime");
-//   const endTime = watch("endTime");
-//   const repeatEndTime = watch("repeatEndTime");
-//   const repeatStartTime = watch("repeatStartTime");
-//   const disableEventAfterSoldOut = watch("disableEventAfterSoldOut"); // Watch state
-//   const isRepetitive = watch("isRepetitive"); // Watch state
-//   const isPublish = watch("isPublish"); // Watch state
-//   const isOnline = watch("isOnline"); // Watch state
-//   const isSeasonal = watch("isSeasonal"); // Watch state
-//   const media = watch("media"); // Watching media state
-//   const enableRatingReview = watch("enableRatingReview"); // Watching media state
-//   const onSubmit = (data) => {
-//     console.log(data);
-//     // console.log(data.media.thumbnailImage);
-//     // const formData = new FormData();
-//     // formData.append("name", data.name);
-//     // formData.append("category", data.category);
-//     // formData.append("eventUrl", data.eventUrl);
-//     // formData.append("shortUrl", data.shortUrl);
-//     // formData.append("excerpt", data.excerpt);
-//     // formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut);
-//     // formData.append("enableRatingReview", data.enableRatingReview);
-//     // formData.append("isRepetitive", data.isRepetitive);
-//     // formData.append("isPublish", data.isPublish);
-//     // formData.append("isSeasonal", data.isSeasonal);
-//     // formData.append("isOnline", data.isOnline);
-//     // formData.append("venue", data.venue);
-//     // formData.append("repeatExcept", data.repeatExcept);
-//     // formData.append("repeatStartTime", data.repeatStartTime);
-//     // formData.append("repeatEndTime", data.repeatEndTime);
-//     // formData.append("facebookLink", data.facebookLink);
-//     // formData.append("startDate", `${data.startDate}T${data.startTime}`);
-//     // formData.append("endDate", `${data.endDate}T${data.endTime}`);
-//     // formData.append("description", data.description);
-
-//     // // 🔹 Append Individual Images from Media Object
-//     // if (data.media?.thumbnailImage) {
-//     //   formData.append("media[thumbnailImage]", data.media.thumbnailImage);
-//     // }
-//     // if (data.media?.posterImage) {
-//     //   formData.append("media[posterImage]", data.media.posterImage);
-//     // }
-//     // if (data.media?.seatingChartImage) {
-//     //   formData.append("media[seatingChartImage]", data.media.seatingChartImage);
-//     // }
-
-//     // // 🔹 Append Images Array (Multiple Images)
-//     // if (data.media?.images?.length > 0) {
-//     //   data.media.images.forEach((image, index) => {
-//     //     formData.append(`media[images][${index}]`, image.file);
-//     //   });
-//     // }
-//     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-//     if (isLogin) {
-//       dispatch(
-//         createNewEvent(data, thumbnailImage, posterImage, seatingChartImage)
-//       );
-
-//       reset();
-//       setThumnPreview(null);
-//       setPosterPreview(null);
-//       setSeatingChartPreview(null);
-//       localStorage.removeItem("eventData");
-//       navigate("/home");
-//     } else {
-//       navigate("/login");
-//     }
-//   };
-//   return (
-//     <div className=" lg:h-[119vh] lg:mb-0 md:mb-0 pt-20 lg:pt-0 md:pt-0  ">
-//       <div className="flex md:flex-col     lg:flex-row lg:h-screen  ">
-//         <Photo1 h={119} />
-//         <div className="flex flex-col pb-4 overflow-y-scroll w-full lg:w-full  lg:pr-3 lg:h-[120vh]  ">
-//           <div className=" flex flex-col  gap-1 lg:pr-10   "></div>
-//           <div className="lg:w-[100%] max-w-4xl  p-6 pl-8  lg:pl-10 lg:pr-10  bg-gray-100 rounded-xl shadow-md">
-//             <form onSubmit={handleSubmit(onSubmit)}>
-//               <h2 className="text-xl font-semibold mb-6 text-[#ff2459]">
-//                 Event Registration
-//               </h2>
-
-//               {/* Name */}
-//               <div className="mb-4 ">
-//                 <label
-//                   htmlFor="name"
-//                   className="block text-sm font-medium text-gray-700"
-//                 >
-//                   Enter Name*
-//                 </label>
-//                 <input
-//                   type="text"
-//                   className="mt-1 block w-full border rounded-md p-2"
-//                   placeholder="Enter name"
-//                   {...register("name", { required: "name is required" })}
-//                 />
-//                 {errors.name && (
-//                   <p className="text-red-600 text-sm px-2">
-//                     {errors.name.message}*
-//                   </p>
-//                 )}
-//               </div>
-
-//               {/*textArea*/}
-//               <div className="mb-4 ">
-//                 <label
-//                   htmlFor="name"
-//                   className="block text-sm font-medium text-gray-700"
-//                 >
-//                   Enter Description*
-//                 </label>
-//                 <textarea
-//                   id="name"
-//                   name="description"
-//                   className="mt-1 block w-full border rounded-md p-2"
-//                   placeholder="Enter Description"
-//                   {...register("description", {
-//                     required: "Event description is required",
-//                   })}
-//                 ></textarea>
-//                 {errors.description && (
-//                   <p className="text-red-600 text-sm px-2">
-//                     {errors.description.message}*
-//                   </p>
-//                 )}
-//               </div>
-
-//               {/* select Category
-//               <div className="mb-4">
-//                 <label
-//                   htmlFor="category"
-//                   className="block text-sm font-medium text-gray-700"
-//                 >
-//                   Select Category
-//                 </label>
-//                 <select
-//                   id="state"
-//                   name="state"
-//                   className="mt-1 block w-full border rounded-md p-2"
-//                   {...register("category", {
-//                     required: "category is required",
-//                   })}
-//                 >
-//                   <option value="">Select Category</option>
-//                   <option value="Music & concert">Music & concert</option>
-//                   <option value="Business">Business</option>
-//                   <option value="Fiteness & Yoga">Fiteness & Yoga</option>
-//                   <option value="Travelling & Trekking">
-//                     Travelling & Trekking
-//                   </option>
-//                   <option value="Sport & fitness">Sport & fitness</option>
-//                   <option value="Education & Classes">
-//                     Education & Classes
-//                   </option>
-//                   <option value="    Charity & Non-profit">
-//                     Charity & Non-profit
-//                   </option>
-//                 </select>
-//               </div> */}
-
-//               {/* Venue and Performer */}
-//               <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
-//                 <div>
-//                   <label
-//                     htmlFor="venue"
-//                     className="block text-sm mb-1 font-medium text-gray-700"
-//                   >
-//                     Venue
-//                   </label>
-
-//                   <Controller
-//                     name="venue"
-//                     control={control}
-//                     rules={{
-//                       required: "Please select an venue",
-//                     }}
-//                     render={({ field }) => (
-//                       <Select
-//                         {...field}
-//                         isClearable // Enables "X" button to clear input
-//                         options={options}
-//                         placeholder="Search venue..."
-//                         getOptionLabel={(option) => option.label} // Show venue name
-//                         getOptionValue={(option) => option.value} // Ensure unique selection by ID
-//                         onInputChange={(value, { action }) => {
-//                           if (action === "input-change") {
-//                             setQuery(value); // Update search query
-//                           }
-//                           if (
-//                             action === "input-blur" ||
-//                             action === "menu-close"
-//                           ) {
-//                             setQuery(""); // Clear input when dropdown closes
-//                           }
-//                         }}
-//                         onChange={(selectedOption) => {
-//                           field.onChange(
-//                             selectedOption ? selectedOption.value : null
-//                           ); // Store only ID
-//                         }}
-//                         value={
-//                           options.find(
-//                             (option) => option.value === field.value
-//                           ) || null
-//                         } // Maintain selected value
-//                       />
-//                     )}
-//                   />
-
-//                   {errors.venue && (
-//                     <p className="text-red-500 text-sm">
-//                       {errors.venue.message}
-//                     </p>
-//                   )}
-//                 </div>
-//                 <div>
-//                   <label
-//                     htmlFor="performer"
-//                     className="block text-sm mb-1 font-medium text-gray-700"
-//                   >
-//                     Performers
-//                   </label>
-
-//                   <Controller
-//                     name="performers" // Store selected performers in useForm
-//                     control={control}
-//                     rules={{ required: "Please select at least one performer" }}
-//                     render={({ field }) => (
-//                       <Select
-//                         {...field}
-//                         isMulti // Allow multiple selection
-//                         options={performerOptions}
-//                         placeholder="Select performers..."
-//                         getOptionLabel={(option) => option.label} // Display performer name
-//                         getOptionValue={(option) => option.value} // Ensure unique selection by ID
-//                         onInputChange={(value) => setPerformer(value)} // Update search query
-//                         onChange={(selectedOptions) => {
-//                           const selectedIDs = selectedOptions
-//                             ? selectedOptions.map((option) => option.value)
-//                             : [];
-//                           field.onChange(selectedIDs); // Store only performer IDs in useForm
-//                           console.log("Selected Performer IDs:", selectedIDs); // Debugging
-//                         }}
-//                         value={performerOptions.filter((option) =>
-//                           field.value?.includes(option.value)
-//                         )} // Ensure proper selection
-//                       />
-//                     )}
-//                   />
-
-//                   {errors.performers && (
-//                     <p className="text-red-500 text-sm">
-//                       {errors.performers.message}
-//                     </p>
-//                   )}
-//                 </div>
-//               </div>
-//               <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
-//                 <div>
-//                   <label
-//                     htmlFor="facebookLink"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Facebook Link
-//                   </label>
-//                   <input
-//                     type="url"
-//                     id="facebookLink"
-//                     name="facebookLink"
-//                     className="mt-1 block w-full border rounded-md p-2"
-//                     placeholder="Enter your Facebook link"
-//                     {...register("facebookLink", {
-//                       required: "Email is required",
-//                     })}
-//                   />
-//                   {errors.facebookLink && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.facebookLink.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//                 {/*youtube url*/}
-//                 <div>
-//                   <label
-//                     htmlFor="youtube url"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Youtube Url
-//                   </label>
-//                   <input
-//                     type="url"
-//                     className="mt-1 block w-full border rounded-md p-2"
-//                     placeholder="Enter your Youtube url"
-//                     {...register("media.youtubeUrl")}
-//                   />
-//                 </div>
-//               </div>
-
-//               {/*Event Url */}
-//               <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 mb-4">
-//                 <div>
-//                   <label
-//                     htmlFor="eventUrl"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Event url
-//                   </label>
-//                   <input
-//                     type="url"
-//                     className="mt-1 block w-full border rounded-md p-2"
-//                     placeholder="Enter your Event link"
-//                     {...register("eventUrl", {
-//                       required: "Event url is required",
-//                     })}
-//                   />
-//                   {errors.eventUrl && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.eventUrl.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//                 <div>
-//                   <label
-//                     htmlFor="shortUrl"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Short Url
-//                   </label>
-//                   <input
-//                     type="url"
-//                     className="mt-1 block w-full border rounded-md p-2"
-//                     placeholder="Enter your short link"
-//                     {...register("shortUrl", {
-//                       required: "shortUrl is required",
-//                     })}
-//                   />
-//                   {errors.shortUrl && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.shortUrl.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//               </div>
-
-//               {/*excerpt*/}
-//               <div className="mb-4">
-//                 <label
-//                   htmlFor="excerpt"
-//                   className="block text-sm font-medium text-gray-700"
-//                 >
-//                   Excerpt
-//                 </label>
-//                 <input
-//                   type="text"
-//                   className="mt-1 block w-full border rounded-md p-2"
-//                   placeholder="Enter your excerpt"
-//                   {...register("excerpt", {
-//                     required: "Event url is required",
-//                   })}
-//                 />
-//                 {errors.excerpt && (
-//                   <p className="text-red-600 text-sm px-2">
-//                     {errors.excerpt.message}*
-//                   </p>
-//                 )}
-//               </div>
-//               {/*Offline Payment Instruction*/}
-//               <div className="mb-4">
-//                 <label
-//                   htmlFor="Offline Payment Instructions"
-//                   className="block text-sm font-medium text-gray-700"
-//                 >
-//                   Offline Payment Instructions
-//                 </label>
-//                 <input
-//                   type="text"
-//                   className="mt-1 block w-full border rounded-md p-2"
-//                   placeholder="Enter Offline Payment Instructions"
-//                   {...register("offlinePaymentInstructions", {})}
-//                 />
-//                 {errors.offlinePaymentInstructions && (
-//                   <p className="text-red-600 text-sm px-2">
-//                     {errors.offlinePaymentInstructions.message}*
-//                   </p>
-//                 )}
-//               </div>
-
-//               {/* Start and End Date */}
-//               <div className="grid lg:grid-cols-2 grid-cols-1 gap-4  mb-4">
-//                 <div>
-//                   <label
-//                     htmlFor="startDate"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Start Date & Time*
-//                   </label>
-//                   <input
-//                     type="date"
-//                     id="startDate"
-//                     name="startDate"
-//                     className="mt-1  block w-full border rounded-md p-2"
-//                     {...register("startDate", {
-//                       required: "startDate is required",
-//                     })}
-//                   />
-//                   {errors.startDate && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.startDate.message}*
-//                     </p>
-//                   )}
-//                   <input
-//                     type="time"
-//                     id="startTime"
-//                     name="startTime"
-//                     className="mt-6 block w-full border rounded-md p-2"
-//                     {...register("startTime", {
-//                       required: "startTime is required",
-//                     })}
-//                   />
-//                   {errors.startTime && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.startTime.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//                 <div>
-//                   <label
-//                     htmlFor="endDate"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     End Date & Time*
-//                   </label>
-//                   <input
-//                     type="date"
-//                     id="endDate"
-//                     name="endDate"
-//                     className="mt-1  block w-full border rounded-md p-2"
-//                     {...register("endDate", {
-//                       required: "endDate is required",
-//                       validate: (value) =>
-//                         !startDate ||
-//                         value > startDate ||
-//                         "End date must be after start date",
-//                     })}
-//                   />
-//                   {errors.endDate && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.endDate.message}*
-//                     </p>
-//                   )}
-//                   <input
-//                     type="time"
-//                     id="endTime"
-//                     name="endTime"
-//                     className=" mt-6 block w-full border rounded-md p-2"
-//                     {...register("endTime", {
-//                       required: "End time is required",
-//                       validate: (value) => {
-//                         if (!startDate || !endDate || !startTime || !value)
-//                           return true;
-
-//                         const startDateTime = new Date(
-//                           `${startDate}T${startTime}`
-//                         );
-//                         const endDateTime = new Date(`${endDate}T${value}`);
-
-//                         return (
-//                           endDateTime > startDateTime ||
-//                           "End time must be after start time"
-//                         );
-//                       },
-//                     })}
-//                   />
-//                   {errors.endTime && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.endTime.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//               </div>
-
-//               {/*IsRepeititive button*/}
-//               <div>
-//                 <h1 className="font-medium text-[#ff2459]">Repeitive Status</h1>
-//                 <FormGroup className="mb-2 lg:ml-3">
-//                   <FormControlLabel
-//                     control={
-//                       <PinkSwitch
-//                         checked={isRepetitive}
-//                         size="small"
-//                         onClick={() => setValue("isRepetitive", !isRepetitive)}
-//                       />
-//                     }
-//                     label=" Is Event Repetitive"
-//                   />
-//                 </FormGroup>
-//                 {isRepetitive && (
-//                   <div className="bg-white p-4 shadow rounded-lg gap-5 grid  lg:grid-cols-2 grid-cols-1">
-//                     <div className="mb-4">
-//                       <label
-//                         htmlFor="repetitiveType"
-//                         className="block text-sm font-medium text-gray-700"
-//                       >
-//                         Repetitive Type
-//                       </label>
-//                       <select
-//                         className="block mt-1 w-full border rounded-md p-2"
-//                         {...register("repetitiveType", {
-//                           // required: "Repetitive type is required",
-//                         })}
-//                       >
-//                         <option value="">Select Repetitive Type</option>
-//                         <option value="Daily">Daily</option>
-//                         <option value="Weekly">Weekly</option>
-//                         <option value="Monthly">Monthly</option>
-//                         <option value="Yearly">Yearly</option>
-//                       </select>
-//                       {errors.repetitiveType && (
-//                         <p className="text-red-600 text-sm px-2">
-//                           {errors.repetitiveType.message}*
-//                         </p>
-//                       )}
-//                     </div>
-
-//                     <div className="mb-4">
-//                       <label className="block text-sm font-medium text-gray-700">
-//                         Repetitive Except
-//                       </label>
-//                       <input
-//                         type="number"
-//                         className="mt-1 block w-full border rounded-md p-2"
-//                         placeholder="Enter repeat except "
-//                         {...register("repeatExcept", {
-//                           required: "Repeat Except required",
-//                         })}
-//                       />
-//                       {errors.except && (
-//                         <p className="text-red-600 text-sm px-2">
-//                           {errors.repeatExcept.message}*
-//                         </p>
-//                       )}
-//                     </div>
-//                     <div>
-//                       <label
-//                         htmlFor="RepeatStartTime"
-//                         className="block text-sm font-medium text-gray-700"
-//                       >
-//                         Repeat Start Time*
-//                       </label>
-//                       <input
-//                         type="time"
-//                         className="mt-1 block w-full border rounded-md p-2"
-//                         {...register("repeatStartTime", {
-//                           // required: "repeatStartTime is required",
-//                         })}
-//                       />
-//                       {errors.repeatStartTime && (
-//                         <p className="text-red-600 text-sm px-2">
-//                           {errors.repeatStartTime.message}*
-//                         </p>
-//                       )}
-//                     </div>
-//                     <div>
-//                       <label className="block text-sm font-medium text-gray-700">
-//                         Repeat End Time*
-//                       </label>
-//                       <input
-//                         type="time"
-//                         className="mt-1 block w-full border rounded-md p-2"
-//                         {...register("repeatEndTime", {
-//                           required: "repeatEndTime is required",
-//                           validate: (value) => {
-//                             return (
-//                               value > repeatStartTime ||
-//                               "End time must be after start time"
-//                             );
-//                           },
-//                         })}
-//                       />
-//                       {errors.repeatEndtTime && (
-//                         <p className="text-red-600 text-sm px-2">
-//                           {errors.repeatEndTime.message}*
-//                         </p>
-//                       )}
-//                     </div>
-
-//                     <div>
-//                       <FormGroup className=" ">
-//                         <FormControlLabel
-//                           control={
-//                             <PinkSwitch
-//                               checked={isSeasonal}
-//                               size="small"
-//                               onClick={() =>
-//                                 setValue("isSeasonal", !isSeasonal)
-//                               }
-//                             />
-//                           }
-//                           label="Is seasonal"
-//                         />
-//                       </FormGroup>
-//                     </div>
-//                   </div>
-//                 )}
-//               </div>
-
-//               {/* Input Field for Tags */}
-//               <div className="mt-4">
-//                 <label
-//                   htmlFor="EventTag"
-//                   className="block text-sm font-medium text-gray-700"
-//                 >
-//                   EventTag
-//                 </label>
-//                 <input
-//                   type="text"
-//                   value={tagInput}
-//                   onChange={(e) => setTagInput(e.target.value)}
-//                   onKeyDown={handleKeyDown}
-//                   placeholder="Type a tag and press Enter"
-//                   className=" mt-1 block w-full border rounded-md p-2"
-//                 />
-
-//                 {/* Hidden input field to store tags */}
-//                 <input type="hidden" {...register("eventTag")} />
-
-//                 {/* Display Tags as List */}
-//                 <div className="flex flex-wrap mt-2">
-//                   {eventTag.map((tag, index) => (
-//                     <div
-//                       key={index}
-//                       className="bg-blue-500 text-white px-2 py-1 rounded flex items-center m-1"
-//                     >
-//                       {tag}
-//                       <button
-//                         type="button"
-//                         onClick={() => removeTag(index)}
-//                         className="ml-2 text-gray-800 hover:text-red-500"
-//                       >
-//                         <MdCancel />
-//                       </button>
-//                     </div>
-//                   ))}
-//                 </div>
-//               </div>
-
-//               {/*thumbnail image*/}
-//               <div className="mb-4">
-//                 <label className="block font-medium">Thumbnail Image:</label>
-//                 <input
-//                   type="file"
-//                   accept="image/*"
-//                   // onChange={(e) => handleImageChange(e, "thumbnailImage")}
-//                   onChange={(e) => {
-//                     const file = e.target.files[0];
-//                     if (file) {
-//                       setThumbnailImage(file);
-//                       setValue(`thumbnailImage`, file);
-//                       const imageUrl = URL.createObjectURL(file);
-
-//                       setThumnPreview(imageUrl);
-//                     }
-//                   }}
-//                   className="border p-2 rounded w-full"
-//                 />
-//                 {thumbnailImage && (
-//                   <div className="mt-2 relative">
-//                     <img
-//                       src={thumnPreview}
-//                       alt="Thumbnail Preview"
-//                       className="w-16 h-16 object-cover rounded"
-//                     />
-//                     <button
-//                       type="button"
-//                       onClick={() => setThumnPreview(null)}
-//                       className="absolute top-0 left-[44px]  text-red-600  p-1 rounded-full"
-//                     >
-//                       <MdCancel />
-//                     </button>
-//                   </div>
-//                 )}
-//                 {errors.thumbnailImage && (
-//                   <p className="text-red-500 text-sm">
-//                     {errors.thumbnailImage.message}
-//                   </p>
-//                 )}
-//               </div>
-
-//               {/* Poster Image Upload */}
-//               <div className="mb-4">
-//                 <label className="block font-medium">Poster Image:</label>
-//                 <input
-//                   type="file"
-//                   accept="image/*"
-//                   // onChange={(e) => handleImageChange(e, "posterImage")}
-//                   onChange={(e) => {
-//                     const file = e.target.files[0];
-//                     if (file) {
-//                       setPosterImage(file);
-//                       setValue(`posterImage`, file);
-//                       const imageUrl = URL.createObjectURL(file);
-
-//                       setPosterPreview(imageUrl);
-//                     }
-//                   }}
-//                   className="border p-2 rounded w-full"
-//                 />
-//                 {posterImage && (
-//                   <div className="mt-2 relative">
-//                     <img
-//                       src={posterPreview}
-//                       alt="Poster Preview"
-//                       className="w-16 h-16 object-cover rounded"
-//                     />
-//                     <button
-//                       type="button"
-//                       // onClick={() => removeImage("posterImage")}
-//                       onClick={() => setPosterPreview(null)}
-//                       className="absolute top-0 left-[44px]  text-red-600 p-1 rounded-full"
-//                     >
-//                       <MdCancel />
-//                     </button>
-//                   </div>
-//                 )}
-//               </div>
-
-//               {/* seating Chart Image Upload */}
-//               <div className="mb-4">
-//                 <label className="block font-medium">
-//                   Seating chart Image:
-//                 </label>
-//                 <input
-//                   type="file"
-//                   accept="image/*"
-//                   // onChange={(e) => handleImageChange(e, "seatingChartImage")}
-//                   onChange={(e) => {
-//                     const file = e.target.files[0];
-//                     if (file) {
-//                       setSeatingChartImage(file);
-//                       setValue(`seatingChartImage`, file);
-//                       const imageUrl = URL.createObjectURL(file);
-
-//                       setSeatingChartPreview(imageUrl);
-//                     }
-//                   }}
-//                   className="border p-2 rounded w-full"
-//                 />
-//                 {seatingChartImage && (
-//                   <div className="mt-2 relative">
-//                     <img
-//                       src={seatingChartPreview}
-//                       alt="seatingChartImage Preview"
-//                       className="w-16 h-16 object-cover rounded"
-//                     />
-//                     <button
-//                       type="button"
-//                       // onClick={() => removeImage("seatingChartImage")}
-//                       onClick={() => setSeatingChartPreview(null)}
-//                       className="absolute top-0 left-[44px]  text-red-600 p-1 rounded-full"
-//                     >
-//                       <MdCancel />
-//                     </button>
-//                   </div>
-//                 )}
-//               </div>
-
-//               {/*images*/}
-//               <div>
-//                 <div className="mb-4">
-//                   <label className="block font-medium">Select Images:</label>
-//                   <input
-//                     type="file"
-//                     accept="image/*"
-//                     multiple
-//                     onChange={handleImagesChange1}
-//                     className="border p-2 rounded w-full"
-//                   />
-//                 </div>
-
-//                 {/* Image Previews */}
-//                 {/* <div className="grid grid-cols-3 gap-2">
-//                   {media.images.map((image, index) => (
-//                     <div key={index} className="relative">
-//                       <img
-//                         src={image.preview}
-//                         alt={`Uploaded ${index}`}
-//                         className="w-16 h-16 object-cover rounded"
-//                       />
-//                       <button
-//                         type="button"
-//                         onClick={() => removeImage1(index)}
-//                         className="absolute top-0 left-[44px] text-red-600 p-1 rounded-full"
-//                       >
-//                         <MdCancel />
-//                       </button>
-//                     </div>
-//                   ))}
-//                 </div> */}
-//               </div>
-
-//               {/*performer Link*/}
-//               <div className="mt-4">
-//                 <div></div>
-//                 <div>
-//                   <label
-//                     htmlFor="shortUrl"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Performer Link
-//                   </label>
-//                   <input
-//                     type="url"
-//                     className="mt-1 block w-full border rounded-md p-2"
-//                     placeholder="Enter performer link"
-//                     {...register("performerLink", {
-//                       required: "performerLink is required",
-//                     })}
-//                   />
-//                   {errors.performerLink && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.performerLink.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//               </div>
-
-//               {/*Seo*/}
-//               <div className="mb-4 mt-4 grid lg:grid-cols-2 grid-cols-1 gap-4">
-//                 <div>
-//                   <label
-//                     htmlFor="metaTitle"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Meta Title
-//                   </label>
-//                   <input
-//                     type="text"
-//                     className="mt-1 block w-full border rounded-md p-2"
-//                     placeholder="Enter your Meta Title"
-//                     {...register("seo.metaTitle", {
-//                       required: "Meta Title is required",
-//                     })}
-//                   />
-//                   {errors.seo?.metaTitle && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.seo.metaTitle.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//                 <div>
-//                   <label
-//                     htmlFor="metaTags"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Meta Tag
-//                   </label>
-//                   <input
-//                     type="text"
-//                     className="mt-1 block w-full border rounded-md p-2"
-//                     placeholder="Enter your Meta Tags"
-//                     {...register("seo.metaTags", {
-//                       required: "Meta Tag is required",
-//                     })}
-//                   />
-//                   {errors.seo?.metaTags && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.seo.metaTags.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//                 <div>
-//                   <label
-//                     htmlFor="metaDescription"
-//                     className="block text-sm font-medium text-gray-700"
-//                   >
-//                     Meta Description
-//                   </label>
-//                   <textarea
-//                     className="mt-1 block w-full border rounded-md p-2"
-//                     placeholder="Enter your Meta description"
-//                     {...register("seo.metaDescription", {
-//                       required: "Meta Description is required",
-//                     })}
-//                   />
-//                   {errors.seo?.metaDescription && (
-//                     <p className="text-red-600 text-sm px-2">
-//                       {errors.seo.metaDescription.message}*
-//                     </p>
-//                   )}
-//                 </div>
-//               </div>
-
-//               {/*Disabel event after sold out*/}
-//               <div className="mb-4 mt-4 flex justify-between">
-//                 <FormGroup>
-//                   <FormControlLabel
-//                     control={
-//                       <PinkSwitch
-//                         checked={disableEventAfterSoldOut}
-//                         size="small"
-//                         onClick={() =>
-//                           setValue(
-//                             "disableEventAfterSoldOut",
-//                             !disableEventAfterSoldOut
-//                           )
-//                         }
-//                       />
-//                     }
-//                     label="Disable Event after sold out"
-//                   />
-//                 </FormGroup>
-//                 {/* <FormGroup>
-//                   <FormControlLabel
-//                     control={
-//                       <PinkSwitch
-//                         checked={isOnline}
-//                         size="small"
-//                         onClick={() => setValue("isOnline", !isOnline)}
-//                       />
-//                     }
-//                     label="Is Payment Online"
-//                   />
-//                 </FormGroup> */}
-
-//                 {/* <FormGroup>
-//                   <FormControlLabel
-//                     control={
-//                       <PinkSwitch
-//                         checked={isPublish}
-//                         size="small"
-//                         onClick={() => setValue("isPublish", !isPublish)}
-//                       />
-//                     }
-//                     label="Publish Event.."
-//                   />
-//                 </FormGroup> */}
-//               </div>
-//               <div className="mb-4 mt-4">
-//                 <FormGroup>
-//                   <FormControlLabel
-//                     control={
-//                       <Checkbox
-//                         {...register("enableRatingReview")}
-//                         defaultChecked={false}
-//                         size="small"
-//                         sx={{ "& .MuiSvgIcon-root": { fontSize: 16 } }} // Adjusts icon size
-//                         onChange={() =>
-//                           setValue("enableRatingReview", !enableRatingReview)
-//                         }
-//                       />
-//                     }
-//                     label="Enable Rating Review"
-//                     componentsProps={{ typography: { fontSize: "12px" } }} // Reduces label size
-//                   />
-//                 </FormGroup>
-//               </div>
-
-//               {/* Submit Button */}
-
-//               <div className="flex justify-around p-4">
-//                 <Button
-//                   text={"previous"}
-//                   variant={"normal"}
-//                   rounded={"rounded-lg"}
-//                   onClick={() => navigate("/createEvent")}
-//                 />
-//                 <button
-//                   // onClick={() => navigate("/login")}
-//                   className="p-1 bg-[#ff2459] px-4 rounded-lg text-white"
-//                 >
-//                   Submit
-//                 </button>
-//               </div>
-//             </form>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

@@ -105,7 +105,6 @@ export const getPerformer = (setLoader, filter, page, category) => {
 
     try {
       const response = await axios.get(`${api}`);
-      console.log("response", response);
       dispatch({
         type: "GET_PERFORMER",
         performerData: response.data.performers, // Ensure the API actually returns this structure

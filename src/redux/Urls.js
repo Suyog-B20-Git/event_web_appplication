@@ -3,7 +3,7 @@ import { getVenue } from "./actions/master/Events/GetVenue";
 import { getLocationDetails } from "./actions/master/location/locationDetail";
 
 export const baseUrl = "http://localhost:5000/api/";
-// export const baseUrl = "http://dev.eventsnode.com:3000/api/";
+// export const baseUrl = "http://localhost:5000/api/";
 
 
 export const Auth={
@@ -21,14 +21,17 @@ export const Event = {
   getEventByFilter:`${baseUrl}event/filter?`,
   getRecentlyView:`${baseUrl}event/recently-viewed?page=1&limit=10`,
   addFavouriteEvent:`${baseUrl}event/favorites`,
-  
+  updateTicket: `${baseUrl}ticket`,
 };
 
 export const Performer = {
   getPerformer: `${baseUrl}performer/suggestions`,
   postPerformer:`${baseUrl}performer`,
   getPerformerByFilter:`${baseUrl}performer/filter`,
-  postFavouritePerformer:`${baseUrl}performer/favorites`
+  postFavouritePerformer:`${baseUrl}performer/favorites`,
+  getFavouritePerformer:`${baseUrl}performer/favorites`,
+  deleteFavouritePerformer:`${baseUrl}performer/favorites`,
+
 };
 
 export const Organizer={

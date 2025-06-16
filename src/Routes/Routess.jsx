@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer"; // Remove curly braces
 import Index from "../Main/Index";
 import Home from "../LandingPages/Home";
-
+import { text_data } from "../Components/Events/menuData";
 import Viewall from "../LandingPages/Viewall";
 import CreateEvent from "../Components/CreateEvent/CreateEvent";
 import CreateEventForm from "../Components/CreateEvent/CreateEventForm";
@@ -27,65 +27,108 @@ import Dashboard from "../Components/Dashboard";
 import Profile from "../Components/Profile";
 import MybookingDetail from "../Components/MybookingDetail";
 import CreateTicket from "../Components/CreateEvent/CreateTicket";
+import SearchData from "../Components/SearchData";
+import OAuthSuccess from "../Users/OAuthSuccess";
+import OAuthFailure from "../Users/OAuthFailure";
+import BookTicket from "../LandingPages/BookTicket";
+import Terms from "../Components/Home/Terms";
+import About from "../Components/Home/About";
+import ContactUs from "../Components/Home/ContactUs";
+
 
 function Routess() {
   return (
     <div>
       <Routes>
-        {/* <Route path="/" element={<Screen />}> */}
-        {/* <Route index element={<LandingPage />} />
-          <Route path="/landingPage" element={<LandingPage />} />
-          
-          <Route path="/createPage" element={<CreateProfile />} />
-          <Route path="/featuredEvent" element={<FeaturedEvent />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/eventComponent" element={<EventComponent />} />
-          <Route path="/Vanue" element={<Vanue />} />
-          <Route path="/myBooking" element={<MyBooking />} />
-          <Route path="/bookingDetails" element={<BookingDetails />} />
-           */}
         <Route path="/" element={<Index />}>
           <Route index element={<Home />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="viewAll" element={<Viewall />} />
-          <Route path="/createEvent" element={<CreateEvent />} />
-          <Route path="/createEvent1" element={<CreateEventForm />} />
-          <Route path="organiser" element={<Orgnizer />} />
+          <Route path="home" element={<Home />} />
+
+          {text_data.map((item) => (
+            <React.Fragment key={item.path}>
+              {/* Parent route (e.g., /events, /organisers, /venues, etc.) */}
+              <Route
+                path={item.path}
+                element={
+                  item.name === "Events" ? (
+                    <Viewall />
+                  ) : item.name === "Organisers" ? (
+                    <Orgnizer />
+                  ) : item.name === "Venues" ? (
+                    <GetVenue />
+                  ) : item.name === "Performers" ? (
+                    <GetPerformers />
+                  ) : item.name === "Services" ? (
+                    <GetService />
+                  ) : null
+                }
+              />
+
+              {/* Submenu routes */}
+              {item.popUpMenu &&
+                item.popUpMenu.map(
+                  (subItem) =>
+                    subItem.path && (
+                      <Route
+                        key={subItem.path}
+                        path={subItem.path}
+                        element={
+                          item.name === "Events" ? (
+                            <Viewall />
+                          ) : item.name === "Organisers" ? (
+                            <Orgnizer />
+                          ) : item.name === "Venues" ? (
+                            <GetVenue />
+                          ) : item.name === "Performers" ? (
+                            <GetPerformers />
+                          ) : item.name === "Services" ? (
+                            <GetService />
+                          ) : null
+                        }
+                      />
+                    )
+                )}
+            </React.Fragment>
+          ))}
+
+          <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/submit-event" element={<CreateEventForm />} />
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/createPage" element={<CreatePage />} />
-          <Route path="/Organizers" element={<GetOrganizer />} />
-          <Route
-            path="/Organizer/:organizerId"
-            element={<GetOrganizerById />}
-          />
+          <Route path="/create-page" element={<CreatePage />} />
+          <Route path="/organizers" element={<GetOrganizer />} />
+          <Route path="/organizers/wedding-planner" element={<GetOrganizer />}   />
+          <Route path="/organizers/adventure" element={<GetOrganizer />} />
+          <Route path="/organizers/event-planner" element={<GetOrganizer />} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
+          <Route path="/oauth-failure" element={<OAuthFailure />} />
+         
+          <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} />
+          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} />
 
-          <Route path="/Performers" element={<GetPerformers />} />
-          <Route
-            path="/Performer/:performerId"
-            element={<GetPerformerById />}
-          />
-
-          <Route path="/Venues" element={<GetVenue />} />
+          <Route path="/Performer/:performerId" element={<GetPerformerById />} />
           <Route path="/Venue/:venueId" element={<GetVenueById />} />
+          <Route path="/Service/:serviceId" element={<GetServiceById />} />
 
-          <Route path="/Services" element={<GetService />} />
-          <Route
-            path="/Service/:serviceId"
-            element={<GetServiceById />}
-          />
+          <Route path="/city/events" element={<Viewall />} />
+          <Route path="/filtered-events" element={<GetEventByFilter />} />
+          <Route path="/events/:categoryname/:eventId" element={<FeaturedEvent />} />
+          <Route path="/events/live-music/:eventId" element={<FeaturedEvent />} />
+          <Route path="/city/location" element={<SearchData />} />
+          <Route path='event/:eventId' element={<FeaturedEvent />} />
+          <Route path="/bookTicket" element={<BookTicket/>} />
 
-          <Route path="/getEventByFilter" element={<GetEventByFilter />} />
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
-          <Route
-            path="/getOrganizerByFilter"
-            element={<GetOrganizerByFilter />}
-          />
-<Route path="/profile" element={<Profile />} />
-<Route path="/myBookings" element={<MyBookings />} />
+          <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
-          <Route path="/createTicket" element={<CreateTicket />} />
+          <Route path="/create-ticket" element={<CreateTicket />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Route>
 
           </Routes>

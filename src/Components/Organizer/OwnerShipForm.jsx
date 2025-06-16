@@ -1,8 +1,18 @@
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { GiCancel } from "react-icons/gi";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { toast } from "react-toastify";
+const baseUrl = import.meta.env.VITE_API_URL;
 
-function OwnerShipForm({ ownership, setOwnership, name }) {
+function OwnerShipForm({
+  ownership,
+  setOwnership,
+  onOwnershipEnquirySent,
+  name,
+  targetId,
+  modelName,
+}) {
   const {
     register,
     handleSubmit,
@@ -10,9 +20,51 @@ function OwnerShipForm({ ownership, setOwnership, name }) {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    reset();
+  const [loading, setLoading] = useState(false);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setOwnership(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setOwnership]);
+
+  const onSubmit = async (data) => {
+    const payload = {
+      targetId: targetId,
+      modelName: modelName,
+      username: data.username,
+      email: data.email,
+      contactNumber: data.contactNumber,
+      message: data.claim,
+    };
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(`${baseUrl}/api/claims`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+      toast.success("Claim Enquiry sent successfully!");
+      localStorage.setItem(`enquiry_sent_${targetId}`, "true");
+      if (onOwnershipEnquirySent) {
+        onOwnershipEnquirySent(); 
+      }
+      reset();
+      setOwnership(false);
+    } catch (error) {
+      toast.error("Error sending enquiry. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputs = [
@@ -50,8 +102,11 @@ function OwnerShipForm({ ownership, setOwnership, name }) {
     <div>
       <div className="">
         <div className="fixed w-full inset-0 flex flex-col items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
-          <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full] relative">
-          <button
+          <div
+            ref={modalRef}
+            className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full] relative"
+          >
+            <button
               className="absolute top-0 right-3 text-gray-700 hover:text-red-500 text-3xl"
               onClick={() => setOwnership(!ownership)}
             >
@@ -63,9 +118,9 @@ function OwnerShipForm({ ownership, setOwnership, name }) {
                 <h1 className=" p-2 font-medium text-gray-600">
                   Verify Ownership of{" "}
                   <span className="text-[#ff2459]">{name}</span>
-                </h1>              
+                </h1>
               </div>
-             
+
               <form
                 className="flex flex-col   "
                 onSubmit={handleSubmit(onSubmit)}
@@ -134,9 +189,33 @@ function OwnerShipForm({ ownership, setOwnership, name }) {
                   </button>
                   <button
                     type="submit"
-                    className="text-white font-medium bg-[#ff2459] rounded-lg px-3 p-1"
+                    disabled={loading}
+                    className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${
+                      loading ? "opacity-70 cursor-not-allowed" : ""
+                    }`}
                   >
-                    SUBMIT
+                    {loading && (
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8z"
+                        />
+                      </svg>
+                    )}
+                    {loading ? "Sending..." : "SUBMIT"}
                   </button>
                 </div>
               </form>

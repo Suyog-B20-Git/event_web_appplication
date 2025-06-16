@@ -8,7 +8,6 @@ const initialState = {
   }
   
   const getFavouriteServiceReducer = (state = initialState,action) => {
-    // console.log("fav org list ..:",action.payload)
     switch (action.type) {
       case 'GET_FAVOURITE_SERVICE':
         return {

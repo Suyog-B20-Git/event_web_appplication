@@ -8,7 +8,6 @@ const initialState = {
   }
   
   const getEventByIdReducer = (state = initialState,action) => {
-    console.log("action..:",action)
     switch (action.type) {
       case 'GET_EVENT_BY_ID':
         return {

@@ -6,28 +6,28 @@ import { FaFacebook } from "react-icons/fa6";
 import { IoLogoInstagram, IoLogoWhatsapp } from "react-icons/io5";
 import { CiTwitter } from "react-icons/ci";
 
-// Function to convert UTC to Local Time
 const convertUTCToLocal = (utcString) => {
   if (!utcString) return "Invalid Date";
   const date = new Date(utcString);
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString("en-IN", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: true, // Change to false if you prefer 24-hour format
+    hour12: true,
+    timeZone:"Asia/Kolkata",
   });
 };
 
-function EventHeading({ heading, startDate, endDate, by }) {
+function EventHeading({ heading, startDate, endDate, by, category }) {
   const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
     twitter: `https://twitter.com/intent/tweet?url=${currentUrl}`,
     messenger: `https://www.messenger.com/t/?link=${currentUrl}`,
-    instagram: `https://www.instagram.com/`, // No direct sharing, just opens Instagram
+    instagram: `https://www.instagram.com/`,
   };
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");
@@ -38,7 +38,7 @@ function EventHeading({ heading, startDate, endDate, by }) {
       style={{ boxShadow: "2px 2px 10px white" }}
     >
       <h1 className="p-2 lg:text-3xl text-xl font-semibold font-serif">
-        {heading}
+        "{heading}"
       </h1>
 
       <p className="font-semibold flex gap-3 lg:text-base text-sm  p-2 pb-1">
@@ -49,7 +49,7 @@ function EventHeading({ heading, startDate, endDate, by }) {
       <p className="p-2 lg:text-lg whitespace-nowrap flex md:gap-10 lg:gap-10 gap-3">
         By {by}{" "}
         <Button
-          text={"live music"}
+          text={category}
           variant={"primary"}
           textSize={"text-xs"}
           rounded={"rounded-2xl"}

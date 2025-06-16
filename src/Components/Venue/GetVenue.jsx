@@ -24,8 +24,10 @@ import { FaShareAlt } from "react-icons/fa";
 import { getVenue } from "../../redux/actions/master/Venue/getVenue";
 import Pagination from "../Pagination";
 import { getFavouriteVenueData } from "../../redux/actions/master/Venue/getFavouriteVenue";
-import { toast } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 import { postFavouriteVenue } from "../../redux/actions/master/Venue/postFavouriteVenueReducer";
+import { deleteFavouriteVenue } from "../../redux/actions/master/Venue/deleteFavouriteVenue";
+import CommonCalendar from "../CommonCalendar";
 
 function GetVenue() {
   const navigate = useNavigate();
@@ -42,10 +44,6 @@ function GetVenue() {
     { value: "title desc", label: "Title descending" },
   ];
   const [selectedOption, setSelectedOption] = useState("");
-  console.log(
-    "selected option",
-    selectedOption.value ? selectedOption.value : ""
-  );
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -72,8 +70,6 @@ function GetVenue() {
 
   const category1 = "";
   useEffect(() => {
-    // if (isFetching.current) return;
-    // isFetching.current = true;
     if (category1) {
       dispatch(
         getVenue(
@@ -82,9 +78,7 @@ function GetVenue() {
           currentPage,
           category1
         )
-      ).finally(() => {
-        // isFetching.current = false;
-      });
+      ).finally(() => {});
     } else {
       dispatch(
         getVenue(
@@ -93,9 +87,7 @@ function GetVenue() {
           currentPage,
           category ? category : filterValue
         )
-      ).finally(() => {
-        // isFetching.current = false;
-      });
+      ).finally(() => {});
     }
   }, [dispatch, selectedOption, currentPage, category, category1, filterValue]);
 
@@ -105,7 +97,6 @@ function GetVenue() {
 
   const data1 = store.venueData;
   const data = [...new Set(data1)];
-  console.log(data, "VenueData....");
   const totalPages = store.totalPages;
 
   const store1 = useSelector((state) => state.getFavouriteVenueReducer) || {
@@ -113,48 +104,26 @@ function GetVenue() {
   };
   const favouriteVenue = store1.favouriteVenueData;
 
-  // const isFavourite = favouriteOragnizer.some((event) => event._id === oId);
   const isFavourite = (id) => {
     return favouriteVenue.some((fav) => fav._id === id);
   };
-  useEffect(() => {
-    dispatch(getFavouriteVenueData(setLoading)); // Fetch favorites on mount
-  }, [dispatch]);
 
-  useEffect(() => {
-    favouriteVenue.forEach((item) => {
-      isFavourite(item._id);
-    });
-  }, [favouriteVenue]); // Add dependency to re-run when favorite data updates
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
-  const checkFavourite = (id) => {
-    if (favouriteVenue.some((fav) => fav._id === id)) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    }
-  };
-  const handleFavourite = (id) => {
+  const toggleFavorite = (id) => {
     if (isFavourite(id)) {
-      return;
+      dispatch(deleteFavouriteVenue(id));
+      dispatch(getFavouriteVenueData(setLoading));
     } else {
       dispatch(postFavouriteVenue(id));
-
       dispatch(getFavouriteVenueData(setLoading));
     }
+    dispatch(getFavouriteVenueData(setLoading));
   };
+
   useEffect(() => {
-    favouriteVenue.forEach((item) => {
-      isFavourite(item._id);
-    });
-  }, [favouriteVenue]); // Add dependency to re-run when favorite data updates
+    dispatch(getFavouriteVenueData(setLoading));
+  }, [dispatch]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -167,18 +136,6 @@ function GetVenue() {
       setCurrentPage(currentPage - 1);
     }
   };
-  // useEffect(() => {
-  //   const handleScroll = (e) => {
-  //     const scrollHeight = e.target.documentElement.scrollHeight;
-  //     const currentHeight =
-  //       e.target.documentElement.scrollTop + window.innerHeight;
-  //     if (currentHeight + 1 >= scrollHeight * 0.5) {
-  //       setPageNo(pageNo + 1);
-  //     }
-  //   };
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, [pageNo]);
 
   const currentUrl = window.location.href;
   const shareUrls = {
@@ -194,47 +151,6 @@ function GetVenue() {
     window.scrollTo(0, 0);
   }, []);
 
-  // const observerRef = useRef(null); // Ref for the observer target (bottom div)
-  // const isFetching = useRef(false); // Prevent multiple rapid API calls
-
-  //-------------------------------------------------------------------------------//
-  //   useEffect(() => {
-  //     if (!observerRef.current) return;
-
-  //     const observer = new IntersectionObserver(
-  //       (entries) => {
-  //         if (entries[0].isIntersecting && !loading) {
-  //           setPageNo((prevPage) => prevPage + 1);
-  //         }
-  //       },
-  //       { threshold: 1.0 } // Fully visible before triggering
-  //     );
-
-  //     observer.observe(observerRef.current);
-  //     console.log(pageNo);
-  //     return () => {
-  //       if (observerRef.current) observer.unobserve(observerRef.current);
-  //     };
-  //   }, [loading]); // Run effect when loading state changes
-
-  //-------------------------------------------------------------------------------//
-
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       if (entries[0].isIntersecting) {
-  //         setPageNo((prevPage) => prevPage + 1); // Load more data
-  //       }
-  //     },
-  //     { threshold: 0.7 } // Trigger when 50% of the element is visible
-  //   );
-
-  //   if (observerRef.current) observer.observe(observerRef.current);
-
-  //   return () => {
-  //     if (observerRef.current) observer.unobserve(observerRef.current);
-  //   };
-  // }, []);
   if (loading) {
     return <Loading />;
   }
@@ -242,8 +158,8 @@ function GetVenue() {
     <div className="flex lg:flex-row flex-col gap-2 lg:pt-0 md:pt-0 pt-20">
       <div className="p-2 lg:w-[75%] w-full">
         <div className="flex justify-between pt-5 border-b pb-2">
-        <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 ">
-        Venues
+          <h1 className="font-bold text-3xl text-[#ff2459] lg:px-10 px-3 md:px-3 ">
+            Venues
           </h1>
 
           <div className="md:pr-10">
@@ -259,12 +175,12 @@ function GetVenue() {
         </div>
         <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
           <div className="rounded p-2 shadow flex-row md:flex gap-10 ">
-          <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+            <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
               Venues Category
             </h1>
             <section className="flex flex-wrap lg:flex-col gap-3 pt-3 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            <div className="flex gap-3 flex-wrap md:flex-nowrap">
-            <div
+              <div className="flex gap-3 flex-wrap md:flex-nowrap">
+                <div
                   onClick={() => {
                     setCategory("indoor");
                   }}
@@ -284,58 +200,32 @@ function GetVenue() {
             </section>
           </div>
           <div className="rounded border ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
-              Find Events
-              <div className="flex  gap-2 text-xl">
-                <button
+            <h1 className="text-lg font-medium text-gray-900 p-4 border-b flex justify-start ">
+              Share
+              <div className="flex ml-4 gap-4 mt-1 text-2xl ">
+                <FaSquareFacebook
                   onClick={() => handleShare("facebook")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaSquareFacebook className="text-red-500 relative " />
-                </button>
-                <button
+                  className=" text-blue-600  relative "
+                />
+                <FaWhatsapp
                   onClick={() => handleShare("whatsapp")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
-                </button>
-                <button
+                  className=" text-green-600  relative "
+                />
+                <FaFacebookMessenger
                   onClick={() => handleShare("messenger")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaFacebookMessenger className="text-red-500" />
-                </button>
-                <button
+                  className=" text-blue-800  relative "
+                />
+                <FaSquareXTwitter
                   onClick={() => handleShare("twitter")}
-                  className="flex gap-1 shadow border p-1 rounded"
-                >
-                  <FaSquareXTwitter className="text-red-500" />
-                </button>
+                  className=" text-white-600 relative"
+                />
               </div>
             </h1>
-            <div className="flex justify-center items-center ">
-              <div className="flex  md:gap-7 gap-5 p-3 overflow-x-scroll ">
-                <div className="bg-blue-600 rounded h-28 min-w-28  text-white font-medium flex flex-col gap-2 items-start p-4 ">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Todays 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
+            <hr />
+            <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
+              Find Events
+            </h2>
+             <CommonCalendar /> 
           </div>
         </div>
 
@@ -398,8 +288,15 @@ function GetVenue() {
                       </button>
                       <button
                         onClick={() => {
-                          handleFavourite(item._id);
-                          checkFavourite(item._id);
+                          if (!isLogin) {
+                            toast.error("Please login first to Add favorite!", {
+                              transition: Zoom,
+                              hideProgressBar: true,
+                              autoClose: 2000,
+                            });
+                            return;
+                          }
+                          toggleFavorite(item._id);
                         }}
                         className={`flex gap-1 text-xs font-bold cursor-pointer ${
                           isFavourite(item._id)
@@ -409,7 +306,6 @@ function GetVenue() {
                       >
                         <FaHeart className="text-lg" />
                       </button>
-                      {console.log(isFavourite(item._id), "-", item._id)}
 
                       <button className="text-red-500">
                         <a href={item.twitterUrl ? item.twitterUrl : ""}>
@@ -421,10 +317,6 @@ function GetVenue() {
                         </a>
                       </button>
                     </p>
-                    {/* <p className="flex gap-2 pr-5">
-                      5{" "}
-                      <IoStarSharp className="relative top-1 text-yellow-400" />
-                    </p> */}
                   </div>
                 </div>
               );
@@ -443,48 +335,45 @@ function GetVenue() {
             totalPages={totalPages}
           />
         </div>
-        {/* <div ref={observerRef} className="h-10"></div> */}
       </div>
+
       <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
-        <div className="flex flex-col gap-2 px-2 shadow-md p-4">
-          <div className="grid grid-cols-3 gap-2 text-xl">
-            <button
-              onClick={() => handleShare("facebook")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareFacebook className="text-red-500 relative " />
-            </button>
-            <button
-              onClick={() => handleShare("whatsapp")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-                  <FaWhatsapp className="bg-red-500 text-white p-0.5" />
-            </button>
-            <button
-              onClick={() => handleShare("messenger")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaFacebookMessenger className="text-red-500" />
-            </button>
-            <button
-              onClick={() => handleShare("twitter")}
-              className="flex gap-1 shadow border p-1 rounded"
-            >
-              <span className="text-sm border-r px-2">SHARE </span>
-              <FaSquareXTwitter className="text-red-500" />
-            </button>
+        <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+          <div className=" p-3 shadow gap-2 ">
+            <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+              Share
+            </h1>
+            <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
+              <FaSquareFacebook
+                onClick={() => handleShare("facebook")}
+                className="text-blue-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#1877f2] transition duration-300"
+              />
+
+              <FaWhatsapp
+                onClick={() => handleShare("whatsapp")}
+                className="text-green-600 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#25D366] transition duration-300"
+              />
+
+              <FaFacebookMessenger
+                onClick={() => handleShare("messenger")}
+                className="text-blue-700 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#0084ff] transition duration-300"
+              />
+
+              <FaSquareXTwitter
+                onClick={() => handleShare("twitter")}
+                className="text-black-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#000000] transition duration-300"
+              />
+            </div>
           </div>
         </div>
-        <div className="lg:flex hidden flex-col gap-5 rounded pt-5 justify-center bg-white shadow-md  mx-auto ">
-          <div className="rounded p-2 shadow ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
-              Venue Category
+
+        <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+          <div className=" p-3  shadow gap-2 ">
+            <h1 className="text-lg font-medium text-gray-900 p-1 border-b ">
+              Services Category
             </h1>
-            <section className="flex flex-col gap-2 p-3 justify-center items-center">
-      <div className="flex gap-2 flex-wrap justify-center">
+            <section className="flex flex-col gap-2 p-3 justify-start items-start">
+              <div className="flex gap-2 flex-wrap justify-center">
                 <div
                   onClick={() => {
                     setCategory("indoor");
@@ -504,34 +393,12 @@ function GetVenue() {
               </div>
             </section>
           </div>
-          <div className="rounded border">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
-              Find Events
-            </h1>
-            <div className="flex justify-center items-center ">
-              <div className="grid grid-cols-2 gap-4 p-3 ">
-                <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Todays 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
+        <div className="border shadow w-[95%] ml-3">
+          <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
+            Find Events
+          </h1>
+           <CommonCalendar /> 
         </div>
       </div>
     </div>

@@ -54,7 +54,7 @@ export const updateLiftType = (data, props, setisLoader) => {
 
 import axios from "axios";
 import { Organizer } from "../../../Urls";
-let api = "http://dev.eventsnode.com:3000/api/organizer";
+let api = "http://localhost:5000/api/organizer";
 
 export const getOrganizer = (setLoader, filter, page, category) => {
   setLoader(true); // Start loading
@@ -64,12 +64,12 @@ export const getOrganizer = (setLoader, filter, page, category) => {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
         )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
-        // api = `http://dev.eventsnode.com:3000/api/organizer/filter?categories=${encodeURIComponent(
+        // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=9&sortOrder=asc`;
       } else {
         api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=asc&sortBy=name`;
-        // api = `http://dev.eventsnode.com:3000/api/organizer/filter?page=${page}&limit=9&sortOrder=asc`;
+        // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=9&sortOrder=asc`;
       }
 
       break;
@@ -79,12 +79,12 @@ export const getOrganizer = (setLoader, filter, page, category) => {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
         )}&page=${page}&limit=9&sortOrder=desc&sortBy=name`;
-        // api = `http://dev.eventsnode.com:3000/api/organizer/filter?categories=${encodeURIComponent(
+        // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=8&sortOrder=desc`;
       } else
         api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=desc&sortBy=name`;
-      // api = `http://dev.eventsnode.com:3000/api/organizer/filter?page=${page}&limit=8&sortOrder=desc`;
+      // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=desc`;
       break;
 
     case "alphabetical":
@@ -92,12 +92,12 @@ export const getOrganizer = (setLoader, filter, page, category) => {
         api = `${Organizer.getOrganizerByFilter}categories=${encodeURIComponent(
           category
         )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
-        // api = `http://dev.eventsnode.com:3000/api/organizer/filter?categories=${encodeURIComponent(
+        // api = `http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=8&sortOrder=asc`;
       } else
         api = `${Organizer.getOrganizerByFilter}page=${page}&limit=9&sortOrder=asc&sortBy=name`;
-      // api = `http://dev.eventsnode.com:3000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
+      // api = `http://localhost:5000/api/organizer/filter?page=${page}&limit=8&sortOrder=asc`;
       break;
 
     default:
@@ -105,11 +105,11 @@ export const getOrganizer = (setLoader, filter, page, category) => {
         api = ` ${
           Organizer.getOrganizerByFilter
         }categories=${encodeURIComponent(category)}&page=${page}&limit=9`;
-        // api = ` http://dev.eventsnode.com:3000/api/organizer/filter?categories=${encodeURIComponent(
+        // api = ` http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=9`;
       } else api = ` ${Organizer.getOrganizerByFilter}page=${page}&limit=9`;
-      // api = ` http://dev.eventsnode.com:3000/api/organizer/filter?page=${page}&limit=9`;
+      // api = ` http://localhost:5000/api/organizer/filter?page=${page}&limit=9`;
       break;
   }
 
@@ -118,7 +118,6 @@ export const getOrganizer = (setLoader, filter, page, category) => {
 
     try {
       const response = await axios.get(`${api}`);
-      // console.log("response", response);
       dispatch({
         type: "GET_ORGANIZER",
         organizerData: response.data.organizers, // Ensure the API actually returns this structure
@@ -139,62 +138,3 @@ export const getOrganizer = (setLoader, filter, page, category) => {
     }
   };
 };
-
-// import axios from "axios";
-// import { Organizer } from "../../../Urls";
-
-// let api = `${Organizer.getOrganizerFilter}filter`;
-
-// export const getOrganizer = (setLoader, filter, page = 1, limit = 10) => {
-//   return async (dispatch) => {
-//     setLoader(true); // Start loading
-
-//     // let api = `${baseApi}?page=${page}&limit=${limit}`;
-//     // if (filter) {
-//     //   api += `&sortOrder=${
-//     //     filter === "title asc"
-//     //       ? "asc"
-//     //       : `${filter === "alphabetical" ? "asc" : "desc"}`
-//     //   }`;
-//     // }
-//     switch (filter) {
-//       case "title asc":
-//         api = `${api}?page=${page}&limit=${limit}&sortOrder=asc`;
-//         break;
-
-//       case "title desc":
-//         api = `${api}?page=${page}&limit=${limit}&sortOrder=desc`;
-//         break;
-
-//       case "alphabetical":
-//         api = `${api}?page=${page}&limit=${limit}&sortOrder=asc`;
-//         break;
-
-//       default:
-//         api = ` ${api}?page=${page}&limit=${limit}`;
-//         break;
-//     }
-
-//     try {
-//       const response = await axios.get(api);
-//       console.log("API Response:", response);
-
-//       dispatch({
-//         type: "GET_ORGANIZER",
-//         organizerData: response.data.organizers || [], // Ensure correct data structure
-//         page,
-//       });
-//     } catch (error) {
-//       console.error(
-//         "API Error:",
-//         error.response ? error.response.data : error.message
-//       );
-//       dispatch({
-//         type: "GET_ORGANIZER",
-//         organizerData: [],
-//       });
-//     } finally {
-//       setLoader(false); // Stop loading
-//     }
-//   };
-// };

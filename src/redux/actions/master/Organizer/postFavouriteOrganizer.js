@@ -6,9 +6,7 @@ import { toast } from "react-toastify";
 import { Zoom } from "react-toastify";
 import { Organizer } from "../../../Urls";
 export const postFavouriteOrganizer = (organizerId) => {
-  console.log("data.:::", organizerId);
-  console.log("post organizer fav called")
-  const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
+  const isLogin = JSON.parse(localStorage.getItem("isLogin")); 
   return () => {
     axiosInstance
       .post(`${Organizer.addFavouriteOrganizer}`, {
@@ -39,7 +37,6 @@ export const postFavouriteOrganizer = (organizerId) => {
               autoClose: 2000,
             });
           }
-          console.log(response);
         }
       })
 

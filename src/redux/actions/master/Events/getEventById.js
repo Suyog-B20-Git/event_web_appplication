@@ -67,7 +67,6 @@ export const getEventById = (id, setLoader) => {
         response = await axios.get(`${Event.createEvent}/${id}`);
       }
 
-      console.log("response", response);
       dispatch({
         type: "GET_EVENT_BY_ID",
         eventData: response.data, // Ensure the API actually returns this structure
@@ -86,3 +85,51 @@ export const getEventById = (id, setLoader) => {
     }
   };
 };
+
+export const getEventByCategoryAndSlug = (category, slug, setLoading) => async (dispatch) => {
+  try {
+    setLoading(true);
+    // Adjust the API endpoint as needed
+    const lowerCategory = category.toLowerCase();
+    const response = await axios.get(`/api/event/slug/${slug}`);
+    
+    dispatch({
+      type: 'GET_EVENT_BY_ID_SUCCESS', // You can use the same reducer
+      payload: response.data,
+    });
+    
+    setLoading(false);
+  } catch (error) {
+    dispatch({
+      type: 'GET_EVENT_BY_ID_FAIL',
+      payload: error.response?.data || 'Error fetching event',
+    });
+    
+    setLoading(false);
+  }
+};
+
+export const getEventBySlug = (slug, setLoading) => async (dispatch) => {
+  try {
+    setLoading(true);
+    
+    // Update to use your correct API endpoint
+    const response = await axios.get(`/api/event/slug/${slug}`);
+    dispatch({
+      type: 'GET_EVENT_BY_ID_SUCCESS', 
+      payload: response.data,
+    });
+    
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching event by slug:", error);
+    dispatch({
+      type: 'GET_EVENT_BY_ID_FAIL',
+      payload: error.response?.data || 'Error fetching event',
+    });
+    
+    setLoading(false);
+  }
+};
+
+

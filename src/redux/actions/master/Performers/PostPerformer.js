@@ -6,7 +6,6 @@ import { axiosInstance } from "../../../../../utility/utils";
 import { toast } from "react-toastify";
 import { Performer } from "../../../Urls";
 export const createNewPerformer = (data) => {
-  console.log("data.:::", data);
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
@@ -26,14 +25,6 @@ export const createNewPerformer = (data) => {
             hideProgressBar: true,
             autoClose: 2000,
           });
-          //fixme use "CREATE_PERFORMER" action or dispatch() when it is necessary and complete for now it works properly when commented
-          // if (isLogin) {
-          //   dispatch({
-          //     type: "CREATE_PERFORMER",
-          //     payload: response.data,
-          //   });
-          // }
-          console.log(response);
         }
       })
       .catch((error) => {

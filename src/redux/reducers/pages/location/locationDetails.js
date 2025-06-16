@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const locationDetailsReducer = (state = initialState, action) => {
-  console.log("action..:", action);
   switch (action.type) {
     case "GET_LOCATION_DETAILS":
       return {

@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { MdCancel } from "react-icons/md";
@@ -18,6 +20,7 @@ import { Country, State, City } from "country-state-city";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Eye } from "lucide-react"; 
 import Modal from "react-modal";
+// import axios from "axios";
 import FacebookEmbeded from "../SocialMedia/Facebook";
 import InstagramEmbed  from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
@@ -25,10 +28,11 @@ import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 import { useNavigate } from "react-router-dom";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 
 function CreatePage() {
-  const navigate = useNavigate(); 
+  // const navigate = useNavigate(); 
   const {
     control,
     handleSubmit,
@@ -38,15 +42,19 @@ function CreatePage() {
     reset,
     formState: { errors },
   } = useForm();
+  
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
   const [selectedTagKeywords, setSelectedTagKeywords] = useState([]);
   const [customTag, setCustomTag] = useState("");
   const [captchaValue, setCaptchaValue] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [formData, setFormData] = useState({});
+
+  const [selectedCategory, setSelectedCategory] = useState(null); // NEW
+
+  // const [formData, setFormData] = useState({});
   const [activeTab, setActiveTab] = useState("About");
-  
+  const navigate = useNavigate();
   const handleTagChange = (selectedOptions) => {
     const newTags = selectedOptions
       ? selectedOptions.map((option) => option.value)
@@ -62,52 +70,45 @@ function CreatePage() {
       newSubCategory = selectedOptions ? [selectedOptions.value] : [];
     }
 
-    console.log("Updated SubCategory:", newSubCategory); // Debugging log
     setSelectedSubCategory(newSubCategory);
   };
 
   const categoryList = [
-    { value: "Organiser", label: "Organiser" },
-    { value: "Performers", label: "Performers" },
-    { value: "Services", label: "Services" },
-    { value: "Venues", label: "Venues" },
+    { value: "Organizer", label: "Organizer" },
+    { value: "Performer", label: "Performer" },
+    { value: "Service", label: "Service" },
+    { value: "Venue", label: "Venue" },
   ];
 
-  const selectedCategory = watch("category");
-  // const selectedSubCategories = watch("subCategory") || [];
-  // const selectedCountry = watch("country");
-  // const selectedState = watch("state");
-  const place_id = watch("location");
+useEffect(() => {
+  const fetchSubCategories = async () => {
+    if (!selectedCategory) {
+      setSubCategoryList([]);
+      return;
+    }
 
-  const subCategoryOptions = {
-    Organiser: [
-      { value: "event planner", label: "Event Planner" },
-      { value: "wedding planner", label: "Wedding Planner" },
-      { value: "adventure", label: "Adventure" },
-    ],
-    Performers: [
-      { value: "band", label: "Band" },
-      { value: "disc jockey", label: "Disc Jockey" },
-      { value: "sound artist", label: "Sound Artist" },
-      { value: "stand up comedian", label: "Stand Up Comedian" },
-    ],
-    Services: [
-      { value: "anchor", label: "Anchor" },
-      { value: "decor", label: "Decor" },
-      { value: "entertainer", label: "Entertainer" },
-      { value: " party supplier", label: "Party Supplier" },
-      {
-        value: "photography & videography",
-        label: "Photography & Videography",
-      },
-      { value: "promoter", label: "Promoters" },
-      { value: "dance studio", label: "Dance Studio" },
-    ],
-    Venues: [
-      { value: "outdoor", label: "Outdoor" },
-      { value: "indoor", label: "Indoor" },
-    ],
+    try {
+      const response = await fetch(`${baseUrl}/api/categories?type=${selectedCategory.value}`);
+       const data= await response.json(); 
+
+   const formatted =
+     data.data?.map((sub) => ({
+       label: sub.name,
+       value: sub.name,
+     })) || [];
+
+
+      setSubCategoryList(formatted);
+    } catch (error) {
+      setSubCategoryList([]);
+    }
   };
+
+  fetchSubCategories();
+}, [selectedCategory]);
+
+  
+  const place_id = watch("location");
 
   const socialProfile = [
   { label: "Facebook Url", value: "facebookUrl", placeholder: "https://www.facebook.com/abc" },
@@ -120,24 +121,25 @@ function CreatePage() {
     { value: "Event Planner", label: "Event Planner" },
     { value: "Corporate Events", label: "Corporate Events" },
     { value: "Catering service", label: "Catering service" },
-    { value: "Birthday Organiser", label: "Birthday Organiser" },
+    { value: "Birthday Organizer", label: "Birthday Organizer" },
     { value: "Wedding Planner", label: "Wedding Planner" },
   ];
 
   const tagKeywordOptions = {
-    Organiser: [
+    Organizer: [
       { value: "Event Planner", label: "Event Planner" },
       { value: "Corporate Events", label: "Corporate Events" },
       { value: "Catering service", label: "Catering service" },
-      { value: "Birthday Organiser", label: "Birthday Organiser" },
+      { value: "Birthday Organizer", label: "Birthday Organizer" },
       { value: "Wedding Planner", label: "Wedding Planner" },
     ],
-    Performers: [
+    Performer: [
       { value: "Band", label: "Band" },
       { value: "Disc Jockey", label: "Disc Jockey" },
       { value: "Sound Artist", label: "Sound Artist" },
+      { value: "Stand up Comedian", label: "Stand up Comedian" },
     ],
-    Services: [
+    Service: [
       { value: "Photography", label: "Photography" },
       { value: "Videography", label: "Videography" },
       { value: "Makeup Artist", label: "Makeup Artist" },
@@ -146,6 +148,13 @@ function CreatePage() {
     ],
   };
   
+const [soundCloudUrl, setSoundCloudUrl] = useState("");
+
+const handleSoundCloudChange = (e) => {
+  setSoundCloudUrl(e.target.value);
+};
+
+
   const handleTagKeywordChange = (selectedOptions) => {
     const selectedValues = selectedOptions ? selectedOptions.map((opt) => opt.value) : [];
     setSelectedTagKeywords([...selectedValues, ...selectedTagKeywords.filter(tag => !tagKeywordList.some(t => t.value === tag))]);
@@ -181,10 +190,8 @@ function CreatePage() {
     setSelectedTagKeywords([]); // Clear tag keywords when category changes
   }, [selectedCategory]);
   
-  const subCategoryList = selectedCategory
-  ? subCategoryOptions[selectedCategory?.value] || []
-  : [];
-
+  const [subCategoryList, setSubCategoryList] = useState([]);
+ 
   const validateBusinessHours = (value) => {
     if (!value) return "Time is required";
     const [hours, minutes] = value.split(":").map(Number);
@@ -227,7 +234,6 @@ function CreatePage() {
 
   useEffect(() => {
     if (location) {
-      console.log("Fetching locations for:", location);
       dispatch(getLocation(location));
     }
   }, [dispatch, location]);
@@ -240,11 +246,9 @@ function CreatePage() {
     value: item.place_id,
     label: item.description,
   }));
-  console.log("Location Store Data:", store3);
-
+  
   useEffect(() => {
     if (place_id) {
-      console.log("Fetching location details for:", place_id);
       dispatch(getLocationDetails(place_id));
     }
   }, [dispatch, place_id]);
@@ -253,20 +257,42 @@ function CreatePage() {
     locationDetails: [],
   };
   const data4 = store4.locationDetails ? store4.locationDetails : [];
-  console.log("Location Details Data:", data4);
+
+// handle page-redirection and data saving
+
+useEffect(() => {
+  const savedData = localStorage.getItem("savedFormData");
+  const savedUIState = localStorage.getItem("savedUIState");
+  if (savedData) {
+    const parsedData = JSON.parse(savedData);
+    reset(parsedData); // react-hook-form's reset function to preload form
+    localStorage.removeItem("savedFormData"); // Clean up
+  }
+   if (savedUIState) {
+    const uiState = JSON.parse(savedUIState);
+  setSelectedCountry(uiState.selectedCountry || null);
+    setSelectedState(uiState.selectedState || null);
+    setSelectedCity(uiState.selectedCity || null);
+    setSelectedSubCategory(uiState.selectedSubCategory || []);
+    setSelectedTagKeywords(uiState.selectedTagKeywords || []);
+    setImage(uiState.image || null);
+  localStorage.removeItem("savedUIState");
+   }
+}, []);
+
 
   // Handle Image Selection
   const [image, setImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
-
   const [imageError, setImageError] = useState("");
+  const [formData, setFormData] = useState({ image: null });
+  const [previewImage, setPreviewImage] = useState(null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-  
     if (!file) {
-      setImageError("Image is required");
-      return;
+        toast.error("No file selected");
+        return;
     }
   
     if (file.size > 2 * 1024 * 1024) {
@@ -336,7 +362,9 @@ function CreatePage() {
     formData.append("googleSearchLat", data4.location.lat);
     formData.append("googleSearchLong", data4.location.lng);
 
-    selectedTags.forEach((tag) => formData.append("tags[]", tag));
+    //  Update map pin here
+    
+    selectedTagKeywords.forEach((tag) => formData.append("tags[]", tag));
 
     if (data.phone) formData.append("phoneNumber", data.phone);
     if (data.email) formData.append("email", data.email);
@@ -348,21 +376,25 @@ function CreatePage() {
     formData.append("youtubeUrl", data.youtubeUrl);
     formData.append("twitterUrl", data.twitterUrl);
 
-    if (selectedCategory.value === "Performers") {
+    if (selectedCategory.value === "Performer") {
       formData.append("cloudSoundUrl", data.cloudSoundUrl);
       formData.append("spotifyUrl", data.spotifyUrl);
       dispatch(createNewPerformer(formData));
+      navigate("/home");
     }
 
-    if (selectedCategory.value === "Organiser") {
+    if (selectedCategory.value === "Organizer") {
       dispatch(createNewOrganizer(formData));
+      navigate("/home");
     }
-    if (selectedCategory.value === "Services") {
+
+    if (selectedCategory.value === "Service") {
       dispatch(createNewService(formData));
-      // notifySuccess(data.listingTitle);
+      navigate("/home");
     }
-    if (selectedCategory.value === "Venues") {
-      formData.append("coverImage", coverImage); // Append file
+
+    if (selectedCategory.value === "Venue") {
+      formData.append("coverImage", coverImage);
       formData.append("url", data.url);
       formData.append("zipcode", data.zipcode);
       formData.append("quotedForm", data.quotedForm);
@@ -374,25 +406,13 @@ function CreatePage() {
       formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
       formData.append("amenities", data.amenities);
       formData.append("type", data.type);
-
       dispatch(createNewVenue(formData));
-      // notifySuccess(data.listingTitle);
-      // toast.success(`${selectedCategory.value} Page created successfully!`);
-
+      navigate("/home");
     }
 
-    console.log("Form Data:", data);
-
-    // setImage(null);
-    // setCoverImage(null);
-
-    // reset();
-    // setSelectedTags([])
-  } 
-catch (error) {
-  console.error("Submission failed:", error);
-  alert("An error occurred during submission.");
-}
+  } catch (error) {
+    alert("An error occurred during submission.");
+  }
 };
 
 
@@ -425,10 +445,10 @@ catch (error) {
   return (
     <div className="bg-white p-10 shadow-md rounded-md lg:pt-12 pt-28 md:pt-8 ">
       <form onSubmit={handleSubmit(onSubmit)}>
-      <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
-         Create a Page
-       </h2>
-     {/* Category Selection */}
+        <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
+          Create a Page
+        </h2>
+        {/* Category Selection */}
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
           <div className="flex flex-col gap-1">
             <label className="text-gray-700 font-medium">
@@ -444,11 +464,13 @@ catch (error) {
                   options={categoryList}
                   onChange={(selectedOption) => {
                     field.onChange(selectedOption);
-                    setValue("subCategory", []); // Reset subcategory when category changes
+                    setSelectedCategory(selectedOption); // Set for fetching subcategories
+                    setValue("subCategory", []); // Clear subcategories on category change
                   }}
                 />
               )}
             />
+
             {errors.category && (
               <p className="text-red-500 text-sm">{errors.category.message}</p>
             )}
@@ -463,56 +485,46 @@ catch (error) {
               name="subCategory"
               control={control}
               rules={{ required: "Subcategory is required" }}
-              render={({ field, fieldState: { error } }) => (
-                <>
-                  <Select
-                    {...field}
-                    options={subCategoryList}
-                    isMulti={selectedCategory?.value !== "Venues"} // Multiple selection except for Venues
-                    isDisabled={!selectedCategory}
-                    onChange={(selectedOptions) => {
-                      const values = Array.isArray(selectedOptions)
-                        ? selectedOptions.map((option) => option.value)
-                        : selectedOptions
-                        ? [selectedOptions.value]
-                        : [];
-                      field.onChange(values);
-                      setSelectedSubCategory(values);
-                    }}
-                    value={subCategoryList.filter((option) =>
-                      (field.value || []).includes(option.value) // Ensure field.value is always an array
-                    )}
-                  />
-                  {error && <span className="text-red-500 text-sm">{error.message}</span>}
-                </>
+              render={({ field }) =>   (
+                <Select
+                {...field}
+                  isMulti
+                  options={subCategoryList}
+                  isDisabled={!selectedCategory}
+                  onChange={(selectedOptions) => {
+                    const values = selectedOptions.map((opt) => opt.value);
+                    setSelectedSubCategory(values);
+                    setValue("subCategory", values); // sync with react-hook-form
+                  }}
+                  value={subCategoryList.filter((opt) =>
+                    selectedSubCategory.includes(opt.value)
+                  )}
+                />
               )}
             />
           </div>
-          </div>
+        </div>
 
-          {/*Listing Title*/}
-          <div className="flex flex-col gap-1 mb-4">
-            <label
-              htmlFor="name"
-              className="block font-semibold text-gray-700"
-            >
-              Listing Title*
-            </label>
-            <input
-              type="text"
-              name="listingTitle"
-              className="mt-1 block w-full border rounded-md p-2"
-              placeholder="Listing Title"
-              {...register("listingTitle", {
-                required: "Listing title is required",
-              })}
-            />
-            {errors.listingTitle && (
-              <p className="text-red-600 text-sm px-2">
-                {errors.listingTitle.message}*
-              </p>
-            )}
-          </div>
+        {/*Listing Title*/}
+        <div className="flex flex-col gap-1 mb-4">
+          <label htmlFor="name" className="block font-semibold text-gray-700">
+            Listing Title*
+          </label>
+          <input
+            type="text"
+            name="listingTitle"
+            className="mt-1 block w-full border rounded-md p-2"
+            placeholder="Listing Title"
+            {...register("listingTitle", {
+              required: "Listing title is required",
+            })}
+          />
+          {errors.listingTitle && (
+            <p className="text-red-600 text-sm px-2">
+              {errors.listingTitle.message}*
+            </p>
+          )}
+        </div>
 
         {/*textArea*/}
         <div className="mb-4 ">
@@ -525,7 +537,11 @@ catch (error) {
           <textarea
             id="name"
             name="listingDescription"
-            className="mt-1 block w-full border rounded-md p-2"
+            className="mt-1 block w-full border rounded-md p-2 resize-y"
+            onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
             placeholder="Enter Description"
             {...register("listingDescription", {
               required: "Listing description is required",
@@ -537,7 +553,7 @@ catch (error) {
             </p>
           )}
         </div>
-        {selectedCategory && selectedCategory.value == "Venues" && (
+        {selectedCategory && selectedCategory.value == "Venue" && (
           <div className="flex flex-col gap-1">
             <h1 className="text-[#ff2459] text-2xl mb-2 font-semibold">
               Venue
@@ -569,7 +585,6 @@ catch (error) {
                   placeholder={`Enter Website Url`}
                   {...register("url")}
                 />
-                
               </div>
               <div>
                 <label
@@ -709,131 +724,179 @@ catch (error) {
               />
             </div>
 
-            {selectedCategory?.value === "Venues" && (
-          <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
-            {/* Start Hour */}
-            <div className="flex flex-col gap-1">
-              <label className="block text-sm font-medium text-gray-700">Start Hour*</label>
-              <div className="flex gap-2">
-                <input
-                  type="time"
-                  {...register("startHour", { required: "Start Hour is required" })}
-                  className="block w-full border rounded-md p-2"
-                />
-                <select
-                  {...register("startMeridian", { required: "Select AM/PM" })}
-                  className="border rounded-md p-2"
-                >
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
+            {selectedCategory?.value === "Venue" && (
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+                {/* Start Hour */}
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Start Hour*
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="time"
+                      {...register("startHour", {
+                        required: "Start Hour is required",
+                      })}
+                      className="block w-full border rounded-md p-2"
+                    />
+                    <select
+                      {...register("startMeridian", {
+                        required: "Select AM/PM",
+                      })}
+                      className="border rounded-md p-2"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                  {errors.startHour && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.startHour.message}*
+                    </p>
+                  )}
+                  {errors.startMeridian && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.startMeridian.message}*
+                    </p>
+                  )}
+                </div>
+
+                {/* End Hour */}
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700">
+                    End Hour*
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="time"
+                      {...register("endHour", {
+                        required: "End Hour is required",
+                        validate: (value) => {
+                          const startHour =
+                            document.querySelector('[name="startHour"]')?.value;
+                          const startMeridian = document.querySelector(
+                            '[name="startMeridian"]'
+                          )?.value;
+                          const endMeridian = document.querySelector(
+                            '[name="endMeridian"]'
+                          )?.value;
+
+                          if (!startHour) return "Start Hour is required first";
+
+                          // Convert time to 24-hour format for comparison
+                          const convertTo24Hour = (time, meridian) => {
+                            let [hour, minute] = time.split(":").map(Number);
+                            if (meridian === "PM" && hour !== 12) hour += 12;
+                            if (meridian === "AM" && hour === 12) hour = 0;
+                            return hour * 60 + minute; // Convert to total minutes for comparison
+                          };
+
+                          const startTime = convertTo24Hour(
+                            startHour,
+                            startMeridian
+                          );
+                          const endTime = convertTo24Hour(value, endMeridian);
+
+                          return endTime > startTime
+                            ? true
+                            : "End Hour must be after Start Hour";
+                        },
+                      })}
+                      className="block w-full border rounded-md p-2"
+                    />
+                    <select
+                      {...register("endMeridian", { required: "Select AM/PM" })}
+                      className="border rounded-md p-2"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                  {errors.endHour && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.endHour.message}*
+                    </p>
+                  )}
+                  {errors.endMeridian && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.endMeridian.message}*
+                    </p>
+                  )}
+                </div>
               </div>
-              {errors.startHour && <p className="text-red-600 text-sm px-2">{errors.startHour.message}*</p>}
-              {errors.startMeridian && <p className="text-red-600 text-sm px-2">{errors.startMeridian.message}*</p>}
-            </div>
-
-            {/* End Hour */}
-            <div className="flex flex-col gap-1">
-              <label className="block text-sm font-medium text-gray-700">End Hour*</label>
-              <div className="flex gap-2">
-                <input
-                  type="time"
-                  {...register("endHour", {
-                    required: "End Hour is required",
-                    validate: (value) => {
-                      const startHour = document.querySelector('[name="startHour"]')?.value;
-                      const startMeridian = document.querySelector('[name="startMeridian"]')?.value;
-                      const endMeridian = document.querySelector('[name="endMeridian"]')?.value;
-
-                      if (!startHour) return "Start Hour is required first";
-
-                      // Convert time to 24-hour format for comparison
-                      const convertTo24Hour = (time, meridian) => {
-                        let [hour, minute] = time.split(":").map(Number);
-                        if (meridian === "PM" && hour !== 12) hour += 12;
-                        if (meridian === "AM" && hour === 12) hour = 0;
-                        return hour * 60 + minute; // Convert to total minutes for comparison
-                      };
-
-                      const startTime = convertTo24Hour(startHour, startMeridian);
-                      const endTime = convertTo24Hour(value, endMeridian);
-
-                      return endTime > startTime ? true : "End Hour must be after Start Hour";
-                    },
-                  })}
-                  className="block w-full border rounded-md p-2"
-                />
-                <select
-                  {...register("endMeridian", { required: "Select AM/PM" })}
-                  className="border rounded-md p-2"
-                >
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
-              </div>
-              {errors.endHour && <p className="text-red-600 text-sm px-2">{errors.endHour.message}*</p>}
-              {errors.endMeridian && <p className="text-red-600 text-sm px-2">{errors.endMeridian.message}*</p>}
-            </div>
+            )}
           </div>
         )}
 
-      </div>
-    )}
+        {selectedCategory?.value !== "Venue" && (
+          <div className="mb-4 rounded-lg">
+            <label className="block text-gray-700 font-semibold mb-2">
+              Select Tag Keywords:
+            </label>
 
-          {selectedCategory?.value !== "Venues" && (
-          <div className="mb-4 p-4  rounded-lg shadow-md">
-          <label className="block text-gray-700 font-semibold mb-2">Select Tag Keywords:</label>
-          <Select
-            isMulti
-            options={tagKeywordOptions[selectedCategory?.value] || []}
-            onChange={handleTagKeywordChange}
-            value={(tagKeywordOptions[selectedCategory?.value] || []).filter((opt) =>
-              selectedTagKeywords.includes(opt.value)
-            )}
-            className="mb-3"
-          />
-          
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={customTag}
-              onChange={handleCustomTagChange}
-              placeholder="Type to add manually"
-              className="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+            <Select
+              isMulti
+              options={tagKeywordOptions[selectedCategory?.value] || []}
+              onChange={(selectedOptions) => {
+                const selectedValues = selectedOptions.map(
+                  (option) => option.value
+                );
+                setSelectedTagKeywords(selectedValues);
+              }}
+              value={(tagKeywordOptions[selectedCategory?.value] || []).filter(
+                (opt) => selectedTagKeywords.includes(opt.value)
+              )}
+              className="mb-3"
             />
-            <button 
-              type="button" 
-              onClick={addCustomTag}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-            >
-              Add
-            </button>
-          </div>
 
-          {selectedTagKeywords.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {selectedTagKeywords.map((tag, index) => (
-                <span 
-                  key={index} 
-                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm"
-                >
-                  {tag}
-                  <button 
-                    className="text-gray-800 hover:text-red-500 font-bold ml-2"
-                    onClick={() => handleTagRemove(tag)}
-                  >
-                    x
-                  </button>
-                </span>
-              ))}
+            <div className="flex gap-2 max-w-[500px]">
+              <input
+                type="text"
+                value={customTag}
+                onChange={(e) => setCustomTag(e.target.value)}
+                placeholder="Type to add..."
+                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (customTag && !selectedTagKeywords.includes(customTag)) {
+                    setSelectedTagKeywords([...selectedTagKeywords, customTag]);
+                    setCustomTag(""); // Clear input after adding
+                  }
+                }}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+              >
+                Add
+              </button>
             </div>
-          )}
+
+            {selectedTagKeywords.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {selectedTagKeywords.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm flex items-center"
+                  >
+                    {tag}
+                    <button
+                      className="text-gray-800 hover:text-red-500 font-bold ml-2"
+                      onClick={() =>
+                        setSelectedTagKeywords(
+                          selectedTagKeywords.filter((t) => t !== tag)
+                        )
+                      }
+                    >
+                      x
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
+        )}
 
-          )}
-
-
-    {/*Location*/}
+        {/* Location */}
         <div className="flex flex-col gap-1 mt-12">
           <h1 className="text-[#ff2459] text-2xl font-semibold mb-2">
             Location and map
@@ -852,25 +915,25 @@ catch (error) {
                 )}
               </label>
               <Controller
-              name="country"
-              control={control}
-              rules={{ required: "Please select a country" }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  isClearable
-                  options={countryOptions}
-                  placeholder="Search country..."
-                  onChange={(selectedOption) => {
-                    field.onChange(selectedOption); // Updates form state
-                    setSelectedCountry(selectedOption); // Updates component state
-                    setValue("state", null); // Reset state when country changes
-                    setValue("city", null); // Reset city when country changes
-                  }}
-                  value={selectedCountry}
-                />
-              )}
-            />
+                name="country"
+                control={control}
+                rules={{ required: "Please select a country" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    isClearable
+                    options={countryOptions}
+                    placeholder="Search country..."
+                    onChange={(selectedOption) => {
+                      field.onChange(selectedOption); // Updates form state
+                      setSelectedCountry(selectedOption); // Updates component state
+                      setValue("state", null); // Reset state when country changes
+                      setValue("city", null); // Reset city when country changes
+                    }}
+                    value={selectedCountry}
+                  />
+                )}
+              />
             </div>
             <div>
               <label
@@ -885,25 +948,25 @@ catch (error) {
                 )}
               </label>
               <Controller
-              name="state"
-              control={control}
-              rules={{ required: "Please select a state" }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  isClearable
-                  isDisabled={!selectedCountry}
-                  options={stateOptions}
-                  placeholder="Search state..."
-                  onChange={(selectedOption) => {
-                    field.onChange(selectedOption);
-                    setSelectedState(selectedOption);
-                    setValue("city", null); // Reset city when state changes
-                  }}
-                  value={selectedState}
-                />
-              )}
-            />
+                name="state"
+                control={control}
+                rules={{ required: "Please select a state" }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    isClearable
+                    isDisabled={!selectedCountry}
+                    options={stateOptions}
+                    placeholder="Search state..."
+                    onChange={(selectedOption) => {
+                      field.onChange(selectedOption);
+                      setSelectedState(selectedOption);
+                      setValue("city", null); // Reset city when state changes
+                    }}
+                    value={selectedState}
+                  />
+                )}
+              />
             </div>
           </div>
           <div className="grid lg:mt-4 lg:grid-cols-2 grid-cols-1 gap-6">
@@ -920,27 +983,28 @@ catch (error) {
                 )}
               </label>
               <Controller
-              name="city"
-              control={control}
-              rules={{
-                required: selectedState ? "Please select a city" : "Select a state first",
-              }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  isClearable
-                  options={cityOptions}
-                  placeholder="Search city..."
-                  isDisabled={!selectedState}
-                  onChange={(selectedOption) => {
-                    field.onChange(selectedOption);
-                    setSelectedCity(selectedOption);
-                  }}
-                  value={selectedCity}
-                />
-              )}
-            />
-
+                name="city"
+                control={control}
+                rules={{
+                  required: selectedState
+                    ? "Please select a city"
+                    : "Select a state first",
+                }}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    isClearable
+                    options={cityOptions}
+                    placeholder="Search city..."
+                    isDisabled={!selectedState}
+                    onChange={(selectedOption) => {
+                      field.onChange(selectedOption);
+                      setSelectedCity(selectedOption);
+                    }}
+                    value={selectedCity}
+                  />
+                )}
+              />
             </div>
             <div>
               <label
@@ -979,7 +1043,12 @@ catch (error) {
                     onChange={(selectedOption) => {
                       field.onChange(
                         selectedOption ? selectedOption.value : null
-                      ); // Store only ID
+                      );
+                      if (selectedOption) {
+                        geocodeAndCenterMap(selectedOption.label);
+                      }
+
+                      // Store only ID
                     }}
                     value={
                       locationOptions.find(
@@ -992,7 +1061,7 @@ catch (error) {
             </div>
           </div>
         </div>
-        {selectedCategory && selectedCategory.value == "Venues" && (
+        {selectedCategory && selectedCategory.value == "Venue" && (
           <div className="flex flex-col gap-1 mt-4">
             <input
               type="text"
@@ -1017,49 +1086,50 @@ catch (error) {
         </div>
 
         {/*Contact Information*/}
-        {selectedCategory && selectedCategory.value !== "Venues" && (
+        {selectedCategory && selectedCategory.value !== "Venue" && (
           <div className="flex flex-col gap-1 mt-2">
             <h1 className="text-[#ff2459] text-2xl font-semibold mb-2">
               Contact Information
             </h1>
             <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
               {/* Phone */}
-            <div className="flex flex-col gap-1">
-              <label className="text-gray-700 font-medium">Phone</label>
-              <input
-                type="text"
-                {...register("phone", {
-                  pattern: {
-                    value: /^[6-9]\d{9}$/, // Starts with 6-9 and has 10 digits
-                    message: "Enter a valid 10-digit phone number",
-                  },
-                })}
-                className="border p-2 rounded"
-                placeholder="Enter phone number"
-              />
-              {errors.phone && (
-                <p className="text-red-500 text-sm">{errors.phone.message}</p>
-              )}
-            </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">Phone</label>
+                <input
+                  type="text"
+                  {...register("phone", {
+                    pattern: {
+                      value: /^[6-9]\d{9}$/, // Starts with 6-9 and has 10 digits
+                      message: "Enter a valid 10-digit phone number",
+                    },
+                  })}
+                  className="border p-2 rounded"
+                  placeholder="Enter phone number"
+                />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                )}
+              </div>
 
-            {/* Email */}
-            <div className="flex flex-col gap-1">
-              <label className="text-gray-700 font-medium">Email</label>
-              <input
-                type="email"
-                {...register("email", {
-                  pattern: {
-                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                    message: "Enter a valid email address",
-                  },
-                })}
-                className="border p-2 rounded"
-                placeholder="Enter email"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
-            </div>
+              {/* Email */}
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">Email</label>
+                <input
+                  type="email"
+                  {...register("email", {
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                      message: "Enter a valid email address",
+                    },
+                  })}
+                  className="border p-2 rounded"
+                  placeholder="Enter email"
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
+              </div>
 
               {/* Time Input Field */}
               {/* <div className="flex flex-col gap-1">
@@ -1095,36 +1165,42 @@ catch (error) {
                   placeholder="website"
                   {...register("website")}
                 />
-                
               </div>
             </div>
           </div>
         )}
 
-       {/* File Upload Section */}
+        {/* File Upload Section */}
         <div className="mt-8 mb-1 font-semibold">
           <label className="text-sm">Upload Profile Image*</label>
         </div>
 
         <div className="border p-2 flex flex-col gap-1">
-          <input type="file" onChange={handleImageChange} accept="image/*" />
+          <input
+            type="file"
+            onChange={handleImageChange}
+            accept="image/*"
+            required
+          />
         </div>
         {imageError && <p className="text-red-500">{imageError}</p>}
 
-        <p className="p-2 pt-1 pb-5 text-gray-500">Image size must be less than 2MB</p>
+        <p className="p-2 pt-1 pb-5 text-gray-500">
+          Image size must be less than 2MB
+        </p>
 
         {/* Add Cover Image Section - Only for Venues */}
-        {selectedCategory?.value === "Venues" && (
+        {selectedCategory?.value === "Venue" && (
           <>
             <div className="mt-4 mb-1 font-semibold">
               <label className="text-sm">Upload Cover Image</label>
             </div>
 
             <div className="border p-2 flex flex-col gap-1">
-              <input 
-                type="file" 
-                onChange={(e) => setCoverImage(e.target.files[0])} 
-                accept="image/*" 
+              <input
+                type="file"
+                onChange={(e) => setCoverImage(e.target.files[0])}
+                accept="image/*"
               />
             </div>
 
@@ -1135,7 +1211,7 @@ catch (error) {
         )}
 
         {/* Add more Image Section - Only for Performers */}
-        {selectedCategory?.value === "Performers" && (
+        {selectedCategory?.value === "Performer" && (
           <div className="flex flex-col gap-1">
             <label className="text-gray-700 font-medium">Add More Images</label>
             <input
@@ -1149,13 +1225,17 @@ catch (error) {
         <hr />
 
         <div className="flex flex-col gap-6 mt-6">
-            <h1 className="text-[#ff2459] text-2xl font-semibold">Social Profiles</h1>
+          <h1 className="text-[#ff2459] text-2xl font-semibold">
+            Social Profiles
+          </h1>
 
-            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
             {socialProfile.map((item, index) => {
               return (
                 <div key={index} className="flex flex-col gap-1">
-                  <label className="text-gray-700 font-medium">{item.label}</label>
+                  <label className="text-gray-700 font-medium">
+                    {item.label}
+                  </label>
                   <input
                     type="url"
                     name={item.value}
@@ -1174,8 +1254,8 @@ catch (error) {
               );
             })}
 
-           {/* Spotify URL*/}
-            {selectedCategory && selectedCategory.value == "Performers" && (
+            {/* Spotify URL*/}
+            {selectedCategory && selectedCategory.value == "Performer" && (
               <div className="flex flex-col gap-1">
                 <label className="text-gray-700 font-medium">Spotify Url</label>
                 <input
@@ -1195,38 +1275,41 @@ catch (error) {
               </div>
             )}
 
-          {/* SoundCloud URL */}
-          {selectedCategory && selectedCategory.value == "Performers" && (
-            <div className="grid lg:grid-cols-1 grid-cols-1 gap-6 mt-0">
-              <div className="flex flex-col gap-1">
-                <label className="text-gray-700 font-medium">SoundCloud Url</label>
-                <input
-                  type="url"
-                  name="soundCloudUrl"
-                  className="mt-1 block w-full border rounded-md p-2"
-                  placeholder="https://www.soundcloud.com/album/track"
-                  {...register("soundCloudUrl", {
-                    // required: `SoundCloud URL is required`,
-                  })}
-                />
-                {errors.soundCloudUrl && (
-                  <p className="text-red-600 text-sm px-2">
-                    {errors.soundCloudUrl.message}*
-                  </p>
-                )}
+            {/* SoundCloud URL */}
+            {selectedCategory && selectedCategory.value == "Performer" && (
+              <div className="grid lg:grid-cols-1 grid-cols-1 gap-6 mt-0">
+                <div className="flex flex-col gap-1">
+                  <label className="text-gray-700 font-medium">
+                    SoundCloud Url
+                  </label>
+                  <input
+                    type="url"
+                    name="soundCloudUrl"
+                    onChange={handleSoundCloudChange}
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="https://www.soundcloud.com/album/track"
+                    {...register("soundCloudUrl", {
+                      // required: `SoundCloud URL is required`,
+                    })}
+                  />
+                  {errors.soundCloudUrl && (
+                    <p className="text-red-600 text-sm px-2">
+                      {errors.soundCloudUrl.message}*
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         </div>
 
         <div className="flex gap-2 mt-8">
-        <ReCAPTCHA
-          sitekey="YOUR_RECAPTCHA_SITE_KEY"
-          onChange={(value) => setCaptchaValue(value)}
-        />
+          <ReCAPTCHA
+            sitekey="YOUR_RECAPTCHA_SITE_KEY"
+            onChange={(value) => setCaptchaValue(value)}
+          />
         </div>
-        
+
         <div className="flex gap-2 mt-8">
           <input
             type="checkbox"
@@ -1251,7 +1334,8 @@ catch (error) {
             type="button"
             className="bg-gray-300 text-black p-3 px-3 rounded-lg shadow-md 
                       hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
-           onClick={onPreview}>
+            onClick={onPreview}
+          >
             <Eye size={20} /> Preview
           </button>
 
@@ -1265,128 +1349,171 @@ catch (error) {
           </button>
         </div>
       </form>
- 
+
       <Modal
-  isOpen={isPreviewOpen}
-  onRequestClose={() => setIsPreviewOpen(false)}
-  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-auto min-h-screen"
->
-<div className="bg-white p-6 rounded-md shadow-lg w-3/4 max-w-4xl relative max-h-[72vh] overflow-y-auto mt-36">
-    
-    {/* Close Button */}
-    <button
-      onClick={() => setIsPreviewOpen(false)}
-      className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-    >
-      ✖
-    </button>
-
-    <div className="flex">
-      {/* Left Section*/}
-      <div className="w-1/3 p-4">
-        <img
-          src={formData.image || "https://via.placeholder.com/150?text=No+Image"}
-          alt="Listing"
-          className="w-full h-40 object-cover rounded-md"
-        />
-        
-        <div className="flex items-center mt-2">
-        <p className="text-gray-700 font-semibold ">Name : </p>
-        <h2 className="font-semibold">
-          {formData.title || <span className="text-gray-500 "> Listing Title Missing</span>}
-        </h2>
-      </div>
-      <div className="flex items-center mt-2">
-
-        <p className="text-gray-700 font-semibold">Address :</p>
-        <p className="text-gray-700">
-          {formData.address || <span className="text-gray-500"> Address Not Provided</span>}
-        </p>
-        </div>
-        <div className="flex items-center mt-2">
-
-        <p className="text-gray-700 font-semibold">Phone :</p>
-        <p className="text-gray-700">
-          {formData.phone || <span className="text-gray-500"> Phone Missing</span>}
-        </p>
-        </div>
-
-        <p className="text-gray-700 font-semibold mt-2 ">Website :</p>
-        <p className="text-gray-700">
-          {formData.website || <span className="text-gray-500"> Website Not Available</span>}
-        </p>
-      </div>
-
-      {/* Right Section: Tabs */}
-      <div className="w-2/3 p-4 border-l">
-      <div className="flex overflow-x-auto space-x-4 pb-2">
-        {["About", "Facebook", "Twitter", "Instagram", "SoundCloud", "YouTube", "Spotify"].map((tab) => (
+        isOpen={isPreviewOpen}
+        onRequestClose={() => setIsPreviewOpen(false)}
+        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 overflow-auto min-h-screen p-2 sm:p-4"
+      >
+        <div className="bg-white p-4 sm:p-6 rounded-md shadow-lg w-[95%] sm:w-3/4 max-w-4xl relative max-h-[72vh] overflow-y-auto mt-20 sm:mt-36">
+          {/* Close Button */}
           <button
-            key={tab}
-            className={`py-2 px-4 transition-all ${
-              activeTab === tab ? "border-b-2 border-blue-500 font-bold" : "text-gray-500"
-            }`}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => setIsPreviewOpen(false)}
+            className="absolute top-2 right-2 text-gray-900 hover:text-gray-700 text-sm p-0 sm:p-2"
           >
-            {tab}
+            ✖
           </button>
-        ))}
-      </div>
 
-      <div className="p-4 h-96 overflow-y-auto">
-        {activeTab === "About" && (
-          <p>{formData.about || <span className="text-gray-500">About Info Missing</span>}</p>
-        )}
+          <div className="flex flex-col sm:flex-row">
+            {/* Left Section */}
+            <div className="w-full sm:w-1/3 p-2 sm:p-4">
+              {previewImage ? (
+                <img
+                  src={previewImage}
+                  alt="Listing"
+                  className="w-full h-40 object-cover rounded-md"
+                />
+              ) : (
+                <div className="w-full h-40 flex items-center justify-center bg-gray-200 text-gray-500 rounded-md">
+                  No Image Available
+                </div>
+              )}
 
-        {activeTab === "Facebook" && (
-          formData.socialLinks?.facebook ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.facebook }} />
-          ) : (
-            <p className="text-gray-500">Facebook Link Not Provided</p>
-          )
-        )}
-        {activeTab === "Twitter" && (
-          formData.socialLinks?.twitter ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.twitter }} />
-          ) : (
-            <p className="text-gray-500">Twitter Link Not Provided</p>
-          )
-        )}
-        {activeTab === "Instagram" && (
-          formData.socialLinks?.instagram ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.instagram }} />
-          ) : (
-            <p className="text-gray-500">Instagram Link Not Provided</p>
-          )
-        )}
-        {activeTab === "SoundCloud" && (
-          formData.socialLinks?.soundcloud ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.soundcloud }} />
-          ) : (
-            <p className="text-gray-500">SoundCloud Link Not Provided</p>
-          )
-        )}
-        {activeTab === "YouTube" && (
-          formData.socialLinks?.youtube ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.youtube }} />
-          ) : (
-            <p className="text-gray-500">YouTube Link Not Provided</p>
-          )
-        )}
-        {activeTab === "Spotify" && (
-          formData.socialLinks?.spotify ? (
-            <div dangerouslySetInnerHTML={{ __html: formData.socialLinks.spotify }} />
-          ) : (
-            <p className="text-gray-500">Spotify Link Not Provided</p>
-          )
-        )}
-      </div>
-    </div>
+              <div className="mt-2 space-y-2">
+                <p className="text-gray-700 font-semibold">Name:</p>
+                <h2 className="font-semibold text-sm sm:text-base">
+                  {formData.title || (
+                    <span className="text-gray-500">Listing Title Missing</span>
+                  )}
+                </h2>
 
-    </div>
-  </div>
-</Modal>
+                <p className="text-gray-700 font-semibold">Address:</p>
+                <p className="text-gray-700 text-sm sm:text-base">
+                  {formData.address || (
+                    <span className="text-gray-500">Address Not Provided</span>
+                  )}
+                </p>
 
+                <p className="text-gray-700 font-semibold">Phone:</p>
+                <p className="text-gray-700 text-sm sm:text-base">
+                  {formData.phone || (
+                    <span className="text-gray-500">Phone Missing</span>
+                  )}
+                </p>
+
+                <p className="text-gray-700 font-semibold">Website:</p>
+                <p className="text-gray-700 text-sm sm:text-base">
+                  {formData.website || (
+                    <span className="text-gray-500">Website Not Available</span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Right Section: Tabs */}
+            <div className="w-full sm:w-2/3 p-2 sm:p-4 border-t sm:border-l">
+              <div className="flex overflow-x-auto space-x-2 pb-2 text-sm sm:text-base">
+                {[
+                  "About",
+                  "Facebook",
+                  "Twitter",
+                  "Instagram",
+                  "SoundCloud",
+                  "YouTube",
+                  "Spotify",
+                ].map((tab) => (
+                  <button
+                    key={tab}
+                    className={`py-2 px-3 sm:px-4 transition-all ${
+                      activeTab === tab
+                        ? "border-b-2 border-blue-500 font-bold"
+                        : "text-gray-500"
+                    }`}
+                    onClick={() => setActiveTab(tab)}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              <div className="p-2 sm:p-4 h-80 sm:h-96 overflow-y-auto">
+                {activeTab === "About" && (
+                  <p>
+                    {formData.about || (
+                      <span className="text-gray-500">About Info Missing</span>
+                    )}
+                  </p>
+                )}
+
+                {activeTab === "Facebook" &&
+                  (formData.socialLinks?.facebook ? (
+                    <div className="w-full flex justify-center py-4">
+                      <div className="w-full max-w-[800px]">
+                        <FacebookEmbeded
+                          appId={849920522233544}
+                          fbId={formData.socialLinks.facebook}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">Facebook Link Not Provided</p>
+                  ))}
+
+                {activeTab === "Twitter" &&
+                  (formData.socialLinks?.twitter ? (
+                    <p className="font-medium text-lg text-center py-4">
+                      <TwitterEmbed twitterUrl={formData.socialLinks.twitter} />
+                    </p>
+                  ) : (
+                    <p className="text-gray-500">Twitter Link Not Provided</p>
+                  ))}
+
+                {activeTab === "Instagram" &&
+                  (formData.socialLinks?.instagram ? (
+                    <InstagramEmbed
+                      instagramUrl={formData.socialLinks.instagram}
+                    />
+                  ) : (
+                    <p className="text-gray-500">Instagram Link Not Provided</p>
+                  ))}
+
+                {activeTab === "SoundCloud" &&
+                  (formData.socialLinks?.soundcloud ? (
+                    <p className="text-center mt-2">
+                      <SoundCloudEmbed
+                        soundCloudUrl={formData.socialLinks.soundcloud}
+                      />
+                    </p>
+                  ) : (
+                    <p className="text-gray-500">
+                      SoundCloud Link Not Provided
+                    </p>
+                  ))}
+
+                {activeTab === "YouTube" &&
+                  (formData.socialLinks?.youtube ? (
+                    <p>
+                      <YouTubeProfile
+                        youtubeEmbedUrl={formData.socialLinks.youtube}
+                      />
+                    </p>
+                  ) : (
+                    <p className="text-gray-500">YouTube Link Not Provided</p>
+                  ))}
+
+                {activeTab === "Spotify" &&
+                  (formData.socialLinks?.spotify ? (
+                    <p>
+                      <SpotifyEmbed artistId={formData.socialLinks.spotify} />
+                    </p>
+                  ) : (
+                    <p className="text-gray-500">Spotify Link Not Provided</p>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
