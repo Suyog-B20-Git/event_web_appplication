@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Select from "react-select";
-import DatePicker from "react-multi-date-picker";
+// import DatePicker from "react-multi-date-picker";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
 import { GiPartyPopper } from "react-icons/gi";
