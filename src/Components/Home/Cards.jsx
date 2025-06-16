@@ -1,4 +1,3 @@
-
 import React from "react";
 
 import { BsFire } from "react-icons/bs";
@@ -26,8 +25,8 @@ function Cards({ data, heading }) {
 
   return (
     <div className="flex justify-center items-center w-full">
-  <div className="lg:p-12 lg:pb-5 lg:pt-10 pt-5 p-5 w-full max-w-[1340px] mx-auto">
-       <div className="flex justify-between">
+      <div className="lg:p-12 lg:pb-5 lg:pt-10 pt-5 p-5 w-full max-w-[1340px] mx-auto">
+        <div className="flex justify-between">
           <div className="flex gap-2 lg:pl-3">
             <BsFire className="text-2xl relative top-1" />
             <p className="font-bold font-sans lg:text-2xl">{heading}</p>
@@ -41,19 +40,19 @@ function Cards({ data, heading }) {
         </div>
 
         {/* Cards container with horizontal scrolling */}
-        <div className="  flex gap-9 overflow-x-auto lg:p-4 pt-2 relative lg:right-46   w-full">
+        <div className="  flex gap-9 overflow-x-auto overflow-y-hidden lg:p-4 pt-2 relative lg:right-46   w-full">
           {data.map((item, index) => (
             <div
               key={index}
               className="overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 flex-none  border  p-2 rounded-lg lg:w-[372px] w-57"
               onClick={() => navigate("/featuredEvent", { state: item._id })}
-            >       
-
-             <div className="h-24 lg:h-52 md:h-32 w-full rounded-lg flex justify-end overflow-hidden relative">
+            >
+              <div className="h-24 lg:h-52 md:h-32 w-full rounded-lg flex justify-end overflow-hidden relative">
                 <div
                   style={{
                     backgroundImage: `url(${
-                      item.media?.thumbnailImage || "assets/staticAssets/fallback-image.jpg"
+                      item.media?.thumbnailImage ||
+                      "assets/staticAssets/fallback-image.jpg"
                     })`,
                     backgroundRepeat: "no-repeat",
                     backgroundSize: "cover",
@@ -81,7 +80,7 @@ function Cards({ data, heading }) {
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <MdEvent className="relative top-1" />
                       <span>{convertUTCToLocal(item.startDate)}</span>
-                      </p>
+                    </p>
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <CiLocationOn className="relative top-1" />
                       <span>
@@ -105,7 +104,6 @@ function Cards({ data, heading }) {
               </div>
             </div>
           ))}
-          
         </div>
       </div>
     </div>

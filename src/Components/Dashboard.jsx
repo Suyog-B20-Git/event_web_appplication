@@ -118,7 +118,7 @@ import { HiOutlineReceiptRefund } from "react-icons/hi";
 import { IoIosTime, IoMdDownload } from "react-icons/io";
 import { IoTicket } from "react-icons/io5";
 import { TbCalendarEvent, TbLayoutDashboardFilled } from "react-icons/tb";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { SlCalender } from "react-icons/sl";
 import CommonCalendar from "./CommonCalendar";
 
@@ -307,8 +307,8 @@ const Dashboard = () => {
 
           {activeSection === "my-events" && 
            <div>
-           <h2 className="text-2xl font-semibold text-gray-900">My Events</h2>
-            <CommonCalendar />
+          <CommonCalendar />
+           
            </div>
            }
 

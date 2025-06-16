@@ -29,7 +29,7 @@ function CardData({ data, heading, navigation }) {
         </div>
 
         {/* Horizontal scrollable card container */}
-        <div className="flex gap-9 overflow-x-auto lg:p-4 pt-2 w-full">
+        <div className="flex gap-9 overflow-x-auto overflow-y-hidden lg:p-4 pt-2 w-full">
           {data.map((item, index) => (
             <div
               key={index}
