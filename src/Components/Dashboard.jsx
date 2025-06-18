@@ -58,7 +58,7 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
        {/* Header */}
-     <div className="fixed left-0 top-16 z-50 mt-2 ml-2"> {/* 👈 top-16 = 4rem (same as header height) */}
+     <div className="fixed left-0 top-22 z-50 mt-2 ml-2"> {/* 👈 top-16 = 4rem (same as header height) */}
         <button
           onClick={() => setShowSidebar(!showSidebar)}
           className="p-2 bg-gray-800 text-white rounded"
@@ -78,7 +78,7 @@ const Dashboard = () => {
       {/* Sidebar starts below header */}
       <aside
         ref={sidebarRef}
-        className={`fixed left-0 w-14  top-28 z-30 p-2 bg-gray-900 text-white
+        className={`fixed left-0 w-14  top-44 z-30 p-2 bg-gray-900 text-white
           transition-transform duration-300
           h-[calc(100vh-4rem)]
           ${showSidebar ? "translate-x-0" : "-translate-x-full"}
