@@ -53,6 +53,7 @@ import {
 } from "../../redux/actions/master/Events/UpcomingEvent";
 import FollowButton from "../FollowButton";
 import CommonCalendar from "../CommonCalendar";
+import YouTubeWall from "../SocialMedia/YouTubeWall";
 
 function GetPerformerById() {
   const { performerId } = useParams();
@@ -498,6 +499,7 @@ function GetPerformerById() {
             )}
 
             <div className="lg:w-[70%]  h-[500px] overflow-scroll scrollbar-hide  rounded-lg">
+              <div className="sticky top-0 z-10">
               <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
                 <button
                   className={`px-2 ${
@@ -680,7 +682,8 @@ function GetPerformerById() {
                   STAT
                 </button>
               </div>
-              <div className="lg:px-4 p-2 border bg-white  rounded-lg h-full overflow-auto">
+              </div>
+              <div className="lg:px-4 p-2 border bg-white rounded-lg h-full overflow-auto">
                 {about && data ? (
                   <p className="py-5 ">
                     <h2 className="text-2xl font-semibold text-gray-800 py-4">
@@ -800,11 +803,13 @@ function GetPerformerById() {
                   )}
                 </p>
                 <p>
-                  {youtube ? (
-                    <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
-                  ) : (
-                    ""
-                  )}
+                 {youtube &&
+                    (data.youtubeId ? (
+                      <YouTubeWall channelId={data.youtubeId} />
+                    ) : (
+                      <div>Not Available</div>
+                    ))
+                  }
                 </p>
                 <p>{stat ? <PerformerStats data={data} /> : ""}</p>
               </div>

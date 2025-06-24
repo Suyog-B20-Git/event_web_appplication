@@ -2,15 +2,28 @@
 import React from "react";
 
 function WatchTrailer({ youtubeVideoUrl = [] }) {
-  const getEmbedUrl = (url) => {
-    try {
-      const videoId = new URL(url).searchParams.get("v");
-      return `https://www.youtube.com/embed/${videoId}`;
-    } catch (error) {
-      console.error("Invalid YouTube URL:", url);
+ const getEmbedUrl = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+    let videoId = parsedUrl.searchParams.get("v");
+
+    // Fallback for shorts URLs
+    if (!videoId && parsedUrl.pathname.startsWith("/shorts/")) {
+      videoId = parsedUrl.pathname.split("/shorts/")[1];
+    }
+
+    if (!videoId) {
+      console.error("No video ID found in URL:", url);
       return "";
     }
-  };
+
+    return `https://www.youtube.com/embed/${videoId}`;
+  } catch (error) {
+    console.error("Invalid YouTube URL:", url);
+    return "";
+  }
+};
+
 
   return (
     <center>

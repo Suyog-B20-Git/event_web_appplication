@@ -50,6 +50,7 @@ import {
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
 import FollowButton from "../FollowButton.jsx";
 import CommonCalendar from "../CommonCalendar.jsx";
+import YouTubeWall from "../SocialMedia/YouTubeWall.jsx";
 
 function GetVenueById() {
   const { venueId } = useParams();
@@ -486,6 +487,7 @@ function GetVenueById() {
             )}
 
             <div className="lg:w-[70%]  h-[500px] overflow-scroll  scrollbar-hide  rounded-lg">
+               <div className="sticky top-0 z-10">
               <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
                 <button
                   className={`px-2 ${
@@ -613,6 +615,7 @@ function GetVenueById() {
                 >
                   STAT
                 </button>
+              </div>
               </div>
 
               <div className="lg:px-4 border bg-white  rounded-lg h-full overflow-auto">
@@ -817,11 +820,13 @@ function GetVenueById() {
                 </p>
 
                 <p className="font-medium text-lg text-center ">
-                  {youtube ? (
-                    <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
-                  ) : (
-                    <div></div>
-                  )}
+                  {youtube &&
+                    (data.youtubeId ? (
+                      <YouTubeWall channelId={data.youtubeId} />
+                    ) : (
+                      <div>Not Available</div>
+                    ))
+                  }
                 </p>
                 <p className="font-medium text-lg text-center ">
                   {stat && <VenueStats data={data} />}

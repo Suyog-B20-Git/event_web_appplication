@@ -47,6 +47,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { deleteFavouriteEvent } from "../redux/actions/master/Events/deleteFavouriteEvent";
 import fallbackImage from "/public/assets/staticAssets/fallback-image.jpg";
 import VenueData from "../Components/FeaturedEvent/VenueData";
+import TicketPrice from "../Components/FeaturedEvent/TicektPrice";
 
 function FeaturedEvent() {
   const {
@@ -399,7 +400,16 @@ function FeaturedEvent() {
           </div>
           <hr />
           <div className="pt-2 flex justify-between gap-2 lg:pt-3 md:p-2 px-3 mt-0 sm:mt-6">
-            <p className="lg:text-xl text-base font-bold">$99 onwards </p>
+            {receivedData?.ticketFormats?.length > 0 ? (
+              <p className="lg:text-xl text-base font-bold mt-2">
+                Price:{" "}
+                <TicketPrice ticketFormatId={receivedData.ticketFormats[0]} />
+              </p>
+            ) : (
+              <p className="lg:text-xl text-base font-bold mt-2">
+                Price: Not Available
+              </p>
+            )}
             <button
               onClick={() => {
                 setModal(true);
@@ -423,7 +433,12 @@ function FeaturedEvent() {
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
-              by={receivedData?.organizer?.name || receivedData?.organizer?.username || receivedData?.name || "-"}
+              by={
+                receivedData?.organizer?.name ||
+                receivedData?.organizer?.username ||
+                receivedData?.name ||
+                "-"
+              }
               category={receivedData.category}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
@@ -464,13 +479,10 @@ function FeaturedEvent() {
             </div>
             <div className="w-full justify-start items-start gap-2 p-4">
               {/* Repeating Dates & Days */}
-
-               
-              {Array.isArray(receivedData.repeatDates !=="null") &&
-                Array.isArray(receivedData.repeatDays !=="") &&
+              {/* {receivedData.repeatDates !== null &&
+                Array.isArray(receivedData.repeatDates) &&
                 receivedData.repeatDates.length > 0 &&
-                receivedData.repeatDates.length ===
-                  receivedData.repeatDays.length && (
+                receivedData.repeatDays !== "" && (
                   <div className="bg-white p-4 rounded-xl shadow border border-gray-200 overflow-x-auto">
                     <div className="flex items-center gap-2 mb-3">
                       <MdOutlineEventRepeat className="text-3xl text-pink-600" />
@@ -481,7 +493,7 @@ function FeaturedEvent() {
                     <hr className="mb-4" />
 
                     <h2 className="text-md font-semibold text-gray-700 mb-2">
-                      Repeats on:
+                      Repeats on: {receivedData.repetitiveType}
                     </h2>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {receivedData.repeatDates.map((date, idx) => (
@@ -499,8 +511,61 @@ function FeaturedEvent() {
                       {receivedData.repeatEndTime}
                     </div>
                   </div>
-                )}
-              
+                )} */}
+
+              {receivedData.isRepetitive === true && (
+               <div className="bg-white p-4 rounded-xl shadow border border-gray-200 overflow-x-auto">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MdOutlineEventRepeat className="text-3xl text-pink-600" />
+                      <h1 className="text-2xl font-bold text-gray-800">
+                        Repeating Events
+                      </h1>
+                    </div>
+                    <hr className="mb-4" />
+
+                    <h2 className="text-md font-semibold text-gray-700 mb-2">
+                      Repeats on: {receivedData.repetitiveType}
+                    </h2>
+                    
+                    {receivedData.repetitiveType === "Monthly" && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+
+                      {receivedData.repeatDates.map((date, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                        >
+                          {`Date: ${date}`}
+                        </div>
+                      ))}
+                  </div>
+                    )}
+
+                    {receivedData.repetitiveType === "Weekly" && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                      {receivedData.repeatDays.map((day, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                        >
+                          {`Day: ${day}`}
+                        </div>
+                      ))}
+
+                    </div>
+                    )}
+                    
+                    <div className="text-lg font-semibold">
+                      <span className="font-medium text-gray-800">Time:</span>{" "}
+                      {receivedData.repeatStartTime} -{" "}
+                      {receivedData.repeatEndTime}
+                    </div>
+                  </div>  
+              )}
+
+
+
+
 
               <div className="bg-white p-4 mt-6 rounded-xl shadow-lg border border-gray-200">
                 <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
@@ -513,12 +578,12 @@ function FeaturedEvent() {
               </div>
 
               <div className="p-3 px-0 sm:px-6 mt-4 rounded-xl">
-               
                 <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
                   Event Tags
                 </h2>
-                {Array.isArray(receivedData.eventTags!=="undefined" || "null" || "") &&
-                receivedData.eventTags.length > 0 ? (
+                {Array.isArray(
+                  receivedData.eventTags !== "undefined" || "null" || ""
+                ) && receivedData.eventTags.length > 0 ? (
                   <div className="flex flex-wrap gap-3 mt-2">
                     {receivedData.eventTags.map((tag, index) => (
                       <Button
@@ -579,21 +644,21 @@ function FeaturedEvent() {
                 )}
               </div>
 
-<div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
-  {Array.isArray(receivedData.youtubeVideoUrls) && 
-   receivedData.youtubeVideoUrls.some(url => url && url.trim() !== "") ? (
-    <>
-      <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
-        Watch Videos
-      </h1>
-      <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
-    </>
-  ) : (
-    <p className="text-lg text-gray-600 mt-2">
-     
-    </p>
-  )}
-</div>
+              <div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
+                {Array.isArray(receivedData.youtubeVideoUrls) &&
+                receivedData.youtubeVideoUrls.some(
+                  (url) => url && url.trim() !== ""
+                ) ? (
+                  <>
+                    <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
+                      Watch Videos
+                    </h1>
+                    <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
+                  </>
+                ) : (
+                  <p className="text-lg text-gray-600 mt-2"></p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -627,7 +692,9 @@ function FeaturedEvent() {
 
                 {/* Organizer Name */}
                 <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                  {receivedData.organizer?.name || receivedData.organizer?.username || "Organizer Name"}
+                  {receivedData.organizer?.name ||
+                    receivedData.organizer?.username ||
+                    "Organizer Name"}
                 </p>
 
                 {/* Organizer Info */}

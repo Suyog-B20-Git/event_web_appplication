@@ -5,6 +5,7 @@ import { CiLocationOn } from "react-icons/ci";
 import { MdEvent } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
+import TicketPrice from "../FeaturedEvent/TicektPrice";
 
 const convertUTCToLocal = (utcString) => {
   if (!utcString) return "Invalid Date";
@@ -91,7 +92,19 @@ function Cards({ data, heading }) {
                   </div>
 
                   <p className="mt-auto  flex lg:justify-between gap-4 items-center text-sm lg:text-sm p-2">
-                    <span className="lg:text-sm text-xs">$1300 ONWARDS</span>
+                    {/* <span className="lg:text-sm text-xs">$1300 ONWARDS</span> */}
+                     {item?.ticketFormats?.length > 0 ? (
+            <p className="lg:text-sm text-xs">
+              Price:{" "}
+              <TicketPrice
+                ticketFormatId={item.ticketFormats[0]}
+              />
+            </p>
+            ) : (
+              <p className="lg:text-sm text-xs">
+              Price: Not Available
+              </p>
+              )}
                     <button
                       className="relative  hover:text-white rounded shadow lg:p-2 p-2 lg:m-0 mr-1 lg:text-sm text-xs bg-white transition-all duration-300 
                               before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-[#ff2459] before:transition-all before:duration-300 

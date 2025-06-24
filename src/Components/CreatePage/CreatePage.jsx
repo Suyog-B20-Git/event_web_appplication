@@ -112,7 +112,7 @@ useEffect(() => {
   const socialProfile = [
   { label: "Facebook Url", value: "facebookUrl", placeholder: "https://www.facebook.com/abc" },
   { label: "Twitter Url", value: "twitterUrl", placeholder: "https://www.twitter.com/abc" },
-  { label: "Youtube Url", value: "youtubeUrl", placeholder: "https://www.youtube.com/watch?V=abc123" },
+  { label: "Youtube Url", value: "youtubeUrl", placeholder: "https://www.youtube.com/@tseries" },
   { label: "Instagram Url", value: "instagramUrl", placeholder: "https://www.instagram.com/Adidas" },
 ];
 
@@ -306,7 +306,7 @@ useEffect(() => {
 
 
 const onSubmit = async (data) => {
-  
+  console.log("Form Data:", data);
   const token = localStorage.getItem("authToken");
   if (!token) {
     alert("Please login first.");
@@ -344,6 +344,7 @@ const onSubmit = async (data) => {
 
     setError(""); 
     const formData = new FormData();
+    console.log("fm data:", formData);
     formData.append("profileImage", image);
     data.subCategory.forEach((subCategory) =>{
     formData.append("categories[]", subCategory.toLowerCase())
@@ -368,11 +369,12 @@ const onSubmit = async (data) => {
     if (data.phone) formData.append("phoneNumber", data.phone);
     if (data.email) formData.append("email", data.email);
     if (data.availableTime)
-      formData.append("availableTime", data.availableTime);
+      formData.append("availableTime", data.availableTime || "9 AM to 6 PM");
     if (data.website) formData.append("website", data.website);
     formData.append("facebookUrl", data.facebookUrl);
     formData.append("instagramUrl", data.instagramUrl);
     formData.append("youtubeUrl", data.youtubeUrl);
+    console.log("Youtube URL:", data.youtubeUrl);
     formData.append("twitterUrl", data.twitterUrl);
 
     if (selectedCategory.value === "Performer") {
@@ -1090,7 +1092,7 @@ const onSubmit = async (data) => {
             <h1 className="text-[#ff2459] text-2xl font-semibold mb-2">
               Contact Information
             </h1>
-            <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
               {/* Phone */}
               <div className="flex flex-col gap-1">
                 <label className="text-gray-700 font-medium">Phone</label>
@@ -1108,6 +1110,22 @@ const onSubmit = async (data) => {
                 {errors.phone && (
                   <p className="text-red-500 text-sm">{errors.phone.message}</p>
                 )}
+              </div>
+
+              {/* Available Time */}
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">
+                  Available Time*
+                </label>
+               <input
+                  type="text"
+                  placeholder="9 AM to 6 PM"
+                  {...register("availableTime", {
+                    required: "Available time is required",
+                    
+                  })}
+                  className="border p-2 rounded"
+                />
               </div>
 
               {/* Email */}

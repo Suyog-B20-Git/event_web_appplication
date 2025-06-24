@@ -23,6 +23,8 @@ import { postTicketData } from "../../redux/actions/master/Events/updateTicket";
 import { toast } from "react-toastify";
 const baseUrl = import.meta.env.VITE_API_URL;
 import axios from "axios";
+import { useWatch } from "react-hook-form";
+
 // import DatePicker from "react-datepicker";
 // import "react-datepicker/dist/react-datepicker.css";
 
@@ -41,7 +43,7 @@ export default function EventForm() {
   const [selectedPerformers, setSelectedPerformers] = useState([]);
   const dispatch = useDispatch();
   const [youtubeLinks, setYoutubeLinks] = useState([""]);
-  const [performerFacebookLinks, setPerformerFacebookLinks] = useState([""]);
+  const [performersYtLinks, setperformersYtLinks] = useState([""]);
   const [showTicketForm, setShowTicketForm] = useState(false);
 
   const selectedRadio = localStorage.getItem("selectedRadio");
@@ -104,20 +106,20 @@ export default function EventForm() {
   };
 
   const handleAddPerformerLink = () => {
-    setPerformerFacebookLinks([...performerFacebookLinks, ""]); // Add new input
+    setperformersYtLinks([...performersYtLinks, ""]);
   };
 
   const handleRemovePerformerLink = (index) => {
-    const updatedLinks = performerFacebookLinks.filter((_, i) => i !== index);
-    setPerformerFacebookLinks(updatedLinks);
-    setValue("performerFacebookLinks", updatedLinks); // Update form state
+    const updatedLinks = performersYtLinks.filter((_, i) => i !== index);
+    setperformersYtLinks(updatedLinks);
+    setValue("performersYtLinks", updatedLinks);
   };
 
   const handlePerformerLinkChange = (index, value) => {
-    const updatedLinks = [...performerFacebookLinks];
+    const updatedLinks = [...performersYtLinks];
     updatedLinks[index] = value;
-    setPerformerFacebookLinks(updatedLinks);
-    setValue("performerFacebookLinks", updatedLinks); // Update form state
+    setperformersYtLinks(updatedLinks);
+    setValue("performersYtLinks", updatedLinks);
   };
 
   const navigate = useNavigate();
@@ -252,7 +254,12 @@ export default function EventForm() {
 
   const [repeatExceptList, setRepeatExceptList] = useState([]);
   const handleAddRepeatExcept = (e) => {
-    if (e.key === "Enter" && e.target.value.trim() !== "") {
+    if (
+      e.key === "Enter" &&
+      e.target.value.trim() !== "" &&
+      e.target.value <= 31 &&
+      e.target.value >= 1
+    ) {
       e.preventDefault();
 
       const newValue = Number(e.target.value.trim());
@@ -290,36 +297,46 @@ export default function EventForm() {
   const repetitiveType = watch("repetitiveType");
 
   useEffect(() => {
-    if (watch("venue") || watch("facebookLink")) {
-      clearErrors(["venue", "facebookLink"]);
+    if (watch("venue") || watch("mapUrl")) {
+      clearErrors(["venue", "mapUrl"]);
     }
-  }, [watch("venue"), watch("facebookLink"), clearErrors]);
+  }, [watch("venue"), watch("mapUrl"), clearErrors]);
+
+  // useEffect(() => {
+  //   if (watch("performers") || watch("performersYtLinks")) {
+  //     clearErrors(["performers", "performersYtLinks"]);
+  //   }
+  // }, [watch("performers"), watch("performersYtLinks"), clearErrors]);
+
+  // const performersValue = useWatch({
+  //   control,
+  //   name: "performers",
+  // });
+
+  const performers = useWatch({ control, name: "performers" });
+  const ytLinks = useWatch({ control, name: "performersYtLinks" });
 
   useEffect(() => {
-    if (
-      (!watch("performers") || watch("performers").length === 0) &&
-      (!watch("performerFacebookLinks") || watch("performerFacebookLinks"))
-    ) {
+    const hasPerformers = performers?.length > 0;
+    const hasYtLinks = ytLinks && ytLinks.some((link) => link?.trim() !== "");
+
+    if (!hasPerformers && !hasYtLinks) {
       setError("performers", {
         type: "manual",
-        message: "Either Performers or Performers Facebook Link is required.",
+        message: "Either Performers or Performers YouTube Link is required.",
       });
-      setError("performerFacebookLinks", {
+      setError("performersYtLinks", {
         type: "manual",
-        message: "Either Performers or Performers Facebook Link is required.",
+        message: "Either Performers or Performers YouTube Link is required.",
       });
     } else {
       clearErrors("performers");
-      clearErrors("performerFacebookLinks");
+      clearErrors("performersYtLinks");
     }
-  }, [
-    watch("performers"),
-    watch("performerFacebookLinks"),
-    setError,
-    clearErrors,
-  ]);
+  }, [performers, ytLinks]);
 
   const onSubmit = (data) => {
+    console.log("FORM DATA", data);
     const formData = new FormData();
     const category = data.selectedEvent || data.category;
     // const { repeatDates, repeatDays } = getRepeatDatesAndDays(repeatDatesRaw);
@@ -338,32 +355,39 @@ export default function EventForm() {
     formData.append("isSeasonal", data.isSeasonal ?? false);
     formData.append("isOnline", data.isOnline ?? true);
     formData.append("venue", data.venue || "");
-    formData.append("facebookLink", data.facebookLink || "");
+    formData.append("mapUrl", data.mapUrl || "");
     formData.append("repeatExcept", data.repeatExcept ?? 1);
     formData.append("performers", data.performers || []);
-    formData.append(
-      "performerFacebookLinks",
-      JSON.stringify(data.performerFacebookLinks)
-    );
+    // formData.append("performersYtLinks", data.performersYtLinks || []);
+    if (
+      data.performersYtLinks &&
+      data.performersYtLinks.length > 0 &&
+      data.performersYtLinks[0] !== ""
+    ) {
+      const linksString = data.performersYtLinks
+        .filter((link) => link.trim() !== "")
+        .join(",");
+
+      formData.append("performersYtLinks", linksString);
+    }
+
     formData.append(
       "repeatStartTime",
       data.repeatStartTime ? data.repeatStartTime : ""
     );
 
-    const repeatDates = [];
-    const repeatDays = [];
-
-    repeatDatesRaw.forEach((dateObj) => {
-      const date = new Date(dateObj);
-      repeatDates.push(date.getDate());
-      repeatDays.push(date.toLocaleString("en-US", { weekday: "long" }));
-    });
-
-    formData.append("repeatDates", repeatDates.join(","));
-    formData.append("repeatDays", repeatDays.join(","));
+    if (repetitiveType === "Weekly") {
+      if (repeatDatesRaw.length > 0) {
+        formData.append("repeatDays", repeatDatesRaw);
+      }
+    } else if (repetitiveType === "Monthly") {
+      const dateNumbers = repeatDatesRaw.map((d) => new Date(d).getDate());
+      if (dateNumbers.length > 0) {
+        formData.append("repeatDates", dateNumbers);
+      }
+    }
 
     formData.append("repeatEndTime", data.repeatEndTime);
-    formData.append("facebookLink", data.facebookLink);
     formData.append("youtubeLinks", data.youtubeLinks);
     formData.append("startDate", `${data.startDate}T${data.startTime}`);
     formData.append("endDate", `${data.endDate}T${data.endTime}`);
@@ -457,13 +481,21 @@ export default function EventForm() {
     formData.append("isSeasonal", data.isSeasonal ?? false);
     formData.append("isOnline", data.isOnline ?? true);
     formData.append("venue", data.venue || "");
-    formData.append("facebookLink", data.facebookLink || "");
+    formData.append("mapUrl", data.mapUrl || "");
     formData.append("repeatExcept", data.repeatExcept ?? 1);
     formData.append("performers", data.performers || []);
-    formData.append(
-      "performerFacebookLinks",
-      JSON.stringify(data.performerFacebookLinks)
-    );
+    // formData.append("performersYtLinks", data.performersYtLinks);
+    if (
+      data.performersYtLinks &&
+      data.performersYtLinks.length > 0 &&
+      data.performersYtLinks[0] !== ""
+    ) {
+      const linksString = data.performersYtLinks
+        .filter((link) => link.trim() !== "")
+        .join(",");
+
+      formData.append("performersYtLinks", linksString);
+    }
 
     const repeatDates = [];
     const repeatDays = [];
@@ -481,7 +513,6 @@ export default function EventForm() {
       data.repeatStartTime ? data.repeatStartTime : ""
     );
     formData.append("repeatEndTime", data.repeatEndTime);
-    formData.append("facebookLink", data.facebookLink);
     formData.append("youtubeLinks", data.youtubeLinks);
     formData.append("startDate", `${data.startDate}T${data.startTime}`);
     formData.append("endDate", `${data.endDate}T${data.endTime}`);
@@ -698,7 +729,7 @@ export default function EventForm() {
 
               <div className="flex items-center  h-full mb-4 ">
                 {/* Venue Field */}
-                <div className="w-full flex flex-col justify-center gap-2">
+                {/* <div className="w-full flex flex-col justify-center gap-2">
                   <label
                     htmlFor="venue"
                     className="block text-sm font-medium text-gray-700"
@@ -760,14 +791,117 @@ export default function EventForm() {
                       </>
                     )}
                   />
+                </div> */}
+              </div>
+
+              <div className="flex items-center justify-center h-full mb-4 ">
+                {/* Venue Field */}
+                <div className="w-1/2 flex flex-col justify-center gap-2">
+                  <label
+                    htmlFor="venue"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Venue
+                  </label>
+                  <Controller
+                    name="venue"
+                    control={control}
+                    rules={{
+                      validate: (value) => {
+                        if (!value && !watch("mapUrl")) {
+                          return "Either Venue or Google Map URL is required.";
+                        }
+                        return true;
+                      },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Select
+                          {...field}
+                          isClearable
+                          options={options}
+                          placeholder="Search venue..."
+                          getOptionLabel={(option) => option.label}
+                          getOptionValue={(option) => option.value}
+                          onInputChange={(value, { action }) => {
+                            if (action === "input-change") {
+                              setQuery(value);
+                            }
+                            if (
+                              action === "input-blur" ||
+                              action === "menu-close"
+                            ) {
+                              setQuery("");
+                            }
+                          }}
+                          onChange={(selectedOption) => {
+                            field.onChange(
+                              selectedOption ? selectedOption.value : null
+                            );
+                          }}
+                          value={
+                            options.find(
+                              (option) => option.value === field.value
+                            ) || null
+                          }
+                          noOptionsMessage={() => "Type... to see Venues"}
+                          isDisabled={!!watch("mapUrl")}
+                          className={
+                            watch("mapUrl")
+                              ? "bg-gray-200 cursor-not-allowed"
+                              : ""
+                          }
+                        />
+                        <p className="text-red-500 text-sm min-h-[1rem]">
+                          {fieldState.error?.message}
+                        </p>
+                      </>
+                    )}
+                  />
+                </div>
+
+                {/* OR separator */}
+                <div className="px-4 flex items-center justify-center">
+                  <span className="text-gray-500 font-semibold ">or</span>
+                </div>
+
+                {/* Venue Google Map URL Field */}
+                <div className="w-1/2 flex flex-col justify-center gap-1 lg:mt-[-9px]">
+                  <label
+                    htmlFor="mapUrl"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Google Map URL
+                  </label>
+                  <input
+                    type="url"
+                    id="mapUrl"
+                    name="mapUrl"
+                    className={`mt-1 block w-full border rounded-md p-2 ${
+                      watch("venue") ? "bg-gray-200 cursor-not-allowed" : ""
+                    }`}
+                    placeholder="Enter your Venue Map URL"
+                    {...register("mapUrl", {
+                      validate: (value) => {
+                        if (!value && !watch("venue")) {
+                          return "Either Google Map URL or Venue is required.";
+                        }
+                        return true;
+                      },
+                    })}
+                    disabled={!!watch("venue")} // Disable when Venue is selected
+                  />
+                  <p className="text-red-500 text-sm min-h-[1rem]">
+                    {errors.mapUrl?.message}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-start h-full mb-4 gap-4">
+              <div className="flex items-center justify-center h-full mb-4">
                 {/* Performers Select */}
-                <div className="w-full flex flex-col gap-2">
+                <div className="w-1/2 flex flex-col justify-center gap-2">
                   <label
-                    htmlFor="performer"
+                    htmlFor="performers"
                     className="block text-sm font-medium text-gray-700"
                   >
                     Performers
@@ -776,28 +910,113 @@ export default function EventForm() {
                   <Controller
                     name="performers"
                     control={control}
+                    rules={{
+                      validate: (value) => {
+                        const ytLinksFilled = ytLinks?.some(
+                          (link) => link?.trim() !== ""
+                        );
+                        if (!value?.length && !ytLinksFilled) {
+                          return "Either Performer or Performers YT URL is required.";
+                        }
+                        return true;
+                      },
+                    }}
                     render={({ field }) => (
-                      <Select
-                        {...field}
-                        isMulti
-                        options={performerOptions}
-                        placeholder="Select performers..."
-                        getOptionLabel={(option) => option.label}
-                        getOptionValue={(option) => option.value}
-                        onInputChange={(value) => setPerformer(value)}
-                        onChange={(selectedOptions) => {
-                          setSelectedPerformers(selectedOptions);
-                          const selectedIDs = selectedOptions
-                            ? selectedOptions.map((option) => option.value)
-                            : [];
-                          field.onChange(selectedIDs);
-                        }}
-                        value={selectedPerformers}
-                        noOptionsMessage={() => "Type... to see performers"}
-                        className="w-full"
-                      />
+                      <>
+                        <Select
+                          {...field}
+                          isMulti
+                          options={performerOptions}
+                          placeholder="Select performers..."
+                          getOptionLabel={(option) => option.label}
+                          getOptionValue={(option) => option.value}
+                          onInputChange={(value) => setPerformer(value)}
+                          onChange={(selectedOptions) => {
+                            setSelectedPerformers(selectedOptions);
+                            const selectedIDs = selectedOptions
+                              ? selectedOptions.map((option) => option.value)
+                              : [];
+                            field.onChange(selectedIDs);
+                          }}
+                          value={selectedPerformers}
+                          isClearable
+                          noOptionsMessage={() => "Type... to see performers"}
+                          isDisabled={ytLinks?.some(
+                            (link) => link?.trim() !== ""
+                          )}
+                          classNamePrefix="react-select"
+                          className={`react-select-container ${
+                            ytLinks?.some((link) => link?.trim() !== "")
+                              ? "bg-gray-200 cursor-not-allowed"
+                              : ""
+                          }`}
+                        />
+                        <p className="text-red-500 text-sm min-h-[1rem]">
+                          {field.error?.message}
+                        </p>
+                      </>
                     )}
                   />
+                </div>
+
+                {/* OR separator */}
+                <div className="px-4 flex items-center justify-center">
+                  <span className="text-gray-500 font-semibold">or</span>
+                </div>
+
+                {/* Performer Youtube Link Field */}
+                <div className="w-1/2 flex flex-col gap-2">
+                  <label
+                    htmlFor="performersYtLinks"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Performers Youtube Link
+                  </label>
+
+                  {performersYtLinks.map((link, index) => (
+                    <div key={index} className="flex gap-2 items-center">
+                      <Controller
+                        name={`performersYtLinks[${index}]`}
+                        control={control}
+                        defaultValue={link}
+                        render={({ field }) => (
+                          <input
+                            type="url"
+                            className={`mt-1 block w-full border rounded-md p-2 min-h-[42px] ${
+                              performers?.length > 0
+                                ? "bg-gray-200 cursor-not-allowed"
+                                : ""
+                            }`}
+                            placeholder="Enter performers youtube link"
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                              handlePerformerLinkChange(index, e.target.value);
+                            }}
+                            disabled={performers?.length > 0}
+                          />
+                        )}
+                      />
+
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          className="text-red-600 font-bold px-2"
+                          onClick={() => handleRemovePerformerLink(index)}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={handleAddPerformerLink}
+                    className="mt-2 bg-red-500 text-white px-2 py-1 rounded-md w-fit text-sm"
+                  >
+                    + Add More
+                  </button>
                 </div>
               </div>
 
@@ -812,9 +1031,7 @@ export default function EventForm() {
                   type="text"
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter your excerpt"
-                  {...register("excerpt", {
-                   
-                  })}
+                  {...register("excerpt", {})}
                 />
                 {errors.excerpt && (
                   <p className="text-red-600 text-sm px-2">
@@ -1009,7 +1226,9 @@ export default function EventForm() {
               </div>
               {/*IsRepeititive button*/}
               <div>
-                <h1 className="font-medium text-[#ff2459]">Repetitive Status</h1>
+                <h1 className="font-medium text-[#ff2459]">
+                  Repetitive Status
+                </h1>
                 <div className="flex gap-2 items-center">
                   <div
                     onClick={() => setValue("isRepetitive", !isRepetitive)}
@@ -1045,7 +1264,6 @@ export default function EventForm() {
                         <option value="Daily">Daily</option>
                         <option value="Weekly">Weekly</option>
                         <option value="Monthly">Monthly</option>
-                        <option value="Yearly">Yearly</option>
                       </select>
                       {errors.repetitiveType && (
                         <p className="text-red-600 text-sm px-2">
@@ -1053,56 +1271,106 @@ export default function EventForm() {
                         </p>
                       )}
                     </div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Repetitive Except
-                      </label>
 
-                      <input
-                        type="number"
-                        className="mt-1 block w-full border rounded-md p-2"
-                        placeholder="Enter repeat except and press Enter"
-                        onKeyDown={handleAddRepeatExcept} // ✅ Add values on Enter
-                      />
+                    {repetitiveType === "Daily" && (
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Repetitive Dates (Repeats Except)
+                        </label>
 
-                      {errors.repeatExcept && (
-                        <p className="text-red-600 text-sm px-2">
-                          {errors.repeatExcept.message}*
-                        </p>
-                      )}
+                        <input
+                          type="number"
+                          min={1}
+                          max={31}
+                          className="mt-1 block w-full border rounded-md p-2"
+                          placeholder="Enter repeat except and press Enter"
+                          onKeyDown={handleAddRepeatExcept} // ✅ Add values on Enter
+                        />
 
-                      {/* Display Array Values */}
-                      <div className="flex flex-wrap mt-2">
-                        {repeatExceptList.map((value, index) => (
-                          <div
-                            key={index}
-                            className="bg-blue-500 text-white px-2 py-1 rounded flex items-center m-1"
-                          >
-                            {value}
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveRepeatExcept(index)}
-                              className="ml-2 text-gray-800 hover:text-red-500"
+                        {errors.repeatExcept && (
+                          <p className="text-red-600 text-sm px-2">
+                            {errors.repeatExcept.message}*
+                          </p>
+                        )}
+
+                        {/* Display Array Values */}
+                        <div className="flex flex-wrap mt-2">
+                          {repeatExceptList.map((value, index) => (
+                            <div
+                              key={index}
+                              className="bg-blue-500 text-white px-2 py-1 rounded flex items-center m-1"
                             >
-                              <MdCancel />
-                            </button>
-                          </div>
-                        ))}
+                              {value}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveRepeatExcept(index)}
+                                className="ml-2 text-gray-800 hover:text-red-500"
+                              >
+                                <MdCancel />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                    <div className="mb-4 col-span-4 w-full bg-blue-300 p-4 rounded-lg">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Select Repeating Dates
-                      </label>
-                      <DatePicker
-                        multiple
-                        value={repeatDatesRaw}
-                        onChange={setRepeatDatesRaw}
-                        format="YYYY-MM-DD"
-                        className="border mt-1 p-2 rounded-md w-[100%]"
-                        placeholder="Select Dates"
-                      />
-                    </div>
+                    )}
+
+                    {repetitiveType === "Weekly" && (
+                      <div className="mb-4 col-span-4 w-full bg-blue-300 p-4 rounded-lg">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Select Repeating Days
+                        </label>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {[
+                            "Sunday",
+                            "Monday",
+                            "Tuesday",
+                            "Wednesday",
+                            "Thursday",
+                            "Friday",
+                            "Saturday",
+                          ].map((day) => (
+                            <label
+                              key={day}
+                              className="flex items-center bg-white p-2 rounded"
+                            >
+                              <input
+                                type="checkbox"
+                                value={day}
+                                checked={repeatDatesRaw.includes(day)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setRepeatDatesRaw([...repeatDatesRaw, day]);
+                                  } else {
+                                    setRepeatDatesRaw(
+                                      repeatDatesRaw.filter((d) => d !== day)
+                                    );
+                                  }
+                                }}
+                                className="mr-2"
+                              />
+                              {day}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {repetitiveType === "Monthly" && (
+                      <div className="mb-4 col-span-4 w-full bg-blue-300 p-4 rounded-lg">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Select Repeating Dates
+                        </label>
+                        <DatePicker
+                          multiple
+                          value={repeatDatesRaw}
+                          onChange={setRepeatDatesRaw}
+                          format="YYYY-MM-DD"
+                          className="border mt-1 p-2 rounded-md w-[100%]"
+                          placeholder="Select Dates"
+                        />
+                      </div>
+                    )}
+
                     <div>
                       <label
                         htmlFor="RepeatStartTime"
@@ -1503,12 +1771,14 @@ export default function EventForm() {
                   </label>
                   <textarea
                     id="metaDescription"
-                    className="mt-1 block w-full border rounded-md p-2"
+                    className="mt-1 block w-full border rounded-md p-2 resize-y"
                     placeholder="Enter your Meta description"
                     {...register("seo.metaDescription", {
                       required: "Meta Description is required",
                     })}
                     onChange={(e) => {
+                      e.target.style.height = "auto";
+                      e.target.style.height = `${e.target.scrollHeight}px`;
                       setMetaDescEdited(true);
                       setValue("seo.metaDescription", e.target.value);
                     }}

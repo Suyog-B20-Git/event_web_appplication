@@ -6,6 +6,7 @@ import { getOrganizerById } from "../../redux/actions/master/Organizer/getOrgani
 import {
   MdKeyboardDoubleArrowRight,
   MdOutlineNavigateNext,
+  MdOutlineAlternateEmail, 
 } from "react-icons/md";
 import {
   FaEye,
@@ -16,8 +17,9 @@ import {
   FaSquareFacebook,
   FaSquareXTwitter,
   FaWhatsapp,
+  FaGlobe,
 } from "react-icons/fa6";
-import { IoFlagSharp, IoLogoWhatsapp } from "react-icons/io5";
+import { IoFlagSharp, IoLogoWhatsapp, IoGlobeOutline } from "react-icons/io5";
 import {
   CiCircleCheck,
   CiCircleInfo,
@@ -27,7 +29,7 @@ import {
   CiCirclePlus,
 } from "react-icons/ci";
 import { BsCalendar2DateFill } from "react-icons/bs";
-
+import { FaClock } from "react-icons/fa6";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import MapContainer from "./Map";
@@ -51,9 +53,11 @@ import {
 } from "../../redux/actions/master/Events/UpcomingEvent";
 import { FaPhoneAlt } from "react-icons/fa";
 const baseUrl = import.meta.env.VITE_API_URL;
+const ytapikey = import.meta.env.VITE_YOUTUBE_API_KEY;
 import axios from "axios";
 import FollowButton from "../FollowButton";
 import CommonCalendar from "../CommonCalendar";
+import YouTubeWall from "../SocialMedia/YouTubeWall";
 
 function GetOrganizerById() {
   const { organizerId } = useParams();
@@ -230,13 +234,13 @@ function GetOrganizerById() {
             </div>
           </div>
           <div
-            className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
+            className=" text-white flex flex-col justify-around gap-2 lg:gap-4 lg:pt-10 py-3 lg:px-8   lg:p-2"
             style={{
               backgroundImage:
                 "url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fG9yZ2FuaXplcnxlbnwwfHx8fDE2OTY5NzQ1NTg&ixlib=rb-4.0.3&q=80&w=1080')",
             }}
           >
-            <div className="flex flex-col gap-4 lg:px-0 px-2 ">
+            <div className="flex flex-col gap-4 lg:px-0 px-2 lg:mt-[-15px]">
               <div className="flex justify-between">
                 <h1
                   className="text-white  font-medium lg:text-4xl text-2xl"
@@ -275,24 +279,85 @@ function GetOrganizerById() {
                   : "not specified"}
               </p>
             </div>
-            <div
-              className="flex gap-2 lg:px-0 px-2 lg:p-0 p-2 py-0 cursor-pointer"
-              onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
-            >
-              <p>
-                <FaPhoneAlt
-                  className="text-red-500 relative top-1"
-                  style={{ textShadow: "1px 1px 1px black" }}
-                />
-              </p>
-              <p>
-                {!hasPhoneNumber
-                  ? "Not available"
-                  : showNumber
-                  ? data.phoneNumber
-                  : "View Contact"}
-              </p>
+            <div className="grid grid-cols-2 gap-6 px-2 lg:px-0 lg:mt-2 lg:w-[60%]">
+              {/* Phone Section */}
+              <div className="flex gap-2 p-0 py-0 cursor-pointer ">
+                <p
+                  className="max-w-md"
+                  onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+                >
+                  <FaPhoneAlt
+                    className="text-red-500 relative top-1"
+                    style={{ textShadow: "1px 1px 1px black" }}
+                  />
+                </p>
+                <p onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}>
+                  {!hasPhoneNumber
+                    ? "Not available"
+                    : showNumber
+                    ? data.phoneNumber
+                    : "View Contact"}
+                </p>
+              </div>
+
+              {/* Available Time Section */}
+              {data.availableTime && (
+                <div className="flex gap-2 p-0 py-0 cursor-default">
+                  <p>
+                    <FaClock
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <p>{data.availableTime}</p>
+                </div>
+              )}
             </div>
+
+            <div className="grid lg:grid-cols-2 gap-4 px-2 py-1 lg:px-0 lg:py-0 sm:mt-2 lg:w-[60%]">
+              {/* Website Section */}
+              {data.website && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <FaGlobe
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={
+                      data.website.startsWith("http")
+                        ? data.website
+                        : `https://${data.website}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.website}
+                  </a>
+                </div>
+              )}
+
+              {/* Email Section */}
+              {data.email && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <MdOutlineAlternateEmail 
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={`mailto:${data.email}`}
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.email}
+                  </a>
+                </div>
+              )}
+            </div>
+
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
@@ -494,139 +559,141 @@ function GetOrganizerById() {
               </div>
             )}
 
-            <div className="lg:w-[70%]  h-[500px] overflow-scroll scrollbar-hide overflow-y-hidden rounded-lg ">
-              <div
-                className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  
+            <div className="lg:w-[70%]  h-[600px] overflow-scroll scrollbar-hide overflow-y-hidden rounded-lg ">
+              <div className="sticky top-0 z-10">
+                <div
+                  className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  
               lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  "
-              >
-                <button
-                  className={`px-2 ${
-                    about ? "border-b-2 border-b-red-600" : ""
-                  }`}
-                  onClick={() => {
-                    setAbout(true);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("about")}
-                  onMouseLeave={() => setHoveredTab(null)}
                 >
-                  ABOUT
-                </button>
-                <button
-                  className={`${
-                    upcoming ? "border-b-2 border-b-red-600" : ""
-                  } p-2`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(true);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("upcoming-event")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  UPCOMING EVENT
-                </button>
-                <button
-                  className={`${
-                    facebook ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(true);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("facebook")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  FACEBOOK
-                </button>
-                <button
-                  className={`${
-                    twitter ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(true);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("twitter")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  TWITTER
-                </button>
-                <button
-                  className={`${
-                    instagram ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(true);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("instagram")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  INSTAGRAM
-                </button>
-                <button
-                  className={`${
-                    youtube ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(true);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("youtube")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  YOUTUBE
-                </button>
-                <button
-                  className={`${
-                    stat ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(true);
-                  }}
-                  onMouseEnter={() => setHoveredTab("stat")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  STAT
-                </button>
+                  <button
+                    className={`px-2 ${
+                      about ? "border-b-2 border-b-red-600" : ""
+                    }`}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    ABOUT
+                  </button>
+                  <button
+                    className={`${
+                      upcoming ? "border-b-2 border-b-red-600" : ""
+                    } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    UPCOMING EVENT
+                  </button>
+                  <button
+                    className={`${
+                      facebook ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    FACEBOOK
+                  </button>
+                  <button
+                    className={`${
+                      twitter ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(true);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${
+                      instagram ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
+                  <button
+                    className={`${
+                      youtube ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${
+                      stat ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stat")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    STAT
+                  </button>
+                </div>
               </div>
-              <div className="lg:px-4 px-2 border bg-white rounded-lg h-full overflow-auto">
+              <div className="lg:px-4 p-2 border bg-white rounded-lg h-full overflow-auto mb-2">
                 {about && data ? (
                   <p className="py-5 ">
                     <h2 className="text-2xl font-semibold text-gray-800 py-4">
@@ -642,11 +709,18 @@ function GetOrganizerById() {
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
                     {upcomingEventData.length > 0 ? (
                       upcomingEventData.map((event, index) => (
-                        <div  
+                        <div
                           key={index}
                           className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
-                          onClick={() => navigate(`/events/${event.category.toLowerCase()}/${event._id}`, { state: event._id }) }
-                       >
+                          onClick={() =>
+                            navigate(
+                              `/events/${event.category.toLowerCase()}/${
+                                event._id
+                              }`,
+                              { state: event._id }
+                            )
+                          }
+                        >
                           {/* 🔹 Image Container*/}
                           <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
                             <img
@@ -714,24 +788,42 @@ function GetOrganizerById() {
                 ) : null}
 
                 <div className="font-medium text-lg text-center">
-                  {instagram ? (
+                  {instagram &&
+                    (data.instagramUrl ? (
+                      <div className="w-full flex justify-center py-6">
+                        <div className="w-full max-w-[1200px]">
+                          <InstagramEmbed instagramUrl={data.instagramUrl} />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-5">Not Available</div>
+                    ))}
+
+                  {/* {instagram ? (
                     <div className="w-full flex justify-center py-6">
                       <div className="w-full max-w-[1200px]">
                         <InstagramEmbed instagramUrl={data.instagramUrl} />
                       </div>
                     </div>
-                  ) : null}
+                  ) : null} */}
                 </div>
 
                 <p className="font-medium text-lg text-center py-6">
-                  {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
+                  {twitter &&
+                    (data.twitterUrl ? (
+                      <TwitterEmbed twitterUrl={data.twitterUrl} />
+                    ) : (
+                      <div className="text-center">Not Available</div>
+                    ))}
                 </p>
-                <p className="font-medium text-lg text-center ">
-                  {youtube ? (
-                    <YouTubeProfile youtubeUrl={data.youtubeUrl} />
-                  ) : (
-                    <div></div>
-                  )}
+
+                <p className="font-medium text-lg text-center mt-[-5%]">
+                  {youtube &&
+                    (data.youtubeId ? (
+                      <YouTubeWall channelId={data.youtubeId} />
+                    ) : (
+                      <div className="text-center">Not Available</div>
+                    ))}
                 </p>
                 <p>{stat ? <OrganizerStats data={data} /> : ""}</p>
               </div>
@@ -815,7 +907,7 @@ function GetOrganizerById() {
                 <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
                   Find Events
                 </h2>
-               <CommonCalendar /> 
+                <CommonCalendar />
               </div>
             </div>
           </div>
@@ -893,7 +985,7 @@ function GetOrganizerById() {
             <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
               Find Events
             </h1>
-            <CommonCalendar /> 
+            <CommonCalendar />
           </div>
         </div>
       </div>
