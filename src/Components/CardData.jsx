@@ -35,7 +35,11 @@ function CardData({ data, heading, navigation }) {
               key={index}
               className="cursor-pointer transition-transform duration-300 hover:scale-105 flex-none border p-2 rounded-lg lg:w-[372px] w-64 shadow-md"
               onClick={() => {
+                if(heading ==="ORGANIZERS"){
                 navigate(`/Organizer/${item._id}`, { state: item._id });
+                }else{
+                navigate(`/Venue/${item._id}`, { state: item._id }); 
+                }
               }}
             >
               {/* Image */}

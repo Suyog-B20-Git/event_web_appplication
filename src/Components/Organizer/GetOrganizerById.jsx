@@ -6,7 +6,7 @@ import { getOrganizerById } from "../../redux/actions/master/Organizer/getOrgani
 import {
   MdKeyboardDoubleArrowRight,
   MdOutlineNavigateNext,
-  MdOutlineAlternateEmail, 
+  MdEmail , 
 } from "react-icons/md";
 import {
   FaEye,
@@ -343,7 +343,7 @@ function GetOrganizerById() {
               {data.email && (
                 <div className="flex gap-2 items-center p-0 py-0">
                   <p>
-                    <MdOutlineAlternateEmail 
+                    <MdEmail  
                       className="text-red-500 relative top-1 text-xl"
                       style={{ textShadow: "1px 1px 1px black" }}
                     />
@@ -798,17 +798,9 @@ function GetOrganizerById() {
                     ) : (
                       <div className="text-center py-5">Not Available</div>
                     ))}
-
-                  {/* {instagram ? (
-                    <div className="w-full flex justify-center py-6">
-                      <div className="w-full max-w-[1200px]">
-                        <InstagramEmbed instagramUrl={data.instagramUrl} />
-                      </div>
-                    </div>
-                  ) : null} */}
                 </div>
 
-                <p className="font-medium text-lg text-center py-6">
+                <p className="font-medium text-lg text-center py-0">
                   {twitter &&
                     (data.twitterUrl ? (
                       <TwitterEmbed twitterUrl={data.twitterUrl} />
@@ -817,7 +809,7 @@ function GetOrganizerById() {
                     ))}
                 </p>
 
-                <p className="font-medium text-lg text-center mt-[-5%]">
+                <p className="">
                   {youtube &&
                     (data.youtubeId ? (
                       <YouTubeWall channelId={data.youtubeId} />

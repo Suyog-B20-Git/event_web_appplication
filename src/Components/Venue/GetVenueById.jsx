@@ -486,7 +486,7 @@ function GetVenueById() {
               </div>
             )}
 
-            <div className="lg:w-[70%]  h-[500px] overflow-scroll  scrollbar-hide  rounded-lg">
+            <div className="lg:w-[70%]  h-[600px] overflow-scroll  scrollbar-hide  rounded-lg">
                <div className="sticky top-0 z-10">
               <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
                 <button
