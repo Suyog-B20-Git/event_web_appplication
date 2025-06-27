@@ -90,7 +90,6 @@ const YouTubeWall = ({ channelId }) => {
         }
 
         const channel = channelData.items[0];
-        console.log("Channel data:", channel);
         const channelTitleFetched = channel.snippet?.title || "YouTube Channel";
         const channelDescFetched =
           channel.snippet?.description ||

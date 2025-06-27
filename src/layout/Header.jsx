@@ -42,7 +42,7 @@ const Header = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [searchDropdown, setSearchDropdown] = useState(false);
-  const [query, setQuery] = useState("All-locations");
+  const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const wrapperRef = useRef(null);
   const [isSelectedFromDropdown, setIsSelectedFromDropdown] = useState(false);
@@ -127,7 +127,7 @@ useEffect(() => {
         { name: "Business", path: "/events/business" },
         { name: "Festivals", path: "/events/festivals" },
         { name: "Live Music", path: "/events/live-music" },
-        { name: "Nightlife and club", path: "/events/nightlife-and-club" },
+        { name: "Nightlife & Club", path: "/events/nightlife-and-club" },
         { name: "Professional", path: "/events/professional" },
         { name: "Social", path: "/events/social" },
         { name: "Sport & Leisure", path: "/events/sport-and-leisure" },
@@ -645,7 +645,7 @@ useEffect(() => {
                         <button
                           key={menuIndex}
                           onClick={() => {
-                             setSelectedCategory(menuItem.name);
+                            setSelectedCategory(menuItem.name);
                             navigate(menuItem.path, {
                               state: menuItem.name,
                             });

@@ -110,6 +110,8 @@ function GetVenueById() {
   const coverImage = data?.coverImage;
   const formatteddUrl = coverImage
     ? coverImage.replace(/\\/g, "/")
+      .replace(/\/{2,}/g, "/")
+      .replace("http:/", "http://")
     : fallbackImage;
   const email = data?.email;
   const name = data?.name;
@@ -459,7 +461,10 @@ function GetVenueById() {
               <div className="w-full border border-gray-200 shadow max-w-[250px] md:max-w-[400px] lg:max-w-[180px] h-auto aspect-[5/5] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
                 {data.profileImage ? (
                   <img
-                    src={data.profileImage}
+                    src={data.profileImage
+                      .replace(/\\/g, "/")
+                      .replace(/\/{2,}/g, "/")
+                      .replace("http:/", "http://")}
                     className="w-full h-full object-cover"
                     alt="Profile"
                   />
@@ -467,17 +472,21 @@ function GetVenueById() {
                   <img
                     src="/assets/staticAssets/user-icon.png"
                     className="w-full h-full object-cover"
-                    alt="user"
+                    alt="User"
                   />
                 )}
               </div>
 
               <div className=" lg:flex gap-2 hidden justify-center">
-               <FollowButton targetId={targetId} modelName={modelName} />
+                <FollowButton targetId={targetId} modelName={modelName} />
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
-              <FollowButton targetId={targetId} modelName={modelName} variant="mobile"  />
+              <FollowButton
+                targetId={targetId}
+                modelName={modelName}
+                variant="mobile"
+              />
             </div>
 
             {hoveredTab && (
@@ -487,135 +496,135 @@ function GetVenueById() {
             )}
 
             <div className="lg:w-[70%]  h-[600px] overflow-scroll  scrollbar-hide  rounded-lg">
-               <div className="sticky top-0 z-10">
-              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
-                <button
-                  className={`px-2 ${
-                    about ? "border-b-2 border-b-red-600" : ""
-                  }`}
-                  onClick={() => {
-                    setAbout(true);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("about")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  ABOUT
-                </button>
-                <button
-                  className={`${
-                    upcoming ? "border-b-2 border-b-red-600" : ""
-                  } p-2`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(true);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("upcoming-event")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  UPCOMING EVENT
-                </button>
-                <button
-                  className={`${
-                    facebook ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(true);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("facebook")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  FACEBOOK
-                </button>
-                <button
-                  className={`${
-                    twitter ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(true);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("twitter")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  TWITTER
-                </button>
-                <button
-                  className={`${
-                    instagram ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(true);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("instagram")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  INSTAGRAM
-                </button>
-                <button
-                  className={`${
-                    youtube ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(true);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("youtube")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  YOUTUBE
-                </button>
-                <button
-                  className={`${
-                    stat ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(true);
-                  }}
-                  onMouseEnter={() => setHoveredTab("stat")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  STAT
-                </button>
-              </div>
+              <div className="sticky top-0 z-10">
+                <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
+                  <button
+                    className={`px-2 ${
+                      about ? "border-b-2 border-b-red-600" : ""
+                    }`}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    ABOUT
+                  </button>
+                  <button
+                    className={`${
+                      upcoming ? "border-b-2 border-b-red-600" : ""
+                    } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    UPCOMING EVENT
+                  </button>
+                  <button
+                    className={`${
+                      facebook ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    FACEBOOK
+                  </button>
+                  <button
+                    className={`${
+                      twitter ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(true);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${
+                      instagram ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
+                  <button
+                    className={`${
+                      youtube ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${
+                      stat ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stat")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    STAT
+                  </button>
+                </div>
               </div>
 
               <div className="lg:px-4 border bg-white  rounded-lg h-full overflow-auto">
@@ -741,13 +750,19 @@ function GetVenueById() {
                         <div
                           key={index}
                           className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
-                        onClick={() => navigate(`/events/${event.category.toLowerCase()}/${event._id}`, { state: event._id }) }
+                          onClick={() =>
+                            navigate(
+                              `/events/${event.category.toLowerCase()}/${
+                                event._id
+                              }`,
+                              { state: event._id }
+                            )
+                          }
                         >
                           {/* 🔹 Image Container*/}
                           <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
                             <img
-                              src={
-                                event.media?.thumbnailImage ||
+                              src={event.media?.thumbnailImage ||
                                 "https://via.placeholder.com/250x160?text=No+Image"
                               }
                               alt={event.name}
@@ -825,8 +840,7 @@ function GetVenueById() {
                       <YouTubeWall channelId={data.youtubeId} />
                     ) : (
                       <div>Not Available</div>
-                    ))
-                  }
+                    ))}
                 </p>
                 <p className="font-medium text-lg text-center ">
                   {stat && <VenueStats data={data} />}
@@ -903,7 +917,7 @@ function GetVenueById() {
                 <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
                   Find Events
                 </h2>
-                 <CommonCalendar /> 
+                <CommonCalendar />
               </div>
             </div>
           </div>
@@ -973,7 +987,7 @@ function GetVenueById() {
             <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
               Find Events
             </h1>
-             <CommonCalendar /> 
+            <CommonCalendar />
           </div>
         </div>
       </div>

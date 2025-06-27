@@ -89,7 +89,7 @@ function CardData({ data, heading, navigation }) {
                       <FaInstagram />
                     </a>
                   )}
-                  <FcLike />
+                  
                   {item.twitterUrl && (
                     <a
                       href={item.twitterUrl}

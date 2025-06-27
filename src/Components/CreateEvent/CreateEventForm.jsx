@@ -167,7 +167,7 @@ export default function EventForm() {
     },
   });
 
-  const [eventTags, setEventTags] = useState([""]);
+  const [eventTags, setEventTags] = useState([]);
   const eventTag = watch("eventTag") || [];
 
   const handleKeyDown = (e) => {
@@ -379,6 +379,7 @@ export default function EventForm() {
     if (repetitiveType === "Weekly") {
       if (repeatDatesRaw.length > 0) {
         formData.append("repeatDays", repeatDatesRaw);
+        console.log("weekly raw", repeatDatesRaw);
       }
     } else if (repetitiveType === "Monthly") {
       const dateNumbers = repeatDatesRaw.map((d) => new Date(d).getDate());
@@ -602,9 +603,11 @@ export default function EventForm() {
       description,
       promoCodes: promoCodeArray || [],
       isSale: isSale,
-      salePrice: Number(salePrice) || "",
-      saleStartDate: new Date(saleStartDate).toISOString() || "",
-      saleEndDate: new Date(saleEndDate).toISOString() || "",
+      salePrice: Number(salePrice) || null,
+      saleStartDate: saleStartDate
+        ? new Date(saleStartDate).toISOString()
+        : null,
+      saleEndDate: saleEndDate ? new Date(saleEndDate).toISOString() : null,
       soldOut: isSoldOut || false,
       seatingPoints: [],
       bookedSeats: bookedSeatArray,
@@ -1432,15 +1435,7 @@ export default function EventForm() {
                             } catch (error) {}
                           }
                         }}
-                        {...register("repeatEndTime", {
-                          required: "repeatEndTime is required",
-                          validate: (value) => {
-                            return (
-                              value > repeatStartTime ||
-                              "End time must be after start time"
-                            );
-                          },
-                        })}
+                        {...register("repeatEndTime", {})}
                       />
                       {errors.repeatEndtTime && (
                         <p className="text-red-600 text-sm px-2">

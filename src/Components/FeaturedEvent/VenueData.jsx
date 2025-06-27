@@ -25,7 +25,7 @@ return (
                         <div className="h-40 lg:h-52 w-full rounded-lg overflow-hidden relative">
                             <img
                                 src={
-                                    item.profileImage || "public/assets/staticAssets/music.jpeg"
+                                    item.profileImage || "https://uploads-ssl.webflow.com/6074635e07fbbbc45f34a580/62ed4a6a17fa6378798911df_Cover-2400w.jpg"
                                 }
                                 alt={item.name}
                                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-125"
