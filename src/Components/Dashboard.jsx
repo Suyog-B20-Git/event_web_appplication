@@ -44,9 +44,9 @@ const Dashboard = () => {
  const sections = [
     { name: "Dashboard", icon: <GrDashboard />, id: "dashboard" },
     { name: "My Bookings", icon: <FaMoneyCheckDollar />, id: "my-bookings" },
+     { name: "My Events", icon: <FaCalendarAlt />, id: "my-events" },
     { name: "My Earnings", icon: <FaWallet />, id: "my-earnings" },
     { name: "My Tags", icon: <FaTags />, id: "my-tags" },
-    { name: "My Events", icon: <FaCalendarAlt />, id: "my-events" },
     { name: "My Venues", icon: <FaMapLocation />, id: "my-venues" },
     { name: "Scan Tickets", icon: <MdOutlineQrCodeScanner />, id: "scan-tickets" },
     { name: "Guests", icon: <MdGroups2 />, id: "guests" },
