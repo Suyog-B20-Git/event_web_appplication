@@ -46,7 +46,11 @@ function CardData({ data, heading, navigation }) {
               <div className="h-40 lg:h-52 w-full rounded-lg overflow-hidden relative">
                 <img
                   src={
-                    item.profileImage || "public/assets/staticAssets/music.jpeg"
+                    item.profileImage  ? item.profileImage
+                              .replace(/\\/g, "/")
+                              .replace(/\/{2,}/g, "/")
+                              .replace("http:/", "http://")
+                          : "/assets/staticAssets/fallback-image.jpg"
                   }
                   alt={item.name}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-125"

@@ -68,20 +68,21 @@ function Cards({ data, heading }) {
                 </div>
               </div>
               <div>
-                <div className="flex    font-medium  flex-col gap-2 p-2 lg:text-base text-xs">
-                  <div className="">
-                    {" "}
-                    <p className="lg:text-xl overflow-x-hidden   text-base flex lg:flex-row flex-col justify-between">
-                      {item.name}{" "}
-                      <p className="flex gap-2 text-gray-500 lg:text-base text-xs  ">
+                <div className="flex font-medium flex-col gap-2 p-2 lg:text-base text-xs">
+                  <div>
+                    <p className="lg:text-xl text-base flex flex-col lg:flex-row justify-between overflow-x-hidden">
+                      {item.name}
+                      <span className="flex gap-2 text-gray-500 lg:text-base text-xs">
                         <FaEye className="relative top-1 text-blue-600" />
                         <span>{item.visits}</span>
-                      </p>
+                      </span>
                     </p>
+
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <MdEvent className="relative top-1" />
                       <span>{convertUTCToLocal(item.startDate)}</span>
                     </p>
+
                     <p className="flex gap-2 text-gray-500 lg:text-base text-xs">
                       <CiLocationOn className="relative top-1" />
                       <span>
@@ -91,28 +92,37 @@ function Cards({ data, heading }) {
                     </p>
                   </div>
 
-                  <p className="mt-auto  flex lg:justify-between gap-4 items-center text-sm lg:text-sm p-2">
-                    {/* <span className="lg:text-sm text-xs">$1300 ONWARDS</span> */}
-                     {item?.ticketFormats?.length > 0 ? (
-            <p className="lg:text-sm text-xs">
-              Price:{" "}
-              <TicketPrice
-                ticketFormatId={item.ticketFormats[0]}
-              />
-            </p>
-            ) : (
-              <p className="lg:text-sm text-xs">
-              Price: Not Available
-              </p>
-              )}
+                  {/* PRICE + BUTTON ROW */}
+                  <div className="mt-2 flex justify-between items-center text-sm lg:text-sm p-2">
+                    <div>
+                      {item?.ticketFormats?.length > 0 ? (
+                        <span className="lg:text-lg text-xs">
+                          Price:{" "}
+                          {heading === "UPCOMING EVENTS" ? (
+                            <span className="text-xl">
+                              ₹ {item.ticketFormats[0].price ?? ""} /-
+                            </span>
+                          ) : (
+                            <TicketPrice
+                              ticketFormatId={item.ticketFormats[0]}
+                            />
+                          )}
+                        </span>
+                      ) : (
+                        <span className="lg:text-lg text-xs">
+                          Price: Not Available
+                        </span>
+                      )}
+                    </div>
+
                     <button
-                      className="relative  hover:text-white rounded shadow lg:p-2 p-2 lg:m-0 mr-1 lg:text-sm text-xs bg-white transition-all duration-300 
-                              before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-[#ff2459] before:transition-all before:duration-300 
-                              hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
+                      className="relative hover:text-white rounded shadow lg:p-2 p-2 lg:text-sm text-xs bg-white transition-all duration-300 
+          before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-[#ff2459] before:transition-all before:duration-300 
+          hover:before:w-full hover:text-black hover:before:opacity-100 before:z-0"
                     >
-                      <p className="relative "> BUY NOW</p>
+                      <span className="relative">BUY NOW</span>
                     </button>
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>

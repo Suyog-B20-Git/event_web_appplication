@@ -506,10 +506,17 @@ function FeaturedEvent() {
                   </div>
                   <hr className="mb-4" />
 
-                  <h2 className="text-md font-semibold text-gray-700 mb-2">
+                  <div className="text-md font-semibold text-gray-700 mb-2">
                     Repeats on: {receivedData.repetitiveType}
-                  </h2>
-
+                 
+                  {receivedData.repetitiveType === "Daily" &&
+                  receivedData.repeatExcept &&
+                    receivedData.repeatExcept.length > 0 && (
+                      <h1 className="text-2xl font-bold text-red-700">
+                        Except : <span className="text-red-700"> {receivedData.repeatExcept.join(",")} </span>
+                      </h1>
+                    )}
+ </div>
                   {receivedData.repetitiveType === "Monthly" && (
                     <div className="flex flex-wrap gap-2 mb-3">
                       {receivedData.repeatDates

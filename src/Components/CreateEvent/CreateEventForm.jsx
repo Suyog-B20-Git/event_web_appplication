@@ -171,21 +171,37 @@ export default function EventForm() {
   const eventTag = watch("eventTag") || [];
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && tagInput.trim() !== "") {
-      e.preventDefault();
+  if (e.key === "Enter" && tagInput.trim() !== "") {
+    e.preventDefault();
 
-      const newTags = tagInput
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
+    const newTagsRaw = tagInput
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
 
-      const updatedTags = [...eventTags, ...newTags];
+    const existingTagsLowerSet = new Set(eventTags.map(tag => tag.toLowerCase()));
+
+    const uniqueNewTags = newTagsRaw.filter(tag => {
+      const isDuplicate = existingTagsLowerSet.has(tag.toLowerCase());
+      if (!isDuplicate) {
+        existingTagsLowerSet.add(tag.toLowerCase());
+        return true;
+      }
+      return false;
+    });
+
+    if (uniqueNewTags.length > 0) {
+      const updatedTags = [...eventTags, ...uniqueNewTags];
       setEventTags(updatedTags);
       setValue("eventTag", updatedTags);
       clearErrors("eventTag");
-      setTagInput("");
     }
-  };
+
+    setTagInput("");
+  }
+};
+
+
 
   const removeTag = (index) => {
     const updatedTags = eventTags.filter((_, i) => i !== index);
@@ -230,8 +246,21 @@ export default function EventForm() {
 
   const handleImagesChange1 = (e) => {
     const files = Array.from(e.target.files);
+
     if (files.length) {
-      const newImages = files.map((file) => ({
+      const existingFiles = selectedImages.map((img) => img.file);
+
+      // Filter out duplicates based on name and size
+      const uniqueFiles = files.filter((file) => {
+        return !existingFiles.some(
+          (existing) =>
+            existing.name === file.name && existing.size === file.size
+        );
+      });
+
+      if (uniqueFiles.length === 0) return; // No new unique files
+
+      const newImages = uniqueFiles.map((file) => ({
         file,
         preview: URL.createObjectURL(file),
       }));
@@ -356,20 +385,21 @@ export default function EventForm() {
     formData.append("isOnline", data.isOnline ?? true);
     formData.append("venue", data.venue || "");
     formData.append("mapUrl", data.mapUrl || "");
-    formData.append("repeatExcept", data.repeatExcept ?? 1);
+    formData.append("repeatExcept", data.repeatExcept ?? []);
     formData.append("performers", data.performers || []);
     // formData.append("performersYtLinks", data.performersYtLinks || []);
-    if (
-      data.performersYtLinks &&
-      data.performersYtLinks.length > 0 &&
-      data.performersYtLinks[0] !== ""
-    ) {
-      const linksString = data.performersYtLinks
-        .filter((link) => link.trim() !== "")
-        .join(",");
+   if (
+  Array.isArray(data.performersYtLinks) &&
+  data.performersYtLinks.some((link) => typeof link === "string" && link.trim() !== "")
+) {
+  const linksString = data.performersYtLinks
+    .filter((link) => typeof link === "string" && link.trim() !== "")
+    .map((link) => link.trim())
+    .join(",");
 
-      formData.append("performersYtLinks", linksString);
-    }
+  formData.append("performersYtLinks", linksString);
+}
+
 
     formData.append(
       "repeatStartTime",
@@ -483,7 +513,7 @@ export default function EventForm() {
     formData.append("isOnline", data.isOnline ?? true);
     formData.append("venue", data.venue || "");
     formData.append("mapUrl", data.mapUrl || "");
-    formData.append("repeatExcept", data.repeatExcept ?? 1);
+    formData.append("repeatExcept", data.repeatExcept ?? []);
     formData.append("performers", data.performers || []);
     // formData.append("performersYtLinks", data.performersYtLinks);
     if (

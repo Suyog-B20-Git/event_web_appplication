@@ -717,7 +717,7 @@ function GetServiceById() {
                             <img
                               src={
                                 event.media?.thumbnailImage ||
-                                "https://via.placeholder.com/250x160?text=No+Image"
+                                "/assets/staticAssets/fallback-image.jpg"
                               }
                               alt={event.name}
                               className="w-full h-full object-cover"
