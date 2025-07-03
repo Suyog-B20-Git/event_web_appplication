@@ -482,14 +482,17 @@ function Viewall() {
                   <div
                     style={{
                       backgroundImage: `url(${
-                        item.media?.thumbnailImage ||
-                        "assets/staticAssets/fallback-image.jpg"
+                        item.media?.thumbnailImage || item.media?.posterImage ||
+                       "/assets/staticAssets/fallback-image.jpg"
                       })`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
                     className="absolute inset-0 transition-transform duration-300 hover:scale-125"
+                    onError={(e) => {
+                      e.target.style.backgroundImage = `url(/assets/staticAssets/fallback-image.jpg)`;
+                    }}
                   ></div>
 
                   {/* Category Text (Fixed on Top) */}

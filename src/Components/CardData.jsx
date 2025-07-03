@@ -35,14 +35,22 @@ function CardData({ data, heading, navigation }) {
               key={index}
               className="cursor-pointer transition-transform duration-300 hover:scale-105 flex-none border p-2 rounded-lg lg:w-[372px] w-64 shadow-md"
               onClick={() => {
+                if(heading ==="ORGANIZERS"){
                 navigate(`/Organizer/${item._id}`, { state: item._id });
+                }else{
+                navigate(`/Venue/${item._id}`, { state: item._id }); 
+                }
               }}
             >
               {/* Image */}
               <div className="h-40 lg:h-52 w-full rounded-lg overflow-hidden relative">
                 <img
                   src={
-                    item.profileImage || "public/assets/staticAssets/music.jpeg"
+                    item.profileImage  ? item.profileImage
+                              .replace(/\\/g, "/")
+                              .replace(/\/{2,}/g, "/")
+                              .replace("http:/", "http://")
+                          : "/assets/staticAssets/fallback-image.jpg"
                   }
                   alt={item.name}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-125"
@@ -85,7 +93,7 @@ function CardData({ data, heading, navigation }) {
                       <FaInstagram />
                     </a>
                   )}
-                  <FcLike />
+                  
                   {item.twitterUrl && (
                     <a
                       href={item.twitterUrl}

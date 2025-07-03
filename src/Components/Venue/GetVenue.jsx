@@ -225,7 +225,7 @@ function GetVenue() {
             <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
               Find Events
             </h2>
-             <CommonCalendar /> 
+            <CommonCalendar />
           </div>
         </div>
 
@@ -246,7 +246,14 @@ function GetVenue() {
                     className="h-40 md:h-36 lg:h-40 w-full overflow-hidden"
                   >
                     <img
-                      src={item.profileImage}
+                      src={
+                        item.profileImage
+                          ? item.profileImage
+                              .replace(/\\/g, "/")
+                              .replace(/\/{2,}/g, "/")
+                              .replace("http:/", "http://")
+                          : "/assets/staticAssets/fallback-image.jpg"
+                      }
                       className="rounded-t h-40 w-full transition-transform duration-300 hover:scale-125"
                       alt={item.name}
                     />
@@ -398,7 +405,7 @@ function GetVenue() {
           <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
             Find Events
           </h1>
-           <CommonCalendar /> 
+          <CommonCalendar />
         </div>
       </div>
     </div>

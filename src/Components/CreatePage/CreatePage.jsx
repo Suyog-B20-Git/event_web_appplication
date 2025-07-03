@@ -113,7 +113,7 @@ useEffect(() => {
   const socialProfile = [
   { label: "Facebook Url", value: "facebookUrl", placeholder: "https://www.facebook.com/abc" },
   { label: "Twitter Url", value: "twitterUrl", placeholder: "https://www.twitter.com/abc" },
-  { label: "Youtube Url", value: "youtubeUrl", placeholder: "https://www.youtube.com/watch?V=abc123" },
+  { label: "Youtube Url", value: "youtubeUrl", placeholder: "https://www.youtube.com/@tseries" },
   { label: "Instagram Url", value: "instagramUrl", placeholder: "https://www.instagram.com/Adidas" },
 ];
 
@@ -148,7 +148,7 @@ useEffect(() => {
     ],
   };
   
-const [soundCloudUrl, setSoundCloudUrl] = useState("");
+const [soundcloudUrl, setSoundCloudUrl] = useState("");
 
 const handleSoundCloudChange = (e) => {
   setSoundCloudUrl(e.target.value);
@@ -369,7 +369,7 @@ useEffect(() => {
     if (data.phone) formData.append("phoneNumber", data.phone);
     if (data.email) formData.append("email", data.email);
     if (data.availableTime)
-      formData.append("availableTime", data.availableTime);
+      formData.append("availableTime", data.availableTime || "9 AM to 6 PM");
     if (data.website) formData.append("website", data.website);
     formData.append("facebookUrl", data.facebookUrl);
     formData.append("instagramUrl", data.instagramUrl);
@@ -377,7 +377,7 @@ useEffect(() => {
     formData.append("twitterUrl", data.twitterUrl);
 
     if (selectedCategory.value === "Performer") {
-      formData.append("cloudSoundUrl", data.cloudSoundUrl);
+      formData.append("soundcloudUrl", data.soundcloudUrl);
       formData.append("spotifyUrl", data.spotifyUrl);
       dispatch(createNewPerformer(formData));
       navigate("/home");
@@ -395,7 +395,7 @@ useEffect(() => {
 
     if (selectedCategory.value === "Venue") {
       formData.append("coverImage", coverImage);
-      formData.append("url", data.url);
+      formData.append("website", data.url);
       formData.append("zipcode", data.zipcode);
       formData.append("quotedForm", data.quotedForm);
       formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
@@ -429,7 +429,7 @@ useEffect(() => {
         facebook: formValues.facebookUrl,
         twitter: formValues.twitterUrl,
         instagram: formValues.instagramUrl,
-        soundcloud: formValues.cloudSoundUrl,
+        soundcloud: formValues.soundcloudUrl,
         youtube: formValues.youtubeUrl,
         spotifyUrl: formValues.spotifyUrl,
       },
@@ -571,7 +571,6 @@ useEffect(() => {
                 className="mt-1 block w-full border rounded-md mb-3  p-2"
                 placeholder="eg. cinema,theater,stadium"
                 {...register("type", {
-                  // required: "amenties is required",
                 })}
               />
             </div>
@@ -599,7 +598,6 @@ useEffect(() => {
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter Amenities"
                   {...register("amenities", {
-                    // required: "amenties is required",
                   })}
                 />
               </div>
@@ -616,7 +614,6 @@ useEffect(() => {
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter no of seated guest"
                   {...register("noOfSeatedGuest", {
-                    // required: "No of seated guest is required",
                   })}
                 />
               </div>
@@ -633,7 +630,6 @@ useEffect(() => {
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter no of standing guest"
                   {...register("noOfStandingGuest", {
-                    // required: "No of seated guest is required",
                   })}
                 />
               </div>
@@ -650,7 +646,6 @@ useEffect(() => {
                   className="mt-1 block w-full border rounded-md p-2"
                   placeholder="Enter neighbourhood"
                   {...register("neighbourhoods", {
-                    // required: "No of seated guest is required",
                   })}
                 />
               </div>
@@ -682,9 +677,8 @@ useEffect(() => {
                   type="text"
                   name="foodAndBeveragesDetails"
                   className="mt-1 block w-full border rounded-md mb-3  p-2"
-                  placeholder="enter food beverage details"
+                  placeholder="Enter food beverage details"
                   {...register("foodAndBeveragesDetails", {
-                    // required: "amenties is required",
                   })}
                 />
               </div>
@@ -699,132 +693,29 @@ useEffect(() => {
                   type="text"
                   name="quotedForm"
                   className="mt-1 block w-full border rounded-md mb-3  p-2"
-                  placeholder="enter quoted Form"
+                  placeholder="Enter quoted Form like per hour/day"
                   {...register("quotedForm", {
-                    // required: "amenties is required",
                   })}
                 />
               </div>
             </div>
-            <div>
+            <div >
               <label
                 htmlFor="availibility"
                 className="block text-sm font-medium text-gray-700"
               >
-                availability
+                Availability
               </label>
-              <input
-                type="text"
+              <textarea                
                 name="availability"
-                className="mt-1 block w-full border rounded-md mb-3  p-2"
-                placeholder="enter availability"
+                className="mt-1 block w-full border rounded-md mb-3  p-2 "
+                placeholder="Enter availability"
                 {...register("availability", {
-                  // required: "amenties is required",
                 })}
               />
             </div>
 
-            {selectedCategory?.value === "Venue" && (
-              <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
-                {/* Start Hour */}
-                <div className="flex flex-col gap-1">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Start Hour*
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="time"
-                      {...register("startHour", {
-                        required: "Start Hour is required",
-                      })}
-                      className="block w-full border rounded-md p-2"
-                    />
-                    <select
-                      {...register("startMeridian", {
-                        required: "Select AM/PM",
-                      })}
-                      className="border rounded-md p-2"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                  {errors.startHour && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.startHour.message}*
-                    </p>
-                  )}
-                  {errors.startMeridian && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.startMeridian.message}*
-                    </p>
-                  )}
-                </div>
-
-                {/* End Hour */}
-                <div className="flex flex-col gap-1">
-                  <label className="block text-sm font-medium text-gray-700">
-                    End Hour*
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="time"
-                      {...register("endHour", {
-                        required: "End Hour is required",
-                        validate: (value) => {
-                          const startHour =
-                            document.querySelector('[name="startHour"]')?.value;
-                          const startMeridian = document.querySelector(
-                            '[name="startMeridian"]'
-                          )?.value;
-                          const endMeridian = document.querySelector(
-                            '[name="endMeridian"]'
-                          )?.value;
-
-                          if (!startHour) return "Start Hour is required first";
-
-                          // Convert time to 24-hour format for comparison
-                          const convertTo24Hour = (time, meridian) => {
-                            let [hour, minute] = time.split(":").map(Number);
-                            if (meridian === "PM" && hour !== 12) hour += 12;
-                            if (meridian === "AM" && hour === 12) hour = 0;
-                            return hour * 60 + minute; // Convert to total minutes for comparison
-                          };
-
-                          const startTime = convertTo24Hour(
-                            startHour,
-                            startMeridian
-                          );
-                          const endTime = convertTo24Hour(value, endMeridian);
-
-                          return endTime > startTime
-                            ? true
-                            : "End Hour must be after Start Hour";
-                        },
-                      })}
-                      className="block w-full border rounded-md p-2"
-                    />
-                    <select
-                      {...register("endMeridian", { required: "Select AM/PM" })}
-                      className="border rounded-md p-2"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                  {errors.endHour && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.endHour.message}*
-                    </p>
-                  )}
-                  {errors.endMeridian && (
-                    <p className="text-red-600 text-sm px-2">
-                      {errors.endMeridian.message}*
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
+            
           </div>
         )}
 
@@ -1091,7 +982,7 @@ useEffect(() => {
             <h1 className="text-[#ff2459] text-2xl font-semibold mb-2">
               Contact Information
             </h1>
-            <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-6">
               {/* Phone */}
               <div className="flex flex-col gap-1">
                 <label className="text-gray-700 font-medium">Phone</label>
@@ -1109,6 +1000,22 @@ useEffect(() => {
                 {errors.phone && (
                   <p className="text-red-500 text-sm">{errors.phone.message}</p>
                 )}
+              </div>
+
+              {/* Available Time */}
+              <div className="flex flex-col gap-1">
+                <label className="text-gray-700 font-medium">
+                  Available Time*
+                </label>
+               <input
+                  type="text"
+                  placeholder="9 AM to 6 PM"
+                  {...register("availableTime", {
+                    required: "Available time is required",
+                    
+                  })}
+                  className="border p-2 rounded"
+                />
               </div>
 
               {/* Email */}
@@ -1130,25 +1037,6 @@ useEffect(() => {
                   <p className="text-red-500 text-sm">{errors.email.message}</p>
                 )}
               </div>
-
-              {/* Time Input Field */}
-              {/* <div className="flex flex-col gap-1">
-                <label className="text-gray-700 font-medium">
-                  Select Business Hours (9 AM - 6 PM)*
-                </label>
-                <input
-                  type="time"
-                  {...register("availableTime", {
-                    validate: validateBusinessHours,
-                  })}
-                  className="border p-2 rounded"
-                />
-                {errors.availableTime && (
-                  <p className="text-red-500 text-sm">
-                    {errors.availableTime.message}
-                  </p>
-                )}
-              </div> */}
 
               {/*Website*/}
               <div>
@@ -1284,17 +1172,17 @@ useEffect(() => {
                   </label>
                   <input
                     type="url"
-                    name="soundCloudUrl"
+                    name="soundcloudUrl"
                     onChange={handleSoundCloudChange}
                     className="mt-1 block w-full border rounded-md p-2"
                     placeholder="https://www.soundcloud.com/album/track"
-                    {...register("soundCloudUrl", {
+                    {...register("soundcloudUrl", {
                       // required: `SoundCloud URL is required`,
                     })}
                   />
-                  {errors.soundCloudUrl && (
+                  {errors.soundcloudUrl && (
                     <p className="text-red-600 text-sm px-2">
-                      {errors.soundCloudUrl.message}*
+                      {errors.soundcloudUrl.message}*
                     </p>
                   )}
                 </div>
@@ -1481,7 +1369,7 @@ useEffect(() => {
                   (formData.socialLinks?.soundcloud ? (
                     <p className="text-center mt-2">
                       <SoundCloudEmbed
-                        soundCloudUrl={formData.socialLinks.soundcloud}
+                        soundcloudUrl={formData.socialLinks.soundcloud}
                       />
                     </p>
                   ) : (
