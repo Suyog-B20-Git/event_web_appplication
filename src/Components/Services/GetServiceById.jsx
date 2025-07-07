@@ -6,6 +6,7 @@ import Loading from "../Loading";
 import {
   MdKeyboardDoubleArrowRight,
   MdOutlineNavigateNext,
+  MdEmail,
 } from "react-icons/md";
 import {
   FaEye,
@@ -16,6 +17,8 @@ import {
   FaSquareFacebook,
   FaSquareXTwitter,
   FaWhatsapp,
+  FaGlobe,
+  FaClock,
 } from "react-icons/fa6";
 import { IoFlagSharp, IoLogoWhatsapp } from "react-icons/io5";
 import {
@@ -51,6 +54,7 @@ import {
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
 import FollowButton from "../FollowButton";
 import CommonCalendar from "../CommonCalendar.jsx";
+import YouTubeWall from "../SocialMedia/YouTubeWall.jsx";
 
 function GetServiceById() {
   const { serviceId } = useParams();
@@ -271,23 +275,83 @@ function GetServiceById() {
                 {data.city},{data.state},{data.country}
               </p>
             </div>
-            <div
-              className="flex gap-2 lg:px-0 px-2 lg:p-0 p-2 py-0 cursor-pointer"
-              onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
-            >
-              <p>
-                <FaPhoneAlt
-                  className="text-red-500 relative top-1"
-                  style={{ textShadow: "1px 1px 1px black" }}
-                />
-              </p>
-              <p>
-                {!hasPhoneNumber
-                  ? "Not available"
-                  : showNumber
-                  ? data.phoneNumber
-                  : "View Contact"}
-              </p>
+            <div className="grid grid-cols-2 gap-6 px-2 lg:px-0 lg:mt-2 lg:w-[60%]">
+              {/* Phone Section */}
+              <div className="flex gap-2 p-0 py-0 cursor-pointer ">
+                <p
+                  className="max-w-md"
+                  onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+                >
+                  <FaPhoneAlt
+                    className="text-red-500 relative top-1"
+                    style={{ textShadow: "1px 1px 1px black" }}
+                  />
+                </p>
+                <p onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}>
+                  {!hasPhoneNumber
+                    ? "Not available"
+                    : showNumber
+                    ? data.phoneNumber
+                    : "View Contact"}
+                </p>
+              </div>
+
+              {/* Available Time Section */}
+              {data.availableTime && (
+                <div className="flex gap-2 p-0 py-0 cursor-default">
+                  <p>
+                    <FaClock
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <p>{data.availableTime}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-4 px-2 py-1 lg:px-0 lg:py-0 sm:mt-2 lg:w-[60%]">
+              {/* Website Section */}
+              {data.website && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <FaGlobe
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={
+                      data.website.startsWith("http")
+                        ? data.website
+                        : `https://${data.website}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.website}
+                  </a>
+                </div>
+              )}
+
+              {/* Email Section */}
+              {data.email && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <MdEmail
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={`mailto:${data.email}`}
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.email}
+                  </a>
+                </div>
+              )}
             </div>
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
@@ -466,7 +530,7 @@ function GetServiceById() {
                   />
                 ) : (
                   <img
-                     src="/assets/staticAssets/user-icon.png"
+                    src="/assets/staticAssets/user-icon.png"
                     className="w-full h-full object-cover"
                     alt="user"
                   />
@@ -474,11 +538,15 @@ function GetServiceById() {
               </div>
 
               <div className=" lg:flex gap-2 hidden justify-center">
-               <FollowButton targetId={targetId} modelName={modelName} />
+                <FollowButton targetId={targetId} modelName={modelName} />
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center">
-              <FollowButton targetId={targetId} modelName={modelName} variant="mobile"  />
+              <FollowButton
+                targetId={targetId}
+                modelName={modelName}
+                variant="mobile"
+              />
             </div>
 
             {hoveredTab && (
@@ -487,135 +555,137 @@ function GetServiceById() {
               </div>
             )}
 
-            <div className="lg:w-[70%]  h-[500px] overflow-scroll scrollbar-hide rounded-lg">
-              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
-                <button
-                  className={`px-2 ${
-                    about ? "border-b-2 border-b-red-600" : ""
-                  }`}
-                  onClick={() => {
-                    setAbout(true);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("about")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  ABOUT
-                </button>
-                <button
-                  className={`${
-                    upcoming ? "border-b-2 border-b-red-600" : ""
-                  } p-2`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(true);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("upcoming-event")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  UPCOMING EVENT
-                </button>
-                <button
-                  className={`${
-                    facebook ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(true);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("facebook")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  FACEBOOK
-                </button>
-                <button
-                  className={`${
-                    twitter ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(true);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("twitter")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  TWITTER
-                </button>
-                <button
-                  className={`${
-                    instagram ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(true);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("instagram")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  INSTAGRAM
-                </button>
+            <div className="lg:w-[70%]  h-[600px] overflow-scroll scrollbar-hide rounded-lg">
+              <div className="sticky top-0 z-10">
+                <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
+                  <button
+                    className={`px-2 ${
+                      about ? "border-b-2 border-b-red-600" : ""
+                    }`}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    ABOUT
+                  </button>
+                  <button
+                    className={`${
+                      upcoming ? "border-b-2 border-b-red-600" : ""
+                    } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    UPCOMING EVENT
+                  </button>
+                  <button
+                    className={`${
+                      facebook ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    FACEBOOK
+                  </button>
+                  <button
+                    className={`${
+                      twitter ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(true);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${
+                      instagram ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
 
-                <button
-                  className={`${
-                    youtube ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(true);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("youtube")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  YOUTUBE
-                </button>
-                <button
-                  className={`${
-                    stat ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(true);
-                  }}
-                  onMouseEnter={() => setHoveredTab("stats")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  STATS
-                </button>
+                  <button
+                    className={`${
+                      youtube ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${
+                      stat ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stats")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    STATS
+                  </button>
+                </div>
               </div>
               <div className="lg:px-4 px-2 border bg-white  rounded-lg h-full overflow-auto">
                 {about && data ? (
@@ -647,7 +717,7 @@ function GetServiceById() {
                             <img
                               src={
                                 event.media?.thumbnailImage ||
-                                "https://via.placeholder.com/250x160?text=No+Image"
+                                "/assets/staticAssets/fallback-image.jpg"
                               }
                               alt={event.name}
                               className="w-full h-full object-cover"
@@ -721,11 +791,12 @@ function GetServiceById() {
                 </p>
 
                 <p>
-                  {youtube ? (
-                    <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
-                  ) : (
-                    ""
-                  )}
+                  {youtube &&
+                    (data.youtubeId ? (
+                      <YouTubeWall channelId={data.youtubeId} />
+                    ) : (
+                      <div className="text-center">Not Available</div>
+                    ))}
                 </p>
 
                 <p>{stat ? <ServiceStats data={data} /> : ""}</p>
@@ -849,7 +920,7 @@ function GetServiceById() {
                 <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
                   Find Events
                 </h2>
-                 <CommonCalendar /> 
+                <CommonCalendar />
               </div>
             </div>
           </div>
@@ -965,7 +1036,7 @@ function GetServiceById() {
             <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
               Find Events
             </h1>
-             <CommonCalendar /> 
+            <CommonCalendar />
           </div>
         </div>
       </div>
