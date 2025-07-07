@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaCalendarAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+// import DashCreateEvent from "./Components/DashboardCreateEvent/DashCreateEvent";
 import axios from "axios";
+
 
 const sections = [
   { name: "My Events", icon: <FaCalendarAlt />, id: "my-events" },
@@ -58,7 +60,7 @@ const MyEvents = () => {
   }, [page, rowsToShow]);
 
   const handleCreateEvent = () => {
-    navigate("/create-event"); 
+    navigate("/dashboard/create-event"); 
   };
 
   const handleSearchChange = (e) => {

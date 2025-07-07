@@ -34,6 +34,8 @@ import BookTicket from "../LandingPages/BookTicket";
 import Terms from "../Components/Home/Terms";
 import About from "../Components/Home/About";
 import ContactUs from "../Components/Home/ContactUs";
+import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
+// import DashCreateEvent from "./Components/DashboardCreateEvent/DashCreateEvent";
 
 
 function Routess() {
@@ -93,6 +95,7 @@ function Routess() {
 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
+          <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

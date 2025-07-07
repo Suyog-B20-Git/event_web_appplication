@@ -45,14 +45,15 @@ const MyBookings = () => {
               />
             </label>
             {/* Search Any  */}
-            <label className="flex flex-col w-full md:w-[300px]" htmlFor="rows">
+            {/* <label className="flex flex-col w-full md:w-[300px]" htmlFor="rows">
               Search Any
               <input
                 type="text"
                 placeholder="Search "
                 className="flex flex-col border px-4 py-2 rounded-xlw-auto md:w-auto"
               />
-            </label>
+            </label> */}
+            
             {/* <DatePicker
       selected={null}
       onChange={(date) => {}}
