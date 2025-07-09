@@ -1,7 +1,5 @@
-
-
 import React, { useState } from "react";
-// import NewVenueForm from "./NewVenueForm"; 
+import NewVenueForm from "./NewVenueForm";
 
 const Location = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -15,13 +13,22 @@ const Location = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <label className="text-sm text-gray-700 font-medium">Online Event</label>
+        <label className="text-sm text-gray-700 font-medium">
+          Online Event
+        </label>
         <input
           type="checkbox"
           checked={isOnline}
           onChange={() => setIsOnline(!isOnline)}
           className="w-5 h-5"
-        />
+        />{" "}
+      </div>
+      <div className="flex flex-wrap   text-gray-600 ">
+        <p className="text-sm">
+          Make Event Hybrid by making it Online & Selecting a Venue. Attendees
+          can come to Venue with Tickets, and can join online with Online Event
+          Secret Details
+        </p>
       </div>
 
       <div>
@@ -29,7 +36,7 @@ const Location = () => {
           Event Venues (Optional)
         </label>
         <select
-          className="w-full border border-gray-300 rounded-lg px-4 py-2"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-500 hover:border-blue-500"
           value={selectedVenue}
           onChange={(e) => setSelectedVenue(e.target.value)}
         >

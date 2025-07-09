@@ -4,6 +4,7 @@ import {FaPeopleArrows, FaTags,FaMoneyCheckDollar, FaMapLocation,FaMapLocationDo
 import { GrDashboard } from "react-icons/gr";
 // import { useNavigate } from "react-router-dom";
 import {FaBars, FaWallet,FaCalendarAlt, FaStarHalfAlt} from "react-icons/fa";
+import DashCreateEvent from "./DashboardCreateEvent/DashCreateEvent";
 
 
 import DashboardOverview from "./Dashboard/DashboardOverview";
@@ -118,6 +119,7 @@ const Dashboard = () => {
         {activeSection === "guests" && <Guest />}
         {activeSection === "sub-organizers" && <SubOrganizers />}
         {activeSection === "reviews" && <Reviews />}
+        {activeSection === "DashCreateEvent" && <DashCreateEvent />}
       </main>
     </div>
   );

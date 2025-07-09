@@ -10,31 +10,39 @@ const Timings = ({ nextTab }) => {
       {/* Date and Time */}
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Start Date
+          </label>
           <input
             type="date"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600  hover:border-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Start Time
+          </label>
           <input
             type="time"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600  hover:border-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            End Date
+          </label>
           <input
             type="date"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600  hover:border-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            End Time
+          </label>
           <input
             type="time"
-            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600  hover:border-blue-500"
           />
         </div>
       </div>
@@ -42,16 +50,23 @@ const Timings = ({ nextTab }) => {
       {/* Duration Display */}
       <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-2 rounded">
         <p>
-          <strong>Start:</strong> 04 Jul 2025 | <strong>End:</strong> 15 Jul 2025
+          <strong>Start:</strong> 04 Jul 2025 | <strong>End:</strong> 15 Jul
+          2025
         </p>
-        <p className="text-sm mt-1"><strong>Duration:</strong> 12 days | 266:00 hour</p>
+        <p className="text-sm mt-1">
+          <strong>Duration:</strong> 12 days | 266:00 hour
+        </p>
       </div>
 
       {/* Repeat Toggle */}
       <div className="flex items-center justify-between pt-4">
         <div>
-          <p className="text-sm font-medium text-gray-800">Add Repetitive Schedules</p>
-          <p className="text-xs text-gray-500">Make this a repetitive/recurring event</p>
+          <p className="text-sm font-medium text-gray-800">
+            Add Repetitive Schedules
+          </p>
+          <p className="text-xs text-gray-500">
+            Make this a repetitive/recurring event
+          </p>
         </div>
         <label className="inline-flex relative items-center cursor-pointer">
           <input

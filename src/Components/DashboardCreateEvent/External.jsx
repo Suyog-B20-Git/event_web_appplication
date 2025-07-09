@@ -18,7 +18,7 @@ const External = ({ nextTab }) => {
           placeholder="Enter external event URL"
           value={externalUrl}
           onChange={(e) => setExternalUrl(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2  hover:border-blue-500"
         />
       </div>
 
@@ -29,7 +29,7 @@ const External = ({ nextTab }) => {
           placeholder="Enter button text"
           value={buttonText}
           onChange={(e) => setButtonText(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2  hover:border-blue-500"
         />
       </div>
 

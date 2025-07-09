@@ -1,4 +1,3 @@
-// Components/DashboardCreateEvent/DashCreateEvent.jsx
 import React, { useState } from "react";
 import Details from "./Details";
 import Timings from "./Timing";
@@ -7,12 +6,14 @@ import Location from "./Location";
 import Media from "./Media";
 import SEO from "./SEO";
 import Publish from "./Publish";
-// import Dashboard from "../Dashboard";
+import NewVenueForm from "./NewVenueForm";
+
 
 const tabs = ["Details", "Timings", "External", "Location", "Media", "SEO", "Publish"];
 
 const DashCreateEvent = () => {
   const [activeTab, setActiveTab] = useState("Details");
+   const [activeSection, setActiveSection] = useState("DashCreateEvent");
 
   const nextTab = () => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -22,10 +23,10 @@ const DashCreateEvent = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 bg-white rounded-lg shadow-md max-w-6xl mx-auto">
+    <div className="p-4 md:p-6 bg-white rounded-lg shadow-md max-w-8xl mx-auto">
       <h2 className="text-2xl font-bold mb-6">Update Event - abc123</h2>
 
-      {/* Tab Buttons */}
+      
       <div className="flex flex-wrap gap-2 border-b mb-6">
         {tabs.map((tab) => (
           <button
@@ -51,6 +52,7 @@ const DashCreateEvent = () => {
         {activeTab === "Media" && <Media nextTab={nextTab} />}
         {activeTab === "SEO" && <SEO nextTab={nextTab} />}
         {activeTab === "Publish" && <Publish />}
+        {activeTab === "NewVenueForm" && <NewVenueForm />}
       </div>
     </div>
   );
