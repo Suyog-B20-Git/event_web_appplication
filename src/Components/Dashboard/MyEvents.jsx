@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { FaCalendarDays } from "react-icons/fa6";
 import { FaCalendarAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-// import DashCreateEvent from "./Components/DashboardCreateEvent/DashCreateEvent";
 import axios from "axios";
+
+
 
 
 const sections = [
@@ -62,7 +63,7 @@ const MyEvents = () => {
   const handleCreateEvent = () => {
     navigate("/dashboard/create-event"); 
   };
-
+ 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
 
@@ -95,7 +96,6 @@ const MyEvents = () => {
               Create Event
             </button>
           </div>
-
           {/* Filter Row */}
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
             <label className="flex flex-col md:flex-row md:items-center gap-2">

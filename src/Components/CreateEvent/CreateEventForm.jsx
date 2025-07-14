@@ -647,7 +647,7 @@ export default function EventForm() {
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.post(
-        `${baseUrl}/api/ticketFormat`,
+        `${baseUrl}/ticketFormat`,
         ticketData,
         {
           headers: {

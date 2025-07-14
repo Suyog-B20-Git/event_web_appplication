@@ -2,9 +2,7 @@ import { useState, useRef, useEffect} from "react";
 import { MdOutlineQrCodeScanner,MdGroups2,} from "react-icons/md";
 import {FaPeopleArrows, FaTags,FaMoneyCheckDollar, FaMapLocation,FaMapLocationDot,} from "react-icons/fa6";
 import { GrDashboard } from "react-icons/gr";
-// import { useNavigate } from "react-router-dom";
 import {FaBars, FaWallet,FaCalendarAlt, FaStarHalfAlt} from "react-icons/fa";
-import DashCreateEvent from "./DashboardCreateEvent/DashCreateEvent";
 
 
 import DashboardOverview from "./Dashboard/DashboardOverview";
@@ -27,7 +25,7 @@ const Dashboard = () => {
 
     const headerHeight = "4rem";
 
-  // click‑outside to close mobile sidebar
+ 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (sidebarRef.current && !sidebarRef.current.contains(e.target)) {
@@ -59,7 +57,7 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
        {/* Header */}
-     <div className="fixed left-0 top-22 z-50 mt-2 ml-2"> {/* 👈 top-16 = 4rem (same as header height) */}
+     <div className="fixed left-0 top-22 z-50 mt-2 ml-2"> 
         <button
           onClick={() => setShowSidebar(!showSidebar)}
           className="p-2 bg-gray-800 text-white rounded"
@@ -119,7 +117,6 @@ const Dashboard = () => {
         {activeSection === "guests" && <Guest />}
         {activeSection === "sub-organizers" && <SubOrganizers />}
         {activeSection === "reviews" && <Reviews />}
-        {activeSection === "DashCreateEvent" && <DashCreateEvent />}
       </main>
     </div>
   );

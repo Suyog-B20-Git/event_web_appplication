@@ -149,11 +149,6 @@ function Home() {
     window.scrollTo(0, 0);
   }, []);
 
-  // const [loadingCount, setLoadingCount] = useState(5);
-  // if (loadingCount > 0) {
-  //   return <Loading />;
-  // }
-
   if (loading) {
     return <Loading />;
   }

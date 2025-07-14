@@ -12,7 +12,7 @@ const TicketPrice = ({ ticketFormatId }) => {
   const fetchTicketFormat = async () => {
     try {
       
-      const response = await axios.get(`${baseUrl}/api/ticketFormat/${ticketFormatId}`, {
+      const response = await axios.get(`${baseUrl}/ticketFormat/${ticketFormatId}`, {
         headers: {
           Authorization: authToken,
         },

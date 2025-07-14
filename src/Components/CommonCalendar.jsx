@@ -367,7 +367,7 @@ const location = useLocation();
         const sundayStr = formatDateYMD(sunday);
 
 
-        const baseUrl = "http://dev.eventsnode.com:3000/api/event/filter";
+        const baseUrl = "http://localhost:5000/api/event/filter";
 
         // Construct URLs for different date ranges
         const todayUrl = `${baseUrl}?startDate=${todayStr}&endDate=${tomorrowStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`;
