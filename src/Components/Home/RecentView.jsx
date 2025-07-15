@@ -48,7 +48,7 @@ return (
                 onClick={() => navigate("/featuredEvent", { state: item._id })}
               >
                 <img
-                  src={item.media.thumbnailImage}
+                  src={item.media.thumbnailImage || item.media.posterImage ||  "assets/staticAssets/fallback-image.jpg"}
                   className="h-24 lg:h-32 w-full rounded-lg object-cover"
                   alt=""
                 />
@@ -69,7 +69,7 @@ return (
                   onClick={() => navigate("/featuredEvent", { state: item._id })}
                 >
                   <img
-                    src={item.media.thumbnailImage}
+                    src={item.media.thumbnailImage || item.media.posterImage || "assets/staticAssets/fallback-image.jpg"}
                     className="h-24 w-full rounded-lg object-cover"
                     alt=""
                   />

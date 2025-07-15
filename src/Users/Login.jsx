@@ -7,6 +7,7 @@ import Button from "../Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
 import { HiOutlineDeviceMobile } from "react-icons/hi";
+import jwtDecode from "jwt-decode";
 
 import axios from "axios";
 import Photo from "./Photo";
@@ -35,38 +36,73 @@ const redirectTo =
     setSuccessMessage("");
 
     try {
-      const response = await axios.post(`${baseUrl}/api/auth/login`,
+      const response = await axios.post(`${baseUrl}/auth/login`,
         {
           email,
           password,
         }
       );
 
-      if (response.status === 200) {
-        toast.success("Login successful!", { position: "top-right" });
-        localStorage.setItem("authToken", response.data.token);
-        localStorage.setItem("isLogin", JSON.stringify(true));
-        localStorage.removeItem("redirectAfterLogin");
-        navigate(redirectTo);
-      }
-    } catch (error) {
-      if (error.response) {
-        toast.error(error.response.data.message || "Login failed.", {
+  //     if (response.status === 200) {
+  //       toast.success("Login successful!", { position: "top-right" });
+  //       localStorage.setItem("authToken", response.data.token);
+  //       localStorage.setItem("isLogin", JSON.stringify(true));
+  //       localStorage.removeItem("redirectAfterLogin");
+  //       navigate(redirectTo);
+  //     }
+  //   } catch (error) {
+  //     if (error.response) {
+  //       toast.error(error.response.data.message || "Login failed.", {
+  //         position: "top-right",
+  //       });
+  //     } else {
+  //      toast.error("An error occurred. Please try again.", {
+  //         position: "top-right",
+  //       });
+  //     }
+  //   }
+  // };
+
+if (response.status === 200) {
+      const token = response.data.token;
+      const decodedToken = jwtDecode(token);
+      const userRole = decodedToken.role;
+
+      // Store token and login status
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("isLogin", JSON.stringify(true));
+      localStorage.removeItem("redirectAfterLogin");
+
+      if (userRole === "superadmin") {
+        toast.success("SuperAdmin logged in successfully!", {
           position: "top-right",
         });
+        navigate("/"); // Redirect to homepage
       } else {
-       toast.error("An error occurred. Please try again.", {
-          position: "top-right",
-        });
+        toast.success("Login successful!", { position: "top-right" });
+        navigate(redirectTo); // Redirect to original page
       }
     }
-  };
+  } catch (error) {
+    if (error.response) {
+      toast.error(error.response.data.message || "Login failed.", {
+        position: "top-right",
+      });
+    } else {
+      toast.error("An error occurred. Please try again.", {
+        position: "top-right",
+      });
+    }
+  }
+};
+
+
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${baseUrl}/api/auth/google`;
+    window.location.href = `${baseUrl}/=auth/google`;
   };
 
   return (

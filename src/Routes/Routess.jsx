@@ -34,7 +34,12 @@ import BookTicket from "../LandingPages/BookTicket";
 import Terms from "../Components/Home/Terms";
 import About from "../Components/Home/About";
 import ContactUs from "../Components/Home/ContactUs";
+
 import EventFilterBar from "../LandingPages/EventFilterBar";
+
+import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
+import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
+
 
 
 function Routess() {
@@ -94,6 +99,8 @@ function Routess() {
 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
+         <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
+         <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -133,8 +140,7 @@ function Routess() {
            <Route path="/events" element={<Viewall />} />
         </Route>
 
-        {/* </Route> */}
-      </Routes>
+          </Routes>
     </div>
   );
 }

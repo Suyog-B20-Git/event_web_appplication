@@ -234,6 +234,7 @@ function Viewall() {
           </div>
         )}
 
+
         <EventFilterBar
           searchEvent={searchEvent}
           priceType={priceType}
@@ -241,6 +242,37 @@ function Viewall() {
           convertUTCToLocal={convertUTCToLocal}
           navigate={navigate}
         />
+
+        <div className="flex justify-end items-center mr-3 pt-2">
+         <FollowEvent modelName="Category" categoryType="Event" categoryName={selCategory}  />
+         </div>
+        <div className=" grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-9 gap-5  lg:p-4 pt-2 relative lg:right-46   w-full">
+          {data && data.length > 0 ? (
+            data.map((item, index) => (
+              <div
+                key={index}
+                // className="flex-none shadow-lg p-2 rounded-lg lg:w-80 w-56"
+                className="overflow-hidden flex-none transition-transform duration-300 hover:scale-105  border  shadow-lg p-2 rounded-lg lg:w-[372px] w-57"
+                onClick={() => navigate("/featuredEvent", { state: item._id })}
+              >
+                <div className="h-24 lg:h-52 md:h-32 w-full rounded-lg flex justify-end overflow-hidden relative">
+                  {/* Background Image Container */}
+                  <div
+                    style={{
+                      backgroundImage: `url(${
+                        item.media?.thumbnailImage || item.media?.posterImage ||
+                       "/assets/staticAssets/fallback-image.jpg"
+                      })`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                    className="absolute inset-0 transition-transform duration-300 hover:scale-125"
+                    onError={(e) => {
+                      e.target.style.backgroundImage = `url(/assets/staticAssets/fallback-image.jpg)`;
+                    }}
+                  ></div>
+
 
         <div className="flex justify-end items-center mr-3 pt-3">
           <FollowEvent modelName="Category" categoryType="Event" categoryName={selCategory} />

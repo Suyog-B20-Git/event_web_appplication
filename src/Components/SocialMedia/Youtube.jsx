@@ -1,4 +1,5 @@
 export const convertToYouTubeEmbedUrl = (url) => {
+  console.log("Converting YouTube URL:", url);
   try {
     const parsedUrl = new URL(url);
 
@@ -17,6 +18,7 @@ export const convertToYouTubeEmbedUrl = (url) => {
     if (parsedUrl.hostname.includes('youtube.com')) {
       const v = parsedUrl.searchParams.get('v');
       if (v) videoId = v;
+      console.log("videoId from search params:", videoId);
     }
 
     if (!videoId) throw new Error('Could not extract video ID');
@@ -31,6 +33,7 @@ export const convertToYouTubeEmbedUrl = (url) => {
 import React from "react";
 
 const YouTubeProfile = ({ youtubeUrl }) => {
+  console.log("YouTube URL received:", youtubeUrl);
   try {
     const embedUrl = convertToYouTubeEmbedUrl(youtubeUrl);
 

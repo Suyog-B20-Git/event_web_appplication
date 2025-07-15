@@ -67,8 +67,8 @@ function Home() {
 
   // Create initial slides from your dynamic data
   const initialSlides = [
-    ...data.slice(0, 7),
-    ...data1.slice(0, 7),
+    ...data.slice(0, 5),
+    ...data1.slice(0, 5),
   ]
     .map((item, index) => ({
       id: index + 1,
@@ -178,12 +178,17 @@ function Home() {
                         state: slide.eventId
                       });
                     }}
+
                     className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg transition-all duration-5000 cursor-pointer border border-black sm:mx-4 sm:ml-[10px] ${
                       index === currentSlide ? "border-2 border-black opacity-100 scale-115" : "opacity-50 scale-80"
+
+                    className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg transition-all duration-5000 cursor-pointer border border-pink-200 sm:mx-4 sm:ml-[10px] ${
+                      index === currentSlide ? "border-2 border-pink-300 opacity-100 scale-115" : "opacity-50 scale-80"
+
                     }`}
                   >
                     <h4 className="absolute top-4 left-4 text-white text-lg font-bold bg-[#ff4259] rounded-full px-2 z-10">
-                      {slide.category}
+                     <span className="justify-center items-center">  {slide.category} </span>
                     </h4>
                     <img
                       src={slide.bgImage}

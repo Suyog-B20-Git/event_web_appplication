@@ -15,13 +15,13 @@ export const deleteFavouriteEvent = (eventId) => {
       })
       .then((response) => {
         if (!response.data.status) {
-          toast.success(response.data.message, {
+          toast.error(response.data.message, {
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
           });
         } else {
-          toast.success(response.data.message, {
+          toast.error(response.data.message, {
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
