@@ -1,14 +1,31 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-// import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
-import { FaFolderOpen , FaCameraRetro} from "react-icons/fa";
 
-import { BiParty } from "react-icons/bi";
-import { GiFireplace } from "react-icons/gi";
-import { MdOutlineTheaterComedy ,  MdOutlineFestival , MdNightlife, MdBusinessCenter } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { FaFolderOpen, FaCameraRetro, FaCompactDisc } from "react-icons/fa";
+import { FaPeopleGroup } from "react-icons/fa6";
+import {
+  GiFireplace,
+  GiSwordman,
+  GiFoodTruck,
+  GiTie,
+  GiSpeaker,
+} from "react-icons/gi";
+import { HiOutlinePaintBrush } from "react-icons/hi2";
+import {
+  MdEmojiEvents,
+  MdSportsGymnastics,
+  MdSportsScore,
+} from "react-icons/md";
+import { FaHouseUser } from "react-icons/fa";
+import {
+  MdOutlineTheaterComedy,
+  MdOutlineFestival,
+  MdNightlife,
+  MdBusinessCenter,
+} from "react-icons/md";
 import { BsPciCardSound } from "react-icons/bs";
-import { GiPartyPopper, GiTie, GiSpeaker, GiHanger,  GiFoodTruck ,GiLovers } from "react-icons/gi";
+import { FaBuildingWheat } from "react-icons/fa6";
 import {
   FaMusic,
   FaTheaterMasks,
@@ -19,7 +36,6 @@ import {
   FaBeer,
   FaMicrophoneAlt,
 } from "react-icons/fa";
-
 
 const AdminCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -38,30 +54,45 @@ const AdminCategories = () => {
   const navigate = useNavigate();
 
   const categoryIcons = {
-    "business-and-seminars": 
-      <MdBusinessCenter className="text-7xl text-center mx-auto" />,
-     "party-supplies": <BiParty className="text-7xl text-center mx-auto" />,
+    "business & seminars": (
+      <MdBusinessCenter className="text-7xl text-center mx-auto" />
+    ),
+    "party supplies": <GiFoodTruck className="text-7xl text-center mx-auto" />,
     "wedding planner": <GiFireplace className="text-7xl text-center mx-auto" />,
+    "live music": <FaMusic className="text-7xl text-center mx-auto" />,
+    "dance studio": (
+      <MdSportsGymnastics className="text-7xl text-center mx-auto" />
+    ),
+    entertainer: <GiSwordman className="text-7xl text-center mx-auto" />,
+    anchor: <FaMicrophoneAlt className="text-7xl text-center mx-auto" />,
+    "sound artist": <BsPciCardSound className="text-7xl text-center mx-auto" />,
+    "stand up comedian": (
+      <MdOutlineTheaterComedy className="text-7xl text-center mx-auto" />
+    ),
+    festivals: <MdOutlineFestival className="text-7xl text-center mx-auto" />,
     "live-music": <FaMusic className="text-7xl text-center mx-auto" />,
-    "party-supplies": <GiFoodTruck className="text-7xl text-center mx-auto" />,
-    "live-music": <FaMusic className="text-7xl text-center mx-auto" />,
-    "anchor": <FaMicrophoneAlt className="text-7xl text-center mx-auto" />,
-    "sound-artist": <BsPciCardSound className="text-7xl text-center mx-auto" />,
-    "stand-up-comedian": 
-    <MdOutlineTheaterComedy className="text-7xl text-center mx-auto" />,
-        "festivals": <MdOutlineFestival className="text-7xl text-center mx-auto" />,
-    "live-music": <FaMusic className="text-7xl text-center mx-auto" />,
-    "nightlife-and-clubs": 
-      <MdNightlife className="text-7xl text-center mx-auto" />,
-        "professional": <GiTie className="text-7xl text-center mx-auto" />,
-    "social": <FaMicrophoneAlt className="text-7xl text-center mx-auto" />,
-    "sport-and-leisure": 
-      <FaUmbrellaBeach className="text-7xl text-center mx-auto" />,
-      "theatre-and-arts": 
-      <FaTheaterMasks className="text-7xl text-center mx-auto" />,
-      " testing": <GiSpeaker className="text-7xl text-center mx-auto" />,
-    "disc-jockey": <GiSpeaker className="text-7xl text-center mx-auto" />,
-    "photography & videography": <FaCameraRetro className="text-7xl text-center mx-auto" />,
+    "nightlife & club": (
+      <MdNightlife className="text-7xl text-center mx-auto" />
+    ),
+    professional: <GiTie className="text-7xl text-center mx-auto" />,
+    social: <FaMicrophoneAlt className="text-7xl text-center mx-auto" />,
+    "sport & leisure": (
+      <FaUmbrellaBeach className="text-7xl text-center mx-auto" />
+    ),
+    "theatre & arts": (
+      <FaTheaterMasks className="text-7xl text-center mx-auto" />
+    ),
+    testing: <GiSpeaker className="text-7xl text-center mx-auto" />,
+    indoor: <FaHouseUser className="text-7xl text-center mx-auto" />,
+    outdoor: <FaBuildingWheat className="text-7xl text-center mx-auto" />,
+    adventure: <MdSportsScore className="text-7xl text-center mx-auto" />,
+    "disc jockey": <FaCompactDisc className="text-7xl text-center mx-auto" />,
+    promoters: <FaPeopleGroup className="text-7xl text-center mx-auto" />,
+    artist: <HiOutlinePaintBrush className="text-7xl text-center mx-auto" />,
+    "event planner": <MdEmojiEvents className="text-7xl text-center mx-auto" />,
+    "photography & videography": (
+      <FaCameraRetro className="text-7xl text-center mx-auto" />
+    ),
   };
 
   const fetchCategories = async () => {
@@ -93,7 +124,7 @@ const AdminCategories = () => {
 
   const handleAddNew = () => {
     setModalMode("add");
-    setModalData({ type: "", slug: "", status: "enabled" });
+    setModalData({ type: "", name: "", status: "enabled" });
     setShowModal(true);
   };
 
@@ -136,7 +167,6 @@ const AdminCategories = () => {
     setShowModal(true);
   };
 
- 
   const toggleCheckbox = (id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
@@ -152,17 +182,21 @@ const AdminCategories = () => {
     setTimeout(() => setToast(null), 2500);
   };
 
+  const [openDropdown, setOpenDropdown] = useState(null);
+  useEffect(() => {
+    const handleClickOutside = () => setOpenDropdown(null);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   return (
     <div className="p-4">
- 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
-      
         <div className="flex items-center gap-2">
           <FaFolderOpen className="text-3xl text-gray-700" />
           <h2 className="text-3xl font-semibold text-gray-800">Categories</h2>
         </div>
 
-       
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleAddNew}
@@ -176,7 +210,6 @@ const AdminCategories = () => {
           >
             Bulk Delete
           </button>
-        
         </div>
       </div>
       {/* </div> */}
@@ -194,13 +227,13 @@ const AdminCategories = () => {
               <th className="p-2">
                 <input type="checkbox" disabled />
               </th>
-              <th className="p-2">Id</th>
-              <th className="p-2">Category</th>
-              <th className="p-2">Sub-Category</th>
-              <th className="p-2">Thumb</th>
-              <th className="p-2">Updated At</th>
-              <th className="p-2">Status</th>
-              <th className="p-2">Actions</th>
+              {/* <th className="p-2">Id</th> */}
+              <th className="p-3 text-left">Category</th>
+              <th className="p-3 text-left">Sub-Category</th>
+              <th className="p-3">Thumb</th>
+              {/* <th className="p-2">Updated At</th> */}
+              <th className="p-3">Status</th>
+              <th className="p-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -213,35 +246,70 @@ const AdminCategories = () => {
                     onChange={() => toggleCheckbox(cat._id)}
                   />
                 </td>
-                <td className="p-2">{cat._id}</td>
-                <td className="p-2">{cat.type}</td>
-                <td className="p-2">{cat.name}</td>
-                <td className="p-2 text-center">
-                  {categoryIcons[cat.slug] || (
-                    <div className="text-sm text-gray-500">No Icon</div>
+                {/* <td className="p-2">{cat._id}</td> */}
+                <td className="p-3">{cat.type}</td>
+                <td className="p-3">{cat.name}</td>
+                <td className="p-3 text-center">
+                  {categoryIcons[cat.name?.toLowerCase()] || (
+                    <span className="text-gray-400">No Icon</span>
                   )}
                 </td>
-                <td className="p-2">{cat.updatedAt || "--"}</td>
-                <td className="p-2">{cat.status}</td>
-                <td className="p-2 flex gap-2">
-                  <button
-                    onClick={() => handleView(cat._id)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded-xl"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => handleEdit(cat._id)}
-                    className="bg-blue-600 text-white px-2 py-1 rounded-xl"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(cat._id)}
-                    className="bg-red-600 text-white px-2 py-1 rounded-xl"
-                  >
-                    Delete
-                  </button>
+                <td className="p-3 text-center">
+                  {cat.status ? (
+                    <span
+                      className={`px-2 py-1 rounded-full text-white text-xs ${
+                        cat.status === "enabled"
+                          ? "bg-green-500"
+                          : "bg-gray-500"
+                      }`}
+                    >
+                      {cat.status}
+                    </span>
+                  ) : (
+                    <span className="text-gray-600">Disabled</span>
+                  )}
+                </td>
+
+                <td className="p-3 relative">
+                  <div className="relative inline-block text-right bg-green-500 text-white px-2 py-1 rounded-xl">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenDropdown(
+                          cat._id === openDropdown ? null : cat._id
+                        );
+                      }}
+                      className="w-14 h-8 flex items-center justify-center rounded-full h"
+                    >
+                      <span className="text-md font-bold text-white-600 w-full ">
+                        {" "}
+                        ⋮More
+                      </span>
+                    </button>
+
+                    {openDropdown === cat._id && (
+                      <div className="absolute right-0 mt-2 w-32 origin-top-right bg-white border border-gray-300 rounded-md shadow-lg z-50">
+                        <button
+                          onClick={() => handleView(cat._id)}
+                          className="block w-full bg-yellow-500 text-white px-2 py-1 mb-1 rounded-xl"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => handleEdit(cat._id)}
+                          className="block w-full bg-blue-600 text-white px-2 py-1 mb-1 rounded-xl"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(cat._id)}
+                          className="block w-full bg-red-600 text-white px-2 py-1  mb-1 rounded-xl"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -258,10 +326,35 @@ const AdminCategories = () => {
               <>
                 {modalMode === "view" ? (
                   <>
-                 
-                    <p>View Mode</p>
+                    <p className="mb-2">
+                      <strong>Category:</strong> {modalData?.type || "--"}
+                    </p>
+                    <p className="mb-2">
+                      <strong>Subcategory:</strong> {modalData?.name || "--"}
+                    </p>
+                    <p className="mb-2">
+                      <strong>Status:</strong> {modalData?.status || "--"}
+                    </p>
+                    <div className="mt-4">
+                      <strong>Thumb:</strong>
+                      <br />
+                      {modalData?.name?.toLowerCase() &&
+                      categoryIcons[modalData.name.toLowerCase()] ? (
+                        <div className="mt-2 text-center">
+                          {categoryIcons[modalData.name.toLowerCase()]}
+                        </div>
+                      ) : modalData?.icon ? (
+                        <img
+                          src={modalData.icon}
+                          alt="icon"
+                          className="h-12 mx-auto mt-2"
+                        />
+                      ) : (
+                        <span className="text-gray-500">No Icon</span>
+                      )}
+                    </div>
                   </>
-                ) : modalMode === "add" ? (
+                ) : (
                   <>
                     <label className="block mb-1 font-medium">Category:</label>
                     <input
@@ -270,7 +363,7 @@ const AdminCategories = () => {
                       onChange={(e) =>
                         setModalData({ ...modalData, type: e.target.value })
                       }
-                      className="w-full border px-3 py-2 rounded mb-3"
+                      className="w-full border px-3 py-2 rounded  mb-3"
                     />
 
                     <label className="block mb-1 font-medium">
@@ -281,60 +374,6 @@ const AdminCategories = () => {
                       value={modalData?.name || ""}
                       onChange={(e) =>
                         setModalData({ ...modalData, name: e.target.value })
-                      }
-                      className="w-full border px-3 py-2 rounded mb-3"
-                    />
-
-                    <label className="block mb-1 font-medium">Status:</label>
-                    <select
-                      value={modalData?.status || "enabled"}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, status: e.target.value })
-                      }
-                      className="w-full border px-3 py-2 rounded mb-3"
-                    >
-                      <option value="enabled">Enabled</option>
-                      <option value="disabled">Disabled</option>
-                    </select>
-
-                    <label className="block mb-1 font-medium">Icon:</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            setModalData({
-                              ...modalData,
-                              icon: reader.result,
-                            });
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="w-full border px-3 py-2 rounded mb-4"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <label className="block mb-1 font-medium">Category:</label>
-                    <input
-                      type="text"
-                      value={modalData?.type || ""}
-                      readOnly
-                      className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-600 mb-3"
-                    />
-
-                    <label className="block mb-1 font-medium">
-                      Subcategory:
-                    </label>
-                    <input
-                      type="text"
-                      value={modalData?.slug || ""}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, slug: e.target.value })
                       }
                       className="w-full border px-3 py-2 rounded mb-3"
                     />
@@ -391,14 +430,17 @@ const AdminCategories = () => {
                             `http://localhost:5000/api/categories/${modalData._id}`,
                             {
                               name: modalData.name,
-                              status: modalData.status,
+                              type: modalData.type,
                               icon: modalData.icon,
+                              status: modalData.status,
                             },
                             {
                               headers: { Authorization: token },
                             }
                           );
                           showToast("Category updated successfully");
+                          setShowModal(false);
+                          fetchCategories();
                         } else if (modalMode === "add") {
                           await axios.post(
                             `http://localhost:5000/api/categories`,
@@ -417,7 +459,6 @@ const AdminCategories = () => {
                         setShowModal(false);
                         fetchCategories();
                       } catch (err) {
-                        console.error("Save failed", err);
                         showToast("Failed to save category");
                       }
                     }}
@@ -476,7 +517,7 @@ const AdminCategories = () => {
                       }
 
                       setConfirmModal({ show: false, id: null, bulk: false });
-                      fetchCategories(); 
+                      fetchCategories();
                     } catch (err) {
                       console.error("Deletion failed", err);
                       showToast(" Failed to delete");
