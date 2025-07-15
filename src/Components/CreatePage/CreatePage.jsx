@@ -32,7 +32,8 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 
 function CreatePage() {
-   const {
+  // const navigate = useNavigate(); 
+  const {
     control,
     handleSubmit,
     watch,
@@ -293,67 +294,66 @@ useEffect(() => {
         toast.error("No file selected");
         return;
     }
-
-    setImage(file);  // Update state with file
-
-    setPreviewImage(URL.createObjectURL(file));
-};
-
-   if (!captchaValue) {
-    //   toast.error("Please complete the reCAPTCHA verification.");
-    //   return;
-    }
-
-
-const onSubmit = async (data) => {
-  console.log("Form Data:", data);
-  const token = localStorage.getItem("authToken");
-  if (!token) {
-    alert("Please login first.");
-    localStorage.setItem("redirectAfterLogin", "/create-page");
-    localStorage.setItem("savedFormData", JSON.stringify(...data));
-    localStorage.setItem(
-      "missingUploads",
-      JSON.stringify({
-        imageMissing: !!image,
-        coverImageMissing: !!coverImage,
-        
-      })
-    );
-    localStorage.setItem(
-      "savedUIState",
-      JSON.stringify({
-        selectedCountry,
-        selectedState,
-        selectedCity,
-        selectedSubCategory,
-        selectedTagKeywords,
-        image,
-        coverImage,
-      })
-    );
-    navigate("/login");
-    return;
-  }
-
-  try {
-    if (!check) {
-      setError("You must accept the terms.");
+  
+    if (file.size > 2 * 1024 * 1024) {
+      setImageError("File size must be less than 2MB");
       return;
     }
+  
+    setImage(file);
+    setImageError(""); // Clear previous error if valid image is selected
+  };
+  
 
-    setError(""); 
+  console.log(image);
+
+  // const onSubmit = (data) => {
+  //   // if (!captchaValue) {
+  //   //   toast.error("Please complete the reCAPTCHA verification.");
+  //   //   return;
+  //   // }
+
+  //   if (!check) {
+  //     setError("You must accept the terms.");
+  //     return; // Prevent form submission
+  //   }
+  
+  //   setError(""); // Clear error if checkbox is checked
+
+
+    const onSubmit = async (data) => {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Please login first.");
+        localStorage.setItem("redirectAfterLogin", "/createPage");
+        navigate("/login");
+        return;
+      }
+
+      try {
+        
+          if (!check) {
+          setError("Please accept the terms.");
+          return;
+        }
+            
+        setError(""); // Clear checkbox errors
+        console.log("All checks passed. Submitting data:", data);
+
+
     const formData = new FormData();
-    console.log("fm data:", formData);
-    formData.append("profileImage", image);
-    data.subCategory.forEach((subCategory) =>{
-    formData.append("categories[]", subCategory.toLowerCase())
-  }
-  );
-    formData.append("country", selectedCountry?.label || "");
-    formData.append("state", selectedState?.label || "");
-    formData.append("city", selectedCity?.label || "");
+    formData.append("profileImage", image); // Append file
 
+    selectedSubCategory.forEach((subCategory) =>
+      formData.append("categories[]", subCategory)
+    );
+    formData.append("country", selectedCountry ? selectedCountry.label : "");
+    formData.append("state", selectedState ? selectedState.label : "");
+    formData.append("city", selectedCity ? selectedCity.label : "");
+    
+    formData.append("country", data.country);
+    formData.append("state", data.state);
+    formData.append("city", data.city);
     formData.append("location", data.location);
     formData.append("name", data.listingTitle);
     formData.append("description", data.listingDescription);
@@ -416,7 +416,7 @@ const onSubmit = async (data) => {
 };
 
 
-  const onPreview = () => {
+    const onPreview = () => {
     const formValues = watch(); 
     setFormData({
       profileImage: formValues.Image, 

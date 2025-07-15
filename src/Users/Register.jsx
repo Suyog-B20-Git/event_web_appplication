@@ -40,7 +40,7 @@ function Register() {
     try {
       if (password === confirmPassword) {
         const response = await axios.post(
-          `${baseUrl}/api/auth/setup`,
+          `${baseUrl}/auth/setup`,
           {
             username,
             email,
