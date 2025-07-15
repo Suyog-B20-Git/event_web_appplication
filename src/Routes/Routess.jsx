@@ -34,8 +34,12 @@ import BookTicket from "../LandingPages/BookTicket";
 import Terms from "../Components/Home/Terms";
 import About from "../Components/Home/About";
 import ContactUs from "../Components/Home/ContactUs";
+
+import EventFilterBar from "../LandingPages/EventFilterBar";
+
 import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
 import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
+
 
 
 function Routess() {
@@ -133,6 +137,7 @@ function Routess() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
+           <Route path="/events" element={<Viewall />} />
         </Route>
 
           </Routes>

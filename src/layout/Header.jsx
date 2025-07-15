@@ -1,123 +1,115 @@
 import {
   IoLocationSharp,
   IoMenu,
-  IoSearch,
   IoSearchSharp,
   IoTicket,
 } from "react-icons/io5";
-
 import { useState, useEffect, useRef } from "react";
 import Button from "../Components/Button";
-// import InputField from "../ReusableComponents/InputField";
 import Sidebar from "./Sidebar";
 import {
   IoIosLogOut,
   IoIosPerson,
   IoMdArrowDropdown,
-  IoMdHome,
 } from "react-icons/io";
 import {
-  MdContactPhone,
   MdDashboard,
   MdEvent,
   MdMiscellaneousServices,
 } from "react-icons/md";
 import { GrGroup } from "react-icons/gr";
 import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode"; // Correct import
+import jwt_decode from "jwt-decode";
 import { CiSearch } from "react-icons/ci";
 import { CgProfile } from "react-icons/cg";
 import gsap from "gsap";
 import axios from "axios";
 import { toast } from "react-toastify";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const Header = () => {
   const navigate = useNavigate();
-  const [location, setLocation] = useState(false);
+  const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [ShowPopup, setShowPopup] = useState(false);
-  const [userName, setUserName] = useState(""); 
-  const [refresh, setRefresh] = useState(0);
+  const [userName, setUserName] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [searchDropdown, setSearchDropdown] = useState(false);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
-  const wrapperRef = useRef(null);
-  const [isSelectedFromDropdown, setIsSelectedFromDropdown] = useState(false);
   const [searchValue, setSearchValue] = useState("All");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemRefs = useRef([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [isLog, setIsLog] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState("Select Location");
 
-useEffect(() => {
-  switch (selectedCategory) {
-    case "Business":
-      setSelectedCategory("business & seminars");
-      break;
-    case "Festivals":
-      setSelectedCategory("festivals");
-      break;
-    case "Live Music":
-      setSelectedCategory("live music");
-      break;
-    case "Nightlife and club":
-      setSelectedCategory("nightlife & club");
-      break;
-    case "Professional":
-      setSelectedCategory("professional");
-      break;
-    case "Social":
-      setSelectedCategory("social");
-      break;
-    case "Sport & Leisure":
-      setSelectedCategory("sport & leisure");
-      break;
-    case "Theatre & Arts":
-      setSelectedCategory("theatre & arts");
-      break;
-    case "all":
-      setSelectedCategory("all");
-      break;
-   
-    default:      
-      localStorage.removeItem("selectedCategory");
-      break;
-  }
-  localStorage.setItem("selectedCategory", selectedCategory);
-}, [selectedCategory]);
+  const desktopSearchBarContainerRef = useRef(null);
+  const mobileSearchBarContainerRef = useRef(null);
+  const desktopSearchDropdownRef = useRef(null);
+  const locationPopupRef = useRef(null);
+  const boxRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const searchInputRef = useRef(null);
 
-
-  useEffect(() => {
-    if (highlightedIndex >= 0 && itemRefs.current[highlightedIndex]) {
-      itemRefs.current[highlightedIndex].scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
-    }
-  }, [highlightedIndex]);
-  // Get the authToken from localStorage
   const authToken = localStorage.getItem("authToken");
-
-  useEffect(() => {
-    if (authToken) {
-      const decodedToken = jwt_decode(authToken);
-      if (decodedToken?.name) {
-        setUserName(decodedToken.name); // Set user name if token is valid
-      }
-      if (decodedToken?.role) {
-        localStorage.setItem("role", decodedToken.role);
-      }
-    }
-  }, [authToken]);
-
   const role = localStorage.getItem("role");
-  const [isSearch, setIsSearch] = useState(false);
-  const handleShowAlert = () => setShowPopup(true);
 
-  var text_data = [
-    { name: "Home", icon: <IoMdHome />, path: "/home" },
+  const metroCities = [
+    { 
+      name: "Mumbai", 
+      state_name: "Maharashtra", 
+      country_name: "India",
+      image: "https://images.unsplash.com/photo-1543157145-f78c636d023d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    },
+    { 
+      name: "Delhi", 
+      state_name: "Delhi", 
+      country_name: "India",
+      image: "https://images.unsplash.com/photo-1587474260584-136574528ed5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    },
+    { 
+      name: "Bangalore", 
+      state_name: "Karnataka", 
+      country_name: "India",
+      image: "https://images.unsplash.com/photo-1470004914212-05527e49370b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    },
+    { 
+      name: "Chennai", 
+      state_name: "Tamil Nadu", 
+      country_name: "India",
+      image: "https://images.unsplash.com/photo-1592903297149-37fb25202dfa?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    },
+    { 
+      name: "Kolkata", 
+      state_name: "West Bengal", 
+      country_name: "India",
+      image: "https://images.unsplash.com/photo-1584515933487-779824d29309?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    },
+    { 
+      name: "Hyderabad", 
+      state_name: "Telangana", 
+      country_name: "India",
+      image: "https://images.unsplash.com/photo-1581852057101-85a0b3d9b9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    },
+    { 
+      name: "Pune", 
+      state_name: "Maharashtra", 
+      country_name: "India",
+      image: "https://images.unsplash.com/photo-1634034379073-f689b460a3fc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    },
+    { 
+      name: "Ahmedabad", 
+      state_name: "Gujarat", 
+      country_name: "India",
+      image: "https://images.unsplash.com/photo-1633424090571-c4a7b5d5edf2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+    },
+  ];
+
+  const text_data = [
     {
       name: "Events",
       filterPath: "/filtered-events",
@@ -157,7 +149,6 @@ useEffect(() => {
         { name: "Stand up Comedian", path: "/performers/stand-up-comedian" },
       ],
     },
-
     {
       name: "Services",
       path: "/services",
@@ -186,461 +177,511 @@ useEffect(() => {
         { name: "Outdoor", path: "/venues/outdoor" },
       ],
     },
-    { name: "Contact Us", path: "/contact", icon: <MdContactPhone /> },
   ];
 
-  const [isLog, setIsLog] = useState(false);
-  const [isPop, setIsPop] = useState(false);
-  const boxRef = useRef(null);
-  const dropdownRef = useRef(null); // Ref for the dropdown
-
-  useEffect(() => {
-    gsap.from(boxRef.current, {
-      y: 100, // Moves up from 100px
-      opacity: 0, // Starts with opacity 0
-      duration: 1, // Animation lasts for 1 second
-      ease: "power3.out",
-    });
-  }, []);
-
-  const [activeIndex, setActiveIndex] = useState(null);
-
-  const handleSearch = () => {
-    if (location.trim()) {
-      const searchLocation = searchValue === "All" ? "" : `?location=${encodeURIComponent(searchValue)}`;
-      navigate(`/city/location${searchLocation}`);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsLog(false);
-        setIsPop(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const handleShowAlert = () => setShowPopup(true);
 
   const handleProfileClick = async () => {
     const token = localStorage.getItem("authToken");
-
     if (!token) {
+      navigate("/login");
       return;
     }
-
     try {
       const response = await axios.get(`${baseUrl}/api/user`, {
-        headers: {
-          Authorization: `${token}`,
-        },
+        headers: { Authorization: `${token}` },
       });
       if (response.data.status) {
         localStorage.setItem("userProfile", JSON.stringify(response.data.data));
         setIsLog(false);
         navigate("/profile");
       } else {
+        toast.error(response.data.message || "Failed to fetch profile.");
       }
     } catch (error) {
-      toast.error(error.data.message || error.message);
+      console.error("Error fetching profile:", error);
+      toast.error(error.response?.data?.message || error.message || "An error occurred.");
     }
-  }
+  };
 
   const handleLogOut = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("isLogin");
     localStorage.removeItem("eventData");
+    localStorage.removeItem("role");
+    setUserName("");
     navigate("/home");
+    toast.success("Logged out successfully!");
   };
 
-  const handleClickOutside1 = (event) => {
-    if (searchRef.current && !searchRef.current.contains(event.target)) {
-      setIsSearch(false);
-    }
-  };
-
-  const searchRef = useRef(null);
-
-  useEffect(() => {
-    if (isSearch) {
-      document.addEventListener("mousedown", handleClickOutside1);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside1);
-    };
-  }, [isSearch]);
-
-  // Fetch location suggestions based on user input
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (searchValue.length > 0 && searchValue !== "All") {
-        try {
-          const response = await axios.get(`${baseUrl}/api/location/locationSuggestions?search=${searchValue}`
-          );
-          setSuggestions(response.data || []);
-          setShowLocationDropdown(true);
-        } catch (error) {
-          console.error("Error fetching suggestions:", error);
-        }
-      } else {
-        setSuggestions([]);
-        setShowLocationDropdown(false);
-      }
-    };
-
-    const debounce = setTimeout(fetchSuggestions, 300);
-    return () => clearTimeout(debounce);
-  }, [searchValue]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setShowLocationDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleSelect = (locationString) => {
+  const handleLocationSelect = (locationString) => {
     const cityOnly = locationString.split(",")[0].trim();
     setQuery(cityOnly);
     setSearchValue(cityOnly);
-    setShowLocationDropdown(false);
+    setCurrentLocation(cityOnly);
+    setShowLocationPopup(false);
+    navigate(`/city/location?location=${encodeURIComponent(cityOnly)}`);
+    gsap.to(locationPopupRef.current, {
+      scale: 0.9,
+      opacity: 0,
+      duration: 0.2,
+      ease: "power2.in",
+      onComplete: () => setShowLocationPopup(false)
+    });
   };
-  const skipSearchRef = useRef(false);
-
-  // Fetch search results based on user input
-  useEffect(() => {
-    const fetchSearchResults = async () => {
-      if (skipSearchRef.current) {
-        skipSearchRef.current = false; 
-        return;
-      }
-
-      if (search.length > 0) {
-        try {
-          const response = await axios.get(
-            `${baseUrl}/api/search?query=${search}`
-          );
-        
-          const receivedData = response?.data?.data;
-          const filterData = [];
-
-          for (const category in receivedData) {
-            if (Array.isArray(receivedData[category])) {
-              receivedData[category].forEach((item) => {
-                filterData.push({
-                  ...item,
-                  categoryGroup: category,
-                  eventCategory: item.category,
-                  category: category,
-
-                  
-                });
-              });
-            }
-          }
-
-          setSearchResults(filterData);
-          setSearchDropdown(true);
-        } catch (error) {
-          console.error("Error fetching Search Results:", error);
-        }
-      }
-    };
-    const debounce = setTimeout(fetchSearchResults, 300);
-    return () => clearTimeout(debounce);
-  }, [search]);
-
-  useEffect(() => {
-    const handleClickOutside1 = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setSearchDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside1);
-    return () => document.removeEventListener("mousedown", handleClickOutside1);
-  }, []);
 
   const handleSelectSearch = (item) => {
-    skipSearchRef.current = true;
     setSearch(item.name);
-    const formattedCategory =
-    item.eventCategory?.toLowerCase().replace(/\s+/g, "-") || "general";
-    switch (item.category) {
+    const formattedCategory = item.eventCategory?.toLowerCase().replace(/\s+/g, "-") || "general";
+
+    switch (item.categoryGroup) {
       case "events":
-        navigate(`/events/${formattedCategory}/${item._id}` || `/events/${item.slug || "featured-event"}`, {
-          state: item._id,
-        }
-        );
+        navigate(`/events/${formattedCategory}/${item._id}`, { state: item._id });
         break;
       case "organizers":
-        navigate(`/Organizer/${item._id}`);
+        navigate(`/organizer/${item._id}`);
         break;
       case "performers":
-        navigate(`/Performer/${item._id}`);
+        navigate(`/performer/${item._id}`);
         break;
       case "services":
-        navigate(`/Service/${item._id}`);
+        navigate(`/service/${item._id}`);
         break;
       case "venues":
-        navigate(`/Venue/${item._id}`);
+        navigate(`/venue/${item._id}`);
         break;
       default:
-        console.warn("Unknown category:", item.category);
+        console.warn("Unknown category:", item.categoryGroup);
         break;
     }
     setSearchDropdown(false);
     setSearchResults([]);
+    setIsSearchExpanded(false);
   };
+
+  const handleSearchIconClick = () => {
+    setIsSearchExpanded((prev) => !prev);
+    if (!isSearchExpanded) {
+      setTimeout(() => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+        }
+      }, 100);
+    } else {
+      setSearch('');
+      setSearchResults([]);
+      setSearchDropdown(false);
+    }
+  };
+
+  const handleLocationIconClick = () => {
+    setShowLocationPopup(true);
+    setQuery("");
+    gsap.from(locationPopupRef.current, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.3,
+      ease: "back.out(1.2)"
+    });
+  };
+
+  useEffect(() => {
+    let categoryToSet = selectedCategory;
+    switch (selectedCategory) {
+      case "Business":
+        categoryToSet = "business & seminars";
+        break;
+      case "Festivals":
+        categoryToSet = "festivals";
+        break;
+      case "Live Music":
+        categoryToSet = "live music";
+        break;
+      case "Nightlife and club":
+        categoryToSet = "nightlife & club";
+        break;
+      case "Professional":
+        categoryToSet = "professional";
+        break;
+      case "Social":
+        categoryToSet = "social";
+        break;
+      case "Sport & Leisure":
+        categoryToSet = "sport & leisure";
+        break;
+      case "Theatre & Arts":
+        categoryToSet = "theatre & arts";
+        break;
+      case "all":
+        categoryToSet = "all";
+        break;
+      default:
+        localStorage.removeItem("selectedCategory");
+        break;
+    }
+    if (categoryToSet) {
+      localStorage.setItem("selectedCategory", categoryToSet);
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    if (authToken) {
+      try {
+        const decodedToken = jwt_decode(authToken);
+        if (decodedToken?.name) {
+          setUserName(decodedToken.name);
+        }
+        if (decodedToken?.role) {
+          localStorage.setItem("role", decodedToken.role);
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        handleLogOut();
+      }
+    }
+  }, [authToken]);
+
+  useEffect(() => {
+    if (highlightedIndex >= 0 && itemRefs.current[highlightedIndex]) {
+      itemRefs.current[highlightedIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [highlightedIndex]);
+
+  useEffect(() => {
+    if (isLog && boxRef.current) {
+      gsap.from(boxRef.current, {
+        y: 100,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+    }
+  }, [isLog]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsLog(false);
+      }
+      if (locationPopupRef.current && !locationPopupRef.current.contains(event.target)) {
+        gsap.to(locationPopupRef.current, {
+          scale: 0.9,
+          opacity: 0,
+          duration: 0.2,
+          onComplete: () => setShowLocationPopup(false)
+        });
+      }
+      if (
+        (desktopSearchBarContainerRef.current && !desktopSearchBarContainerRef.current.contains(event.target)) &&
+        (mobileSearchBarContainerRef.current && !mobileSearchBarContainerRef.current.contains(event.target)) &&
+        (desktopSearchDropdownRef.current && !desktopSearchDropdownRef.current.contains(event.target)) &&
+        event.target !== document.getElementById('desktop-search-icon') &&
+        event.target !== document.getElementById('mobile-search-icon')
+      ) {
+        setIsSearchExpanded(false);
+        setSearchDropdown(false);
+        setSearch("");
+        setSearchResults([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchValue.length > 0 && searchValue !== "All") {
+        try {
+          const response = await axios.get(`${baseUrl}/api/location/locationSuggestions?search=${searchValue}`);
+          setSuggestions(response.data || []);
+        } catch (error) {
+          console.error("Error fetching location suggestions:", error);
+          setSuggestions([]);
+        }
+      } else {
+        setSuggestions([]);
+      }
+    };
+
+    const debounceTimeout = setTimeout(fetchSuggestions, 300);
+    return () => clearTimeout(debounceTimeout);
+  }, [searchValue]);
+
+  useEffect(() => {
+    const fetchSearchResults = async () => {
+      if (search.length === 0) {
+        setSearchResults([]);
+        setSearchDropdown(false);
+        return;
+      }
+      try {
+        const response = await axios.get(`${baseUrl}/api/search?query=${search}`);
+        const receivedData = response?.data?.data;
+        const filterData = [];
+        for (const category in receivedData) {
+          if (Array.isArray(receivedData[category])) {
+            receivedData[category].forEach((item) => {
+              filterData.push({
+                ...item,
+                categoryGroup: category,
+                eventCategory: item.category,
+                category: category,
+              });
+            });
+          }
+        }
+        setSearchResults(filterData);
+        setSearchDropdown(filterData.length > 0);
+      } catch (error) {
+        console.error("Error fetching Search Results:", error);
+        setSearchResults([]);
+        setSearchDropdown(false);
+      }
+    };
+    const debounceTimeout = setTimeout(fetchSearchResults, 300);
+    return () => clearTimeout(debounceTimeout);
+  }, [search]);
 
   return (
     <div className="bg-gray-900 text-white p-1 fixed w-full z-40">
-      <div>
-        <div className="lg:w-[100%] w-[100%]  lg:h-[140px] inset-0 z-60 items-center justify-center  relative">
-          {/* first div */}
-          <div className="flex w-[100%] md:h-[80px] h-[60px]  lg:h-[80px]  inset-0 z-60 items-center justify-center bg-opacity-50 relative ">
-            {/* <div className="flex justify-between  items-center  lg:w-[60%] w-[100%] "> */}
-            <div className="flex items-center justify-between w-full lg:h-[100px] px-4">
-              {/* <div
-                className="md:w-[35%] lg:w-[100%] w-[100%]  
-            ml-3 relative lg: p-1 rounded-md "
-              > */}
-              <div className="lg:w-[30%] md:w-[25%] w-auto">
-                {/* <div className="md:w-[35%] w-[80%]  ml-3 relative z-20 p-1 rounded-md"> */}
-
-                <img
-                  src="/assets/staticAssets/logo.png"
-                  className="hidden md:block lg:w-[50%] md:w-[60%] w-auto"
-                  // className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
-                  alt="logo"
-                  onClick={() => navigate("/home")}
-                />
-              </div>
-
-              {/*Mobile view */}
-              {/* Mobile Logo */}
-              {isSearch ? (
-                <div
-                  ref={searchRef}
-                  className="flex relative lg:hidden md:hidden px-4 items-center rounded-full bg-gray-100 shadow-md p-2 w-full mx-auto"
-                >
-                  <span className="text-gray-700 text-lg font-bold">
-                    <IoSearch />
-                  </span>
-                  <input
-                    type="search"
-                    placeholder="Search events"
-                    onClick={() => setLocation(true)}
-                    className="bg-transparent outline-none px-4 text-gray-700 w-full"
-                  />
-                </div>
-              ) : (
-                <img
-                  src="/assets/staticAssets/logo.png"
-                  className="lg:hidden md:hidden block h-[40%] w-[40%] mx-auto"
-                  alt="logo"
-                  onClick={() => navigate("/home")}
-                />
-              )}
-
-              <div className="relative flex items-center justify-end md:w-[65%] w-full p-2 mx-auto">
-                {/* <div className="relative z-20 md:w-[65%] w-[96%] "> */}
-                {/* search bar */}
-
-                <div className="lg:flex md:flex hidden  lg:flex-row flex-col items-center rounded-full bg-gray-100 shadow-md p-2 lg:w-full w-[80%]  mx-auto">
-                  {/* Search Input */}
-                  <div
-                    className="hidden lg:flex md:flex flex-1 justify-center"
-                    ref={searchRef}
-                  >
-                    <input
-                      type="text"
-                      placeholder="Search events"
-                      value={search}
-                      onChange={(e) =>{ setSearch(e.target.value);
-                        setHighlightedIndex(-1);
-                      }}
-                      onClick={() => setLocation(true)}
-                      onKeyDown={(e) => {
-                        if (!searchResults.length) return;
-                    
-                        switch (e.key) {
-                          case "ArrowDown":
-                            setHighlightedIndex((prev) => (prev + 1) % searchResults.length);
-                            break;
-                          case "ArrowUp":
-                            setHighlightedIndex((prev) =>
-                              prev <= 0 ? searchResults.length - 1 : prev - 1
-                            );
-                            break;
-                          case "Enter":
-                            if (highlightedIndex >= 0) {
-                              handleSelectSearch(searchResults[highlightedIndex]);
-                              e.preventDefault();
-                            }
-                            break;
-                          default:
-                            break;
-                        }
-                      }}
-                      className="flex-1 bg-transparent outline-none px-4 text-gray-700"
-                    />
-                  </div>
-                  <div className="absolute flex-1" ref={skipSearchRef}>
-                    {searchDropdown && searchResults.length > 0 && (
-                      <ul className="absolute z-10  bg-white text-black border mt-3 rounded w-60 max-h-48  overflow-y-auto shadow-md">
-                        {searchResults.map((item, index) => (
-                          <li
-                            key={item._id}
-                            ref={(el) => (itemRefs.current[index] = el)}
-                            onMouseDown={() => handleSelectSearch(item)}
-                            className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${
-                              index === highlightedIndex ? "bg-gray-300 font-semibold" : ""
-                            }`}
-                          >
-                            <span className="font-medium">{item.name}</span>{" "}
-                            <span className="text-gray-500 text-sm">
-                              {" "}
-                              — {item.category}{" "}
-                            </span>{" "}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-
-                  {/* Location */}
-                  <div className="lg:flex hidden items-center gap-2 px-4 border-l border-gray-300">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 64 64"
-                      height={"20px"}
-                      id="location"
-                    >
-                      <g fill="#134563">
-                        <path d="m32 55.7-.9-1.1c-.6-.8-15.9-18.7-15.9-29.4 0-9.3 7.6-16.8 16.8-16.8S48.8 16 48.8 25.2c0 10.7-15.3 28.7-15.9 29.4l-.9 1.1zm0-45c-8 0-14.4 6.5-14.4 14.4 0 8.4 11.1 22.7 14.4 26.8 3.3-4.1 14.4-18.3 14.4-26.8 0-7.9-6.4-14.4-14.4-14.4z"></path>
-                        <path d="M32 31.6c-3.5 0-6.4-2.9-6.4-6.4s2.9-6.4 6.4-6.4 6.4 2.9 6.4 6.4-2.9 6.4-6.4 6.4zm0-10.4c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4z"></path>
-                      </g>
-                    </svg>
-                    <div className="flex" ref={wrapperRef}>
-                      <input
-                        type="text"
-                        placeholder="location"
-                        value={query}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setQuery(value);
-                          setSearchValue(value);
-                        }}
-                        onClick={() => setLocation(true)}
-                        className="flex-1 bg-transparent outline-none px-2 text-gray-700"
-                      />
-                      {/* Search Button */}
-                      <button className="bg-[#e33661]   font-semibold p-1 rounded-full">
-                        <IoSearchSharp
-                          className="text-white text-xl"
-                          onClick={() => {
-                            if (searchValue.trim()) {
-                              navigate(`/city/location?location=${encodeURIComponent(searchValue)}`);}
-                          }}
-                        />
-                      </button>
-                    </div>
-                    <div className="absolute">
-                      {showLocationDropdown && suggestions.length > 0 && (
-                        <ul className="absolute z-10  bg-white text-black border mt-3 rounded w-60  max-h-48 overflow-y-auto shadow-md">
-                          {suggestions.map((suggestion, index) => (
-                            <li
-                              key={index}
-                              onMouseDown={() =>
-                                handleSelect(
-                                  `${suggestion.name}, ${suggestion.state_name}, ${suggestion.country_name}`
-                                )
-                              }
-                              className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                            >
-                              {`${suggestion.name}, ${suggestion.state_name}, ${suggestion.country_name}`}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/*Mobile view search bar button*/}
-                {!isSearch && (
-                  <button
-                    onClick={() => setIsSearch(true)}
-                    className={`lg:hidden md:hidden block text-2xl m-1 mr-6 p-1 rounded-full bg-[#ff2459] font-bold`}
-                  >
-                    <CiSearch />
-                  </button>
-                )}
-
-                <div
-                  className="relative z-20 w-[10%] block lg:hidden md:left-4  text-4xl sm:font-medium font-normal  sm:text-2xl"
-                  onClick={(e) => handleShowAlert()}
-                >
-                  <IoMenu />
-                </div>
-              </div>
-            </div>
-
-            {/* second div */}
-            <div className="lg:flex p-4  relative z-60  lg:justify-end hidden   md:w-[40%] w-[100%]">
-              <div className=" m-1">
-                <Button
-                  text={"Create Event"}
-                  rounded={"rounded"}
-                  variant={"primary"}
-                  onClick={() => navigate("/create-event")}
-                />
-              </div>
-              <div className="m-1">
-                <Button
-                  text={"Create Page"}
-                  rounded={"rounded"}
-                  variant={"primary"}
-                  onClick={() => navigate("/create-page")}
-                />
-              </div>
-            </div>
+      <div className="flex w-full h-[80px] items-center justify-between bg-opacity-50 px-4 relative gap-4">
+        {/* Logo and Mobile Location Icon */}
+        <div className="flex items-center gap-2 lg:gap-0 flex-shrink-0">
+          <img
+            src="/assets/staticAssets/logo.png"
+            className="lg:w-[150px] md:w-[120px] w-[100px] cursor-pointer"
+            alt="logo"
+            onClick={() => navigate("/home")}
+          />
+          <div 
+            className="lg:hidden flex items-center gap-1 cursor-pointer group"
+            onClick={handleLocationIconClick}
+          >
+            <IoLocationSharp className="text-white text-xl group-hover:text-[#ff2459] transition-colors" />
+            <span className="text-sm font-medium group-hover:text-[#ff2459] transition-colors">
+              {currentLocation.length > 10 ? `${currentLocation.substring(0, 10)}...` : currentLocation}
+            </span>
           </div>
+        </div>
 
-          {/* Second Headding */}
-          <div className="w-full hidden lg:flex items-center justify-between">
-            <div className="sm:flex justify-end gap-3 lg:relative items-center w-full flex-nowrap">
-              {text_data.map((item, index) => (
+        {/* Desktop Location Selector */}
+        <div 
+          className="hidden lg:flex items-center gap-2 cursor-pointer group relative"
+          onClick={handleLocationIconClick}
+        >
+          <div className="relative">
+            <IoLocationSharp className="text-white text-2xl group-hover:text-[#ff2459] transition-colors" />
+            <span className="absolute -top-1 -right-1 bg-[#ff2459] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="relative -top-px">⌵</span>
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-300 group-hover:text-white">Your Location</span>
+            <span className="font-medium group-hover:text-[#ff2459] transition-colors">
+              {currentLocation}
+            </span>
+          </div>
+        </div>
+
+        {/* Navigation Links */}
+        <div className="hidden lg:flex items-center gap-6 flex-grow justify-center">
+          {text_data.map((item, index) => (
+            <div
+              key={index}
+              className="relative pb-2"
+              onMouseEnter={() => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
+            >
+              <button
+                className="font-medium text-lg flex items-center gap-1 relative z-60 text-white hover:text-[#ff2459] transition-colors duration-200"
+                onClick={() => {
+                  navigate(item.path);
+                  if (item.path === "/events") {
+                    setSelectedCategory("all");
+                  }
+                }}
+              >
+                <span className="relative top-0.5">{item.icon}</span> {item.name}
+              </button>
+
+              {activeIndex === index && item.popUpMenu && (
                 <div
-                  key={index}
-                  className="relative pb-2"
-                  onMouseEnter={() => setActiveIndex(index)} // Keep active when hovering over button or dropdown
-                  onMouseLeave={() => setActiveIndex(null)} // Close dropdown only when mouse leaves both
+                  ref={boxRef}
+                  className="bg-white rounded-lg text-gray-900 absolute top-full left-1/2 -translate-x-1/2 h-max mt-1 shadow-lg z-50 min-w-[180px]"
                 >
-                  <button
-                    className="font-medium lg:text-lg md:text-sm lg:mr-5 flex lg:gap-1 md:gap-0.5 relative z-60"
-                    onClick={() => {
-                      navigate(item.path)
-                    if(item.path === "/events"){
-                      setSelectedCategory("all");
-                    }
-                    }}
-                  >
-                    <p className="relative top-1.5">{item.icon}</p> {item.name}
-                  </button>
-
-                  {activeIndex === index && item.popUpMenu && (
-                    <div
-                      ref={boxRef}
-                      className=" bg-white rounded text-gray-900 absolute top-7 left-0   h-max mt-1 shadow-lg"
+                  {item.popUpMenu.map((menuItem, menuIndex) => (
+                    <button
+                      key={menuIndex}
+                      onClick={() => {
+                        setSelectedCategory(menuItem.name);
+                        navigate(menuItem.path, { state: menuItem.name });
+                      }}
+                      className="flex justify-start gap-2 p-2.5 font-medium hover:text-white whitespace-nowrap hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
                     >
+                      {menuItem.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Search */}
+        <div className="hidden lg:flex items-center flex-shrink-0 relative">
+          <div
+            ref={desktopSearchBarContainerRef}
+            className={`absolute right-0 top-1/2 transform -translate-y-1/2 z-50 flex items-center bg-gray-100 rounded-lg shadow-md transition-all duration-300 ease-in-out
+                ${isSearchExpanded ? 'w-96 px-4 py-2 opacity-100' : 'w-0 px-0 py-0 opacity-0 overflow-hidden'}`}
+          >
+            {isSearchExpanded && (
+              <>
+                <IoSearchSharp className="text-gray-700 text-xl mr-2" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search events, organizers..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setHighlightedIndex(-1);
+                  }}
+                  onKeyDown={(e) => {
+                    if (!searchResults.length) return;
+                    switch (e.key) {
+                      case "ArrowDown":
+                        e.preventDefault();
+                        setHighlightedIndex((prev) => (prev + 1) % searchResults.length);
+                        break;
+                      case "ArrowUp":
+                        e.preventDefault();
+                        setHighlightedIndex((prev) => prev <= 0 ? searchResults.length - 1 : prev - 1);
+                        break;
+                      case "Enter":
+                        if (highlightedIndex >= 0) {
+                          handleSelectSearch(searchResults[highlightedIndex]);
+                          e.preventDefault();
+                        }
+                        break;
+                      default:
+                        break;
+                    }
+                  }}
+                  className="flex-1 bg-transparent outline-none text-gray-700"
+                />
+                <button
+                  onClick={() => {
+                    setIsSearchExpanded(false);
+                    setSearch('');
+                    setSearchResults([]);
+                    setSearchDropdown(false);
+                  }}
+                  className="text-gray-500 ml-2 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </>
+            )}
+          </div>
+          <button
+            id="desktop-search-icon"
+            onClick={handleSearchIconClick}
+            className="p-2 rounded-lg hover:bg-gray-600 transition-colors flex-shrink-0"
+          >
+            <IoSearchSharp className="text-white text-xl" />
+          </button>
+
+          {searchDropdown && searchResults.length > 0 && isSearchExpanded && (
+            <ul
+              ref={desktopSearchDropdownRef}
+              className="absolute z-60 bg-white text-black border mt-1 rounded-lg w-96 max-h-48 overflow-y-auto shadow-md top-[calc(100%+0.5rem)] right-0"
+            >
+              {searchResults.map((item, index) => (
+                <li
+                  key={item._id}
+                  ref={(el) => (itemRefs.current[index] = el)}
+                  onMouseDown={() => handleSelectSearch(item)}
+                  className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${index === highlightedIndex ? "bg-gray-300 font-semibold" : ""}`}
+                >
+                  <span className="font-medium">{item.name}</span>{" "}
+                  <span className="text-gray-500 text-sm">— {item.category}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Create Buttons */}
+        <div className="lg:flex hidden gap-2 flex-shrink-0">
+          <Button
+            text={"Create Event"}
+            rounded={"rounded-lg"}
+            variant={"primary"}
+            onClick={() => navigate("/create-event")}
+          />
+          <Button
+            text={"Create Page"}
+            rounded={"rounded-lg"}
+            variant={"primary"}
+            onClick={() => navigate("/create-page")}
+          />
+        </div>
+
+        {/* User Profile */}
+        <div
+          onMouseEnter={() => setIsLog(true)}
+          onMouseLeave={() => setIsLog(false)}
+          className="relative flex items-center flex-shrink-0 text-white"
+        >
+          {userName ? (
+            <div ref={dropdownRef} className="relative hidden lg:block">
+              <span
+                onClick={() => setIsLog(!isLog)}
+                className="p-1 gap-1 cursor-pointer font-medium break-words lg:text-lg md:text-sm flex lg:gap-1 md:gap-0.5 relative z-60 hover:text-[#ff2459] transition-colors items-center"
+              >
+                {userName} <IoMdArrowDropdown className="text-lg" />
+              </span>
+              {isLog && (
+                <div
+                  ref={boxRef}
+                  className="bg-white rounded-lg text-gray-900 absolute w-40 h-max mt-1 right-0 shadow-lg z-50"
+                >
+                  {role === "organizer" && (
+                    <button
+                      onClick={() => {
+                        setIsLog(false);
+                        navigate("/dashboard");
+                      }}
+                      className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
+                    >
+                      <MdDashboard className="hover:text-white relative top-1" />
+                      Dashboard
+                    </button>
+                  )}
+                  <button
+                    onClick={handleProfileClick}
+                    className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
+                  >
+                    <CgProfile className="hover:text-white relative top-1" />
+                    Profile
+                  </button>
+                  {role === "user" && (
+                    <button
+                      onClick={() => {
+                        setIsLog(false);
+                        navigate("/myBookings");
+                      }}
+                      className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
+                    >
+
+                      <IoTicket className="hover:text-white relative top-1" />
+                      My Orders
+                    </button>
+
                       {item.popUpMenu.map((menuItem, menuIndex) => (
                         <button
                           key={menuIndex}
@@ -657,93 +698,233 @@ useEffect(() => {
                         </button>
                       ))}
                     </div>
+
                   )}
+                  <button
+                    onClick={() => {
+                      handleLogOut();
+                      setIsLog(false);
+                      setUserName("");
+                    }}
+                    className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
+                  >
+                    <IoIosLogOut className="hover:text-white relative top-1" />
+                    Logout
+                  </button>
                 </div>
-              ))}
+              )}
             </div>
-            <div className=" relative bottom-1  md:w-[30%]">
-              <div
-                onMouseEnter={() => setIsLog(true)}
-                onMouseLeave={() => setIsLog(false)}
-                className="md:flex  left-20 z-60  md:justify-end hidden   md:w-[100%] w-[100%]"
+          ) : (
+            <CgProfile
+              className="text-white text-3xl cursor-pointer hover:text-[#ff2459] transition-colors hidden lg:block"
+              onClick={() => navigate("/login")}
+            />
+          )}
+        </div>
+
+        {/* Mobile Menu */}
+        <div className="flex items-center gap-4 lg:hidden">
+          {isSearchExpanded && (
+            <div
+              ref={mobileSearchBarContainerRef}
+              className="flex items-center bg-gray-100 rounded-lg shadow-md px-2 py-1 flex-grow absolute left-4 right-4 z-50 text-gray-700"
+            >
+              <IoSearchSharp className="text-gray-700 text-xl mr-2" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search events, organizers..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setHighlightedIndex(-1);
+                }}
+                onKeyDown={(e) => {
+                  if (!searchResults.length) return;
+                  switch (e.key) {
+                    case "ArrowDown":
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => (prev + 1) % searchResults.length);
+                      break;
+                    case "ArrowUp":
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => prev <= 0 ? searchResults.length - 1 : prev - 1);
+                      break;
+                    case "Enter":
+                      if (highlightedIndex >= 0) {
+                        handleSelectSearch(searchResults[highlightedIndex]);
+                        e.preventDefault();
+                      }
+                      break;
+                    default:
+                      break;
+                  }
+                }}
+                className="flex-1 bg-transparent outline-none text-gray-700"
+              />
+              <button
+                onClick={() => {
+                  setIsSearchExpanded(false);
+                  setSearch('');
+                  setSearchResults([]);
+                  setSearchDropdown(false);
+                }}
+                className="text-gray-500 ml-2 hover:text-gray-700"
               >
-                <div className=" m-1 md:mr-20 lg:mr-36  w-[100%] hidden md:flex md:justify-end  left-0">
-                  {userName ? (
-                    <div ref={dropdownRef}>
-                      <span
-                        onClick={() => setIsLog(!isLog)}
-                        className="p-1 gap-1 cursor-pointer font-medium break-words  lg:text-lg md:text-sm lg:mr-5 flex  lg:gap-1 md:gap-0.5 relative z-60 "
-                      >
-                        {userName}{" "}
-                        <IoMdArrowDropdown className="relative top-1.5" />
-                      </span>
-                      {isLog && (
-                        <div
-                          ref={boxRef}
-                          className="bg-white rounded text-gray-900 absolute w-40  h-max mt-1 "
-                        >
-                          {role == "organizer" && (
-                            <button
-                              onClick={() => {
-                                setIsLog(false);
-                                navigate("/dashboard");
-                              }}
-                              className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
-                            >
-                              <MdDashboard className=" hover:text-white relative top-1" />
-                              Dashboard
-                            </button>
-                          )}
-                          <button
-                           onClick={handleProfileClick}
-                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
-                          >
-                            <CgProfile className=" hover:text-white relative top-1" />
-                            Profile
-                          </button>
-                          {role == "user" && (
-                            <button
-                              onClick={() => {
-                                setIsLog(false);
-                                navigate("/myBookings");
-                              }}
-                              className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
-                            >
-                              <IoTicket className=" hover:text-white relative top-1" />
-                              My Orders
-                            </button>
-                          )}
-                          <button
-                            onClick={() => {
-                              handleLogOut();
-                              setIsLog(false);
-                              setUserName("");
-                              window.location.reload();
-                            }}
-                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
-                          >
-                            <IoIosLogOut className=" hover:text-white relative top-1" />
-                            Logout
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Button
-                      text={"Sign Up / Login "}
-                      textSize={"text-base"}
-                      width={"w-auto"}
-                      rounded={"rounded"}
-                      variant={"primary"}
-                      onClick={() => navigate("/login")}
-                    /> // Show Sign Up/Login button if no token or name
-                  )}
-                </div>
-              </div>
+                ✕
+              </button>
             </div>
+          )}
+
+          <button
+            id="mobile-search-icon"
+            onClick={handleSearchIconClick}
+            className="block text-2xl p-1 rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            <CiSearch />
+          </button>
+          <div
+            className="relative z-20 block text-4xl sm:font-medium font-normal sm:text-2xl cursor-pointer hover:text-[#ff2459] transition-colors"
+            onClick={handleShowAlert}
+          >
+            <IoMenu />
           </div>
         </div>
       </div>
+
+      {/* Mobile Search Dropdown */}
+      {searchDropdown && searchResults.length > 0 && isSearchExpanded && (
+        <ul className="lg:hidden absolute z-50 bg-white text-black border rounded-lg max-h-48 overflow-y-auto shadow-md w-[calc(100%-2rem)] left-4 top-[70px]">
+          {searchResults.map((item, index) => (
+            <li
+              key={item._id}
+              ref={(el) => (itemRefs.current[index] = el)}
+              onMouseDown={() => handleSelectSearch(item)}
+              className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${index === highlightedIndex ? "bg-gray-300 font-semibold" : ""}`}
+            >
+              <span className="font-medium">{item.name}</span>{" "}
+              <span className="text-gray-500 text-sm">— {item.category}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Enhanced Location Popup */}
+      {showLocationPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div
+            ref={locationPopupRef}
+            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl border border-gray-700 overflow-hidden"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-2xl font-bold text-white">Choose Location</h3>
+                <p className="text-gray-400 text-sm">Find events near you</p>
+              </div>
+              <button
+                onClick={() => {
+                  gsap.to(locationPopupRef.current, {
+                    scale: 0.9,
+                    opacity: 0,
+                    duration: 0.2,
+                    onComplete: () => setShowLocationPopup(false)
+                  });
+                }}
+                className="text-gray-400 hover:text-white text-2xl transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <IoLocationSharp className="text-gray-500" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search for a city..."
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setSearchValue(e.target.value);
+                }}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#ff2459] focus:border-transparent transition-all"
+              />
+            </div>
+
+            {!query && (
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <span className="bg-[#ff2459] w-1 h-5 rounded-full"></span>
+                  Popular Cities
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {metroCities.map((city, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleLocationSelect(`${city.name}, ${city.state_name}, ${city.country_name}`)}
+                      className="relative group overflow-hidden rounded-lg h-24 transition-all hover:scale-[1.02]"
+                    >
+                      <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-20 transition-all"></div>
+                      <img 
+                        src={city.image} 
+                        alt={city.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null; 
+                          e.target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80";
+                        }}
+                      />
+                      <div className="absolute bottom-0 left-0 p-3 w-full text-left">
+                        <h5 className="font-bold text-white text-shadow">{city.name}</h5>
+                        <p className="text-xs text-gray-300">{city.state_name}</p>
+                      </div>
+                      <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#ff2459] rounded-lg transition-all pointer-events-none"></div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {suggestions.length > 0 && (
+              <div className="max-h-60 overflow-y-auto">
+                <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  <span className="bg-[#ff2459] w-1 h-5 rounded-full"></span>
+                  Search Results
+                </h4>
+                <ul className="space-y-2">
+                  {suggestions.map((suggestion, index) => (
+                    <li
+                      key={index}
+                      onClick={() => handleLocationSelect(`${suggestion.name}, ${suggestion.state_name}, ${suggestion.country_name}`)}
+                      className="px-4 py-3 bg-gray-800 hover:bg-gray-700 cursor-pointer rounded-lg transition-colors flex items-center gap-3"
+                    >
+                      <div className="bg-[#ff2459] bg-opacity-20 p-2 rounded-full">
+                        <IoLocationSharp className="text-[#ff2459]" />
+                      </div>
+                      <div>
+                        <h5 className="font-medium text-white">{suggestion.name}</h5>
+                        <p className="text-xs text-gray-400">
+                          {suggestion.state_name}, {suggestion.country_name}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {query && suggestions.length === 0 && (
+              <div className="text-center py-8">
+                <IoLocationSharp className="text-gray-600 text-4xl mx-auto mb-3" />
+                <h4 className="text-gray-400 font-medium">No locations found</h4>
+                <p className="text-gray-500 text-sm mt-1">Try searching for another city</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {ShowPopup && <Sidebar setShowPopup={setShowPopup} />}
     </div>
   );
