@@ -136,10 +136,7 @@ const AdminCategories = () => {
     setShowModal(true);
   };
 
-  // const handleOrder = () => {
-  //   navigate("/admin/categories/order");
-  // };
-
+ 
   const toggleCheckbox = (id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
@@ -157,15 +154,15 @@ const AdminCategories = () => {
 
   return (
     <div className="p-4">
-      {/* Header with Icon and Title + Buttons aligned right */}
+ 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
-        {/* Left: Icon + Heading */}
+      
         <div className="flex items-center gap-2">
           <FaFolderOpen className="text-3xl text-gray-700" />
           <h2 className="text-3xl font-semibold text-gray-800">Categories</h2>
         </div>
 
-        {/* Right: Buttons */}
+       
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleAddNew}
@@ -179,12 +176,7 @@ const AdminCategories = () => {
           >
             Bulk Delete
           </button>
-          {/* <button
-            onClick={handleOrder}
-            className="bg-blue-500 text-white text-lg font-semibold px-4 py-2 rounded-xl"
-          >
-            Order
-          </button> */}
+        
         </div>
       </div>
       {/* </div> */}
@@ -266,7 +258,7 @@ const AdminCategories = () => {
               <>
                 {modalMode === "view" ? (
                   <>
-                    {/* You can keep your VIEW layout here if needed */}
+                 
                     <p>View Mode</p>
                   </>
                 ) : modalMode === "add" ? (
@@ -484,7 +476,7 @@ const AdminCategories = () => {
                       }
 
                       setConfirmModal({ show: false, id: null, bulk: false });
-                      fetchCategories(); // 🔁 RELOAD list after deletion
+                      fetchCategories(); 
                     } catch (err) {
                       console.error("Deletion failed", err);
                       showToast(" Failed to delete");
