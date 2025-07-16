@@ -40,7 +40,7 @@ import EventFilterBar from "../LandingPages/EventFilterBar";
 function Routess() {
   return (
     <div>
-      <Route>
+      <Routes>
         <Route path="/" element={<Index />}>
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
@@ -137,7 +137,7 @@ function Routess() {
            <Route path="/events" element={<Viewall />} />
         </Route>
 
-          </Route>
+          </Routes>
     </div>
   );
 }

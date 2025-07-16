@@ -43,26 +43,6 @@ const redirectTo =
         }
       );
 
-  //     if (response.status === 200) {
-  //       toast.success("Login successful!", { position: "top-right" });
-  //       localStorage.setItem("authToken", response.data.token);
-  //       localStorage.setItem("isLogin", JSON.stringify(true));
-  //       localStorage.removeItem("redirectAfterLogin");
-  //       navigate(redirectTo);
-  //     }
-  //   } catch (error) {
-  //     if (error.response) {
-  //       toast.error(error.response.data.message || "Login failed.", {
-  //         position: "top-right",
-  //       });
-  //     } else {
-  //      toast.error("An error occurred. Please try again.", {
-  //         position: "top-right",
-  //       });
-  //     }
-  //   }
-  // };
-
 if (response.status === 200) {
       const token = response.data.token;
       const decodedToken = jwtDecode(token);
