@@ -36,7 +36,7 @@ const Header = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [searchDropdown, setSearchDropdown] = useState(false);
-  const [query, setQuery] = useState("All-locations");
+  const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const [searchValue, setSearchValue] = useState("All");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -119,7 +119,7 @@ const Header = () => {
         { name: "Business", path: "/events/business" },
         { name: "Festivals", path: "/events/festivals" },
         { name: "Live Music", path: "/events/live-music" },
-        { name: "Nightlife and club", path: "/events/nightlife-and-club" },
+        { name: "Nightlife & Club", path: "/events/nightlife-and-club" },
         { name: "Professional", path: "/events/professional" },
         { name: "Social", path: "/events/social" },
         { name: "Sport & Leisure", path: "/events/sport-and-leisure" },

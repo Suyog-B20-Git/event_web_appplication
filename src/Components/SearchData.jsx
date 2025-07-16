@@ -104,7 +104,14 @@ const SearchData = () => {
                 className="h-40 md:h-36 lg:h-40 w-full overflow-hidden flex items-center justify-center cursor-pointer"
               >
                 <img
-                  src={item.profileImage}
+                 src={
+                        item.profileImage
+                          ? item.profileImage
+                              .replace(/\\/g, "/")
+                              .replace(/\/{2,}/g, "/")
+                              .replace("http:/", "http://")
+                          : "/assets/staticAssets/fallback-image.jpg"
+                      }
                   className="h-full w-full object-cover transition-transform duration-300 hover:scale-125"
                   alt={item.name}
                 />

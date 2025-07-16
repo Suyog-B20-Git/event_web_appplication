@@ -67,8 +67,8 @@ function Home() {
 
   // Create initial slides from your dynamic data
   const initialSlides = [
-    ...data.slice(0, 7),
-    ...data1.slice(0, 7),
+    ...data.slice(0, 5),
+    ...data1.slice(0, 5),
   ]
     .map((item, index) => ({
       id: index + 1,
@@ -183,7 +183,7 @@ function Home() {
                     }`}
                   >
                     <h4 className="absolute top-4 left-4 text-white text-lg font-bold bg-[#ff4259] rounded-full px-2 z-10">
-                      {slide.category}
+                     <span className="justify-center items-center">  {slide.category} </span>
                     </h4>
                     <img
                       src={slide.bgImage}

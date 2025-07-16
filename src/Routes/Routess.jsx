@@ -94,6 +94,8 @@ function Routess() {
 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
+         <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
+         <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -133,8 +135,7 @@ function Routess() {
            <Route path="/events" element={<Viewall />} />
         </Route>
 
-        {/* </Route> */}
-      </Routes>
+          </Routes>
     </div>
   );
 }

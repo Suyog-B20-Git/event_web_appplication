@@ -11,8 +11,14 @@ const MapContainer = ({ data }) => {
   };
 
   const defaultCenter = {
-    lat: data ? Number(data.googleSearchLat) : 40.7127753,
-    lng: data ? Number(data.googleSearchLong) : -74.0059728,
+    lat:
+      data?.googleSearchLat && !isNaN(Number(data.googleSearchLat))
+        ? Number(data.googleSearchLat)
+        : 40.7127753,
+    lng:
+      data?.googleSearchLong && !isNaN(Number(data.googleSearchLong))
+        ? Number(data.googleSearchLong)
+        : -74.0059728,
   };
 
   useEffect(() => {
