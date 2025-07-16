@@ -59,53 +59,61 @@ const Header = () => {
   const role = localStorage.getItem("role");
 
   const metroCities = [
-    { 
-      name: "Mumbai", 
-      state_name: "Maharashtra", 
+    {
+      name: "Mumbai",
+      state_name: "Maharashtra",
       country_name: "India",
-      image: "https://images.unsplash.com/photo-1543157145-f78c636d023d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+      image:
+        "https://images.unsplash.com/photo-1543157145-f78c636d023d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     },
-    { 
-      name: "Delhi", 
-      state_name: "Delhi", 
+    {
+      name: "Delhi",
+      state_name: "Delhi",
       country_name: "India",
-      image: "https://images.unsplash.com/photo-1587474260584-136574528ed5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+      image:
+        "https://images.unsplash.com/photo-1587474260584-136574528ed5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     },
-    { 
-      name: "Bangalore", 
-      state_name: "Karnataka", 
+    {
+      name: "Bangalore",
+      state_name: "Karnataka",
       country_name: "India",
-      image: "https://images.unsplash.com/photo-1470004914212-05527e49370b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+      image:
+        "https://images.unsplash.com/photo-1470004914212-05527e49370b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     },
-    { 
-      name: "Chennai", 
-      state_name: "Tamil Nadu", 
+    {
+      name: "Chennai",
+      state_name: "Tamil Nadu",
       country_name: "India",
-      image: "https://images.unsplash.com/photo-1592903297149-37fb25202dfa?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+      image:
+        "https://images.unsplash.com/photo-1592903297149-37fb25202dfa?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     },
-    { 
-      name: "Kolkata", 
-      state_name: "West Bengal", 
+    {
+      name: "Kolkata",
+      state_name: "West Bengal",
       country_name: "India",
-      image: "https://images.unsplash.com/photo-1584515933487-779824d29309?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+      image:
+        "https://images.unsplash.com/photo-1584515933487-779824d29309?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     },
-    { 
-      name: "Hyderabad", 
-      state_name: "Telangana", 
+    {
+      name: "Hyderabad",
+      state_name: "Telangana",
       country_name: "India",
-      image: "https://images.unsplash.com/photo-1581852057101-85a0b3d9b9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+      image:
+        "https://images.unsplash.com/photo-1581852057101-85a0b3d9b9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     },
-    { 
-      name: "Pune", 
-      state_name: "Maharashtra", 
+    {
+      name: "Pune",
+      state_name: "Maharashtra",
       country_name: "India",
-      image: "https://images.unsplash.com/photo-1634034379073-f689b460a3fc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+      image:
+        "https://images.unsplash.com/photo-1634034379073-f689b460a3fc?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     },
-    { 
-      name: "Ahmedabad", 
-      state_name: "Gujarat", 
+    {
+      name: "Ahmedabad",
+      state_name: "Gujarat",
       country_name: "India",
-      image: "https://images.unsplash.com/photo-1633424090571-c4a7b5d5edf2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+      image:
+        "https://images.unsplash.com/photo-1633424090571-c4a7b5d5edf2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
     },
   ];
 
@@ -200,7 +208,9 @@ const Header = () => {
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
-      toast.error(error.response?.data?.message || error.message || "An error occurred.");
+      toast.error(
+        error.response?.data?.message || error.message || "An error occurred."
+      );
     }
   };
 
@@ -226,17 +236,20 @@ const Header = () => {
       opacity: 0,
       duration: 0.2,
       ease: "power2.in",
-      onComplete: () => setShowLocationPopup(false)
+      onComplete: () => setShowLocationPopup(false),
     });
   };
 
   const handleSelectSearch = (item) => {
     setSearch(item.name);
-    const formattedCategory = item.eventCategory?.toLowerCase().replace(/\s+/g, "-") || "general";
+    const formattedCategory =
+      item.eventCategory?.toLowerCase().replace(/\s+/g, "-") || "general";
 
     switch (item.categoryGroup) {
       case "events":
-        navigate(`/events/${formattedCategory}/${item._id}`, { state: item._id });
+        navigate(`/events/${formattedCategory}/${item._id}`, {
+          state: item._id,
+        });
         break;
       case "organizers":
         navigate(`/organizer/${item._id}`);
@@ -268,7 +281,7 @@ const Header = () => {
         }
       }, 100);
     } else {
-      setSearch('');
+      setSearch("");
       setSearchResults([]);
       setSearchDropdown(false);
     }
@@ -281,7 +294,7 @@ const Header = () => {
       scale: 0.8,
       opacity: 0,
       duration: 0.3,
-      ease: "back.out(1.2)"
+      ease: "back.out(1.2)",
     });
   };
 
@@ -363,23 +376,32 @@ const Header = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
         setIsLog(false);
       }
-      if (locationPopupRef.current && !locationPopupRef.current.contains(event.target)) {
+      if (
+        locationPopupRef.current &&
+        !locationPopupRef.current.contains(event.target)
+      ) {
         gsap.to(locationPopupRef.current, {
           scale: 0.9,
           opacity: 0,
           duration: 0.2,
-          onComplete: () => setShowLocationPopup(false)
+          onComplete: () => setShowLocationPopup(false),
         });
       }
       if (
-        (desktopSearchBarContainerRef.current && !desktopSearchBarContainerRef.current.contains(event.target)) &&
-        (mobileSearchBarContainerRef.current && !mobileSearchBarContainerRef.current.contains(event.target)) &&
-        (desktopSearchDropdownRef.current && !desktopSearchDropdownRef.current.contains(event.target)) &&
-        event.target !== document.getElementById('desktop-search-icon') &&
-        event.target !== document.getElementById('mobile-search-icon')
+        (desktopSearchBarContainerRef.current &&
+          !desktopSearchBarContainerRef.current.contains(event.target)) &&
+        (mobileSearchBarContainerRef.current &&
+          !mobileSearchBarContainerRef.current.contains(event.target)) &&
+        (desktopSearchDropdownRef.current &&
+          !desktopSearchDropdownRef.current.contains(event.target)) &&
+        event.target !== document.getElementById("desktop-search-icon") &&
+        event.target !== document.getElementById("mobile-search-icon")
       ) {
         setIsSearchExpanded(false);
         setSearchDropdown(false);
@@ -396,7 +418,9 @@ const Header = () => {
     const fetchSuggestions = async () => {
       if (searchValue.length > 0 && searchValue !== "All") {
         try {
-          const response = await axios.get(`${baseUrl}/api/location/locationSuggestions?search=${searchValue}`);
+          const response = await axios.get(
+            `${baseUrl}/api/location/locationSuggestions?search=${searchValue}`
+          );
           setSuggestions(response.data || []);
         } catch (error) {
           console.error("Error fetching location suggestions:", error);
@@ -457,19 +481,21 @@ const Header = () => {
             alt="logo"
             onClick={() => navigate("/home")}
           />
-          <div 
+          <div
             className="lg:hidden flex items-center gap-1 cursor-pointer group"
             onClick={handleLocationIconClick}
           >
             <IoLocationSharp className="text-white text-xl group-hover:text-[#ff2459] transition-colors" />
             <span className="text-sm font-medium group-hover:text-[#ff2459] transition-colors">
-              {currentLocation.length > 10 ? `${currentLocation.substring(0, 10)}...` : currentLocation}
+              {currentLocation.length > 10
+                ? `${currentLocation.substring(0, 10)}...`
+                : currentLocation}
             </span>
           </div>
         </div>
 
         {/* Desktop Location Selector */}
-        <div 
+        <div
           className="hidden lg:flex items-center gap-2 cursor-pointer group relative"
           onClick={handleLocationIconClick}
         >
@@ -480,7 +506,9 @@ const Header = () => {
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-xs text-gray-300 group-hover:text-white">Your Location</span>
+            <span className="text-xs text-gray-300 group-hover:text-white">
+              Your Location
+            </span>
             <span className="font-medium group-hover:text-[#ff2459] transition-colors">
               {currentLocation}
             </span>
@@ -536,7 +564,11 @@ const Header = () => {
           <div
             ref={desktopSearchBarContainerRef}
             className={`absolute right-0 top-1/2 transform -translate-y-1/2 z-50 flex items-center bg-gray-100 rounded-lg shadow-md transition-all duration-300 ease-in-out
-                ${isSearchExpanded ? 'w-96 px-4 py-2 opacity-100' : 'w-0 px-0 py-0 opacity-0 overflow-hidden'}`}
+                ${
+                  isSearchExpanded
+                    ? "w-96 px-4 py-2 opacity-100"
+                    : "w-0 px-0 py-0 opacity-0 overflow-hidden"
+                }`}
           >
             {isSearchExpanded && (
               <>
@@ -555,11 +587,15 @@ const Header = () => {
                     switch (e.key) {
                       case "ArrowDown":
                         e.preventDefault();
-                        setHighlightedIndex((prev) => (prev + 1) % searchResults.length);
+                        setHighlightedIndex((prev) =>
+                          (prev + 1) % searchResults.length
+                        );
                         break;
                       case "ArrowUp":
                         e.preventDefault();
-                        setHighlightedIndex((prev) => prev <= 0 ? searchResults.length - 1 : prev - 1);
+                        setHighlightedIndex((prev) =>
+                          prev <= 0 ? searchResults.length - 1 : prev - 1
+                        );
                         break;
                       case "Enter":
                         if (highlightedIndex >= 0) {
@@ -576,7 +612,7 @@ const Header = () => {
                 <button
                   onClick={() => {
                     setIsSearchExpanded(false);
-                    setSearch('');
+                    setSearch("");
                     setSearchResults([]);
                     setSearchDropdown(false);
                   }}
@@ -605,7 +641,9 @@ const Header = () => {
                   key={item._id}
                   ref={(el) => (itemRefs.current[index] = el)}
                   onMouseDown={() => handleSelectSearch(item)}
-                  className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${index === highlightedIndex ? "bg-gray-300 font-semibold" : ""}`}
+                  className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${
+                    index === highlightedIndex ? "bg-gray-300 font-semibold" : ""
+                  }`}
                 >
                   <span className="font-medium">{item.name}</span>{" "}
                   <span className="text-gray-500 text-sm">— {item.category}</span>
@@ -725,11 +763,15 @@ const Header = () => {
                   switch (e.key) {
                     case "ArrowDown":
                       e.preventDefault();
-                      setHighlightedIndex((prev) => (prev + 1) % searchResults.length);
+                      setHighlightedIndex((prev) =>
+                        (prev + 1) % searchResults.length
+                      );
                       break;
                     case "ArrowUp":
                       e.preventDefault();
-                      setHighlightedIndex((prev) => prev <= 0 ? searchResults.length - 1 : prev - 1);
+                      setHighlightedIndex((prev) =>
+                        prev <= 0 ? searchResults.length - 1 : prev - 1
+                      );
                       break;
                     case "Enter":
                       if (highlightedIndex >= 0) {
@@ -746,7 +788,7 @@ const Header = () => {
               <button
                 onClick={() => {
                   setIsSearchExpanded(false);
-                  setSearch('');
+                  setSearch("");
                   setSearchResults([]);
                   setSearchDropdown(false);
                 }}
@@ -781,7 +823,9 @@ const Header = () => {
               key={item._id}
               ref={(el) => (itemRefs.current[index] = el)}
               onMouseDown={() => handleSelectSearch(item)}
-              className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${index === highlightedIndex ? "bg-gray-300 font-semibold" : ""}`}
+              className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${
+                index === highlightedIndex ? "bg-gray-300 font-semibold" : ""
+              }`}
             >
               <span className="font-medium">{item.name}</span>{" "}
               <span className="text-gray-500 text-sm">— {item.category}</span>
@@ -808,7 +852,7 @@ const Header = () => {
                     scale: 0.9,
                     opacity: 0,
                     duration: 0.2,
-                    onComplete: () => setShowLocationPopup(false)
+                    onComplete: () => setShowLocationPopup(false),
                   });
                 }}
                 className="text-gray-400 hover:text-white text-2xl transition-colors"
@@ -843,22 +887,31 @@ const Header = () => {
                   {metroCities.map((city, index) => (
                     <button
                       key={index}
-                      onClick={() => handleLocationSelect(`${city.name}, ${city.state_name}, ${city.country_name}`)}
+                      onClick={() =>
+                        handleLocationSelect(
+                          `${city.name}, ${city.state_name}, ${city.country_name}`
+                        )
+                      }
                       className="relative group overflow-hidden rounded-lg h-24 transition-all hover:scale-[1.02]"
                     >
                       <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-20 transition-all"></div>
-                      <img 
-                        src={city.image} 
+                      <img
+                        src={city.image}
                         alt={city.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.target.onerror = null; 
-                          e.target.src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80";
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80";
                         }}
                       />
                       <div className="absolute bottom-0 left-0 p-3 w-full text-left">
-                        <h5 className="font-bold text-white text-shadow">{city.name}</h5>
-                        <p className="text-xs text-gray-300">{city.state_name}</p>
+                        <h5 className="font-bold text-white text-shadow">
+                          {city.name}
+                        </h5>
+                        <p className="text-xs text-gray-300">
+                          {city.state_name}
+                        </p>
                       </div>
                       <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#ff2459] rounded-lg transition-all pointer-events-none"></div>
                     </button>
@@ -877,14 +930,20 @@ const Header = () => {
                   {suggestions.map((suggestion, index) => (
                     <li
                       key={index}
-                      onClick={() => handleLocationSelect(`${suggestion.name}, ${suggestion.state_name}, ${suggestion.country_name}`)}
+                      onClick={() =>
+                        handleLocationSelect(
+                          `${suggestion.name}, ${suggestion.state_name}, ${suggestion.country_name}`
+                        )
+                      }
                       className="px-4 py-3 bg-gray-800 hover:bg-gray-700 cursor-pointer rounded-lg transition-colors flex items-center gap-3"
                     >
                       <div className="bg-[#ff2459] bg-opacity-20 p-2 rounded-full">
                         <IoLocationSharp className="text-[#ff2459]" />
                       </div>
                       <div>
-                        <h5 className="font-medium text-white">{suggestion.name}</h5>
+                        <h5 className="font-medium text-white">
+                          {suggestion.name}
+                        </h5>
                         <p className="text-xs text-gray-400">
                           {suggestion.state_name}, {suggestion.country_name}
                         </p>
@@ -899,7 +958,9 @@ const Header = () => {
               <div className="text-center py-8">
                 <IoLocationSharp className="text-gray-600 text-4xl mx-auto mb-3" />
                 <h4 className="text-gray-400 font-medium">No locations found</h4>
-                <p className="text-gray-500 text-sm mt-1">Try searching for another city</p>
+                <p className="text-gray-500 text-sm mt-1">
+                  Try searching for another city
+                </p>
               </div>
             )}
           </div>
