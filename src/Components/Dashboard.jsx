@@ -158,7 +158,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-gray-50">
       <aside
         className={`bg-gray-800 text-white flex flex-col py-6 space-y-4 transition-all duration-300 fixed left-0 top-[5.5rem] h-[calc(100vh-5.5rem)] z-50
         ${isExpanded ? "w-48 items-start px-4" : "w-20 items-center"}`}
@@ -192,9 +192,9 @@ const Dashboard = () => {
         ))}
       </aside>
 
-      <main className={`flex-1 p-6 ${isExpanded ? "ml-48" : "ml-20"} transition-all duration-300 overflow-y-auto`}>
+      <main className={`flex-1 p-8 ${isExpanded ? "ml-48" : "ml-20"} transition-all duration-300 overflow-y-auto`}>
         <div
-          className="flex items-center cursor-pointer mb-4"
+          className="flex items-center cursor-pointer mb-6"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <FaBars className="text-2xl text-gray-800" />
@@ -203,29 +203,28 @@ const Dashboard = () => {
         <div className="mt-6 transition-opacity duration-500 ease-in-out" key={activeSection}>
           {activeSection === "dashboard" && (
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 whitespace-nowrap">
+              <h1 className="text-3xl font-extrabold text-gray-900 whitespace-nowrap">
                 Hello, {loggedInUser}
               </h1>
-              <p className="text-gray-800 mt-2 border-b-2 border-gray-300">
-                Here's ongoing activity for all your events and the bookings, have a look.
+              <p className="text-gray-600 mt-2 border-b-2 border-gray-200 pb-2">
+                Here's ongoing activity for all your events and bookings.
               </p>
-              <h2 className="text-2xl font-semibold text-gray-900"></h2>
               <div className="grid md:grid-cols-3 gap-6 mt-6">
-                <div className="bg-white p-6 shadow rounded-lg flex justify-between items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="bg-white p-6 rounded-xl shadow-md flex justify-between items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-700">Total Events</h3>
                     <p className="text-3xl font-bold mt-2 text-gray-900">15</p>
                   </div>
                   <TbActivityHeartbeat className="text-pink-500 text-3xl" />
                 </div>
-                <div className="bg-white p-6 shadow rounded-lg flex justify-between items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="bg-white p-6 rounded-xl shadow-md flex justify-between items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-700">Total Earnings</h3>
                     <p className="text-3xl font-bold mt-2 text-gray-900">0.00</p>
                   </div>
                   <TbMoneybag className="text-green-500 text-3xl" />
                 </div>
-                <div className="bg-white p-6 shadow rounded-lg flex justify-between items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="bg-white p-6 rounded-xl shadow-md flex justify-between items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-700">Total Bookings</h3>
                     <p className="text-3xl font-bold mt-2 text-gray-900">10</p>
@@ -233,7 +232,7 @@ const Dashboard = () => {
                   <FiCreditCard className="text-pink-500 text-3xl" />
                 </div>
               </div>
-              <div className="bg-white mt-8 p-6 shadow rounded-lg">
+              <div className="bg-white mt-8 p-6 rounded-xl shadow-md">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Top Selling Events</h3>
                 <div className="h-[300px] w-full border-t border-l relative">
                   <div className="absolute left-[30%] top-[50px] flex items-center gap-2">
@@ -245,13 +244,13 @@ const Dashboard = () => {
                   <div className="absolute top-[200px] left-8 text-sm text-gray-500">Event C</div>
                 </div>
               </div>
-              <div className="bg-white mt-8 p-6 shadow rounded-lg">
+              <div className="bg-white mt-8 p-6 rounded-xl shadow-md">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Event Tickets Statistics</h3>
                 <div className="mb-4">
                   <input
                     type="text"
                     placeholder="Search Table"
-                    className="border px-3 py-2 w-full max-w-sm rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="border border-gray-300 px-4 py-2 w-full max-w-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                   />
                 </div>
                 <div className="overflow-x-auto">
@@ -274,7 +273,7 @@ const Dashboard = () => {
                 </div>
                 <div className="flex items-center justify-between mt-4 text-sm text-gray-600">
                   <div>
-                    Rows per page: <select className="ml-2 border rounded p-1">
+                    Rows per page: <select className="ml-2 border rounded-lg p-1 focus:outline-none focus:ring-2 focus:ring-blue-400">
                       <option>10</option>
                       <option>20</option>
                       <option>50</option>
@@ -282,7 +281,7 @@ const Dashboard = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span>Page</span>
-                    <input value="1" disabled className="border w-10 text-center rounded-md px-2 py-1" />
+                    <input value="1" disabled className="border w-10 text-center rounded-lg px-2 py-1" />
                     <span>of 0</span>
                     <button disabled className="text-gray-400 px-2">Previous</button>
                     <button disabled className="text-gray-400 px-2">Next</button>
@@ -295,8 +294,8 @@ const Dashboard = () => {
           {activeSection === "my-events" && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">My Events</h2>
-                <button className="flex items-center gap-2 bg-[#ff2459] hover:bg-[#e91e63] text-white px-4 py-2 rounded-lg transition shadow-md hover:shadow-lg">
+                <h2 className="text-3xl font-extrabold text-gray-900">My Events</h2>
+                <button className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition shadow-md hover:shadow-lg">
                   <FaCalendarPlus className="text-lg" />
                   <span className="text-sm font-semibold">Create Event</span>
                 </button>
@@ -304,10 +303,10 @@ const Dashboard = () => {
               <div className="flex flex-col gap-2 mb-4">
                 <div className="flex flex-row items-center gap-4">
                   <div className="w-36">
-                    <span className="text-sm font-medium text-gray-700">Search Any</span>
+                    <span className="text-sm font-semibold text-gray-700">Search Any</span>
                   </div>
                   <div className="w-24">
-                    <span className="text-sm font-medium text-gray-700">Show</span>
+                    <span className="text-sm font-semibold text-gray-700">Show</span>
                   </div>
                 </div>
                 <div className="flex flex-row items-center gap-4">
@@ -316,11 +315,11 @@ const Dashboard = () => {
                       type="text"
                       id="search-events"
                       placeholder="Search"
-                      className="border px-4 py-2 rounded-xl w-full max-w-xs"
+                      className="border border-gray-300 px-4 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-red-400 transition"
                     />
                   </div>
                   <div className="w-24">
-                    <select className="border rounded-xl px-2 py-2 w-full" defaultValue="10" id="rows">
+                    <select className="border border-gray-300 rounded-lg px-2 py-2 w-full focus:outline-none focus:ring-2 focus:ring-red-400 transition" defaultValue="10" id="rows">
                       <option>5</option>
                       <option>10</option>
                       <option>20</option>
@@ -425,16 +424,16 @@ const Dashboard = () => {
 
           {activeSection === "scan-tickets" && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Scan Tickets</h2>
+              <h2 className="text-3xl font-extrabold text-gray-900">Scan Tickets</h2>
               <div className="bg-blue-100 text-gray-900 px-4 py-3 rounded-xl mb-4 border border-blue-300">
                 <div className="flex items-center gap-2 p-1 font-semibold">
                   <BiQrScan className="text-gray-900 font-bold text-xl" />
                   Scan Tickets
                 </div>
               </div>
-              <div className="bg-pink-200 text-brown-900 px-4 py-3 rounded-xl mb-4 border border-brown-500">
+              <div className="bg-pink-100 text-gray-900 px-4 py-3 rounded-xl mb-4 border border-pink-300">
                 <div className="flex items-center gap-2 p-1 font-semibold">
-                  <FaCamera className="text-brown-900 text-xl" />
+                  <FaCamera className="text-gray-900 text-xl" />
                   Camera access required
                 </div>
               </div>
@@ -443,133 +442,179 @@ const Dashboard = () => {
 
           {activeSection === "my-bookings" && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">My Bookings</h2>
-              <div className="flex flex-col md:flex-row gap-4 mb-4 p-2 m-2">
-                <div className="flex flex-col gap-2 w-full md:w-1/3">
-                  <div className="flex flex-row items-center gap-4">
-                    <div className="w-36">
-                      <span className="text-sm font-medium text-gray-700">Events</span>
-                    </div>
-                    <div className="w-36">
-                      <span className="text-sm font-medium text-gray-700">Booking Date</span>
-                    </div>
-                    <div className="w-36">
-                      <span className="text-sm font-medium text-gray-700">Event Date</span>
-                    </div>
+              <h2 className="text-3xl font-extrabold text-gray-900 mb-6">My Bookings</h2>
+              <div className="bg-white p-6 rounded-xl shadow-lg mb-8 border border-gray-100">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Filter Bookings</h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Event</label>
+                    <select
+                      id="events"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition bg-gray-50"
+                      defaultValue="All Events"
+                    >
+                      <option>All Events</option>
+                      {myEvents.map((event) => (
+                        <option key={event.id} value={event.name}>
+                          {event.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="flex flex-row items-center gap-4">
-                    <div className="w-36">
-                      <select
-                        id="events"
-                        className="border px-4 py-2 rounded-xl w-full max-w-xs"
-                        defaultValue="All Events"
-                      >
-                        <option>All Events</option>
-                        {myEvents.map((event) => (
-                          <option key={event.id} value={event.name}>
-                            {event.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="w-36">
-                      <input
-                        type="date"
-                        id="booking-date"
-                        className="border px-4 py-2 rounded-xl w-full max-w-xs"
-                      />
-                    </div>
-                    <div className="w-36">
-                      <input
-                        type="date"
-                        id="event-date"
-                        className="border px-4 py-2 rounded-xl w-full max-w-xs"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Booking Date</label>
+                    <input
+                      type="date"
+                      id="booking-date"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition bg-gray-50"
+                    />
                   </div>
-                </div>
-                <div className="flex flex-col gap-2 w-full md:w-1/3">
-                  <div className="flex flex-row items-center gap-4">
-                    <div className="w-36">
-                      <span className="text-sm font-medium text-gray-700">Search Any</span>
-                    </div>
-                    <div className="w-24">
-                      <span className="text-sm font-medium text-gray-700">Show</span>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Event Date</label>
+                    <input
+                      type="date"
+                      id="event-date"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition bg-gray-50"
+                    />
                   </div>
-                  <div className="flex flex-row items-center gap-4">
-                    <div className="w-36">
-                      <input
-                        type="text"
-                        id="search-bookings"
-                        placeholder="Search"
-                        className="border px-4 py-2 rounded-xl w-full max-w-xs"
-                      />
-                    </div>
-                    <div className="w-24">
-                      <select
-                        id="rows"
-                        className="border rounded-xl px-2 py-2 w-full"
-                        defaultValue="10"
-                      >
-                        <option>5</option>
-                        <option>10</option>
-                        <option>20</option>
-                      </select>
-                    </div>
-                    <button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
-                      Reset Filters
+                  <div className="flex items-end">
+                    <button className="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition shadow-md hover:shadow-lg">
+                      Clear Filters
                     </button>
                   </div>
                 </div>
+                <div className="mt-4 flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                    <input
+                      type="text"
+                      id="search-bookings"
+                      placeholder="Search by order ID or email..."
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition bg-gray-50"
+                    />
+                  </div>
+                  <div className="w-24">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Show</label>
+                    <select
+                      id="rows"
+                      className="w-full px-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition bg-gray-50"
+                      defaultValue="10"
+                    >
+                      <option>5</option>
+                      <option>10</option>
+                      <option>20</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div className="overflow-x-auto shadow-md rounded-lg bg-white">
-                <table className="min-w-full text-sm text-left">
-                  <thead className="bg-gray-100 font-bold">
-                    <tr>
-                      <th className="px-4 py-3">Event</th>
-                      <th className="px-4 py-3">Customer Email</th>
-                      <th className="px-4 py-3">Ticket</th>
-                      <th className="px-4 py-3">Order Total</th>
-                      <th className="px-4 py-3">Promocode Reward</th>
-                      <th className="px-4 py-3">Booked On</th>
-                      <th className="px-4 py-3">Payment</th>
-                      <th className="px-4 py-3">Checked In</th>
-                      <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3">Cancellation</th>
-                      <th className="px-4 py-3">Expired</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ticketInfo.map((booking) => (
-                      <tr key={booking.orderId} className="border-t hover:bg-gray-50 transition-colors">
-                        <td className="px-4 py-4">{booking.eventName}</td>
-                        <td className="px-4 py-4">{loggedInUser.toLowerCase().replace(" ", ".") + "@example.com"}</td>
-                        <td className="px-4 py-4">{booking.ticketQuantity}</td>
-                        <td className="px-4 py-4">{booking.orderTotal}</td>
-                        <td className="px-4 py-4">{booking.promoCodeReward}</td>
-                        <td className="px-4 py-4">{booking.bookingDate}</td>
-                        <td className="px-4 py-4">{booking.paymentMode}</td>
-                        <td className="px-4 py-4">{booking.checkedIn}</td>
-                        <td className="px-4 py-4">{booking.status}</td>
-                        <td className="px-4 py-4">-</td>
-                        <td className="px-4 py-4">{booking.expired}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {ticketInfo.map((booking) => (
+                  <div
+                    key={booking.orderId}
+                    className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100"
+                  >
+                    <div className="relative">
+                      <img
+                        src={booking.img}
+                        alt={booking.eventName}
+                        className="w-full h-40 object-cover"
+                      />
+                      <span
+                        className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold text-white ${
+                          booking.status === "upcoming"
+                            ? "bg-blue-600"
+                            : booking.status === "refunded"
+                            ? "bg-red-600"
+                            : "bg-green-600"
+                        }`}
+                      >
+                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                      </span>
+                    </div>
+                    <div className="p-5">
+                      <h3 className="text-lg font-bold text-gray-900 mb-3">{booking.eventName}</h3>
+                      <div className="space-y-2 text-sm text-gray-600">
+                        <div className="flex justify-between">
+                          <span className="font-medium">Order ID:</span>
+                          <span>{booking.orderId}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Email:</span>
+                          <span>{loggedInUser.toLowerCase().replace(" ", ".") + "@example.com"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Tickets:</span>
+                          <span>{booking.ticketQuantity}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Total:</span>
+                          <span>₹{booking.orderTotal}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Promo Code:</span>
+                          <span>{booking.promoCodeReward}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Booked On:</span>
+                          <span>{booking.bookingDate}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Payment:</span>
+                          <span>{booking.paymentMode.charAt(0).toUpperCase() + booking.paymentMode.slice(1)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Checked In:</span>
+                          <span>
+                            {booking.checkedIn === "yes" ? (
+                              <FaCheckCircle className="inline text-green-500" />
+                            ) : (
+                              <span className="text-red-500">No</span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Event Date:</span>
+                          <span>{booking.date} at {booking.time}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Expired:</span>
+                          <span
+                            className={`font-semibold ${
+                              booking.expired === "yes" ? "text-red-500" : "text-green-500"
+                            }`}
+                          >
+                            {booking.expired.charAt(0).toUpperCase() + booking.expired.slice(1)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex gap-2">
+                        <button className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                          View Details
+                        </button>
+                        <button className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition">
+                          Download Ticket
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
+              {ticketInfo.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 text-lg">No bookings found.</p>
+                </div>
+              )}
             </div>
           )}
 
           {activeSection === "my-earnings" && (
             <div className="mt-4">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">My Earning</h2>
+              <h2 className="text-3xl font-extrabold text-gray-900 mb-4">My Earnings</h2>
               <div className="mb-4 w-[200px]">
                 <select
                   value={selectedOption}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                 >
                   <option value="">All Events</option>
                   <option value="event1">Event 1</option>
@@ -577,21 +622,21 @@ const Dashboard = () => {
                 </select>
               </div>
               <div className="grid md:grid-cols-3 gap-4">
-                <div className="bg-sky-400 text-white p-6 rounded-lg flex justify-between items-center shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="bg-sky-400 text-white p-6 rounded-lg flex justify-between items-center shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div>
                     <h3 className="text-lg font-semibold">Total Bookings</h3>
                     <p className="text-2xl font-bold mt-2">0</p>
                   </div>
                   <MdOutlineShoppingCartCheckout className="text-white text-3xl" />
                 </div>
-                <div className="bg-gray-900 text-white p-6 rounded-lg flex justify-between items-center shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="bg-gray-900 text-white p-6 rounded-lg flex justify-between items-center shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div>
                     <h3 className="text-lg font-semibold">Total Admin Commission</h3>
                     <p className="text-2xl font-bold mt-2">0</p>
                   </div>
                   <RiAdminFill className="text-white text-3xl" />
                 </div>
-                <div className="bg-green-400 text-white p-6 rounded-lg flex justify-between items-center shadow transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="bg-green-400 text-white p-6 rounded-lg flex justify-between items-center shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div>
                     <h3 className="text-lg font-semibold">Total Profit</h3>
                     <p className="text-2xl font-bold mt-2">0</p>
@@ -601,7 +646,7 @@ const Dashboard = () => {
               </div>
               <div className="overflow-x-auto mt-6 bg-white shadow-md rounded-lg">
                 <table className="min-w-full text-sm text-left">
-                  <thead className="bg-gray-200 font-bold">
+                  <thead className="bg-gray-100 font-bold">
                     <tr>
                       <th className="px-4 py-3">Event</th>
                       <th className="px-4 py-3">Bookings</th>
@@ -624,15 +669,15 @@ const Dashboard = () => {
           {activeSection === "my-tags" && (
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">My Tags</h2>
-                <button className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg transition hover:bg-gray-700">
+                <h2 className="text-3xl font-extrabold text-gray-900">My Tags</h2>
+                <button className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg transition hover:bg-gray-700 shadow-md">
                   <FaUserTag className="text-lg" />
                   <span className="text-sm font-semibold">Add Tag</span>
                 </button>
               </div>
-              <div className="overflow-x-auto p-6 m-4">
-                <table className="min-w-full text-sm border border-gray-250 rounded-lg overflow-hidden">
-                  <thead className="bg-gray-300 text-left">
+              <div className="overflow-x-auto p-6">
+                <table className="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                  <thead className="bg-gray-100 text-left">
                     <tr>
                       <th className="px-4 py-3 font-bold border-r">Name</th>
                       <th className="px-4 py-3 font-bold border-r">Type</th>
@@ -652,34 +697,32 @@ const Dashboard = () => {
           {activeSection === "my-venues" && (
             <div className="overflow-x-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">My Venues</h2>
-                <div className="flex justify-end mb-4">
-                  <button className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg transition hover:bg-gray-700">
-                    <FaMapLocationDot className="text-lg" />
-                    <span className="text-sm font-semibold">Create Venue</span>
-                  </button>
-                </div>
+                <h2 className="text-3xl font-extrabold text-gray-900">My Venues</h2>
+                <button className="flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-lg transition hover:bg-gray-700 shadow-md">
+                  <FaMapLocationDot className="text-lg" />
+                  <span className="text-sm font-semibold">Create Venue</span>
+                </button>
               </div>
-              <div className="bg-blue-100 text-blue-900 px-4 py-3 rounded mb-4 border border-blue-300">
-                <div className="flex items-center justify-left mb-4">
+              <div className="bg-blue-100 text-blue-900 px-4 py-3 rounded-lg mb-4 border border-blue-200">
+                <div className="flex items-center gap-2">
                   <MdPrivacyTip className="text-xl" />
                   <span className="font-medium">
                     Tip: Add a new Venue only if it does not exist on the website. You can use the Venues created by other Organizers into your event.
                   </span>
                 </div>
               </div>
-              <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg mt-4">
-                <thead className="bg-gray-300 text-left">
+              <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
+                <thead className="bg-gray-100 text-left">
                   <tr>
-                    <th className="px-4 py-3 text-left font-bold">Title</th>
-                    <th className="px-4 py-3 text-left font-bold">State</th>
-                    <th className="px-4 py-3 text-left font-bold">City</th>
-                    <th className="px-4 py-3 text-left font-bold">Actions</th>
+                    <th className="px-4 py-3 font-bold">Title</th>
+                    <th className="px-4 py-3 font-bold">State</th>
+                    <th className="px-4 py-3 font-bold">City</th>
+                    <th className="px-4 py-3 font-bold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.map((venue) => (
-                    <tr key={venue.id} className="border-t">
+                    <tr key={venue.id} className="border-t hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-4">{venue.title}</td>
                       <td className="px-4 py-4">{venue.state}</td>
                       <td className="px-4 py-4">{venue.city}</td>
@@ -701,21 +744,21 @@ const Dashboard = () => {
           {activeSection === "guests" && (
             <div className="w-full px-4">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Manage Guests</h2>
+                <h2 className="text-3xl font-extrabold text-gray-900">Manage Guests</h2>
                 <div className="flex gap-2">
-                  <button className="flex items-center gap-2 bg-[#ff2459] hover:bg-[#e91e63] text-white px-4 py-2 rounded-lg transition">
+                  <button className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition shadow-md">
                     <FaCalendarPlus className="text-md" />
                     <span className="text-sm font-semibold">Create GuestsList</span>
                   </button>
-                  <button className="flex items-center gap-2 bg-gray-900 hover:bg-[#e91e63] text-white px-4 py-2 rounded-lg transition">
+                  <button className="flex items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition shadow-md">
                     <FaCalendarPlus className="text-md" />
                     <span className="text-sm font-semibold">Create Guest</span>
                   </button>
                 </div>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full text-sm border border-gray-300 rounded-lg overflow-hidden">
-                  <thead className="bg-gray-200 text-left">
+                <table className="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                  <thead className="bg-gray-100 text-left">
                     <tr>
                       <th className="px-4 py-3 font-bold border-r w-1/3">Name</th>
                       <th className="px-4 py-3 font-bold border-r w-1/3">Total Guests</th>
@@ -734,10 +777,10 @@ const Dashboard = () => {
 
           {activeSection === "sub-organizers" && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Manage Sub Organizers</h2>
-              <div className="overflow-x-auto p-6 m-4">
-                <table className="min-w-full text-sm border border-gray-250 rounded-lg overflow-hidden">
-                  <thead className="bg-gray-300 text-left">
+              <h2 className="text-3xl font-extrabold text-gray-900">Manage Sub Organizers</h2>
+              <div className="overflow-x-auto p-6">
+                <table className="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                  <thead className="bg-gray-100 text-left">
                     <tr>
                       <th className="px-4 py-3 font-bold border-r">Name</th>
                       <th className="px-4 py-3 font-bold border-r">Email</th>
@@ -757,11 +800,11 @@ const Dashboard = () => {
 
           {activeSection === "reviews" && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Manage Reviews</h2>
-              <div className="flex flex-col gap-2 mb-4 p-2 m-2">
+              <h2 className="text-3xl font-extrabold text-gray-900">Manage Reviews</h2>
+              <div className="flex flex-col gap-2 mb-4 p-2">
                 <div className="flex flex-row items-center gap-4">
                   <div className="w-36">
-                    <span className="text-sm font-medium text-gray-700">Events</span>
+                    <span className="text-sm font-semibold text-gray-700">Events</span>
                   </div>
                 </div>
                 <div className="flex flex-row items-center gap-4">
@@ -770,14 +813,14 @@ const Dashboard = () => {
                       type="text"
                       id="search-events"
                       placeholder="Search"
-                      className="border px-4 py-2 rounded-xl w-full max-w-xs"
+                      className="border border-gray-300 px-4 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-red-400 transition"
                     />
                   </div>
                 </div>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full text-sm border border-gray-300 rounded-lg overflow-hidden">
-                  <thead className="bg-gray-200 text-left">
+                <table className="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                  <thead className="bg-gray-100 text-left">
                     <tr>
                       <th className="px-4 py-3 font-bold border-r w-1/3">Title</th>
                       <th className="px-4 py-3 font-bold border-r w-1/3">Rating</th>
