@@ -701,6 +701,25 @@ useEffect(() => {
                             <CgProfile className=" hover:text-white relative top-1" />
                             Profile
                           </button>
+                          {role == "superadmin" && (
+                            <button
+                              onClick={() => {
+                                setIsLog(false);
+                                navigate("/dashboard");
+                              }}
+                              className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                            >
+                              <MdDashboard className=" hover:text-white relative top-1" />
+                              Dashboard
+                            </button>
+                          )}
+                          <button
+                           onClick={handleProfileClick}
+                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                          >
+                            <CgProfile className=" hover:text-white relative top-1" />
+                            Profile
+                          </button>
                           {role == "user" && (
                             <button
                               onClick={() => {
