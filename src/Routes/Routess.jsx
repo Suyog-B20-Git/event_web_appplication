@@ -40,7 +40,7 @@ import EventFilterBar from "../LandingPages/EventFilterBar";
 function Routess() {
   return (
     <div>
-      <Routes>
+      <Route>
         <Route path="/" element={<Index />}>
           <Route index element={<Home />} />
           <Route path="home" element={<Home />} />
@@ -94,8 +94,10 @@ function Routess() {
 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
-         <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
-         <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />
+         {/* <Route path="/dashboard/create-event" element={<DashCreateEvent />} /> */}
+         {/* <Route path="/adminPanelOverview" element={<AdminPanelOverview />} /> */}
+
+         <Route path="/eventfilerbar" element={<EventFilterBar />} />"
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -135,7 +137,7 @@ function Routess() {
            <Route path="/events" element={<Viewall />} />
         </Route>
 
-          </Routes>
+          </Route>
     </div>
   );
 }
