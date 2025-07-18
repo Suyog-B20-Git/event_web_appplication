@@ -3,21 +3,25 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+const baseUrl = "http://localhost:5000/api/event";
+
 const AdminEvents = () => {
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [page, setPage] = useState(1);
+  const [rowsToShow, setRowsToShow] = useState(10);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("authToken");
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/event", {
+      const response = await axios.get(`${baseUrl}?page=${page}}`, {
         headers: { Authorization: token },
       });
-      console.log("total eventsa", response.data)
+      // console.log("total events", response.data)
       setEvents(response.data.events || []);
     } catch (err) {
       console.error("Failed to fetch events:", err);
@@ -36,7 +40,7 @@ const handleView = (event) => {
       ? `/${capitalCategory}/${event._id}`
       : `/events/${lowerCategory}/${event._id}`;
 
-    navigate(viewUrl); 
+    navigate(viewUrl, { state:  event._id } ); 
     console.log("url is:", viewUrl)
   } catch (err) {
     console.error("Navigation error:", err);
@@ -71,7 +75,7 @@ const handleView = (event) => {
   if (!confirmed) return;
 
   try {
-    await axios.delete(`http://localhost:5000/api/event/${event._id}`, {
+    await axios.delete(`${baseUrl}/${event._id}`, {
       headers: { Authorization: token },
     });
     fetchEvents(); 
@@ -143,10 +147,10 @@ const handleView = (event) => {
               <tr key={event._id} className="border-t">
                 <td className="p-3">{event.name}</td>
                 <td className="p-3">{event.category}</td>
-                <td className="p-3">{event.organizer}</td>
+                <td className="p-3">{event?.organizer?.username || "no organizer found"}</td>
                 <td className="p-3">{formatDate(event.startDate)}</td>
                 <td className="p-3">{formatDate(event.endDate)}</td>
-                <td className="p-3">{event.publish}</td>
+                <td className="p-3">{event.isPublish}</td>
                 <td className="p-3">{event.status}</td>
                 <td className="p-3 relative">
                   <button

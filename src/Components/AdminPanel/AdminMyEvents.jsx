@@ -86,10 +86,10 @@ const AdminMyEvents = () => {
 // };
 
 
-  const handleEdit = (id) => {
-    console.log("ID", id)
-    navigate("/dashboard/create-event", { state: { eventId: id } });
-  };
+ const handleEdit = (id) => {
+  console.log("ID", id);
+  navigate("/dashboard/create-event", { state: id });
+};
 
   const renderPagination = () => {
     const buttons = [];
@@ -158,7 +158,7 @@ const AdminMyEvents = () => {
         >
           <option value="">All Organizers</option>
           {organizers.map((o) => (
-            <option key={o} value={o}>{o}</option>
+            <option key={o} value={o}>{o?.lastname || "not found"}</option>
           ))}
         </select>
         <select

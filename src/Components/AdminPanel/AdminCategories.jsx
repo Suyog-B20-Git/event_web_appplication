@@ -45,6 +45,8 @@ const AdminCategories = () => {
   const [modalMode, setModalMode] = useState("");
   const [modalData, setModalData] = useState(null);
   const [toast, setToast] = useState(null);
+  const [subcategories, setSubcategories] = useState([]);
+const baseUrl = "http://localhost:5000/api";
   const [confirmModal, setConfirmModal] = useState({
     show: false,
     id: null,
@@ -95,10 +97,12 @@ const AdminCategories = () => {
     ),
   };
 
+  const [availableSubcategories, setAvailableSubcategories] = useState([]);
+
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await axios.get("http://localhost:5000/api/categories", {
+      const response = await axios.get(`${baseUrl}/categories`, {
         headers: {
           Authorization: token,
         },
@@ -117,6 +121,27 @@ const AdminCategories = () => {
       setCategories([]);
     }
   };
+
+useEffect(() => {
+  const fetchSubcategories = async () => {
+    if (!modalData?.type || modalMode === "edit") return;
+
+    try {
+      const res = await axios.get(`${baseUrl}/categories?type=${modalData.type}`);
+      const list = res.data.data || [];
+      console.log("List", res.data)
+      setAvailableSubcategories(list);
+      console.log("setAvailableSubcategories", availableSubcategories )
+    } catch (err) {
+      console.error("Subcategory load error:", err);
+    }
+  };
+
+  fetchSubcategories();
+}, [modalData?.type, modalMode]);
+
+
+
 
   useEffect(() => {
     fetchCategories();
@@ -322,96 +347,166 @@ const AdminCategories = () => {
               <h3 className="text-2xl font-bold mb-4 text-center text-blue-700 capitalize">
                 {modalMode} Category
               </h3>
+<>
+  {modalMode === "view" ? (
+    <>
+      <p className="mb-2">
+        <strong>Category:</strong> {modalData?.type || "--"}
+      </p>
+      <p className="mb-2">
+        <strong>Subcategory:</strong> {modalData?.name || "--"}
+      </p>
+      <p className="mb-2">
+        <strong>Status:</strong> {modalData?.status || "--"}
+      </p>
+      <div className="mt-4">
+        <strong>Thumb:</strong>
+        <br />
+        {modalData?.name?.toLowerCase() &&
+        categoryIcons[modalData.name.toLowerCase()] ? (
+          <div className="mt-2 text-center">
+            {categoryIcons[modalData.name.toLowerCase()]}
+          </div>
+        ) : modalData?.icon ? (
+          <img
+            src={modalData.icon}
+            alt="icon"
+            className="h-12 mx-auto mt-2"
+          />
+        ) : (
+          <span className="text-gray-500">No Icon</span>
+        )}
+      </div>
+    </>
+  ) : (
+    <>
+      {/* Category Input or Dropdown */}
+     <label className="block mb-1 font-medium">Category:</label>
+{modalMode === "edit" ? (
+  <input
+    type="text"
+    value={modalData?.type || ""}
+    onChange={(e) =>
+      setModalData({ ...modalData, type: e.target.value })
+    }
+    className="w-full border px-3 py-2 rounded mb-3 text-gray-700"
+  />
+) : (
+  <>
+    {!modalData.newType ? (
+      <select
+        value={modalData?.type || ""}
+        onChange={(e) => {
+          if (e.target.value === "__add_new__") {
+            setModalData({ ...modalData, type: "", newType: true });
+          } else {
+            setModalData({ ...modalData, type: e.target.value });
+          }
+        }}
+        className="w-full border px-3 py-2 rounded mb-3"
+      >
+        <option value="">Select Category</option>
+        <option value="Organizer">Organizer</option>
+        <option value="Performer">Performer</option>
+        <option value="Venue">Venue</option>
+        <option value="Service">Service</option>
+        <option value="__add_new__">➕ Add New Category</option>
+      </select>
+    ) : (
+      <input
+        type="text"
+        placeholder="Enter new category"
+        className="w-full border px-3 py-2 rounded mb-3"
+        value={modalData.type}
+        onChange={(e) =>
+          setModalData({ ...modalData, type: e.target.value })
+        }
+      />
+    )}
+  </>
+)}
 
-              <>
-                {modalMode === "view" ? (
-                  <>
-                    <p className="mb-2">
-                      <strong>Category:</strong> {modalData?.type || "--"}
-                    </p>
-                    <p className="mb-2">
-                      <strong>Subcategory:</strong> {modalData?.name || "--"}
-                    </p>
-                    <p className="mb-2">
-                      <strong>Status:</strong> {modalData?.status || "--"}
-                    </p>
-                    <div className="mt-4">
-                      <strong>Thumb:</strong>
-                      <br />
-                      {modalData?.name?.toLowerCase() &&
-                      categoryIcons[modalData.name.toLowerCase()] ? (
-                        <div className="mt-2 text-center">
-                          {categoryIcons[modalData.name.toLowerCase()]}
-                        </div>
-                      ) : modalData?.icon ? (
-                        <img
-                          src={modalData.icon}
-                          alt="icon"
-                          className="h-12 mx-auto mt-2"
-                        />
-                      ) : (
-                        <span className="text-gray-500">No Icon</span>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <label className="block mb-1 font-medium">Category:</label>
-                    <input
-                      type="text"
-                      value={modalData?.type || ""}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, type: e.target.value })
-                      }
-                      className="w-full border px-3 py-2 rounded  mb-3"
-                    />
+      {/* Subcategory */}
+<label className="block mb-1 font-medium">Subcategory:</label>
+{modalMode === "edit" ? (
+  <input
+    type="text"
+    value={modalData?.name || ""}
+    onChange={(e) => setModalData({ ...modalData, name: e.target.value })}
+    className="w-full border px-3 py-2 rounded mb-3 text-gray-700"
+  />
+) : (
+  <>
+    {!modalData.newName ? (
+      <select
+        value={modalData?.name || ""}
+        onChange={(e) => {
+          if (e.target.value === "__add_new__") {
+            setModalData({ ...modalData, name: "", newName: true });
+          } else {
+            setModalData({ ...modalData, name: e.target.value });
+          }
+        }}
+        className="w-full border px-3 py-2 rounded mb-3"
+      >
+        <option value="">Select Subcategory</option>
+        {availableSubcategories.map((subcat) => (
+          <option key={subcat} value={subcat}>{subcat.name}</option>
+        ))}
+        <option value="__add_new__">➕ Add New Subcategory</option>
+      </select>
+    ) : (
+      <input
+        type="text"
+        placeholder="Enter new subcategory"
+        className="w-full border px-3 py-2 rounded mb-3"
+        value={modalData.name}
+        onChange={(e) => setModalData({ ...modalData, name: e.target.value })}
+      />
+    )}
+  </>
+)}
 
-                    <label className="block mb-1 font-medium">
-                      Subcategory:
-                    </label>
-                    <input
-                      type="text"
-                      value={modalData?.name || ""}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, name: e.target.value })
-                      }
-                      className="w-full border px-3 py-2 rounded mb-3"
-                    />
 
-                    <label className="block mb-1 font-medium">Status:</label>
-                    <select
-                      value={modalData?.status || "enabled"}
-                      onChange={(e) =>
-                        setModalData({ ...modalData, status: e.target.value })
-                      }
-                      className="w-full border px-3 py-2 rounded mb-3"
-                    >
-                      <option value="enabled">Enabled</option>
-                      <option value="disabled">Disabled</option>
-                    </select>
+      {/* Status */}
+      <label className="block mb-1 font-medium">Status:</label>
+      <select
+        value={modalData?.status || "enabled"}
+        onChange={(e) =>
+          setModalData({ ...modalData, status: e.target.value })
+        }
+        className="w-full border px-3 py-2 rounded mb-3"
+      >
+        <option value="enabled">Enabled</option>
+        <option value="disabled">Disabled</option>
+      </select>
 
-                    <label className="block mb-1 font-medium">Thumbnail:</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            setModalData({
-                              ...modalData,
-                              thumb: reader.result,
-                            });
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                      className="w-full border px-3 py-2 rounded mb-4"
-                    />
-                  </>
-                )}
-              </>
+      {/* Thumbnail Upload */}
+      <label className="block mb-1 font-medium">Thumbnail:</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+              setModalData({
+                ...modalData,
+                thumb: reader.result,
+              });
+            };
+            reader.readAsDataURL(file);
+          }
+        }}
+        className="w-full border px-3 py-2 rounded mb-4"
+      />
+    </>
+  )}
+</>
+
+              
+                
               <div className="flex justify-end gap-2 mt-5">
                 <button
                   onClick={() => setShowModal(false)}

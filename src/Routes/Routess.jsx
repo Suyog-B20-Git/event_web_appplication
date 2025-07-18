@@ -129,6 +129,7 @@ function Routess() {
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin-panel" element={<AdminPanelOverview />} />
           <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
