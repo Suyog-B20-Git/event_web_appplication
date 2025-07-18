@@ -96,7 +96,7 @@ function Routess() {
 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
-          {/* <Route path="/dashboard/create-event" element={<DashCreateEvent />} /> */}
+          <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
           {/* <Route path="/adminPanelOverview" element={<AdminPanelOverview />} /> */}
 
           <Route path="/eventfilerbar" element={<EventFilterBar />} />"
