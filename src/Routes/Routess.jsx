@@ -36,6 +36,7 @@ import About from "../Components/Home/About";
 import ContactUs from "../Components/Home/ContactUs";
 import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
 import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
+import AdminMyEvents from "../Components/AdminPanel/AdminMyEvents";
 
 
 function Routess() {
@@ -96,7 +97,9 @@ function Routess() {
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
          <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
+         <Route path="/admin/dashboard/create-event" element={<DashCreateEvent />} />
          <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />
+         <Route path="/adminMyEvents" element={<AdminMyEvents />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
