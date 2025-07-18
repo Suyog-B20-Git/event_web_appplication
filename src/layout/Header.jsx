@@ -564,11 +564,10 @@ const Header = () => {
           <div
             ref={desktopSearchBarContainerRef}
             className={`absolute right-0 top-1/2 transform -translate-y-1/2 z-50 flex items-center bg-gray-100 rounded-lg shadow-md transition-all duration-300 ease-in-out
-                ${
-                  isSearchExpanded
-                    ? "w-96 px-4 py-2 opacity-100"
-                    : "w-0 px-0 py-0 opacity-0 overflow-hidden"
-                }`}
+                ${isSearchExpanded
+                ? "w-96 px-4 py-2 opacity-100"
+                : "w-0 px-0 py-0 opacity-0 overflow-hidden"
+              }`}
           >
             {isSearchExpanded && (
               <>
@@ -641,9 +640,8 @@ const Header = () => {
                   key={item._id}
                   ref={(el) => (itemRefs.current[index] = el)}
                   onMouseDown={() => handleSelectSearch(item)}
-                  className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${
-                    index === highlightedIndex ? "bg-gray-300 font-semibold" : ""
-                  }`}
+                  className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${index === highlightedIndex ? "bg-gray-300 font-semibold" : ""
+                    }`}
                 >
                   <span className="font-medium">{item.name}</span>{" "}
                   <span className="text-gray-500 text-sm">— {item.category}</span>
@@ -707,6 +705,26 @@ const Header = () => {
                     <CgProfile className="hover:text-white relative top-1" />
                     Profile
                   </button>
+
+                  {role === "superadmin" && (
+                    <button
+                      onClick={() => {
+                        setIsLog(false);
+                        navigate("/admin-panel");
+                      }}
+                      className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                    >
+                      🛠 Admin Panel
+                    </button>
+                  )}
+                  {/* <button
+                    onClick={handleProfileClick}
+                    className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
+                  >
+                    <CgProfile className="hover:text-white relative top-1" />
+                    Profile
+                  </button> */}
+
                   {role === "user" && (
                     <button
                       onClick={() => {
@@ -823,9 +841,8 @@ const Header = () => {
               key={item._id}
               ref={(el) => (itemRefs.current[index] = el)}
               onMouseDown={() => handleSelectSearch(item)}
-              className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${
-                index === highlightedIndex ? "bg-gray-300 font-semibold" : ""
-              }`}
+              className={`px-4 py-2 cursor-pointer hover:bg-gray-200 ${index === highlightedIndex ? "bg-gray-300 font-semibold" : ""
+                }`}
             >
               <span className="font-medium">{item.name}</span>{" "}
               <span className="text-gray-500 text-sm">— {item.category}</span>

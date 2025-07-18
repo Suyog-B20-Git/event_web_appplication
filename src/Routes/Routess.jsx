@@ -35,6 +35,7 @@ import Terms from "../Components/Home/Terms";
 import About from "../Components/Home/About";
 import ContactUs from "../Components/Home/ContactUs";
 import EventFilterBar from "../LandingPages/EventFilterBar";
+import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
 
 
 function Routess() {
@@ -94,21 +95,21 @@ function Routess() {
 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
-         {/* <Route path="/dashboard/create-event" element={<DashCreateEvent />} /> */}
-         {/* <Route path="/adminPanelOverview" element={<AdminPanelOverview />} /> */}
+          {/* <Route path="/dashboard/create-event" element={<DashCreateEvent />} /> */}
+          {/* <Route path="/adminPanelOverview" element={<AdminPanelOverview />} /> */}
 
-         <Route path="/eventfilerbar" element={<EventFilterBar />} />"
+          <Route path="/eventfilerbar" element={<EventFilterBar />} />"
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create-page" element={<CreatePage />} />
           <Route path="/organizers" element={<GetOrganizer />} />
-          <Route path="/organizers/wedding-planner" element={<GetOrganizer />}   />
+          <Route path="/organizers/wedding-planner" element={<GetOrganizer />} />
           <Route path="/organizers/adventure" element={<GetOrganizer />} />
           <Route path="/organizers/event-planner" element={<GetOrganizer />} />
           <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="/oauth-failure" element={<OAuthFailure />} />
-         
+
           <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} />
           <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} />
 
@@ -122,11 +123,12 @@ function Routess() {
           <Route path="/events/live-music/:eventId" element={<FeaturedEvent />} />
           <Route path="/city/location" element={<SearchData />} />
           <Route path='event/:eventId' element={<FeaturedEvent />} />
-          <Route path="/bookTicket" element={<BookTicket/>} />
+          <Route path="/bookTicket" element={<BookTicket />} />
 
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin-panel" element={<AdminPanelOverview />} />
           <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
@@ -134,10 +136,10 @@ function Routess() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
-           <Route path="/events" element={<Viewall />} />
+          <Route path="/events" element={<Viewall />} />
         </Route>
 
-          </Routes>
+      </Routes>
     </div>
   );
 }
