@@ -17,22 +17,69 @@ const AdminEvents = () => {
       const response = await axios.get("http://localhost:5000/api/event", {
         headers: { Authorization: token },
       });
+      console.log("total eventsa", response.data)
       setEvents(response.data.events || []);
     } catch (err) {
       console.error("Failed to fetch events:", err);
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/event/${id}`, {
-        headers: { Authorization: token },
-      });
-      fetchEvents(); // refresh list
-    } catch (err) {
-      console.error("Delete failed:", err);
-    }
-  };
+
+const handleView = (event) => {
+  try {
+    const category = event.category || "";
+    const lowerCategory = category.toLowerCase();
+    const capitalCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+    const mainCategories = ["Organiser", "Performer", "Venue", "Service"];
+
+    const viewUrl = mainCategories.includes(lowerCategory)
+      ? `/${capitalCategory}/${event._id}`
+      : `/events/${lowerCategory}/${event._id}`;
+
+    navigate(viewUrl); 
+    console.log("url is:", viewUrl)
+  } catch (err) {
+    console.error("Navigation error:", err);
+  }
+};
+
+
+//   const handleView = (event) => {
+//   const lowerCategory = event.category.toLowerCase();
+//   const upperCategory = event.category.charAt(0).toUpperCase() + event.category.slice(1);
+//   const mainCats = ["Organiser", "Performer", "Venue", "Service"];
+
+//   const url = mainCats.includes(lowerCategory)
+//     ? `/${upperCategory}/${event._id}`
+//     : `/events/${lowerCategory}/${event._id}`;
+//  console.log("url is:", url)
+//   navigate(`http://localhost:5000/api/${url}`);
+// };
+
+
+  // const handleDelete = async (id) => {
+  //       setConfirmModal({
+  //     show: true,
+  //     id,
+  //     bulk: false,
+  //     message: "Are you sure you want to delete this category?",
+  //   });
+  // };
+
+  const handleDelete = async (event) => {
+  const confirmed = window.confirm(`Really want to delete event "${event.name}"?`);
+  if (!confirmed) return;
+
+  try {
+    await axios.delete(`http://localhost:5000/api/event/${event._id}`, {
+      headers: { Authorization: token },
+    });
+    fetchEvents(); 
+  } catch (err) {
+    console.error("Error deleting event:", err);
+  }
+};
+
 
   const handleEdit = (id) => {
     navigate("/dashboard/create-event");
@@ -55,6 +102,14 @@ const AdminEvents = () => {
   document.addEventListener("click", handleClickOutside);
   return () => document.removeEventListener("click", handleClickOutside);
 }, []);
+
+ const formatDate = (str) => {
+    if (!str) return "";
+    const date = new Date(str);
+    return `${date.getDate().toString().padStart(2, '0')}/${
+      (date.getMonth() + 1).toString().padStart(2, '0')}/${
+      date.getFullYear()}`;
+  };
 
 
   return (
@@ -89,8 +144,8 @@ const AdminEvents = () => {
                 <td className="p-3">{event.name}</td>
                 <td className="p-3">{event.category}</td>
                 <td className="p-3">{event.organizer}</td>
-                <td className="p-3">{event.startDate}</td>
-                <td className="p-3">{event.endDate}</td>
+                <td className="p-3">{formatDate(event.startDate)}</td>
+                <td className="p-3">{formatDate(event.endDate)}</td>
                 <td className="p-3">{event.publish}</td>
                 <td className="p-3">{event.status}</td>
                 <td className="p-3 relative">
@@ -116,22 +171,36 @@ const AdminEvents = () => {
                         Edit Event
                       </button>
                       <button
-                        // onClick={() => navigate(`/dashboard/view-event/${event._id}`)}
-                        // navigate(`/events/${event.category}/${event.id}
                         // onClick={() => navigate(`/events/${event.category}/${event.organizer}`)}
-                        onClick={() => navigate(`/events/${event.category}/${event._id}`)}
+                         onClick={() => handleView(event)}
                         className="block w-full   px-2 py-1  mb-1 rounded-xl hover:bg-purple-400"
+                  //        onClick={(e) => {
+                  //   e.stopPropagation();
+                  //    if (event.category && event.id) {
+                  //     navigate(`/events/${event.category}/${event.id}`,
+                  //       {
+                  //         state:event.id,
+                  //     }
+                  //     );
+                  //   } else {
+                  //     console.warn("Missing event data:", event);
+                  //     alert("This event is missing a category. Cannot navigate.");
+                  //   }
+                  // }}
+                  // className="block w-full   px-2 py-1  mb-1 rounded-xl hover:bg-purple-400"
+                      
                       >
                         View Event
                       </button>
                       <button
-                        onClick={() => handleDelete(event._id)}
+                        onClick={() => handleDelete(event)}
                         className="block w-full px-2 py-1  mb-1 rounded-xl hover:bg-purple-400"
                       >
                         Delete Event
                       </button>
                       <button
-                        onClick={() => handleDelete(event._id)}
+                        onClick={() => navigate(`/adminMyEvents`)}
+                        
                         className="block w-full  px-2 py-1  mb-1 rounded-xl hover:bg-purple-400"
                       >
                        More Actions

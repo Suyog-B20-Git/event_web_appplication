@@ -36,6 +36,7 @@ import About from "../Components/Home/About";
 import ContactUs from "../Components/Home/ContactUs";
 import EventFilterBar from "../LandingPages/EventFilterBar";
 import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
+import AdminMyEvents from "../Components/AdminPanel/AdminMyEvents";
 
 
 function Routess() {
