@@ -4,10 +4,9 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import Button from "../Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
-import { HiOutlineDeviceMobile, HiEye, HiEyeOff } from "react-icons/hi"; // Import new icons
+import { HiOutlineDeviceMobile, HiEye, HiEyeOff } from "react-icons/hi"; 
 import jwtDecode from "jwt-decode";
 import axios from "axios";
-// import Photo from "./Photo"; // Removed as per instructions
 import { Auth } from "../redux/Urls";
 import { toast } from "react-toastify";
 
@@ -67,7 +66,7 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-white to-blue-100 py-6 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row shadow-2xl rounded-3xl overflow-hidden w-full max-w-4xl bg-white animate-fadeIn">
-        {/* Left side visual - kept for structural integrity, removed logo */}
+        
         <div className="hidden md:flex md:w-1/2 items-center justify-center bg-gradient-to-br from-[#FF2459] to-pink-300 relative">
           <div className="absolute inset-0 bg-black bg-opacity-30"></div>
           <div className="relative z-10 p-8 flex flex-col items-center text-center">
@@ -102,7 +101,7 @@ function Login() {
               placeholder="••••••••"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              showToggle // This prop would ideally control the visibility toggle in InputField
+              showToggle 
             >
               {/* Eye icon for password visibility */}
               <span
@@ -148,23 +147,23 @@ function Login() {
               <span className="px-3 text-gray-500 text-xs">OR</span>
               <hr className="flex-1 border-t border-gray-200" />
             </div>
-            <div className="flex flex-wrap gap-3 justify-center"> {/* Added flex-wrap for responsiveness */}
+            <div className="flex flex-wrap gap-3 justify-center"> 
               <button
                 type="button"
-                className="flex items-center px-4 py-2 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 transition font-semibold text-sm" // Adjusted text size for smaller buttons
+                className="flex items-center px-4 py-2 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 transition font-semibold text-sm" 
               >
                 <FaFacebookSquare className="text-blue-600 mr-2 text-xl" /> Facebook
               </button>
               <button
                 type="button"
-                className="flex items-center px-4 py-2 rounded-lg bg-red-50 border border-red-200 hover:bg-red-100 transition font-semibold text-sm" // Adjusted text size
+                className="flex items-center px-4 py-2 rounded-lg bg-red-50 border border-red-200 hover:bg-red-100 transition font-semibold text-sm" 
                 onClick={handleGoogleLogin}
               >
                 <ImGoogle className="text-red-500 mr-2 text-xl" /> Google
               </button>
               <button
                 type="button"
-                className="flex items-center px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 transition font-semibold text-sm" // Adjusted text size
+                className="flex items-center px-4 py-2 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 transition font-semibold text-sm"
               >
                 <HiOutlineDeviceMobile className="text-gray-700 mr-2 text-xl" /> SMS
               </button>

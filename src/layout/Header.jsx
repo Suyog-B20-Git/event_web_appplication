@@ -46,6 +46,7 @@ const Header = () => {
   const [isLog, setIsLog] = useState(false);
   const [activeIndex, setActiveIndex] = useState(null);
   const [currentLocation, setCurrentLocation] = useState("Select Location");
+  const [headerVisible, setHeaderVisible] = useState(true);
 
   const desktopSearchBarContainerRef = useRef(null);
   const mobileSearchBarContainerRef = useRef(null);
@@ -419,7 +420,7 @@ const Header = () => {
       if (searchValue.length > 0 && searchValue !== "All") {
         try {
           const response = await axios.get(
-            `${baseUrl}/api/location/locationSuggestions?search=${searchValue}`
+            `${baseUrl}/location/locationSuggestions?search=${searchValue}`
           );
           setSuggestions(response.data || []);
         } catch (error) {
@@ -443,7 +444,7 @@ const Header = () => {
         return;
       }
       try {
-        const response = await axios.get(`${baseUrl}/api/search?query=${search}`);
+        const response = await axios.get(`${baseUrl}/search?query=${search}`);
         const receivedData = response?.data?.data;
         const filterData = [];
         for (const category in receivedData) {
@@ -471,11 +472,12 @@ const Header = () => {
   }, [search]);
 
   return (
-    <div className="bg-gray-900 text-white p-1 fixed w-full z-40">
-      <div className="flex w-full h-[80px] items-center justify-between bg-opacity-50 px-4 relative gap-4">
-        {/* Logo and Mobile Location Icon */}
-        <div className="flex items-center gap-2 lg:gap-0 flex-shrink-0">
-          <img
+    
+      <div className="bg-gray-900 text-white p-1 fixed w-full z-40">
+        <div className="flex w-full h-[80px] items-center justify-between bg-opacity-50 px-4 relative gap-4">
+          {/* Logo and Mobile Location Icon */}
+          <div className="flex items-center gap-2 lg:gap-0 flex-shrink-0">
+            <img
             src="/assets/staticAssets/logo.png"
             className="lg:w-[150px] md:w-[120px] w-[100px] cursor-pointer"
             alt="logo"
@@ -710,6 +712,7 @@ const Header = () => {
                     <button
                       onClick={() => {
                         setIsLog(false);
+                        
                         navigate("/admin-panel");
                       }}
                       className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
@@ -986,6 +989,8 @@ const Header = () => {
 
       {ShowPopup && <Sidebar setShowPopup={setShowPopup} />}
     </div>
+
+    
   );
 };
 

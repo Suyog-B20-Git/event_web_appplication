@@ -24,6 +24,9 @@ function Footer() {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+
+  const [footerVisible, setFooterVisible] = useState(true);
+
   const handleSubscribe = async (e) => {
     e.preventDefault();
 
@@ -381,6 +384,7 @@ function Footer() {
         </div>
       </div>
     </footer>
+  
   );
 }
 

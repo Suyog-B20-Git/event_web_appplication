@@ -1,6 +1,10 @@
 import React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
