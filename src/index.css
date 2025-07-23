@@ -67,3 +67,10 @@
 }
 
 
+.ck-editor__editable {
+  min-height: 400px !important;
+}
+
+.ck-powered-by {
+  display: none !important;
+}

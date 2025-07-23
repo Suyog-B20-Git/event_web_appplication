@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer"; // Remove curly braces
+import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer"; 
 import Index from "../Main/Index";
 import Home from "../LandingPages/Home";
 import { text_data } from "../Components/Events/menuData";
@@ -37,6 +37,9 @@ import ContactUs from "../Components/Home/ContactUs";
 import EventFilterBar from "../LandingPages/EventFilterBar";
 import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
 import AdminMyEvents from "../Components/AdminPanel/AdminMyEvents";
+import AdminBlogPost from "../Components/AdminPanel/AdminBlogPost";
+import AdminCreatePage from "../Components/AdminPanel/AdminCreatePage";
+
 import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
 
 
@@ -99,8 +102,9 @@ function Routess() {
           <Route path="/submit-event" element={<CreateEventForm />} />
           <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
           {/* <Route path="/adminPanelOverview" element={<AdminPanelOverview />} /> */}
+          
 
-          <Route path="/eventfilerbar" element={<EventFilterBar />} />"
+          <Route path="/eventfilerbar" element={<EventFilterBar />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -126,6 +130,9 @@ function Routess() {
           <Route path="/city/location" element={<SearchData />} />
           <Route path='event/:eventId' element={<FeaturedEvent />} />
           <Route path="/bookTicket" element={<BookTicket />} />
+
+
+         
 
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
