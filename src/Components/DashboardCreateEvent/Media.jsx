@@ -1,10 +1,75 @@
-// Components/DashboardCreateEvent/Media.jsx
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-import React, { useState } from "react";
+const Media = ({ data, setData, nextTab }) => {
+  const location = useLocation();
+  const eventData = location.state?.event;
 
-const Media = ({ nextTab }) => {
-  const [poster, setPoster] = useState(null);
-  const [gallery, setGallery] = useState([]);
+  const handlePosterChange = (e) => {
+    const file = e.target.files[0];
+    setData((prev) => ({
+      ...prev,
+      poster: file,
+      posterPreview: URL.createObjectURL(file),
+    }));
+  };
+
+  const handleGalleryChange = (e) => {
+    const files = Array.from(e.target.files);
+    setData((prev) => ({
+      ...prev,
+      gallery: files,
+      galleryPreviews: files.map((f) => URL.createObjectURL(f)),
+    }));
+  };
+
+  const handleVideoUrlChange = (e) => {
+    setData((prev) => ({
+      ...prev,
+      videoUrl: e.target.value,
+    }));
+  };
+
+  const handleVideoIdChange = (e) => {
+    setData((prev) => ({
+      ...prev,
+      videoId: e.target.value,
+    }));
+  };
+
+  const handleSeatingChartChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setData((prev) => ({
+        ...prev,
+        seatingChart: file,
+        seatingChartPreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
+  useEffect(() => {
+    if (!eventData) return;
+
+    // Pre-fill single poster
+    if (eventData.poster) {
+      setPoster(eventData.poster);
+    }
+
+    // Pre-fill gallery images
+    if (Array.isArray(eventData.gallery)) {
+      setGallery(eventData.gallery);
+    }
+
+    // Pre-fill video info
+    if (eventData.videoUrl) setVideoUrl(eventData.videoUrl);
+    if (eventData.videoId) setVideoId(eventData.videoId);
+
+    // Pre-fill seating chart
+    if (Array.isArray(eventData.seatingChart)) {
+      setSeatingChart(eventData.seatingChart);
+    }
+  }, [eventData]);
 
   return (
     <form className="space-y-6">
@@ -16,16 +81,10 @@ const Media = ({ nextTab }) => {
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setPoster(URL.createObjectURL(e.target.files[0]))}
-          className="block w-full border border-gray-300 rounded-2xl px-3 py-2 text-gray-500  hover:border-blue-500"
+          className="block w-full border border-gray-300 rounded-2xl px-3 py-2 text-gray-500 hover:border-blue-500"
+          onChange={handlePosterChange}
         />
-        {poster && (
-          <img
-            src={poster}
-            alt="Poster"
-            className="mt-3 w-48 h-32 object-cover rounded-2xl"
-          />
-        )}
+        {data.posterPreview && <img src={data.posterPreview} alt="Poster" />}
       </div>
 
       {/* Gallery Images */}
@@ -35,30 +94,25 @@ const Media = ({ nextTab }) => {
         </label>
         <input
           type="file"
-          multiple
           accept="image/*"
-          onChange={(e) =>
-            setGallery(
-              Array.from(e.target.files).map((file) =>
-                URL.createObjectURL(file)
-              )
-            )
-          }
-          className="block w-full border border-gray-300 rounded-2xl px-3 py-2  text-gray-500  hover:border-blue-500"
+          className="block w-full border border-gray-300 rounded-2xl px-3 py-2 text-gray-500 hover:border-blue-500"
+          multiple
+          onChange={handleGalleryChange}
         />
+
         <div className="flex gap-4 mt-4 flex-wrap">
-          {gallery.map((img, i) => (
+          {data.galleryPreviews?.map((img, i) => (
             <img
               key={i}
               src={img}
-              alt="Gallery"
               className="w-36 h-24 object-cover rounded-2xl"
+              alt="Gallery"
             />
           ))}
         </div>
       </div>
 
-      {/* Youtube video, YoutubeLink , Seating Chart Image image */}
+      {/* YouTube Video */}
       <div className="space-y-3">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           YouTube Video URL (optional)
@@ -66,16 +120,25 @@ const Media = ({ nextTab }) => {
         <input
           type="text"
           placeholder="YouTube / Promo Video URL"
+          value={data.videoUrl || ""}
+          onChange={handleVideoUrlChange}
           className="w-full border border-gray-300 rounded-2xl px-4 py-2 text-gray-600 hover:border-blue-500"
         />
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+
+        {/* <label className="block text-sm font-medium text-gray-700 mb-1">
           Enter Video ID Only
         </label>
         <input
           type="text"
-          placeholder="https://www.youtube.com/watch?"
+          placeholder="e.g. dQw4w9WgXcQ"
+          value={data.videoId || ""}
+          onChange={handleVideoIdChange}
           className="w-full border border-gray-300 rounded-2xl px-4 py-2 text-gray-600 hover:border-blue-500"
-        />
+        />*/}
+      </div>
+
+      {/* Seating Chart Upload */}
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           SeatingChart Image
         </label>
@@ -83,17 +146,21 @@ const Media = ({ nextTab }) => {
           type="file"
           multiple
           accept="image/*"
-          onChange={(e) =>
-            setGallery(
-              Array.from(e.target.files).map((file) =>
-                URL.createObjectURL(file)
-              )
-            )
-          }
-          className="block w-full border border-gray-300 rounded-2xl px-3 py-2  text-gray-500  hover:border-blue-500"
+          onChange={handleSeatingChartChange}
+          className="block w-full border border-gray-300 rounded-2xl px-3 py-2 text-gray-500 hover:border-blue-500"
         />
+        <div className="flex gap-4 mt-4 flex-wrap">
+          {data.seatingChartPreview && (
+            <img
+              src={data.seatingChartPreview}
+              alt="Seating"
+              className="w-36 h-24 object-cover rounded-2xl"
+            />
+          )}
+        </div>
       </div>
 
+      {/* NEXT Button */}
       <div className="flex justify-end">
         <button
           type="button"

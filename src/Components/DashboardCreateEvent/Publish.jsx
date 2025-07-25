@@ -1,13 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
-const Publish = () => {
-  const [tags, setTags] = useState([]);
+const baseUrl = "http://localhost:5000/api";
+
+const Publish = ({ data, setData, onSave }) => {
   const [newTag, setNewTag] = useState("");
+  const location = useLocation();
+  const eventData = location.state?.event;
+
+  const [tags, setTags] = useState([]);
 
   const addTag = () => {
-    if (newTag && !tags.includes(newTag)) {
-      setTags([...tags, newTag]);
+    if (newTag && !data.tags?.includes(newTag)) {
+      setData({ ...data, tags: [...(data.tags || []), newTag] });
       setNewTag("");
+    }
+  };
+
+  useEffect(() => {
+    if (eventData?.tags) {
+      setTags(eventData.tags);
+    }
+  }, [eventData]);
+
+  const handleSave = async () => {
+    const token = localStorage.getItem("authToken");
+    const payload = { tags };
+
+    try {
+      let response;
+
+      if (eventData?._id) {
+        // Update (PUT)
+        response = await axios.put(
+          `${baseUrl}/event/${eventData._id}`,
+          payload,
+          {
+            headers: {
+              Authorization: token,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        alert("Event updated successfully!");
+      } else {
+        // Create (POST)
+        response = await axios.post(`${baseUrl}/event`, payload, {
+          headers: {
+            Authorization: token,
+            "Content-Type": "application/json",
+          },
+        });
+        alert("Event created successfully!");
+      }
+
+      console.log("Response:", response.data);
+    } catch (error) {
+      console.error("Save error:", error);
+      alert("An error occurred while saving.");
     }
   };
 
@@ -24,14 +75,24 @@ const Publish = () => {
         <div className="flex items-center space-x-2">
           <input
             type="text"
-            value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
+            value={data.newTag || ""}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, newTag: e.target.value }))
+            }
             placeholder="Search Tags"
             className="border border-gray-300 rounded-lg px-4 py-2 w-full hover:border-blue-500"
           />
           <button
-            onClick={addTag}
-            className="bg-black text-white px-2 py-2 rounded-xl "
+            className="bg-black text-white px-2 py-2 rounded-xl"
+            onClick={() => {
+              if (data.newTag) {
+                setData((prev) => ({
+                  ...prev,
+                  tags: [...(prev.tags || []), prev.newTag],
+                  newTag: "",
+                }));
+              }
+            }}
           >
             Add Tag
           </button>
@@ -48,7 +109,10 @@ const Publish = () => {
         </div>
       </div>
 
-      <button className="bg-[#ff2459] text-white px-6 py-2 rounded-xl">
+      <button
+        onClick={onSave}
+        className="bg-[#ff2459] text-white px-6 py-2 rounded-xl"
+      >
         Save
       </button>
 

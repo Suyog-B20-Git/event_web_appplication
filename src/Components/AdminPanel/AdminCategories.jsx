@@ -614,7 +614,7 @@ useEffect(() => {
                       setConfirmModal({ show: false, id: null, bulk: false });
                       fetchCategories();
                     } catch (err) {
-                      console.error("Deletion failed", err);
+                      
                       showToast(" Failed to delete");
                       setConfirmModal({ show: false });
                     }

@@ -1,13 +1,41 @@
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { useLocation } from "react-router-dom";
 
-const Details = ({ nextTab }) => {
+const Details = ({ data, setData, nextTab }) => {
+  const location = useLocation();
+  const eventData = location.state?.event;
+
+  useEffect(() => {
+    if (!eventData) return;
+    setData({
+      category: eventData.category || "",
+      type: eventData.type || "",
+      eventName: eventData.name || "",
+      eventUrl: eventData.eventUrl || "",
+      shortUrl: eventData.shortUrl || "",
+      excerpt: eventData.excerpt || "",
+      description: eventData.description || "",
+      whyToAttend: eventData.whyToAttend || "",
+      offlinePaymentInstructions: eventData.offlinePaymentInstructions || "",
+      currency: eventData.currency || "",
+      soldOut: eventData.soldOut || false,
+      enableReview: eventData.enableReview || false,
+    });
+  }, [eventData, setData]);
+
   return (
     <form className="space-y-6">
       <div>
         <label className="block font-medium mb-1 text-sm text-gray-700">
           Select Category
         </label>
-        <select className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 focus:outline-none hover:border-blue-500 focus:ring-2 focus:ring-pink-400">
+        <select
+          value={data.category || ""}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, category: e.target.value }))
+          }
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 focus:outline-none hover:border-blue-500 focus:ring-2 focus:ring-pink-400"
+        >
           <option value="">-- Category --</option>
           <option value="businessSeminar">Business Seminar</option>
           <option value="festivals">Festivals</option>
@@ -29,6 +57,12 @@ const Details = ({ nextTab }) => {
             type="text"
             placeholder="Paid / Free"
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 placeholder-gray-400 focus:outline-none hover:border-blue-500 "
+            // value={eventType}
+            // onChange={(e) => setEventType(e.target.value)}
+            value={data.type || ""}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, type: e.target.value }))
+            }
           />
         </div>
         <div>
@@ -38,19 +72,27 @@ const Details = ({ nextTab }) => {
           <input
             type="text"
             placeholder="e.g. Summer Fest 2025"
+            value={data.eventName || ""}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, eventName: e.target.value }))
+            }
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 placeholder-gray-400 focus:outline-none hover:border-blue-500"
           />
         </div>
       </div>
 
       {/* Event URLs */}
-      <div className="grid md:grid-cols-1 gap-6">
+      {/* <div className="grid md:grid-cols-1 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Event URL
           </label>
           <input
             type="text"
+            value={data.eventUrl || ""}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, eventUrl: e.target.value }))
+            }
             placeholder="https://youreventsite.com/event-name"
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 placeholder-gray-400 focus:outline-none hover:border-blue-500"
           />
@@ -61,11 +103,15 @@ const Details = ({ nextTab }) => {
           </label>
           <input
             type="text"
+            value={data.shortUrl || ""}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, shortUrl: e.target.value }))
+            }
             placeholder="https://short.link/abc"
             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 placeholder-gray-400 focus:outline-none hover:border-blue-500"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Concept */}
       <div>
@@ -74,6 +120,10 @@ const Details = ({ nextTab }) => {
         </label>
         <input
           type="text"
+          value={data.excerpt || ""}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, excerpt: e.target.value }))
+          }
           placeholder="e.g. Short event concept..."
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 placeholder-gray-400 focus:outline-none hover:border-blue-500"
         />
@@ -87,24 +137,33 @@ const Details = ({ nextTab }) => {
         <div className="border border-gray-300 rounded-lg">
           <textarea
             rows="5"
+            value={data.description || ""}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, description: e.target.value }))
+            }
             placeholder="Add rich description..."
             className="w-full px-4 py-3 text-gray-600 placeholder-gray-400 bg-white focus:outline-none hover:border-blue-500 resize-none rounded-lg"
           ></textarea>
         </div>
       </div>
-
-      <div>
+      
+{/* Why to Attend*/}
+      {/* <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Why to attend event?
         </label>
         <div className="border border-gray-300 rounded-lg">
           <textarea
             rows="5"
+            value={data.whyToAttend || ""}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, whyToAttend: e.target.value }))
+            }
             placeholder="Mention benefits or purpose..."
             className="w-full px-4 py-3 text-gray-600 placeholder-gray-400 bg-white focus:outline-none hover:border-blue-500 resize-none rounded-lg"
           ></textarea>
         </div>
-      </div>
+      </div> */}
 
       {/* Offline Payment */}
       <div>
@@ -113,6 +172,13 @@ const Details = ({ nextTab }) => {
         </label>
         <textarea
           rows="2"
+          value={data.offlinePaymentInstructions || ""}
+          onChange={(e) =>
+            setData((prev) => ({
+              ...prev,
+              offlinePaymentInstructions: e.target.value,
+            }))
+          }
           placeholder="Add instructions..."
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 placeholder-gray-400 focus:outline-none hover:border-blue-500"
         ></textarea>
@@ -125,6 +191,10 @@ const Details = ({ nextTab }) => {
         </label>
         <input
           type="text"
+          value={data.currency || ""}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, currency: e.target.value }))
+          }
           placeholder="e.g. USD / INR"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 placeholder-gray-400 focus:outline-none hover:border-blue-500"
         />
@@ -133,11 +203,25 @@ const Details = ({ nextTab }) => {
       {/* Checkboxes */}
       <div className="flex flex-col gap-3">
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" className="w-4 h-4 rounded border-gray-300" />
+          <input
+            type="checkbox"
+            checked={data.soldOut || false}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, soldOut: e.target.checked }))
+            }
+            className="w-4 h-4 rounded border-gray-300"
+          />
           <span className="text-sm text-gray-700">Event Sold Out</span>
         </label>
         <label className="inline-flex items-center gap-2">
-          <input type="checkbox" className="w-4 h-4 rounded border-gray-300" />
+          <input
+            type="checkbox"
+            checked={data.enableReview || false}
+            onChange={(e) =>
+              setData((prev) => ({ ...prev, enableReview: e.target.checked }))
+            }
+            className="w-4 h-4 rounded border-gray-300"
+          />
           <span className="text-sm text-gray-700">Enable Rating & Review</span>
         </label>
       </div>
