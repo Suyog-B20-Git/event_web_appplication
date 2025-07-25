@@ -4,9 +4,16 @@ import axios from "axios";
 
 const baseUrl = "http://localhost:5000/api";
 
+
+
+const showToast = (msg) => {
+  setToast(msg);
+  setTimeout(() => setToast(null), 2500);
+};
 const Publish = ({ data, setData, onSave }) => {
   const [newTag, setNewTag] = useState("");
   const location = useLocation();
+  const [toast, setToast] = useState(null);
   const eventData = location.state?.event;
 
   const [tags, setTags] = useState([]);
@@ -43,7 +50,7 @@ const Publish = ({ data, setData, onSave }) => {
             },
           }
         );
-        alert("Event updated successfully!");
+        showToast("✅ Event updated successfully!");
       } else {
         // Create (POST)
         response = await axios.post(`${baseUrl}/event`, payload, {
@@ -52,18 +59,17 @@ const Publish = ({ data, setData, onSave }) => {
             "Content-Type": "application/json",
           },
         });
-        alert("Event created successfully!");
+        showToast("✅ Event created successfully!");
       }
 
       console.log("Response:", response.data);
     } catch (error) {
-      console.error("Save error:", error);
-      alert("An error occurred while saving.");
+      showToast(" An error occurred while saving.");
     }
   };
 
   const publishEvent = () => {
-    alert("Event Published!");
+    showToast(" Event Published!");
   };
 
   return (
@@ -129,6 +135,11 @@ const Publish = ({ data, setData, onSave }) => {
           Publish Event
         </button>
       </div>
+      {toast && (
+        <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-md z-50 transition-all duration-300">
+          {toast}
+        </div>
+      )}
     </div>
   );
 };

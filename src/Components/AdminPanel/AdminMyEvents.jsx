@@ -15,35 +15,48 @@ const AdminMyEvents = () => {
   const baseUrl = "http://localhost:5000/api";
 
   const [toast, setToast] = useState(null);
-const showToast = (msg) => {
-  setToast(msg);
-  setTimeout(() => setToast(null), 2500);
-};
+  const [totalPages, setTotalPages] = useState(1);
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
+  };
 
   const fetchEvents = async () => {
     try {
+      const params = {
+        title: searchQuery,
+        organizerName: selectedOrganizer,
+        page,
+        limit: showCount,
+      };
+
       const res = await axios.get(`${baseUrl}/event`, {
         headers: { Authorization: token },
+        params,
       });
-      setEvents(res.data.events || []);
+
+      const responseData = res.data;
+      setEvents(responseData.events || []);
+      setTotalPages(responseData.totalPages || 1);
     } catch (err) {
-      console.error("Failed to load events", err);
+      // console.error("Failed to load events", err);
+      showToast("❌ Failed to load events. Please try again.");
     }
   };
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [searchQuery, selectedOrganizer, page, showCount]);
 
-useEffect(() => {
-  if (dropdownOpen) {
-    const el = document.getElementById(`dropdown-${dropdownOpen}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+  useEffect(() => {
+    if (dropdownOpen) {
+      const el = document.getElementById(`dropdown-${dropdownOpen}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     }
-  }
-}, [dropdownOpen]);
-
+  }, [dropdownOpen]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -55,33 +68,8 @@ useEffect(() => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const organizersAndPerformers = [
-    ...new Set(
-      events.flatMap((e) => [
-        e.organizer?.firstname + " " + e.organizer?.lastname,
-        e.performer?.firstname + " " + e.performer?.lastname,
-      ])
-    ),
-  ];
-
-  const filteredEvents = events
-    .filter((e) => e.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    .filter((e) => {
-      const org = e.organizer?.firstname + " " + e.organizer?.lastname;
-      const perf = e.performer?.firstname + " " + e.performer?.lastname;
-      return selectedOrganizer
-        ? org === selectedOrganizer || perf === selectedOrganizer
-        : true;
-    });
-
-  const totalPages = Math.ceil(filteredEvents.length / showCount);
-  const paginated = filteredEvents.slice(
-    (page - 1) * showCount,
-    page * showCount
-  );
-
   const handleEdit = async (event) => {
-        const id = event._id;
+    const id = event._id;
     try {
       const token = localStorage.getItem("authToken");
       const response = await axios.get(`${baseUrl}/event/${id}`, {
@@ -94,76 +82,59 @@ useEffect(() => {
         const eventData = response.data;
         navigate("/dashboard/create-event", { state: { event: eventData } });
       } else {
-        
         showToast("Could not fetch event details.");
       }
     } catch (error) {
-      
       showToast("Error fetching event. Please try again.");
     }
   };
 
-  // const handleClone = (event) => {
-  //   const newEvent = {
-  //     ...event,
-  //     _id: Date.now().toString(),
-  //     name: `${event.name} (Clone)`,
-  //   };
-  //   setEvents((prev) => [newEvent, ...prev]);
-  //   setPage(1);
-  // };
+  const handleClone = async (event) => {
+    const id = event._id;
+    try {
+      const token = localStorage.getItem("authToken");
 
-// const handleClone = async (event) => {
-//   const id = event._id;
-//   try {
-//     const token = localStorage.getItem("authToken");
+      const response = await axios.post(`${baseUrl}/event/${id}/clone`, event, {
+        headers: { Authorization: token },
+      });
 
-//     const response = await axios.post(`${baseUrl}/event/${id}/clone`, event, {
-//       headers: { Authorization: token },
-//     });
+      if (response.status === 200 && response.data) {
+        const cloned = response.data.clonedEvent || response.data;
+        cloned.name = `${event.name} - clone`;
 
-//     if (response.status === 200 && response.data) {
-//       // Manually modify name in local copy if needed
-//       const cloned = response.data.clonedEvent || response.data;
-//       cloned.name = `${event.name} - clone`;
-
-//       // Show toast and update list
-//       showToast("✅ Event cloned successfully!");
-//       fetchEvents();
-//     } else {
-//       showToast("❌ Failed to clone event.");
-//     }
-//   } catch (error) {
-//     console.error("Clone error:", error);
-//     showToast("⚠️ Error cloning event.");
-//   }
-// };
-
-const handleClone = async (event) => {
-  const id = event._id;
-  try {
-    const token = localStorage.getItem("authToken");
-
-    const response = await axios.post(`${baseUrl}/event/${id}/clone`, {}, {
-      headers: { Authorization: token },
-    });
-
-    if (response.status === 200 && response.data) {
-      showToast("✅ Event cloned successfully!");
-      fetchEvents();
-    } else {
-      showToast("❌ Failed to clone event.");
+        showToast(" Event cloned successfully!");
+        fetchEvents();
+      } else {
+        showToast(" Failed to clone event.");
+      }
+    } catch (error) {
+      showToast(" Error cloning event.");
     }
-  } catch (error) {
-    console.error("Clone error:", error?.response?.data || error.message);
-    showToast(
-      error?.response?.data?.message || "⚠️ Error cloning event."
-    );
-  }
-};
+  };
 
+  // const handleClone = async (event) => {
+  //   const id = event._id;
+  //   try {
+  //     const token = localStorage.getItem("authToken");
 
+  //     const response = await axios.post(
+  //       `${baseUrl}/event/${id}/clone`,
+  //       { event },
+  //       {
+  //         headers: { Authorization: token },
+  //       }
+  //     );
 
+  //     if (response.status === 200 && response.data) {
+  //       showToast(" Event cloned successfully!");
+  //       fetchEvents();
+  //     } else {
+  //       showToast(" Failed to clone event.");
+  //     }
+  //   } catch (error) {
+  //           showToast(error?.response?.data?.message || " Error cloning event.");
+  //   }
+  // };
 
   const renderPagination = () => (
     <div className="flex gap-2">
@@ -200,12 +171,12 @@ const handleClone = async (event) => {
     <div className="p-6 font-sans text-gray-800">
       <h2 className="text-3xl font-bold mb-6">My Events</h2>
 
-      <div className="flex flex-wrap gap-4 mb-6">
+      <div className="flex flex-col gap-4 mb-6">
         <label className="flex flex-col">
-          <span className="text-sm font-medium mb-1">Search Event</span>
+          <span className="text-sm font-medium mb-1">Search Event by Name</span>
           <input
             type="text"
-            className="border p-2 rounded w-full max-w-xs"
+            className="border p-2 rounded-lg w-full max-w-lg  hover:border-blue-500"
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -216,29 +187,24 @@ const handleClone = async (event) => {
 
         <label className="flex flex-col">
           <span className="text-sm font-medium mb-1">
-            List of Organizer/Events
+            Search Event By Organizer
           </span>
-          <select
-            className="border p-2 rounded"
+          <input
+            type="text"
+            placeholder="Search by Organizer"
+            className="border p-2 rounded-lg w-full max-w-lg hover:border-blue-500"
             value={selectedOrganizer}
             onChange={(e) => {
               setSelectedOrganizer(e.target.value);
               setPage(1);
             }}
-          >
-            <option value="">All</option>
-            {organizersAndPerformers.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
+          />
         </label>
 
         <label className="flex flex-col">
           <span className="text-sm font-medium mb-1">Show</span>
           <select
-            className="border p-2 rounded"
+            className="border p-2 rounded w-20 text-center hover:border-blue-500"
             value={showCount}
             onChange={(e) => {
               setShowCount(Number(e.target.value));
@@ -263,7 +229,7 @@ const handleClone = async (event) => {
           </tr>
         </thead>
         <tbody>
-          {paginated.map((event) => (
+          {events.map((event) => (
             <tr key={event._id} className="border-t hover:bg-gray-50">
               <td className="p-3 flex items-center gap-2">
                 <img
@@ -284,7 +250,7 @@ const handleClone = async (event) => {
                 ref={dropdownOpen === event._id ? dropdownRef : null}
               >
                 <button
-                  className="px-2 py-1 rounded-md font-bold bg-green-400 hover:bg-green-700 "
+                  className="px-2 py-1 rounded-md font-bold bg-green-400 hover:bg-green-700"
                   onClick={(e) => {
                     e.stopPropagation();
                     setDropdownOpen(
@@ -295,35 +261,36 @@ const handleClone = async (event) => {
                   ⋮
                 </button>
                 {dropdownOpen === event._id && (
-                  <div 
-                  id={`dropdown-${event._id}`}
-                  className="absolute z-10 right-0 mt-2 w-44 max-h-60 overflow-y-auto bg-blue-50 shadow-lg border border-gray-200 rounded text-sm animate-fade-in scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
->
+                  <div
+                    id={`dropdown-${event._id}`}
+                    className="absolute z-10 right-0 mt-2 w-44 max-h-60 overflow-y-auto bg-blue-50 shadow-lg border border-gray-200 rounded text-sm animate-fade-in scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+                  >
                     <button className="block w-full text-left px-4 py-2 hover:bg-pink-300">
-                      
-                       Export Attendees
+                      Export Attendees
                     </button>
                     <button
                       onClick={() => handleEdit(event)}
-                      className="block w-full text-left px-4 py-2 hover:bg-pink-300">
-                       Edit Event
+                      className="block w-full text-left px-4 py-2 hover:bg-pink-300"
+                    >
+                      Edit Event
                     </button>
                     <button
                       onClick={() => handleClone(event)}
-                      className="block w-full text-left px-4 py-2 hover:bg-pink-300">
-                       Clone Event
+                      className="block w-full text-left px-4 py-2 hover:bg-pink-300"
+                    >
+                      Clone Event
                     </button>
                     <button className="block w-full text-left px-4 py-2 hover:bg-pink-300">
-                       Private Event
+                      Private Event
                     </button>
                     <button className="block w-full text-left px-4 py-2 hover:bg-pink-300">
-                       Add Sub-Organizers
+                      Add Sub-Organizers
                     </button>
                     <button className="block w-full text-left px-4 py-2 hover:bg-pink-300">
-                       Add to GuestList
+                      Add to GuestList
                     </button>
                     <button className="block w-full text-left px-4 py-2 hover:bg-pink-300">
-                       Export Sales Report
+                      Export Sales Report
                     </button>
                   </div>
                 )}
@@ -335,11 +302,15 @@ const handleClone = async (event) => {
 
       <div className="mt-6 flex justify-center">{renderPagination()}</div>
       {toast && (
-  <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-md z-50 transition-all duration-300">
-    {toast}
-  </div>
-)}
-
+        <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-md z-50 transition-all duration-300">
+          {toast}
+        </div>
+      )}
+      {toast && (
+        <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-md z-50 transition-all duration-300">
+          {toast}
+        </div>
+      )}
     </div>
   );
 };

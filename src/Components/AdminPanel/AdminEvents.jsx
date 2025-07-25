@@ -17,8 +17,6 @@ const AdminEvents = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("authToken");
 
-  // const paginatedEvents = events.slice((page - 1) * perPage, page * perPage);
-
   const fetchEvents = async () => {
     try {
       const response = await axios.get(
@@ -72,7 +70,6 @@ const AdminEvents = () => {
     }
   };
 
-
   const handleEdit = async (event) => {
     const id = event._id;
     try {
@@ -92,7 +89,6 @@ const AdminEvents = () => {
         alert("Could not fetch event details.");
       }
     } catch (error) {
-      console.error("Error fetching event", error);
       alert("Error fetching event. Please try again.");
     }
   };
@@ -163,17 +159,19 @@ const AdminEvents = () => {
                   <button
                     className="bg-green-500 text-white px-2 py-1  w-16 h-8 flex items-center justify-center rounded-xl h "
                     onClick={(e) => {
-  e.stopPropagation();
-  const newOpen = dropdownOpen === event._id ? null : event._id;
-  setDropdownOpen(newOpen);
+                      e.stopPropagation();
+                      const newOpen =
+                        dropdownOpen === event._id ? null : event._id;
+                      setDropdownOpen(newOpen);
 
-  // 🟢 Auto scroll the row into view without ref
-  const row = e.currentTarget.closest("tr");
-  if (row) {
-    row.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-}}
-
+                      const row = e.currentTarget.closest("tr");
+                      if (row) {
+                        row.scrollIntoView({
+                          behavior: "smooth",
+                          block: "center",
+                        });
+                      }
+                    }}
                   >
                     <span className="text-md font-bold text-white-600 w-full ">
                       {" "}
