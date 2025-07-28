@@ -39,8 +39,11 @@ import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
 import AdminMyEvents from "../Components/AdminPanel/AdminMyEvents";
 import AdminBlogPost from "../Components/AdminPanel/AdminBlogPost";
 import AdminCreatePage from "../Components/AdminPanel/AdminCreatePage";
-
+import AdminAddPost from "../Components/AdminPanel/AdminAddPost";
 import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
+import AdminTags from "../Components/AdminPanel/AdminTags";
+import AdminBookings from "../Components/AdminPanel/AdminBookings";
+
 
 
 function Routess() {
@@ -53,7 +56,7 @@ function Routess() {
 
           {text_data.map((item) => (
             <React.Fragment key={item.path}>
-              {/* Parent route (e.g., /events, /organisers, /venues, etc.) */}
+              
               <Route
                 path={item.path}
                 element={
@@ -71,7 +74,6 @@ function Routess() {
                 }
               />
 
-              {/* Submenu routes */}
               {item.popUpMenu &&
                 item.popUpMenu.map(
                   (subItem) =>
@@ -101,8 +103,6 @@ function Routess() {
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
           <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
-          {/* <Route path="/adminPanelOverview" element={<AdminPanelOverview />} /> */}
-          
 
           <Route path="/eventfilerbar" element={<EventFilterBar />} />
 
@@ -131,13 +131,19 @@ function Routess() {
           <Route path='event/:eventId' element={<FeaturedEvent />} />
           <Route path="/bookTicket" element={<BookTicket />} />
 
-
-         
-
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
           <Route path="/profile" element={<Profile />} />
+          
+         
           <Route path="/admin-panel" element={<AdminPanelOverview />} />
+          <Route path="/admin/tags" element={<AdminTags />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+
+          <Route path="/admin/posts" element={<AdminBlogPost />} />
+          <Route path="/admin/add-post" element={<AdminAddPost />} />
+          <Route path="/admin/edit-post/:id" element={<AdminAddPost />} />
+          
           <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
@@ -147,7 +153,6 @@ function Routess() {
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/events" element={<Viewall />} />
         </Route>
-
       </Routes>
     </div>
   );
