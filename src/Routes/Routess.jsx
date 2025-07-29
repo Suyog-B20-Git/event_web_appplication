@@ -43,6 +43,21 @@ import AdminAddPost from "../Components/AdminPanel/AdminAddPost";
 import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
 import AdminTags from "../Components/AdminPanel/AdminTags";
 import AdminBookings from "../Components/AdminPanel/AdminBookings";
+import AdminHeaderMenu from "../Components/AdminPanel/AdminHeaderMenu";
+import AdminCommissions from "../Components/AdminPanel/AdminCommissions";
+import AdminFooterMenu from "../Components/AdminPanel/AdminFooterMenu"; 
+import AdminTaxes from "../Components/AdminPanel/AdminTaxes";
+// import AdminUsers from "../Components/AdminPanel/AdminUsers";
+import AdminUsers from "../Components/AdminPanel/AdminUsers";
+import AdminContacts from "../Components/AdminPanel/AdminContacts";
+import AdminBanners from "../Components/AdminPanel/AdminBanners";
+import AdminVenues from "../Components/AdminPanel/AdminVenues";
+import AdminSettings from "../Components/AdminPanel/AdminSettings";
+import AdminPromocodes from "../Components/AdminPanel/AdminPromocodes";
+import AdminComplimentaryBookings from "../Components/AdminPanel/AdminComplimentaryBookings";
+import AdminCurrencies from "../Components/AdminPanel/AdminCurrencies";
+
+
 
 
 
@@ -106,6 +121,31 @@ function Routess() {
 
           <Route path="/eventfilerbar" element={<EventFilterBar />} />
 
+
+
+
+
+          <Route path="/header-menu" element={<AdminHeaderMenu />} />
+          <Route path="/commission" element={<AdminCommissions />} />
+          <Route path="/banners" element={<AdminBanners />} />
+          <Route path="/admin-panel" element={<AdminPanelOverview />} />
+          <Route path="/admin/tags" element={<AdminTags />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/posts" element={<AdminBlogPost />} />
+          <Route path="/admin/add-post" element={<AdminAddPost />} />
+          <Route path="/admin/edit-post/:id" element={<AdminAddPost />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/contacts" element={<AdminContacts />} />
+          <Route path="/admin/venues" element={<AdminVenues />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/promocodes" element={<AdminPromocodes />} />
+          <Route path="/admin/complimentary-bookings" element={<AdminComplimentaryBookings />} />
+          <Route path="/admin/currencies" element={<AdminCurrencies />} />
+
+
+
+
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create-page" element={<CreatePage />} />
@@ -136,13 +176,7 @@ function Routess() {
           <Route path="/profile" element={<Profile />} />
           
          
-          <Route path="/admin-panel" element={<AdminPanelOverview />} />
-          <Route path="/admin/tags" element={<AdminTags />} />
-          <Route path="/admin/bookings" element={<AdminBookings />} />
-
-          <Route path="/admin/posts" element={<AdminBlogPost />} />
-          <Route path="/admin/add-post" element={<AdminAddPost />} />
-          <Route path="/admin/edit-post/:id" element={<AdminAddPost />} />
+         
           
           <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/dashboard" element={<Dashboard />} />

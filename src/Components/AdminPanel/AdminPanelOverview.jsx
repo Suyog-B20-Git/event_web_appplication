@@ -16,6 +16,7 @@ import { TbTagStarred } from "react-icons/tb";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
 
+
 import Events from './AdminEvents';
 import Categories from './AdminCategories';
 import Dashboard from './AdminDashboard';
@@ -27,22 +28,37 @@ import AdminViewPage from './AdminViewPage';
 import AdminAddPost from './AdminAddPost';
 import AdminTags from './AdminTags';
 import AdminBookings from './AdminBookings';
+import AdminHeaderMenu from './AdminHeaderMenu';
+import AdminFooterMenu from './AdminFooterMenu'; 
+import AdminCommissions from './AdminCommissions';
+import AdminTaxes from './AdminTaxes';
+import AdminUsers from './AdminUsers';
+import AdminContacts from './AdminContacts';
+import AdminBanners from './AdminBanners';
+import AdminVenues from './AdminVenues';
+import AdminSettings from './AdminSettings';
+import AdminPromocodes from './AdminPromocodes';
+import AdminComplimentaryBookings from './AdminComplimentaryBookings';
+import AdminCurrencies from './AdminCurrencies';
 
 
-const Bookings = () => <div>Bookings Component</div>;
-const Commissions = () => <div>Commissions Component</div>;
-const Taxes = () => <div>Taxes Component</div>;
-const Users = () => <div>Users Component</div>;
-const Contacts = () => <div>Contacts Component</div>;
+
+const Commissions = () => <AdminCommissions />;
+
+const Taxes = () => <AdminTaxes />;
+const Users = () => <AdminUsers />;
+const Contacts = () => <AdminContacts />;
+const Banners = () => <AdminBanners />;
+const Venues = () => <AdminVenues />;
+const Settings = () => <AdminSettings />;
+const PromoCodes = () => <AdminPromocodes />;
+const ComplimentaryBookings = () => <AdminComplimentaryBookings />;
+const Currencies = () => <AdminCurrencies />;
+
+
+
 const Media = () => <div>Media Component</div>;
-const Banners = () => <div>Banners Component</div>;
-const HeaderMenu = () => <div>HeaderMenu Component</div>;
-const FooterMenu = () => <div>FooterMenu Component</div>;
-const Venues = () => <div>Venues Component</div>;
-const Settings = () => <div>Settings Component</div>;
-const PromoCodes = () => <div>PromoCodes Component</div>;
-const ComplimentaryBookings = () => <div>ComplimentaryBookings Component</div>;
-const Currencies = () => <div>Currencies Component</div>;
+
 const ScanTickets = () => <div>ScanTickets Component</div>;
 
 const AdminPanelOverview = () => {
@@ -90,7 +106,7 @@ const AdminPanelOverview = () => {
         { name: "Users", icon: <ImUsers />, id: "adminUsers" },
         { name: "Contacts", icon: <RiContactsBook3Line />, id: "adminContacts" },
         { name: "Media", icon: <MdOutlinePermMedia />, id: "adminMedia" },
-        { name: "Banners", icon: <GiVerticalBanner />, id: "AdminBanners" },
+        { name: "Banners", icon: <GiVerticalBanner />, id: "adminBanners" }, 
         { name: "Pages", icon: <FaRegFileAlt />, id: "adminPages" },
         { name: "Blog Posts", icon: <MdOutlineDocumentScanner />, id: "adminBlogPosts" },
         { name: "HeaderMenu", icon: <PiListBulletsFill />, id: "adminHeaderMenu" },
@@ -100,6 +116,7 @@ const AdminPanelOverview = () => {
         { name: "PromoCodes", icon: <TbTagStarred />, id: "adminPromoCodes" },
         { name: "Complimentary Bookings", icon: <BsPuzzleFill />, id: "adminComplimentaryBookings" },
         { name: "Currencies", icon: <FaRupeeSign />, id: "adminCurrencies" },
+        { name: "Scan Tickets", icon: <MdOutlineDocumentScanner />, id: "adminScanTickets" }, 
     ];
 
     const activeSectionName = sections.find(sec => sec.id === activeSection)?.name || 'Dashboard';
@@ -250,7 +267,6 @@ const AdminPanelOverview = () => {
                 </nav>
             </aside>
 
-        
             <div className={`flex flex-col flex-1 transition-all duration-300 relative z-0 ${isDesktopSidebarExpanded ? 'md:ml-56' : 'md:ml-16'}`}>
                 <header className="p-2 md:p-4 h-16 flex items-center justify-between z-30 sticky top-0 bg-white/80 backdrop-blur-lg border-b border-gray-200/60">
                     <div className="flex items-center">
@@ -312,6 +328,15 @@ const AdminPanelOverview = () => {
                     {activeSection === "adminDashboard" && <Dashboard />}
                     {activeSection === "adminCategories" && <Categories />}
                     {activeSection === "adminEvents" && <Events />}
+                    {activeSection === "adminTags" && <AdminTags />}
+                    {activeSection === "adminBookings" && <AdminBookings />}
+                    {activeSection === "adminHeaderMenu" && <AdminHeaderMenu />}
+                    {activeSection === "adminFooterMenu" && <AdminFooterMenu />}
+                    {activeSection === "adminCommissions" && <Commissions />}
+                    {activeSection === "adminTaxes" && <Taxes />}
+                    {activeSection === "adminUsers" && <Users />}
+                    
+                   
                     {activeSection === "adminPages" && (
                         <AdminPages
                             pages={pages}
@@ -352,6 +377,8 @@ const AdminPanelOverview = () => {
                             onBack={handleBackToPages}
                         />
                     )}
+                    
+                  
                     {activeSection === "adminBlogPosts" && (
                         <AdminBlogPost 
                             onNavigateToAddPost={handleNavigateToAddPost}
@@ -372,31 +399,20 @@ const AdminPanelOverview = () => {
                             onPostCreate={handlePostUpdate}
                         />
                     )}
-                    {activeSection === "adminBookings" && selectedPage && (
-                        <AdminBookings
-                            page={selectedPage}
-                            onBack={handleBackToPages}
-                            onEdit={() => handleNavigateToEditPage(selectedPage)}
-                        />
-                    )}
                     
-                    {activeSection === "adminTags" && <AdminTags />}
                     
-                     {activeSection === "adminBookings" && <AdminBookings />}
                     {activeSection === "adminCommissions" && <Commissions />}
                     {activeSection === "adminTaxes" && <Taxes />}
                     {activeSection === "adminUsers" && <Users />}
                     {activeSection === "adminContacts" && <Contacts />}
                     {activeSection === "adminMedia" && <Media />}
-                    {activeSection === "AdminBanners" && <Banners />}
-                    {activeSection === "adminHeaderMenu" && <HeaderMenu />}
-                    {activeSection === "adminFooterMenu" && <FooterMenu />}
+                    {activeSection === "adminBanners" && <Banners />}
                     {activeSection === "adminVenues" && <Venues />}
                     {activeSection === "adminSettings" && <Settings />}
                     {activeSection === "adminPromoCodes" && <PromoCodes />}
                     {activeSection === "adminComplimentaryBookings" && <ComplimentaryBookings />}
                     {activeSection === "adminCurrencies" && <Currencies />}
-                    {activeSection === "scan-tickets" && <ScanTickets />}
+                    {activeSection === "adminScanTickets" && <ScanTickets />}
                 </main>
             </div>
         </div>
