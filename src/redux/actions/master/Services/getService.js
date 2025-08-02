@@ -100,7 +100,6 @@ export const getService = (setLoader, filter, page, category) => {
 
     try {
       const response = await axios.get(`${api}`);
-      console.log("response", response);
       dispatch({
         type: "GET_SERVICE",
         serviceData: response.data.services, // Ensure the API actually returns this structure

@@ -4,7 +4,7 @@ import { axiosInstance } from "../../../../../utility/utils";
 import { toast } from "react-toastify";
 import { Zoom } from "react-toastify";
 
-import { Event, Performer } from "../../../Urls";
+import {  Performer } from "../../../Urls";
 
 export const getFavouritePerformerData = (setLoader) => {
   return async (dispatch) => {
@@ -14,10 +14,9 @@ export const getFavouritePerformerData = (setLoader) => {
       const response = await axiosInstance.get(
         `${Performer.getFavouritePerformer}`
       );
-      // console.log("fav response", response);
       dispatch({
         type: "GET_FAVOURITE_PERFORMER",
-        payload: response.data.organizers, // Ensure the API actually returns this structure
+        payload: response.data.organizers, 
       });
     } catch (error) {
       console.error(

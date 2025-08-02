@@ -6,8 +6,6 @@ const initialState = {
   };
   
   const profileReducer = (state = initialState, action) => {
-    console.log("Profile Action:", action);
-  
     switch (action.type) {
       case "UPDATE_USER_REQUEST":
         return {

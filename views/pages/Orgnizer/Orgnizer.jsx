@@ -19,7 +19,6 @@ export const Orgnizer = () => {
   const onSubmit = (data) => {
     dispatch(createNewOrganizer(data));
     setPreview(data);
-    console.log("Form submitted:", data);
   };
 
   return (

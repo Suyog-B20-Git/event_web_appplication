@@ -61,7 +61,6 @@ export const getFavouriteEventData = (setLoader) => {
 
     try {
       const response = await axiosInstance.get(Event.addFavouriteEvent);
-      console.log("fav response", response);
       dispatch({
         type: "GET_FAVOURITE_EVENT",
         payload: response.data.events, // Ensure the API actually returns this structure

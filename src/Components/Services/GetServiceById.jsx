@@ -6,6 +6,7 @@ import Loading from "../Loading";
 import {
   MdKeyboardDoubleArrowRight,
   MdOutlineNavigateNext,
+  MdEmail,
 } from "react-icons/md";
 import {
   FaEye,
@@ -16,6 +17,8 @@ import {
   FaSquareFacebook,
   FaSquareXTwitter,
   FaWhatsapp,
+  FaGlobe,
+  FaClock,
 } from "react-icons/fa6";
 import { IoFlagSharp, IoLogoWhatsapp } from "react-icons/io5";
 import {
@@ -41,19 +44,22 @@ import InstagramProfile from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import ServiceStats from "../SocialMedia/ServiceStat";
 import { getFavouriteServiceData } from "../../redux/actions/master/Services/getFavouriteService";
-import { toast } from "react-toastify";
+import { deleteFavouriteService } from "../../redux/actions/master/Services/deleteFavouriteService";
+import { toast, Zoom } from "react-toastify";
 import { postFavouriteService } from "../../redux/actions/master/Services/postFavouriteService";
 import {
   getUpcomingEventData,
   getUpcomingEventsDataForProfile,
 } from "../../redux/actions/master/Events/UpcomingEvent";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
+import FollowButton from "../FollowButton";
+import CommonCalendar from "../CommonCalendar.jsx";
+import YouTubeWall from "../SocialMedia/YouTubeWall.jsx";
 
 function GetServiceById() {
   const { serviceId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
-
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
   const [about, setAbout] = useState(true);
@@ -63,14 +69,16 @@ function GetServiceById() {
   const [instagram, setInstagram] = useState(false);
   const [youtube, setYoutube] = useState(false);
   const [stat, setStat] = useState(false);
-
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const navigate = useNavigate();
   const location = useLocation();
-  // const serviceId = location.state;
-  console.log(serviceId);
+  const [enquirySent, setEnquirySent] = useState(false);
+  const [ownershipEnquirySent, setOwnershipEnquirySent] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const HrefUrl = window.location.href;
 
   // get Upcoming Event Data
   useEffect(() => {
@@ -87,10 +95,6 @@ function GetServiceById() {
     );
   }, [dispatch, serviceId]);
 
-  // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
-  //   upcomingEventData: [],
-  // }
-
   const upcomingEventData =
     useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
 
@@ -99,60 +103,75 @@ function GetServiceById() {
   }
 
   const data1 = upcomingEventData;
-  console.log("Upcoming Event Data:", data1);
 
   const store = useSelector((state) => state.getServiceByIdReducer) || {
     serviceData: [],
   };
 
   const data = store.serviceData;
-  console.log(data, "serviceData....");
+  const name = data.name;
+  const email = data?.organizerEmail || data?.email;
+  const targetId = data?._id;
+  const modelName = "Service";
 
   const store1 = useSelector((state) => state.getFavouriteServiceReducer) || {
     favouriteServiceData: [],
   };
   const favouriteService = store1.favouriteServiceData;
-  const isFavourite = (id) => {
-    return favouriteService.some((fav) => fav._id === id);
-  };
-  useEffect(() => {
-    dispatch(getFavouriteServiceData(setLoading)); // Fetch favorites on mount
-  }, [dispatch]);
 
-  const checkFavourite = (id) => {
-    if (favouriteService.some((fav) => fav._id === id)) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
+  const isFavourite = favouriteService.some((fav) => fav._id === data._id);
+
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+
+  useEffect(() => {
+    setEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    if (sent === "true") {
+      setEnquirySent(true);
     }
+  }, [name]);
+
+  const handleEnquirySent = () => {
+    setEnquirySent(true);
+    setEnquiry(false);
   };
+
+  useEffect(() => {
+    setOwnershipEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${targetId}`);
+    if (sent === "true") {
+      setOwnershipEnquirySent(true);
+    }
+  }, [targetId]);
+
+  const handleOwnershipEnquirySent = () => {
+    setOwnershipEnquirySent(true);
+    setOwnership(true);
+  };
+
+  useEffect(() => {
+    dispatch(getFavouriteServiceData(setLoading));
+  }, [dispatch]);
 
   const togglePhoneVisibility = () => {
     setShowNumber((prev) => !prev);
   };
   const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
 
-  const handleFavourite = (id) => {
-    if (isFavourite(id)) {
-      return;
-    } else {
-      dispatch(postFavouriteService(id));
-      console.log(id, "fav id");
-      dispatch(getFavouriteServiceData(setLoading));
-    }
-  };
-
   useEffect(() => {
-    dispatch(getServiceById(serviceId, setLoading));
+    setLocalIsFavorite(isFavourite);
+  }, [isFavourite]);
+
+  const toggleFavorite = (id) => {
+    if (localIsFavorite) {
+      setLocalIsFavorite(false);
+      dispatch(deleteFavouriteService(id));
+    } else {
+      setLocalIsFavorite(true);
+      dispatch(postFavouriteService(id));
+    }
     dispatch(getFavouriteServiceData(setLoading));
-  }, [dispatch]);
+  };
 
   const currentUrl = encodeURIComponent(window.location.href); // Get the current page URL
 
@@ -166,9 +185,10 @@ function GetServiceById() {
     window.open(shareUrls[platform], "_blank");
   };
 
-  // useEffect(() => {
-  //   dispatch(getServiceById(serviceId, setLoading));
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getServiceById(serviceId, setLoading));
+    dispatch(getFavouriteServiceData(setLoading));
+  }, [dispatch]);
   if (loading) {
     return <Loading />;
   }
@@ -206,10 +226,7 @@ function GetServiceById() {
                 {data.name}
               </p>
             </div>
-            {/* <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
-                <FaEye className="relative top-1" />
-                {data.visits} , {data.dailyVisits} visits today
-              </p> */}
+
             <div className="lg:flex hidden gap-1 pt-3 p-3 pb-0">
               <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer ">
                 <FaEye className="relative top-0.5 text-blue-600" />
@@ -225,7 +242,7 @@ function GetServiceById() {
             className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
             style={{
               backgroundImage:
-                "radial-gradient( circle farthest-corner at 5.6% 54.5%,  rgba(47,71,79,1) 0%, rgba(159,188,198,1) 83.6% )",
+                "url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fG9yZ2FuaXplcnxlbnwwfHx8fDE2OTY5NzQ1NTg&ixlib=rb-4.0.3&q=80&w=1080')",
             }}
           >
             <div className="flex flex-col gap-4 lg:px-0 px-2 ">
@@ -258,53 +275,154 @@ function GetServiceById() {
                 {data.city},{data.state},{data.country}
               </p>
             </div>
-            <div
-              className="flex gap-2 lg:px-0 px-2 lg:p-0 p-2 py-0 cursor-pointer"
-              onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
-            >
-              <p>
-                <FaPhoneAlt
-                  className="text-red-500 relative top-1"
-                  style={{ textShadow: "1px 1px 1px black" }}
-                />
-              </p>
-              <p>
-                {!hasPhoneNumber
-                  ? "Not available"
-                  : showNumber
-                  ? data.phoneNumber
-                  : "View Contact"}
-              </p>
+            <div className="grid grid-cols-2 gap-6 px-2 lg:px-0 lg:mt-2 lg:w-[60%]">
+              {/* Phone Section */}
+              <div className="flex gap-2 p-0 py-0 cursor-pointer ">
+                <p
+                  className="max-w-md"
+                  onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+                >
+                  <FaPhoneAlt
+                    className="text-red-500 relative top-1"
+                    style={{ textShadow: "1px 1px 1px black" }}
+                  />
+                </p>
+                <p onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}>
+                  {!hasPhoneNumber
+                    ? "Not available"
+                    : showNumber
+                    ? data.phoneNumber
+                    : "View Contact"}
+                </p>
+              </div>
+
+              {/* Available Time Section */}
+              {data.availableTime && (
+                <div className="flex gap-2 p-0 py-0 cursor-default">
+                  <p>
+                    <FaClock
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <p>{data.availableTime}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-4 px-2 py-1 lg:px-0 lg:py-0 sm:mt-2 lg:w-[60%]">
+              {/* Website Section */}
+              {data.website && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <FaGlobe
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={
+                      data.website.startsWith("http")
+                        ? data.website
+                        : `https://${data.website}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.website}
+                  </a>
+                </div>
+              )}
+
+              {/* Email Section */}
+              {data.email && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <MdEmail
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={`mailto:${data.email}`}
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.email}
+                  </a>
+                </div>
+              )}
             </div>
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
-                  className="flex gap-1 hover:text-[#ff2459] "
-                  onClick={() => setOwnership(!ownership)}
-                >
-                  <IoFlagSharp className="relative top-1 lg:text-base text-xs" />{" "}
-                  Claim Ownership
-                </p>
-                <p
-                  className="flex gap-1 bg-white text-gray-900"
-                  onClick={() => setEnquiry(!enquiry)}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
+                    ownershipEnquirySent
+                      ? "text-[#ff2459] cursor-not-allowed"
+                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                  }`}
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    setOwnership(!ownership);
+                  }}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
-                  Send Enquiry
+                  {ownershipEnquirySent
+                    ? "Claim Enquiry Sent"
+                    : "Claim Ownership"}
+                </p>
+                <p
+                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${
+                    enquirySent
+                      ? "text-[#ff2459] cursor-not-allowed"
+                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                  }`}
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    if (!email) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    if (!enquirySent) {
+                      setEnquiry(!enquiry);
+                    }
+                  }}
+                >
+                  <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
+                  {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                 </p>
                 <button
                   onClick={() => {
-                    handleFavourite(data._id);
-                    checkFavourite(data._id);
+                    if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    toggleFavorite(data._id);
                   }}
-                  className={`flex gap-1 bg-white  ${
-                    isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
+                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                   }`}
                 >
-                  <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  {isFavourite(data._id)
-                    ? "Added to Favourites"
-                    : "Add Favourite"}
+                  <FaHeart className="relative top-1 lg:text-base text-xs hover:text-[#ff2459]" />{" "}
+                  {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
                 </button>
               </div>
             </div>
@@ -321,41 +439,77 @@ function GetServiceById() {
                     &times;
                   </button>
 
-                  <div className="flex flex-col gap-0 px-0 h-[170px] w-[300px] border rounded mt-6">
+                  <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-6">
                     <button
-                      className="flex gap-3 p-4 px-4 hover:text-white hover:bg-[#ff2459]"
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${
+                        ownershipEnquirySent
+                          ? "text-[#ff2459] cursor-not-allowed font-bold"
+                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                      }`}
                       onClick={() => {
+                        if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
                         setOwnership(!ownership);
-                        setIsPopUp(false);
                       }}
                     >
                       <IoFlagSharp className="relative top-1 lg:text-base" />
-                      Claim Ownership
+                      {ownershipEnquirySent
+                        ? "Claim Enquiry Sent"
+                        : "Claim Ownership"}
                     </button>
                     <button
-                      className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${
+                        enquirySent
+                          ? "text-[#ff2459] cursor-not-allowed font-bold"
+                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                      }`}
                       onClick={() => {
-                        setEnquiry(!enquiry);
-                        setIsPopUp(false);
+                        if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        if (!email) {
+                          toast.error("Email not available for this service.");
+                          return;
+                        }
+                        if (!enquirySent) {
+                          setEnquiry(!enquiry);
+                          setIsPopUp(false);
+                        }
                       }}
                     >
                       <CiCircleInfo className="relative top-1 lg:text-base" />
-                      Send Enquiry
+                      {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                     </button>
                     <button
                       onClick={() => {
-                        handleFavourite(data._id);
-                        checkFavourite(data._id);
+                        if (!isLogin) {
+                          toast.error("Please login first to Add favorite!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
                       className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                        isFavourite(data._id)
-                          ? "text-[#ff2459]"
-                          : "text-gray-900"
+                        localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                       }`}
                     >
                       <FaHeart className="relative top-2 lg:text-base text-sm" />
-                      {isFavourite(data._id)
+                      {localIsFavorite
                         ? "Added to Favourites"
                         : "Add Favourite"}
                     </button>
@@ -367,254 +521,171 @@ function GetServiceById() {
 
           <div className=" flex lg:flex-row flex-col py-3 ">
             <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
-              <div className="w-[100%] md:w-[80%] lg:w-[100%] max-w-[250px] md:max-w-[400px] lg:max-w-[180px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
+              <div className="w-full border border-gray-200 shadow max-w-[250px] md:max-w-[400px] lg:max-w-[180px] h-auto aspect-[5/5] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
                 {data.profileImage ? (
                   <img
                     src={data.profileImage}
-                    className="w-full h-auto object-contain"
+                    className="w-full h-full object-cover"
                     alt="Profile"
                   />
                 ) : (
-                  <span className="text-gray-500">No Image Available</span>
+                  <img
+                    src="/assets/staticAssets/user-icon.png"
+                    className="w-full h-full object-cover"
+                    alt="user"
+                  />
                 )}
               </div>
+
               <div className=" lg:flex gap-2 hidden justify-center">
-                <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                  <CiCircleCheck className="relative top-1 lg:text-lg" />
-                  Follow
-                </button>
-                <div className="flex   gap-3 ">
-                  <button className="text-red-500 text-2xl">
-                    <a
-                      className="flex"
-                      href={data.instagramUrl ? data.instagramUrl : ""}
-                    >
-                      {data.instagramUrl ? (
-                        <FaInstagram className=" text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-                  {/* <button className="text-red-500 text-2xl">
-                      <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                        {data.facebookUrl ? (
-                          <FcLike className="text-red-500" />
-                        ) : (
-                          ""
-                        )}
-                      </a>
-                    </button> */}
-                  <button className="text-red-500 text-2xl">
-                    <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                      {data.facebookUrl ? (
-                        <CiFacebook className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-
-                  <button
-                    onClick={() => handleFavourite(data._id)}
-                    disabled={isFavourite(data._id)}
-                    className={` text-2xl ${
-                      isFavourite(data._id)
-                        ? "text-red-500 cursor-not-allowed"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    <FaHeart />
-                  </button>
-
-                  <button className="text-red-500 text-2xl">
-                    <a href={data.twitterUrl ? data.twitterUrl : ""}>
-                      {data.twitterUrl ? (
-                        <FaSquareXTwitter className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-                </div>
+                <FollowButton targetId={targetId} modelName={modelName} />
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center">
-              <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                <CiCircleCheck className="relative top-1 lg:text-lg" />
-                Follow
-              </button>
-              <div className="flex   gap-5 ">
-                <button className="text-red-500 text-2xl">
-                  <a
-                    className="flex"
-                    href={data.instagramUrl ? data.instagramUrl : ""}
-                  >
-                    {data.instagramUrl ? (
-                      <FaInstagram className=" text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
-                {/* <button className="text-red-500 text-2xl">
-                    <a href={data.facebookmUrl ? data.facebookUrl : ""}>
-                      {data.facebookUrl ? (
-                        <FcLike className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button> */}
-
-                <button className="text-red-500 text-2xl">
-                  <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                    {data.facebookUrl ? (
-                      <CiFacebook className="text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
-
-                <button
-                  onClick={() => {
-                    handleFavourite(receivedData._id);
-                    checkFavourite(receivedData._id);
-                  }}
-                  className={`text-red-500 text-2xl ${
-                    isFavourite ? "text-[#ff2459]" : "text-gray-900"
-                  }`}
-                >
-                  <FaHeart className="text-red-500" />
-                </button>
-
-                <button className="text-red-500 text-2xl">
-                  <a href={data.twitterUrl ? data.twitterUrl : ""}>
-                    {data.twitterUrl ? (
-                      <FaSquareXTwitter className="text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
-              </div>
+              <FollowButton
+                targetId={targetId}
+                modelName={modelName}
+                variant="mobile"
+              />
             </div>
-            <div className="lg:w-[70%]  h-[500px] overflow-scroll scrollbar-hide rounded-lg">
-              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
-                <button
-                  className={`px-2 ${
-                    about ? "border-b-2 border-b-red-600" : ""
-                  }`}
-                  onClick={() => {
-                    setAbout(true);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  ABOUT
-                </button>
-                <button
-                  className={`${
-                    upcoming ? "border-b-2 border-b-red-600" : ""
-                  } p-2`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(true);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  UPCOMING EVENT
-                </button>
-                <button
-                  className={`${
-                    facebook ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(true);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  FACEBOOK
-                </button>
-                <button
-                  className={`${
-                    twitter ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(true);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  TWITTER
-                </button>
-                <button
-                  className={`${
-                    instagram ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(true);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  INSTAGRAM
-                </button>
 
-                <button
-                  className={`${
-                    youtube ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(true);
-                    setStat(false);
-                  }}
-                >
-                  YOUTUBE
-                </button>
-                <button
-                  className={`${
-                    stat ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(true);
-                  }}
-                >
-                  STATS
-                </button>
+            {hoveredTab && (
+              <div className="fixed bottom-1 left-2 text-xs text-white bg-gray-900 px-2 py-1 rounded shadow">
+                {`${HrefUrl}#${hoveredTab}`}
+              </div>
+            )}
+
+            <div className="lg:w-[70%]  h-[600px] overflow-scroll scrollbar-hide rounded-lg">
+              <div className="sticky top-0 z-10">
+                <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
+                  <button
+                    className={`px-2 ${
+                      about ? "border-b-2 border-b-red-600" : ""
+                    }`}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    ABOUT
+                  </button>
+                  <button
+                    className={`${
+                      upcoming ? "border-b-2 border-b-red-600" : ""
+                    } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    UPCOMING EVENT
+                  </button>
+                  <button
+                    className={`${
+                      facebook ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    FACEBOOK
+                  </button>
+                  <button
+                    className={`${
+                      twitter ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(true);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${
+                      instagram ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
+
+                  <button
+                    className={`${
+                      youtube ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${
+                      stat ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stats")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    STATS
+                  </button>
+                </div>
               </div>
               <div className="lg:px-4 px-2 border bg-white  rounded-lg h-full overflow-auto">
                 {about && data ? (
@@ -628,9 +699,6 @@ function GetServiceById() {
                   </p>
                 ) : null}
 
-                {/* <p className="font-medium text-lg text-center">
-                    {upcomimg ? "" : <div className="  "></div>}
-                  </p> */}
                 {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
                     {upcomingEventData.length > 0 ? (
@@ -638,13 +706,18 @@ function GetServiceById() {
                         <div
                           key={index}
                           className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
+                          onClick={() => {
+                            navigate(`/events/live-music/${event._id}`, {
+                              state: event._id,
+                            });
+                          }}
                         >
                           {/* 🔹 Image Container*/}
                           <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
                             <img
                               src={
                                 event.media?.thumbnailImage ||
-                                "https://via.placeholder.com/250x160?text=No+Image"
+                                "/assets/staticAssets/fallback-image.jpg"
                               }
                               alt={event.name}
                               className="w-full h-full object-cover"
@@ -718,16 +791,30 @@ function GetServiceById() {
                 </p>
 
                 <p>
-                  {youtube ? (
-                    <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
-                  ) : (
-                    ""
-                  )}
+                  {youtube &&
+                    (data.youtubeId ? (
+                      <YouTubeWall channelId={data.youtubeId} />
+                    ) : (
+                      <div className="text-center">Not Available</div>
+                    ))}
                 </p>
 
                 <p>{stat ? <ServiceStats data={data} /> : ""}</p>
               </div>
             </div>
+          </div>
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-1">
+            <h1 className="font-semibold text-xl p-2 ml-2 pb-0 ">Location</h1>
+            <MapContainer className="mb-4" data={data} />
+          </div>
+
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-0 overflow-y-scroll scrollbar-hide">
+            <FacebookComments
+              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+              numPosts={10}
+              width="auto"
+            />
+            <hr />
           </div>
 
           <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
@@ -737,7 +824,7 @@ function GetServiceById() {
                   Service Category
                 </h1>
                 <section className="flex lg:flex-col flex-col md:flex-row overflow-x-scroll gap-2 pt-3 ">
-                  <div className="flex gap-2 ">
+                  <div className="flex gap-2">
                     <div
                       onClick={() => {
                         setCategory("anchor");
@@ -765,19 +852,18 @@ function GetServiceById() {
                     >
                       Entertainer
                     </div>
-                  </div>
-                  <div className="flex gap-2 ">
                     <div
                       onClick={() => {
                         setCategory("party supplies");
                         navigate("/Services", { state: category });
                       }}
-                      className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
+                      className="bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-3 text-xs "
                     >
                       Party Supplies
-                    </div>
+                    </div>{" "}
                   </div>
-                  <div className="flex gap-2 ">
+
+                  <div className="flex gap-2 flex-wrap ">
                     <div
                       onClick={() => {
                         setCategory("photography & videography");
@@ -787,8 +873,6 @@ function GetServiceById() {
                     >
                       Photography & Videography
                     </div>
-                  </div>
-                  <div className="flex gap-2 ">
                     <div
                       onClick={() => {
                         setCategory("promoters");
@@ -811,234 +895,168 @@ function GetServiceById() {
                 </section>
               </div>
               <div className="rounded border ">
-                <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
-                  Find Events
-                  <div className="flex  gap-2 text-xl">
-                    <button
+                <h1 className="text-lg font-medium text-gray-900 p-4 border-b flex justify-start ">
+                  Share
+                  <div className="flex ml-4 gap-4 mt-1 text-2xl ">
+                    <FaSquareFacebook
                       onClick={() => handleShare("facebook")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaSquareFacebook className="text-red-500 relative " />
-                    </button>
-                    <button
+                      className=" text-blue-600  relative "
+                    />
+                    <FaWhatsapp
                       onClick={() => handleShare("whatsapp")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaWhatsapp className="bg-red-500 text-white p-0.5" />
-                    </button>
-                    <button
+                      className=" text-green-600  relative "
+                    />
+                    <FaFacebookMessenger
                       onClick={() => handleShare("messenger")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaFacebookMessenger className="text-red-500" />
-                    </button>
-                    <button
+                      className=" text-blue-800  relative "
+                    />
+                    <FaSquareXTwitter
                       onClick={() => handleShare("twitter")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaSquareXTwitter className="text-red-500" />
-                    </button>
+                      className=" text-white-600 relative"
+                    />
                   </div>
                 </h1>
-                <div className="flex justify-center items-center ">
-                  <div className="flex  gap-5 p-3 overflow-x-scroll ">
-                    <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 ">
-                      <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
+                <hr />
+                <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
+                  Find Events
+                </h2>
+                <CommonCalendar />
+              </div>
+            </div>
+          </div>
+        </div>
 
-                      <p>Today 0</p>
-                    </div>
-                    <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
+        <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+            <div className=" p-3 shadow gap-2 ">
+              <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+                Share
+              </h1>
+              <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
+                <FaSquareFacebook
+                  onClick={() => handleShare("facebook")}
+                  className="text-blue-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#1877f2] transition duration-300"
+                />
 
-                      <p>Tommorrow 0</p>
-                    </div>
-                    <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
+                <FaWhatsapp
+                  onClick={() => handleShare("whatsapp")}
+                  className="text-green-600 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#25D366] transition duration-300"
+                />
 
-                      <p className="text-sm p-1">These Weekend 0</p>
-                    </div>
-                    <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <CalendarCheck className="text-2xl text-white font-medium" />
-                      <p>Choose Date</p>
-                    </div>
+                <FaFacebookMessenger
+                  onClick={() => handleShare("messenger")}
+                  className="text-blue-700 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#0084ff] transition duration-300"
+                />
+
+                <FaSquareXTwitter
+                  onClick={() => handleShare("twitter")}
+                  className="text-black-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#000000] transition duration-300"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+            <div className=" p-3  shadow gap-2 ">
+              <h1 className="text-lg font-medium text-gray-900 p-1 border-b ">
+                Services Category
+              </h1>
+              <section className="flex flex-wrap gap-3 p-3 justify-start items-start">
+                <div className="flex flex-wrap gap-4 justify-start ">
+                  <div
+                    onClick={() => {
+                      setCategory("anchor");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Anchor
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("decor");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Decor
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("entertainer");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Entertainer
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("promoters");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Promoters
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      setCategory("photography & videography");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Photography & Videography
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("dance studio");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Dance Studio
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("party supplies");
+                      navigate("/Services", { state: category });
+                    }}
+                    className="cursor-pointer whitespace-nowrap bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Party Supplies
                   </div>
                 </div>
-              </div>
+              </section>
             </div>
           </div>
-        </div>
 
-        <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">
-          <div className="flex flex-col gap-2 px-2 shadow-md p-4">
-            <div className="grid grid-cols-3 gap-2 text-xl">
-              <button
-                onClick={() => handleShare("facebook")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareFacebook className="text-red-500 relative " />
-              </button>
-              <button
-                onClick={() => handleShare("whatsapp")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaWhatsapp className="bg-red-500 text-white p-0.5" />
-              </button>
-              <button
-                onClick={() => handleShare("messenger")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaFacebookMessenger className="text-red-500" />
-              </button>
-              <button
-                onClick={() => handleShare("twitter")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareXTwitter className="text-red-500" />
-              </button>
-            </div>
-          </div>
-          <div className="rounded p-2 shadow ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
-              Service Category
-            </h1>
-            <section className="flex flex-col gap-2 pt-3 justify-center items-center">
-              <div className="flex flex-wrap gap-2 justify-center ">
-                <div
-                  onClick={() => {
-                    setCategory("anchor");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Anchor
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("decor");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Decor
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("entertainer");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Entertainer
-                </div>
-              </div>
-
-              <div className="flex gap-2 ">
-                <div
-                  onClick={() => {
-                    setCategory("photography & videography");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Photography & Videography
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("promoters");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Promoters
-                </div>
-              </div>
-              <div className="flex gap-2 ">
-                <div
-                  onClick={() => {
-                    setCategory("dance studio");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Dance Studio
-                </div>
-                <div
-                  onClick={() => {
-                    setCategory("party supplies");
-                    navigate("/Services", { state: category });
-                  }}
-                  className="cursor-pointer whitespace-nowrap bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Party Supplies
-                </div>
-              </div>
-            </section>
-          </div>
-          <div className="rounded border">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
+          <div className="border shadow w-[95%] ml-3">
+            <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
               Find Events
             </h1>
-            <div className="flex justify-center items-center ">
-              <div className="grid grid-cols-2 gap-4 p-3 ">
-                <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Today 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
+            <CommonCalendar />
           </div>
         </div>
       </div>
 
-      <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
-        Service Location
-      </h1>
-
-      <div className="px-6 w-full flex justify-center">
-        <MapContainer data={data} />
-      </div>
-
-      {/* <div className="flex justify-between ">
-            <div className="text-sm">Visited 4133 Times , 9 Times in Day</div>
-          </div> */}
-      <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
-        <FacebookComments
-          dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-          // dataHref={currentUrl}
-          numPosts={10}
-          width="1600"
-        />
-      </div>
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}
           name={data.name}
           ownership={ownership}
+          targetId={targetId}
+          modelName={modelName}
+          onOwnershipEnquirySent={handleOwnershipEnquirySent}
         />
       )}
       {enquiry && (
         <EnquiryForm
           setEnquiry={setEnquiry}
-          name={data.name}
+          onEnquirySent={handleEnquirySent}
+          name={name}
+          email={email}
           enquiry={enquiry}
         />
       )}

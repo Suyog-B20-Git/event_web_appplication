@@ -5,7 +5,6 @@ import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer"; // Remove curly 
 import Index from "../Main/Index";
 import Home from "../LandingPages/Home";
 import { text_data } from "../Components/Events/menuData";
-
 import Viewall from "../LandingPages/Viewall";
 import CreateEvent from "../Components/CreateEvent/CreateEvent";
 import CreateEventForm from "../Components/CreateEvent/CreateEventForm";
@@ -32,11 +31,12 @@ import SearchData from "../Components/SearchData";
 import OAuthSuccess from "../Users/OAuthSuccess";
 import OAuthFailure from "../Users/OAuthFailure";
 import BookTicket from "../LandingPages/BookTicket";
-import About from '../Footer/About';
-import Terms from '../Footer/Terms';
-import Blog from '../Footer/Blog';
-import Expert from '../Footer/Expert';
-
+import Terms from "../Components/Home/Terms";
+import About from "../Components/Home/About";
+import ContactUs from "../Components/Home/ContactUs";
+import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
+import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
+import AdminMyEvents from "../Components/AdminPanel/AdminMyEvents";
 
 
 function Routess() {
@@ -96,6 +96,12 @@ function Routess() {
 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
+         <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
+         <Route path="/admin/dashboard/create-event" element={<DashCreateEvent />} />
+        
+
+         <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />
+         <Route path="/adminMyEvents" element={<AdminMyEvents />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -108,7 +114,7 @@ function Routess() {
           <Route path="/oauth-failure" element={<OAuthFailure />} />
          
           <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} />
-          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />}          />
+          <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} />
 
           <Route path="/Performer/:performerId" element={<GetPerformerById />} />
           <Route path="/Venue/:venueId" element={<GetVenueById />} />
@@ -117,6 +123,7 @@ function Routess() {
           <Route path="/city/events" element={<Viewall />} />
           <Route path="/filtered-events" element={<GetEventByFilter />} />
           <Route path="/events/:categoryname/:eventId" element={<FeaturedEvent />} />
+          <Route path="/events/live-music/:eventId" element={<FeaturedEvent />} />
           <Route path="/city/location" element={<SearchData />} />
           <Route path='event/:eventId' element={<FeaturedEvent />} />
           <Route path="/bookTicket" element={<BookTicket/>} />
@@ -124,21 +131,17 @@ function Routess() {
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin-panel" element={<AdminPanelOverview />} />
           <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
           <Route path="/create-ticket" element={<CreateTicket />} />
-
-          <Route path="/about" element={<About />} />
           <Route path="/terms" element={<Terms />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/organiser" element={<Expert />} />
-
-
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<ContactUs />} />
         </Route>
 
-        {/* </Route> */}
-      </Routes>
+          </Routes>
     </div>
   );
 }

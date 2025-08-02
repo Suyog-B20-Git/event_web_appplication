@@ -1,24 +1,62 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 
-function WatchTrailer() {
+function WatchTrailer({ youtubeVideoUrl }) {
+  const urls = Array.isArray(youtubeVideoUrl) ? youtubeVideoUrl : [youtubeVideoUrl];
+
+  const uniqueCleanUrls = urls
+    .filter((url, index, self) => url && url.trim() !== "" && self.indexOf(url) === index);
+
+  const getEmbedUrl = (url) => {
+    try {
+      const parsedUrl = new URL(url);
+      let videoId = parsedUrl.searchParams.get("v");
+
+      // Fallback for shorts
+      if (!videoId && parsedUrl.pathname.startsWith("/shorts/")) {
+        videoId = parsedUrl.pathname.split("/shorts/")[1];
+      }
+
+      if (!videoId) {
+        console.error("No video ID found in URL:", url);
+        return "";
+      }
+
+      return `https://www.youtube.com/embed/${videoId}`;
+    } catch (error) {
+      console.error("Invalid YouTube URL:", url);
+      return "";
+    }
+  };
+
   return (
     <center>
-      <div className="rounded-md bg-white shadow-lg  w-full p-1 sm:p-8 flex flex-col justify-center ">
-        <h1 className="text-2xl sm:text-3xl text-left font-semibold w-full mb-4 sm:mb-8">Watch Trailer</h1>
-        <div className="flex justify-center items-center">
+      {uniqueCleanUrls.length === 1 ? (
+        <div className="flex justify-center items-center w-full mb-3">
           <iframe
-            width="960"
-            height="370"
-            className="h-[250px] sm:h-[300px] md:h-[350px] lg:h-[370px]"
-            src="https://www.youtube.com/embed/lD1X-ODWhvg?si=CbGzId282KczSEVj"
+            className="lg:w-[700px] h-[220px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-lg"
+            src={getEmbedUrl(uniqueCleanUrls[0])}
             title="YouTube video player"
-            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
-            allowfullscreen
+            allowFullScreen
           ></iframe>
         </div>
-      </div>
+      ) : (
+        <div className="flex gap-6 overflow-x-auto scroll-hide px-2 w-full py-2">
+          {uniqueCleanUrls.map((url, index) => (
+            <iframe
+              key={index}
+              className="flex-none w-[300px] h-[180px] sm:w-[360px] sm:h-[220px] md:w-[400px] md:h-[250px] rounded-lg"
+              src={getEmbedUrl(url)}
+              title={`YouTube video ${index + 1}`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
+          ))}
+        </div>
+      )}
     </center>
   );
 }

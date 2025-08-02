@@ -100,7 +100,6 @@ export const getVenue = (setLoader, filter, page, category) => {
 
     try {
       const response = await axios.get(`${api}`);
-      console.log("response", response);
       dispatch({
         type: "GET_VENUE",
         venueData: response.data.venues, // Ensure the API actually returns this structure

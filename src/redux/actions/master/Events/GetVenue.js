@@ -58,7 +58,6 @@ export const getVenue = (venue) => {
   return async (dispatch) => {
     try {
       const response = await axios.get(`${Venue.getVenue}query=${venue}`);
-      console.log("response", response);
       dispatch({
         type: "GET_VENUE",
         venues: response.data, // Ensure the API actually returns this structure

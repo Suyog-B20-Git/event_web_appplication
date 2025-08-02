@@ -14,7 +14,7 @@ import { CiCalendarDate, CiLocationOn } from "react-icons/ci";
 import GetTicket from "../Components/FeaturedEvent/GetTicket";
 import EventGallery from "../Components/FeaturedEvent/EventGallery";
 import MeditationForm from "../Components/FeaturedEvent/MeditationForm";
-
+import PerformersSection from "../Components/Performers/PerformersSection";
 import { TiBookmark } from "react-icons/ti";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Context } from "../Components/Util/ContextProvider";
@@ -23,8 +23,12 @@ import Guest from "../Components/FeaturedEvent/Guest";
 import RegisterModal from "../Components/FeaturedEvent/RegisterModal";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { FaEye, FaHeart } from "react-icons/fa6";
-import { MdDateRange, MdOutlineMailOutline } from "react-icons/md";
-import { PiBuildingApartmentFill } from "react-icons/pi";
+import {
+  MdDateRange,
+  MdOutlineMailOutline,
+  MdOutlineEventRepeat,
+} from "react-icons/md";
+import { PiBuildingApartmentFill, PiBookmarkThin } from "react-icons/pi";
 import OrganiserContact from "../Components/FeaturedEvent/OrganiserContact";
 import { useDispatch, useSelector } from "react-redux";
 import Collapsible from "react-collapsible";
@@ -38,9 +42,12 @@ import EnquiryForm from "../Components/Organizer/EnquiryForm";
 import { addFavouriteEvent } from "../redux/actions/master/Events/AddFavouriteEvent";
 import getFavoriteEventReducer from "../redux/reducers/pages/Events/getFavoriteEvent";
 import { getFavouriteEventData } from "../redux/actions/master/Events/GetFavouriteEvent";
-import { toast } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteFavouriteEvent } from "../redux/actions/master/Events/deleteFavouriteEvent";
+import fallbackImage from "/public/assets/staticAssets/fallback-image.jpg";
+import VenueData from "../Components/FeaturedEvent/VenueData";
+import TicketPrice from "../Components/FeaturedEvent/TicektPrice";
 
 function FeaturedEvent() {
   const {
@@ -48,13 +55,10 @@ function FeaturedEvent() {
     slug: urlSlug,
     eventId: eventId,
   } = useParams();
-  console.log("Event ID:", eventId);
-  console.log("Category Name:", urlCategory);
   const navigate = useNavigate();
   const [enquiry, setEnquiry] = useState(false);
   const location = useLocation();
   const id = location.state;
-  console.log(id);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
@@ -65,11 +69,44 @@ function FeaturedEvent() {
     eventData: [],
   };
   const receivedData = store.eventData;
-  console.log("Received Data from getEventByIdReducer:", receivedData);
+
+  const updateStartDateTime = new Date(receivedData.startDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
+
+  const updateEndDateTime = new Date(receivedData.endDate).toLocaleString(
+    "en-IN",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata",
+    }
+  );
+
+  const youtubeVideoUrl = receivedData.youtubeVideoUrls;
+  const VenuesData = Array.isArray(receivedData?.venue)
+    ? receivedData?.venue
+    : receivedData?.venue
+    ? [receivedData.venue]
+    : [];
+  const thumbnailImage = receivedData?.media?.thumbnailImage;
+  const posterImage = receivedData?.media?.posterImage;
   const phoneNumber = receivedData?.organizer?.phoneNumber?.trim();
   const hasPhoneNumber = phoneNumber !== "" && phoneNumber !== undefined;
   const organizerEmail = receivedData?.organizer?.email?.trim();
-  console.log("Organizer Email from the FeaturedEvent page", organizerEmail);
   const togglePhone = () => {
     if (hasPhoneNumber) {
       setShowNumber((prev) => !prev);
@@ -79,7 +116,6 @@ function FeaturedEvent() {
   const categoryname = urlCategory || receivedData?.category || "all-events";
   const slug = urlSlug || receivedData?.slug || "featured-event";
   const eventid = eventId || receivedData?._id || "null";
-  console.log("eventIdddddddddd", eventid);
   const store1 = useSelector((state) => state.getFavoriteEventReducer) || {
     favouriteEventData: [],
   };
@@ -94,13 +130,12 @@ function FeaturedEvent() {
   );
 
   const name = receivedData.name;
-  console.log("eventName", name);
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   useEffect(() => {
     setEnquirySent(false);
 
     const sent = localStorage.getItem(`enquiry_sent_${name}`);
-    console.log("is Sent for", name, ":", sent);
     if (sent === "true") {
       setEnquirySent(true);
     }
@@ -117,10 +152,10 @@ function FeaturedEvent() {
 
   const toggleFavorite = (id) => {
     if (localIsFavorite) {
-      setLocalIsFavorite(false); 
+      setLocalIsFavorite(false);
       dispatch(deleteFavouriteEvent(id));
     } else {
-      setLocalIsFavorite(true); 
+      setLocalIsFavorite(true);
       dispatch(addFavouriteEvent(id));
     }
 
@@ -133,14 +168,7 @@ function FeaturedEvent() {
     });
   };
 
-
   useEffect(() => {
-    console.log("FeaturedEvent useEffect running with params:", {
-      id,
-      categoryname,
-      slug,
-    });
-
     if (id) {
       dispatch(getEventById(id, setLoading));
     } else if (slug) {
@@ -151,13 +179,9 @@ function FeaturedEvent() {
 
   useEffect(() => {
     if (receivedData && receivedData.category && receivedData._id) {
-      // Include /events in the path to match your route configuration
       const newPath = `/events/${(receivedData.category || "").toLowerCase()}/${
         receivedData._id
       }`;
-      console.log("New Path:", newPath);
-
-      // Check if current path is different to avoid navigation loops
       const currentPath = window.location.pathname;
 
       if (currentPath !== newPath) {
@@ -170,7 +194,6 @@ function FeaturedEvent() {
   }, [receivedData, navigate, id]);
 
   const [modal, setModal] = useState(false);
-  // const [form, setForm] = useState(false);
   const {
     form,
     setForm,
@@ -187,33 +210,29 @@ function FeaturedEvent() {
     receivedData.startDate && extractDateAndTime();
   }, []);
 
-  console.log("Received Data:", receivedData);
-  console.log("Organizer Data:", receivedData.organizer);
-  console.log("Phone:", receivedData.organizer?.phoneNumber);
-
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(null);
 
   const extractDateAndTime = () => {
     const date = new Date(receivedData.startDate);
 
-    // Extract date in YYYY-MM-DD format
     const formattedDate = date.toISOString().split("T")[0];
-    console.log("formattedDate from the FeaturedEvent page", formattedDate);
-    // Extract time in 12-hour format (HH:MM AM/PM)
     const formattedTime = date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, 
+      hour12: true,
     });
-    console.log("FormattedTime from the FeaturedEvent page", formattedTime);
     setDate(formattedDate);
     setTime(formattedTime);
   };
-  console.log("Date & Time:", date, time);
-  const venueData = receivedData.venue || {};
+
+  const googleLocation = {
+    lat: receivedData.venue?.googleSearchLat,
+    lng: receivedData.venue?.googleSearchLong,
+  };
 
   const sectionRef = useRef(null);
+  const LocationRef = useRef(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const addToCalendar = () => {
@@ -229,9 +248,9 @@ function FeaturedEvent() {
 
     const startDate = new Date(receivedData.startDate)
       .toISOString()
-      .replace(/-|:|\.\d+/g, ""); // Format: YYYYMMDDTHHMMSSZ
+      .replace(/-|:|\.\d+/g, "");
     const endDate = new Date(
-      new Date(receivedData.startDate).getTime() + 2 * 60 * 60 * 1000 // Assuming a 2-hour event
+      new Date(receivedData.startDate).getTime() + 2 * 60 * 60 * 1000
     )
       .toISOString()
       .replace(/-|:|\.\d+/g, "");
@@ -241,6 +260,29 @@ function FeaturedEvent() {
     window.open(googleCalendarUrl, "_blank");
   };
 
+  const formatImageUrl = (url) => {
+    if (!url) return null;
+    return url.replace(/\\/g, "/");
+  };
+
+  const formatTo12Hour = (time24) => {
+    if (!time24) return "";
+
+    const [hours, minutes] = time24.split(":");
+    const hour = parseInt(hours, 10);
+    const minute = minutes;
+
+    if (hour === 0) {
+      return `12:${minute} AM`;
+    } else if (hour < 12) {
+      return `${hour}:${minute} AM`;
+    } else if (hour === 12) {
+      return `12:${minute} PM`;
+    } else {
+      return `${hour - 12}:${minute} PM`;
+    }
+  };
+
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-4 ">
@@ -248,7 +290,8 @@ function FeaturedEvent() {
           className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px] mt-20 sm:mt-0 relative"
           style={{
             backgroundImage: `url(${
-              receivedData.media?.thumbnailImage ||
+              formatImageUrl(posterImage) ||
+              formatImageUrl(thumbnailImage) ||
               "assets/staticAssets/fallback-image.jpg"
             })`,
             backgroundPosition: "center",
@@ -270,6 +313,18 @@ function FeaturedEvent() {
           <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
             <p
               onClick={() => {
+                if (!isLogin) {
+                  toast.error("Please login first to send enquiry!", {
+                    transition: Zoom,
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                  });
+                  return;
+                }
+                if (!organizerEmail) {
+                  toast.error("Organizer email not available.");
+                  return;
+                }
                 if (!enquirySent) {
                   setEnquiry(!enquiry);
                 }
@@ -285,7 +340,17 @@ function FeaturedEvent() {
             </p>
 
             <button
-              onClick={() => toggleFavorite(receivedData._id)}
+              onClick={() => {
+                if (!isLogin) {
+                  toast.error("Please login first to Add favorite!", {
+                    transition: Zoom,
+                    hideProgressBar: true,
+                    autoClose: 2000,
+                  });
+                  return;
+                }
+                toggleFavorite(receivedData._id);
+              }}
               className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer hover:text-[#ff2459] ${
                 localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
               }`}
@@ -321,41 +386,51 @@ function FeaturedEvent() {
             {receivedData.name}
           </h1>
           <div className="flex gap-2 pb-3 pl-4 justify-start mt-0 sm:mt-4 ">
-            <div className="relative flex flex-col space-y-4 top-1 lg:text-2xl text-gray-600 ">
-              <TiBookmark />
+            <div className="relative flex flex-col space-y-4 top-0 lg:text-2xl text-gray-800 font-semibold">
+              <PiBookmarkThin />
               <CiCalendarDate />
-              <CiLocationOn />
+              <CiLocationOn
+                onClick={() => {
+                  LocationRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                  });
+                }}
+              />
             </div>
             <div className="text-gray-600 md:text-base  text-xs font-medium space-y-4">
               <p>{receivedData.category}</p>
-              {/* <p>{receivedData.startDate}</p> */}
-              <p>
-                {receivedData?.startDate
-                  ? new Date(receivedData.startDate).toLocaleString(undefined, {
-                      year: "numeric",
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                      timeZone: "UTC",
-                    })
-                  : "--"}
-              </p>
+              <p>{receivedData?.startDate ? updateStartDateTime : "--"}</p>
               <p></p>
-              <p>
+              <p
+                onClick={() => {
+                  LocationRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                  });
+                }}
+              >
                 {receivedData.venue?.city && receivedData.venue?.country
                   ? `${receivedData.venue.city} - ${receivedData.venue.country}`
-                  : receivedData.venue?.name || "-"}
+                  : receivedData.venue?.name || "Not Available"}
               </p>
             </div>
           </div>
           <hr />
           <div className="pt-2 flex justify-between gap-2 lg:pt-3 md:p-2 px-3 mt-0 sm:mt-6">
-            <p className="lg:text-xl text-base font-bold">$99 onwards </p>
+            {receivedData?.ticketFormats?.length > 0 ? (
+              <p className="lg:text-xl text-base font-bold mt-2">
+                Price:{" "}
+                <TicketPrice ticketFormatId={receivedData.ticketFormats[0]} />
+              </p>
+            ) : (
+              <p className="lg:text-xl text-base font-bold mt-2">
+                Price: Not Available
+              </p>
+            )}
             <button
               onClick={() => {
-                setModal(true); 
+                setModal(true);
                 sectionRef.current?.scrollIntoView({
                   behavior: "smooth",
                   block: "nearest",
@@ -371,12 +446,17 @@ function FeaturedEvent() {
         </div>
       </div>
 
-      <div className="lg:p-10 p-3 flex lg:flex-row md:flex-row flex-col w-full gap-4">
-        <div className="lg:w-[90%] md:w-[90%]  ">
+      <div className="lg:flex p-3 mt-5 flex lg:flex-row md:flex-row flex-col  gap-7">
+        <div className="lg:w-[80%] md:w-[90%]  ">
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
-              by={receivedData.name}
+              by={
+                receivedData?.organizer?.name ||
+                receivedData?.organizer?.username ||
+                receivedData?.name ||
+                "-"
+              }
               category={receivedData.category}
               startDate={receivedData.startDate}
               endDate={receivedData.endDate}
@@ -384,59 +464,208 @@ function FeaturedEvent() {
           ) : (
             <EventHeading heading={"No Event data"} by={"-"} startDate={"-"} />
           )}
-          <div className="border-2 m-1 mt-4 sm:mt-6 rounded-lg ">
+          <div className="border-2 m-1 mt-4 sm:mt-6 rounded-lg">
             <div ref={sectionRef} className="p-2 pb-3">
               <p className="font-semibold text-base lg:text-3xl px-3">
                 Get Tickets Now
               </p>
               <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
               <p className="font-semibold text-lg  ml-3 mb-6">
-                {receivedData?.startDate
-                  ? new Date(receivedData.startDate).toLocaleString()
-                  : "-"}
+                {receivedData?.startDate ? updateStartDateTime : "-"}
               </p>
               <hr />
-              <div className="space-y-4">
-                <div onClick={() => {
-                  setForm(!form),
-                  handleGetTicketClick()
-                }
-              }>
-                  {receivedData ? (
+              <div className="space-y-4 ">
+                {receivedData?.ticketFormats?.length > 0 ? (
+                  <div
+                    onClick={() => {
+                      setForm(!form);
+                      handleGetTicketClick();
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
                     <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
+                      start={updateStartDateTime}
+                      eTime={updateEndDateTime}
                     />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
+                  </div>
+                ) : (
+                  <div className="p-4 text-center text-gray-500 select-none">
+                    No tickets available for this event.
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="w-full justify-start items-start gap-2 p-4">
+              {receivedData.isRepetitive === true && (
+                <div className="bg-white p-4 rounded-xl shadow border border-gray-200 overflow-x-auto">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MdOutlineEventRepeat className="text-3xl text-pink-600" />
+                    <h1 className="text-2xl font-bold text-gray-800">
+                      Repeating Events
+                    </h1>
+                  </div>
+                  <hr className="mb-4" />
+
+                  <div className="text-md font-semibold text-gray-700 mb-2">
+                    Repeats on: {receivedData.repetitiveType}
+                 
+                  {receivedData.repetitiveType === "Daily" &&
+                  receivedData.repeatExcept &&
+                    receivedData.repeatExcept.length > 0 && (
+                      <h1 className="text-2xl font-bold text-red-700">
+                        Except : <span className="text-red-700"> {receivedData.repeatExcept.join(",")} </span>
+                      </h1>
+                    )}
+ </div>
+                  {receivedData.repetitiveType === "Monthly" && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {receivedData.repeatDates
+                        .sort((a, b) => parseInt(a) - parseInt(b)) // Sort dates numerically
+                        .map((date, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                          >
+                            {date}
+                          </div>
+                        ))}
+                    </div>
                   )}
-                </div>
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
-                    <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
-                    />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
+
+                  {receivedData.repetitiveType === "Weekly" && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {receivedData.repeatDays
+                        .sort((a, b) => {
+                          // Define the order of days starting from Monday
+                          const dayOrder = {
+                            Monday: 1,
+                            Tuesday: 2,
+                            Wednesday: 3,
+                            Thursday: 4,
+                            Friday: 5,
+                            Saturday: 6,
+                            Sunday: 7,
+                          };
+                          return dayOrder[a] - dayOrder[b];
+                        })
+                        .map((day, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
+                          >
+                            {day}
+                          </div>
+                        ))}
+                    </div>
                   )}
+
+                  <div className="text-lg font-semibold">
+                    <span className="font-medium text-gray-800">Time:</span>{" "}
+                    {formatTo12Hour(receivedData.repeatStartTime)} -{" "}
+                    {formatTo12Hour(receivedData.repeatEndTime)}
+                  </div>
                 </div>
-                <div onClick={() => setForm(!form)}>
-                  {receivedData ? (
-                    <GetTicket
-                      start={new Date(receivedData.startDate).toLocaleString()}
-                      eTime={new Date(receivedData.endDate).toLocaleString()}
-                    />
-                  ) : (
-                    <GetTicket start={"NO Event"} sTime={"-"} eTime={"-"} />
-                  )}
-                </div>
+              )}
+
+              <div className="bg-white p-4 mt-6 rounded-xl shadow-lg border border-gray-200">
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
+                  Event Description
+                </h2>
+                <hr />
+                <p className="text-lg text-gray-600 mt-2">
+                  {receivedData.description || "Description not available."}
+                </p>
+              </div>
+
+              <div className="p-3 px-0 sm:px-6 mt-4 rounded-xl">
+                <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
+                  Event Tags
+                </h2>
+                {Array.isArray(receivedData?.eventTags) &&
+                receivedData.eventTags.filter((tag) => tag && tag.trim() !== "")
+                  .length > 0 ? (
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {receivedData.eventTags
+                      .filter((tag) => tag && tag.trim() !== "")
+                      .map((tag, index) => (
+                        <Button
+                          key={index}
+                          text={tag}
+                          variant={"primary"}
+                          textSize={"text-sm"}
+                          rounded={"rounded-2xl"}
+                        />
+                      ))}
+                  </div>
+                ) : (
+                  <p className="text-lg text-gray-600 mt-2">
+                    No Tags available
+                  </p>
+                )}
+              </div>
+
+              <div className="bg-white p-4 mt-4 rounded-xl shadow-lg border border-gray-200">
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
+                  Event Performers
+                </h2>
+                <hr />
+                <p className="text-lg text-gray-600 mt-2">
+                  <PerformersSection performerIds={receivedData.performers} />
+                </p>
+              </div>
+
+              <div className="p-4 px-0 sm:px-6 mt-3 rounded-xl">
+                <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
+                  Events Venue
+                </h2>
+                {VenuesData && VenuesData.length > 0 ? (
+                  <VenueData data={VenuesData} />
+                ) : (
+                  <p className="text-gray-500 lg:ml-5">Not Available.</p>
+                )}
+              </div>
+
+              <div ref={LocationRef} className="px-0 sm:px-6 mb-3 mt-4">
+                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
+                  Location
+                </h1>
+                <MapContainer className="p-4 ml-2" location={googleLocation} />
+              </div>
+
+              <div className="px-0 sm:px-6 mb-3">
+                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-4">
+                  Event Gallery
+                </h1>
+                {Array.isArray(receivedData?.media?.images) &&
+                receivedData.media.images.length > 0 ? (
+                  <EventGallery data={receivedData.media.images} />
+                ) : (
+                  <p className="text-lg text-gray-600 mt-2">
+                    No images available
+                  </p>
+                )}
+              </div>
+
+              <div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
+                {Array.isArray(receivedData.youtubeVideoUrls) &&
+                receivedData.youtubeVideoUrls.some(
+                  (url) => url && url.trim() !== ""
+                ) ? (
+                  <>
+                    <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
+                      Watch Videos
+                    </h1>
+                    <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
+                  </>
+                ) : (
+                  <p className="text-lg text-gray-600 mt-2"></p>
+                )}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="lg:w-[20%] md:w-[90%] flex flex-col gap-2">
+        <div className="lg:flex-1 md:w-full w-full flex flex-col gap-3">
           <div className="p-4 flex flex-col items-center w-full border rounded-xl">
             {/* Title */}
             <h1 className="text-xl font-semibold text-left px-6 pb-3 lg:pb-5">
@@ -465,7 +694,9 @@ function FeaturedEvent() {
 
                 {/* Organizer Name */}
                 <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                  {receivedData.organizer?.username || "Organizer Name"}
+                  {receivedData.organizer?.name ||
+                    receivedData.organizer?.username ||
+                    "Organizer Name"}
                 </p>
 
                 {/* Organizer Info */}
@@ -496,7 +727,13 @@ function FeaturedEvent() {
 
                 {/* Contact Organizer Button */}
                 <button
-                  onClick={() => setIsFormOpen(true)}
+                  onClick={() => {
+                    if (!organizerEmail) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    setIsFormOpen(true);
+                  }}
                   className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
                 >
                   <IoIosContact className="text-xl" />
@@ -507,7 +744,17 @@ function FeaturedEvent() {
           </div>
 
           <div className="border-2 rounded-xl p-2 flex flex-col items-center">
-            <p className="font-semibold">Google Location</p>
+            <button
+              onClick={() => {
+                LocationRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "nearest",
+                });
+              }}
+              className="font-semibold"
+            >
+              Google Location
+            </button>
             <p className="flex font-semibold ">
               {/* <CiLocationOn className="relative top-1 text-pink-500" />  {receivedData.venue.googleSearchLocation ? receivedData.venue.googleSearchLocation :""} */}
             </p>
@@ -515,32 +762,13 @@ function FeaturedEvent() {
           </div>
           <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2  items-center">
             <p className="text-gray-400 ml-2">Page visited By </p>
-            <p className="font-semibold ml-2">{receivedData.dailyVisits} Times</p>
+            <p className="font-semibold ml-2">
+              {receivedData.dailyVisits} Times
+            </p>
           </div>
         </div>
       </div>
       <div className="px-3 sm:px-10 py-2 ">
-        {/* <Overview />
-        <EventInfo /> */}
-        <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
-            Event Description
-          </h2>
-          <p className="text-lg text-gray-600 mt-2">
-            {receivedData.description || "Description not available."}
-          </p>
-        </div>
-        <div>
-          <h1 className="text-2xl sm:text-3xl text-gray-900 font-semibold pt-10 p-4 pl-0">
-            Location
-          </h1>
-
-          <MapContainer venueData={venueData} />
-        </div>
-        <EventGallery data={receivedData?.media?.images || []} />
-
-        {/* <Sponsors /> */}
-        <WatchTrailer />
         {/* <Speakers />
         <Dj /> */}
         {/* <RatingReview /> */}
@@ -552,50 +780,17 @@ function FeaturedEvent() {
               <OrganiserContact
                 isFormOpen={isFormOpen}
                 setIsFormOpen={setIsFormOpen}
+                OrganizerName={name}
+                OrganizerEmail={organizerEmail}
               />
             </div>
           </div>
         </div>
       )}
-      {/*show Meditation Form */}
-      {/* {form && (
-        <div className="w-[45%] ">
-          <div className="fixed w-full backdrop-blur-md bg-black/50  inset-0 flex flex-col items-center  overflow-y-scroll  z-40 py-4 ">
-            <div className="bg-white p-1 rounded-lg   shadow-lg  lg:w-[full]">
-              <div className="flex justify-end relative lg:right-0 right-16  ">
-                <button
-                  className="hover:text-[#ff2459] text-black text-lg font-bold relative lg:left-0 left-12 w-[max-content] mr-0 sm:mr-6"
-                  onClick={() => setForm(!form)}
-                >
-                  ✕
-                </button>
-              </div>
-              <MeditationForm data={receivedData} />
-            </div>
-          </div>
-        </div>
-      )} */}
+
       {login && (
         <div className="fixed w-full lg:h-[120vh] pt-[40px] p-10  h-[100vh]  inset-0 flex flex-col items-center justify-center z-70 bg-white/30 overflow-x-hidden">
           <div className="bg-white p-6 rounded-lg shadow-lg  overflow-y-scroll scrollbar-hide  lg:w-[full] w-[max-content]">
-            {/* <p className="flex items-center text-lg font-medium lg:p-0 p-4">
-              {account ? (
-                ""
-              ) : guest ? (
-                <h2
-                  className=" text-3xl  md:text-2xl font-semibold"
-                  style={{
-                    textDecoration: "underline",
-                    textDecorationColor: "#FF2459",
-                    color: "#FF2459",
-                  }}
-                >
-                Checkout as Guest
-                </h2>
-              ) : (
-                ""
-              )}
-            </p> */}
             <div className="flex justify-end lg:p-0 mt-3 relative lg:bottom-3 -bottom-8">
               <Button
                 text={"X"}
@@ -650,7 +845,7 @@ function FeaturedEvent() {
         <EnquiryForm
           setEnquiry={setEnquiry}
           onEnquirySent={handleEnquirySent}
-          name={receivedData.name}
+          name={name}
           email={organizerEmail}
           enquiry={enquiry}
         />

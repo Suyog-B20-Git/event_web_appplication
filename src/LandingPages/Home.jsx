@@ -12,36 +12,10 @@ import EventStepOrg from "../Components/Home/EventStepOrg";
 import RecentView from "../Components/Home/RecentView";
 import EventGenre from "../Components/Home/EventGenre";
 import BestVenue from "../Components/Home/BestVenue";
+import { useNavigate } from "react-router-dom";
 
 import Artist from "../Components/Home/Artist";
-import jwt_decode from "jwt-decode"; // Correct import
-const slides = [
-  {
-    id: 1,
-    bgImage:
-      "https://res.cloudinary.com/dwzmsvp7f/image/upload/f_auto,w_400/c_crop%2Cg_custom%2Fv1736567956%2Fzkhqvrmodswgmjfu7m9h.jpg",
-  },
-  {
-    id: 2,
-    bgImage:
-      "https://res.cloudinary.com/dwzmsvp7f/image/upload/f_auto,w_400/c_crop%2Cg_custom%2Fv1735232122%2Fpsm8bj8hey5ijuc0qftb.jpg",
-  },
-  {
-    id: 3,
-    bgImage:
-      "https://res.cloudinary.com/dwzmsvp7f/image/upload/f_auto,w_400/c_crop%2Cg_custom%2Fv1734849105%2Fty5iaoyi1pdsmvlxgdof.jpg",
-  },
-  {
-    id: 4,
-    bgImage:
-      "https://res.cloudinary.com/dwzmsvp7f/image/upload/f_auto,w_400/c_crop%2Cg_custom%2Fv1733994160%2Fxdvnpklinj7nglb8zlli.jpg",
-  },
-  {
-    id: 5,
-    bgImage:
-      "https://res.cloudinary.com/dwzmsvp7f/image/upload/f_auto,w_400/c_crop%2Cg_custom%2Fv1735232122%2Fpsm8bj8hey5ijuc0qftb.jpg",
-  },
-];
+import jwt_decode from "jwt-decode";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getEventData } from "../redux/actions/master/Events/index";
@@ -50,11 +24,12 @@ import { getFeaturedEventData } from "../redux/actions/master/Events/FeaturedEve
 import { getOrganizer } from "../redux/actions/master/Organizer/getOrganiser";
 import { getVenue } from "../redux/actions/master/Venue/getVenue";
 
-
 import Loading from "../Components/Loading";
 import CardData from "../Components/CardData";
+
 function Home() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -90,11 +65,38 @@ function Home() {
   const data4 = store4.venueData;
   const data5 = [...new Set(data4)];
 
-  const [currentSlide, setCurrentSlide] = useState(2);
+  // Create initial slides from your dynamic data
+  const initialSlides = [
+    ...data.slice(0, 5),
+    ...data1.slice(0, 5),
+  ]
+    .map((item, index) => ({
+      id: index + 1,
+      bgImage: item?.media?.thumbnailImage || item?.media?.posterImage || "https://images.unsplash.com/photo-1464047736614-af63643285bf?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      label: item?.name || item?.title || "Untitled",
+      location: `${item?.venue?.city || item?.venue?.country || "India"}`,
+      category: item?.category.toLowerCase(),
+      eventId: item?._id,
+      originalIndex: index, // Keep track of original position
+    }))
+    .filter((slide) => slide.bgImage);
+
+  // State for infinite queue management
+  const [slides, setSlides] = useState(initialSlides);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
+
+  // Update slides when data changes
+  useEffect(() => {
+    if (initialSlides.length > 0) {
+      setSlides(initialSlides);
+      setCurrentSlide(0);
+    }
+  }, [data.length, data1.length]);
 
   const totalSlides = slides.length;
   const [isAuth, setIsAuth] = useState("");
+  
   useEffect(() => {
     setIsAuth(localStorage.getItem("isLogin"));
   }, []);
@@ -102,22 +104,40 @@ function Home() {
   const authToken = localStorage.getItem("authToken");
   const name = authToken ? jwt_decode(authToken)?.name : "Guest";
 
+  // Modified auto-slide logic with infinite queue
   useEffect(() => {
     const interval = setInterval(() => {
+      setSlides(prevSlides => {
+        const currentSlideData = prevSlides[currentSlide];
+        
+        // Check if this slide (by eventId) already exists after the current position
+        const existsLater = prevSlides.slice(currentSlide + 1).some(slide => 
+          slide.eventId === currentSlideData.eventId
+        );
+        
+        // Only add to queue if it doesn't exist later
+        if (!existsLater) {
+          return [...prevSlides, { ...currentSlideData, id: Date.now() + Math.random() }];
+        }
+        
+        return prevSlides;
+      });
+      
       setCurrentSlide((prev) => prev + 1);
     }, 2000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentSlide, slides.length]);
 
+  // Handle seamless looping when reaching the end
   useEffect(() => {
-    if (currentSlide === totalSlides) {
+    if (currentSlide >= slides.length) {
       setTimeout(() => {
         setIsTransitioning(false);
-        setCurrentSlide(2);
+        setCurrentSlide(0);
       }, 100);
     }
-  }, [currentSlide, totalSlides]);
+  }, [currentSlide, slides.length]);
 
   useEffect(() => {
     if (!isTransitioning) {
@@ -132,78 +152,52 @@ function Home() {
   if (loading) {
     return <Loading />;
   }
+
   return (
-    <div className="flex  flex-col lg:gap-0 gap-0.5  overflow-x-hidden lg:pt-0 md:pt-0 pt-[87px]">
-      <div className=" bg-gray-900 flex items-center justify-center">
+    <div className="flex flex-col lg:gap-0 gap-0 overflow-x-hidden lg:pt-0 md:pt-0 pt-[65px]">
+      <div className="bg-gray-900 flex items-center justify-center">
         <div className="w-full h-[250px] flex items-center justify-center bg-gray-900 p-1">
-          <div className="relative w-[350px] h-full flex items-center">
+          <div className="relative w-[400px] sm:w-[250px] h-full flex items-center lg:ml-[-8%]">
             <div
               className="flex transition-transform duration-100 ease-in"
               style={{
-                transform: `translateX(-${currentSlide * 100}%)`,
-                width: `${totalSlides * 100}%`,
-                transition: isTransitioning ? "transform 0.2s linear" : "none",
+                transform: `translateX(-${currentSlide * 400}px)`, 
+                transition: isTransitioning ? "transform 0.5s linear" : "none",
               }}
             >
               {slides.map((slide, index) => (
                 <div
-                  key={`slide-${index}`}
-                  className="w-full h-full flex-shrink-0 flex items-center justify-center px-2"
+                  key={`slide-${slide.id}-${index}`}
+                  className=" h-full flex items-center justify-center px-3 w-[400px]  lg:px-0 "
+                  
                 >
                   <div
-                    className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg transition-opacity duration-700 ${
-                      index === currentSlide ? "opacity-100" : "opacity-40"
+                    onClick={() => {
+                      navigate(`/events/${slide.category}/${slide.eventId}`, {
+                        state: slide.eventId
+                      });
+                    }}
+                    className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg transition-all duration-5000 cursor-pointer border border-pink-200 sm:mx-4 sm:ml-[10px] ${
+                      index === currentSlide ? "border-2 border-pink-300 opacity-100 scale-115" : "opacity-50 scale-80"
                     }`}
                   >
+                    <h4 className="absolute top-4 left-4 text-white text-lg font-bold bg-[#ff4259] rounded-full px-2 z-10">
+                     <span className="justify-center items-center">  {slide.category} </span>
+                    </h4>
                     <img
                       src={slide.bgImage}
                       alt={`Slide ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-[200px] object-cover"
                     />
+                    <p className="absolute bottom-0 w-full text-white text-lg font-bold bg-black bg-opacity-50 px-2 py-1">
+                      {slide.label.toUpperCase()}
+                      <br />
+                      <span className="text-sm text-gray-300 ml-2">
+                        {slide.location}
+                      </span>
+                    </p>
                   </div>
                 </div>
-              ))}
-              {slides.map((slide, index) => (
-                <div
-                  key={`duplicate-${index}`}
-                  className="w-full h-[90%] flex-shrink-0 flex items-center justify-start"
-                  style={{
-                    backgroundImage: `url(${slide.bgImage})`,
-                    backgroundRepeat: "repeat-X",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    borderRadius: "25px",
-                    marginRight: "20px",
-                    opacity: "0.7",
-                    transition: "opacity 0.2s linear",
-                    justifyContent: "start",
-                    justifyItems: "start",
-                  }}
-                >
-                  <img
-                    src={slide.bgImage}
-                    alt={`Duplicate Slide ${index + 1}`}
-                    className="w-full h-full object-cover rounded-lg shadow-lg "
-                    style={{ borderRadius: "35px" }}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Navigation Dots - Centered below the active slide */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-              {slides.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    currentSlide === index ? "bg-white" : "bg-gray-400"
-                  }`}
-                  onClick={() => {
-                    setIsTransitioning(true);
-                    setCurrentSlide(index);
-                  }}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
               ))}
             </div>
           </div>
@@ -216,29 +210,28 @@ function Home() {
       {data.length > 0 ? (
         <Cards data={data} heading={"TRENDING EVENTS"} />
       ) : (
-        setLoading(true)
+        <p></p>
       )}
       {data1.length > 0 ? (
         <Cards data={data1} heading={"UPCOMING EVENTS"} />
       ) : (
-        setLoading(true)
+       <p></p>
       )}
       {data2.length > 0 ? (
         <Cards data={data2} heading={"FEATURED EVENTS"} />
       ) : (
-        setLoading(true)
+       <p></p>
       )}
-      {data3.length > 0 ? (
-        <CardData data={data3} heading={"ORGANIZERS"}/>
+      {data3.length >= 0 ? (
+        <CardData data={data3} heading={"ORGANIZERS"} navigation={"/organizers"}/>
       ) : (
-        setLoading(true)
+       <p></p>
       )}
       {data5.length > 0 ? (
-        <CardData data={data5} heading={"VENUES"}/>
+        <CardData data={data5} heading={"VENUES"} navigation={"/venues"}/>
       ) : (
-        setLoading(true)
+       <p></p>
       )} 
-     
     </div>
   );
 }

@@ -61,7 +61,6 @@ export const getFeaturedEventData = (setLoader) => {
 
     try {
       const response = await axios.get(Event.featuredEvent);
-      console.log("response", response);
       dispatch({
         type: "GET_FEATURED_EVENT",
         eventData: response.data.updatedEvents, // Ensure the API actually returns this structure

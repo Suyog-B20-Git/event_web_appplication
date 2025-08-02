@@ -38,7 +38,6 @@ function Footer() {
         `${baseUrl}/api/newsletter/subscribe`,
         { email }
       );
-      console.log("Subscription response:", apiResponse.data);
       if (apiResponse.data.statusCode === 200) {
         setShowOtpPopup(true);
         setIsLoading(false);
@@ -74,7 +73,6 @@ function Footer() {
       const response = await axios.get(`${baseUrl}/api/newsletter/verify`, {
         params: { email, otp },
       });
-      console.log("OTP verification response:", response.data);
       if (response.data.statusCode === 200) {
         toast.success(response.data.message || "Subscription verified!");
         setShowOtpPopup(false);
@@ -215,7 +213,7 @@ function Footer() {
 
               </li>
               <li>
-                <Link to="/services" className="hover:text-[#ff2459]">
+                <Link to="/events" className="hover:text-[#ff2459]">
                   Events
                 </Link>
               </li>

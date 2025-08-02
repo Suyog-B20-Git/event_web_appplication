@@ -67,7 +67,6 @@ export const getEventById = (id, setLoader) => {
         response = await axios.get(`${Event.createEvent}/${id}`);
       }
 
-      console.log("response", response);
       dispatch({
         type: "GET_EVENT_BY_ID",
         eventData: response.data, // Ensure the API actually returns this structure
@@ -113,11 +112,9 @@ export const getEventByCategoryAndSlug = (category, slug, setLoading) => async (
 export const getEventBySlug = (slug, setLoading) => async (dispatch) => {
   try {
     setLoading(true);
-    console.log("Fetching event by slug:", slug);
     
     // Update to use your correct API endpoint
     const response = await axios.get(`/api/event/slug/${slug}`);
-    console.log(`Making API request to: /api/event/slug/${slug}`)
     dispatch({
       type: 'GET_EVENT_BY_ID_SUCCESS', 
       payload: response.data,

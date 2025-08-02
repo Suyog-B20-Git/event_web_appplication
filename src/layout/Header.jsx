@@ -29,6 +29,7 @@ import { CiSearch } from "react-icons/ci";
 import { CgProfile } from "react-icons/cg";
 import gsap from "gsap";
 import axios from "axios";
+import { toast } from "react-toastify";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const Header = () => {
@@ -41,13 +42,52 @@ const Header = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [searchDropdown, setSearchDropdown] = useState(false);
-  const [query, setQuery] = useState("All-locations");
+  const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const wrapperRef = useRef(null);
   const [isSelectedFromDropdown, setIsSelectedFromDropdown] = useState(false);
   const [searchValue, setSearchValue] = useState("All");
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const itemRefs = useRef([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+useEffect(() => {
+  switch (selectedCategory) {
+    case "Business":
+      setSelectedCategory("business & seminars");
+      break;
+    case "Festivals":
+      setSelectedCategory("festivals");
+      break;
+    case "Live Music":
+      setSelectedCategory("live music");
+      break;
+    case "Nightlife and club":
+      setSelectedCategory("nightlife & club");
+      break;
+    case "Professional":
+      setSelectedCategory("professional");
+      break;
+    case "Social":
+      setSelectedCategory("social");
+      break;
+    case "Sport & Leisure":
+      setSelectedCategory("sport & leisure");
+      break;
+    case "Theatre & Arts":
+      setSelectedCategory("theatre & arts");
+      break;
+    case "all":
+      setSelectedCategory("all");
+      break;
+   
+    default:      
+      localStorage.removeItem("selectedCategory");
+      break;
+  }
+  localStorage.setItem("selectedCategory", selectedCategory);
+}, [selectedCategory]);
+
 
   useEffect(() => {
     if (highlightedIndex >= 0 && itemRefs.current[highlightedIndex]) {
@@ -87,7 +127,7 @@ const Header = () => {
         { name: "Business", path: "/events/business" },
         { name: "Festivals", path: "/events/festivals" },
         { name: "Live Music", path: "/events/live-music" },
-        { name: "Nightlife and club", path: "/events/nightlife-and-club" },
+        { name: "Nightlife & Club", path: "/events/nightlife-and-club" },
         { name: "Professional", path: "/events/professional" },
         { name: "Social", path: "/events/social" },
         { name: "Sport & Leisure", path: "/events/sport-and-leisure" },
@@ -146,7 +186,7 @@ const Header = () => {
         { name: "Outdoor", path: "/venues/outdoor" },
       ],
     },
-    { name: "Contact Us", path: "/contact-us", icon: <MdContactPhone /> },
+    { name: "Contact Us", path: "/contact", icon: <MdContactPhone /> },
   ];
 
   const [isLog, setIsLog] = useState(false);
@@ -190,7 +230,6 @@ const Header = () => {
     const token = localStorage.getItem("authToken");
 
     if (!token) {
-      console.error("No auth token found");
       return;
     }
 
@@ -205,10 +244,9 @@ const Header = () => {
         setIsLog(false);
         navigate("/profile");
       } else {
-        console.error("Failed to fetch user:", response.data.message);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      toast.error(error.data.message || error.message);
     }
   }
 
@@ -362,11 +400,11 @@ const Header = () => {
   };
 
   return (
-    <div className="bg-gray-900 text-white p-1 fixed w-full z-30">
+    <div className="bg-gray-900 text-white p-1 fixed w-full z-40">
       <div>
-        <div className="lg:w-[100%] w-[100%]  lg:h-[140px] inset-0 z-60 items-center justify-center bg-opacity-50 relative">
+        <div className="lg:w-[100%] w-[100%]  lg:h-[140px] inset-0 z-60 items-center justify-center  relative">
           {/* first div */}
-          <div className="flex w-[100%] md:h-[80px] h-[80px]  lg:h-[80px]  inset-0 z-60 items-center justify-center bg-opacity-50 relative ">
+          <div className="flex w-[100%] md:h-[80px] h-[60px]  lg:h-[80px]  inset-0 z-60 items-center justify-center bg-opacity-50 relative ">
             {/* <div className="flex justify-between  items-center  lg:w-[60%] w-[100%] "> */}
             <div className="flex items-center justify-between w-full lg:h-[100px] px-4">
               {/* <div
@@ -378,7 +416,7 @@ const Header = () => {
 
                 <img
                   src="/assets/staticAssets/logo.png"
-                  className="hidden md:block lg:w-[80%] md:w-[100%] w-auto"
+                  className="hidden md:block lg:w-[50%] md:w-[60%] w-auto"
                   // className="lg:block md:block hidden md:w-[17vw] relative  [17vw] lg:w-[80%]  "
                   alt="logo"
                   onClick={() => navigate("/home")}
@@ -411,7 +449,7 @@ const Header = () => {
                 />
               )}
 
-              <div class="relative flex items-center justify-end md:w-[65%] w-full p-2 mx-auto">
+              <div className="relative flex items-center justify-end md:w-[65%] w-full p-2 mx-auto">
                 {/* <div className="relative z-20 md:w-[65%] w-[96%] "> */}
                 {/* search bar */}
 
@@ -588,7 +626,12 @@ const Header = () => {
                 >
                   <button
                     className="font-medium lg:text-lg md:text-sm lg:mr-5 flex lg:gap-1 md:gap-0.5 relative z-60"
-                    onClick={() => navigate(item.path)}
+                    onClick={() => {
+                      navigate(item.path)
+                    if(item.path === "/events"){
+                      setSelectedCategory("all");
+                    }
+                    }}
                   >
                     <p className="relative top-1.5">{item.icon}</p> {item.name}
                   </button>
@@ -602,7 +645,7 @@ const Header = () => {
                         <button
                           key={menuIndex}
                           onClick={() => {
-                            setRefresh((prev) => prev + 1);
+                            setSelectedCategory(menuItem.name);
                             navigate(menuItem.path, {
                               state: menuItem.name,
                             });
@@ -640,6 +683,25 @@ const Header = () => {
                           className="bg-white rounded text-gray-900 absolute w-40  h-max mt-1 "
                         >
                           {role == "organizer" && (
+                            <button
+                              onClick={() => {
+                                setIsLog(false);
+                                navigate("/dashboard");
+                              }}
+                              className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                            >
+                              <MdDashboard className=" hover:text-white relative top-1" />
+                              Dashboard
+                            </button>
+                          )}
+                          <button
+                           onClick={handleProfileClick}
+                            className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                          >
+                            <CgProfile className=" hover:text-white relative top-1" />
+                            Profile
+                          </button>
+                          {role == "superadmin" && (
                             <button
                               onClick={() => {
                                 setIsLog(false);

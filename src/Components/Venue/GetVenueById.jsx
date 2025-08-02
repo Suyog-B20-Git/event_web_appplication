@@ -26,7 +26,7 @@ import {
   CiFacebook,
 } from "react-icons/ci";
 import { BsCalendar2DateFill } from "react-icons/bs";
-
+import { FaPhoneAlt } from "react-icons/fa";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import { CalendarCheck } from "lucide-react";
 import MapContainer from "../Organizer/Map";
@@ -40,16 +40,23 @@ import InstagramProfile from "../SocialMedia/Instagram";
 import FacebookEmbeded from "../SocialMedia/Facebook";
 import VenueStats from "../SocialMedia/VenueStat";
 import { getFavouriteVenueData } from "../../redux/actions/master/Venue/getFavouriteVenue";
-import { toast } from "react-toastify";
+import { toast, Zoom } from "react-toastify";
 import { postFavouriteVenue } from "../../redux/actions/master/Venue/postFavouriteVenueReducer";
-import {getUpcomingEventData, getUpcomingEventsDataForProfile} from "../../redux/actions/master/Events/UpcomingEvent";
+import { deleteFavouriteVenue } from "../../redux/actions/master/Venue/deleteFavouriteVenue";
+import {
+  getUpcomingEventData,
+  getUpcomingEventsDataForProfile,
+} from "../../redux/actions/master/Events/UpcomingEvent";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
+import FollowButton from "../FollowButton.jsx";
+import CommonCalendar from "../CommonCalendar.jsx";
+import YouTubeWall from "../SocialMedia/YouTubeWall.jsx";
 
 function GetVenueById() {
   const { venueId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
   const [category, setCategory] = useState("");
-
+  const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
   const [about, setAbout] = useState(true);
@@ -61,82 +68,114 @@ function GetVenueById() {
   const [stat, setStat] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  // const venueId = location.state;
-  console.log(venueId);
+  const [enquirySent, setEnquirySent] = useState(false);
+  const [ownershipEnquirySent, setOwnershipEnquirySent] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [showNumber, setShowNumber] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const HrefUrl = window.location.href;
+  const fallbackImage =
+    "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fG9yZ2FuaXplcnxlbnwwfHx8fDE2OTY5NzQ1NTg&ixlib=rb-4.0.3&q=80&w=1080";
 
   // get Upcoming Event Data
   useEffect(() => {
     dispatch(
-        getUpcomingEventsDataForProfile({
-          venue: venueId,
-          setLoader: setLoading,
-          page: 1,
-          limit: 10,
-          timezoneOffset: new Date().getTimezoneOffset(),
-          sortBy: "startDate",
-          sortOrder: "asc",
-        })
+      getUpcomingEventsDataForProfile({
+        venue: venueId,
+        setLoader: setLoading,
+        page: 1,
+        limit: 10,
+        timezoneOffset: new Date().getTimezoneOffset(),
+        sortBy: "startDate",
+        sortOrder: "asc",
+      })
     );
   }, [dispatch, venueId]);
 
-      // const upcomingEventData=useSelector((state)=>state.getupcomingEventReducer)  || {
-      //   upcomingEventData: [],
-      // }
+  const upcomingEventData =
+    useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
 
-      const upcomingEventData = useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
+  if (!upcomingEventData) {
+    return <div>Loading...</div>;
+  }
 
-      if (!upcomingEventData) {
-        return <div>Loading...</div>;
-      }
-
-      const data1 = upcomingEventData;
-      console.log("Upcoming Event Data:", data1);
+  const data1 = upcomingEventData;
 
   const store = useSelector((state) => state.getVenueByIdReducer) || {
     venueData: [],
   };
 
   const data = store.venueData;
-  console.log(data, "VenueData....");
-  const currentUrl = encodeURIComponent(window.location.href); // Get the current page URL
+  const coverImage = data?.coverImage;
+  const formatteddUrl = coverImage
+    ? coverImage.replace(/\\/g, "/")
+      .replace(/\/{2,}/g, "/")
+      .replace("http:/", "http://")
+    : fallbackImage;
+  const email = data?.email;
+  const name = data?.name;
+  const targetId = data?._id;
+  const modelName = "Venue";
+  const currentUrl = encodeURIComponent(window.location.href);
 
   const store1 = useSelector((state) => state.getFavouriteVenueReducer) || {
     favouriteVenueData: [],
   };
+
   const favouriteVenue = store1.favouriteVenueData;
-  const isFavourite = (id) => {
-    
-    return favouriteVenue.some((fav) => fav._id === id);
+
+  const isFavourite = favouriteVenue.some((fav) => fav._id === data._id);
+  const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+
+  const togglePhoneVisibility = () => {
+    setShowNumber((prev) => !prev);
   };
+  const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
+
   useEffect(() => {
-    dispatch(getFavouriteVenueData(setLoading)); // Fetch favorites on mount
+    setEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    if (sent === "true") {
+      setEnquirySent(true);
+    }
+  }, [name]);
+
+  const handleEnquirySent = () => {
+    setEnquirySent(true);
+    setEnquiry(false);
+  };
+
+  useEffect(() => {
+    setOwnershipEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${targetId}`);
+    if (sent === "true") {
+      setOwnershipEnquirySent(true);
+    }
+  }, [targetId]);
+
+  const handleOwnershipEnquirySent = () => {
+    setOwnershipEnquirySent(true);
+    setOwnership(true);
+  };
+
+  useEffect(() => {
+    dispatch(getFavouriteVenueData(setLoading));
   }, [dispatch]);
 
-  const checkFavourite = (id) => {
-    if (favouriteVenue.some((fav) => fav._id === id)) {
-      toast.warning("Already added to favorites!", {
-        position: "top-right",
-        autoClose: 2000, // Closes after 2 seconds
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    }
-  };
+  useEffect(() => {
+    setLocalIsFavorite(isFavourite);
+  }, [isFavourite]);
 
-  const handleFavourite = (id) => {
-    if (isFavourite(id)) {
-      return;
+  const toggleFavorite = (id) => {
+    if (localIsFavorite) {
+      setLocalIsFavorite(false);
+      dispatch(deleteFavouriteVenue(id));
     } else {
+      setLocalIsFavorite(true);
       dispatch(postFavouriteVenue(id));
-      console.log(id, "fav id");
-      dispatch(getFavouriteVenueData(setLoading));
     }
+    dispatch(getFavouriteVenueData(setLoading));
   };
 
   useEffect(() => {
@@ -154,9 +193,6 @@ function GetVenueById() {
     window.open(shareUrls[platform], "_blank");
   };
 
-  // useEffect(() => {
-  //   dispatch(getVenueById(venueId, setLoading));
-  // }, [dispatch]);
   if (loading) {
     return <Loading />;
   }
@@ -165,9 +201,9 @@ function GetVenueById() {
     <div className="">
       <div className="flex lg:flex-row flex-col gap-2">
         <div className="lg:pt-6 md:pt-0 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
-        <div className="flex flex-row justify-between items-center font-medium flex-wrap">
-        <div className="flex flex-row gap-2 p-3 flex-wrap">
-        <p
+          <div className="flex flex-row justify-between items-center font-medium flex-wrap">
+            <div className="flex flex-row gap-2 p-3 flex-wrap">
+              <p
                 className="cursor-pointer hover:text-[#ff2459]"
                 onClick={() => navigate("/home")}
               >
@@ -198,10 +234,12 @@ function GetVenueById() {
             </p>
           </div>
           <div
-            className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
+            className="text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8 lg:p-2 min-h-[200px]"
             style={{
-              backgroundImage:
-                "radial-gradient( circle farthest-corner at 5.6% 54.5%,  rgba(47,71,79,1) 0%, rgba(159,188,198,1) 83.6% )",
+              backgroundImage: `url(${formatteddUrl})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }}
           >
             <div className="flex flex-col gap-4 lg:px-0 px-2 ">
@@ -220,7 +258,7 @@ function GetVenueById() {
                 </button>
               </div>
               <p className="text-sm lg:block hidden">
-              {data.visits} , {data.dailyVisits} visits today
+                {data.visits} , {data.dailyVisits} visits today
               </p>
             </div>
             <div className="flex gap-2 lg:px-0 px-2 lg:p-0  p-2">
@@ -234,469 +272,575 @@ function GetVenueById() {
                 {data.city},{data.state},{data.country}
               </p>
             </div>
+            <div
+              className="flex gap-2 lg:px-0 px-2 lg:p-0 p-2 py-0 cursor-pointer"
+              onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+            >
+              <p>
+                <FaPhoneAlt
+                  className="text-red-500 relative top-1"
+                  style={{ textShadow: "1px 1px 1px black" }}
+                />
+              </p>
+              <p>
+                {!hasPhoneNumber
+                  ? "Not available"
+                  : showNumber
+                  ? data.phoneNumber
+                  : "View Contact"}
+              </p>
+            </div>
+
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
-                  className="flex gap-1 hover:text-[#ff2459] "
-                  onClick={() => setOwnership(!ownership)}
-                >
-                  <IoFlagSharp className="relative top-1 lg:text-base text-xs" />{" "}
-                  Claim Ownership
-                </p>
-                <p
-                  className="flex gap-1 bg-white text-gray-900"
-                  onClick={() => setEnquiry(!enquiry)}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
+                    ownershipEnquirySent
+                      ? "text-[#ff2459] cursor-not-allowed"
+                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                  }`}
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    setOwnership(!ownership);
+                  }}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
-                  Send Enquiry
+                  {ownershipEnquirySent
+                    ? "Claim Enquiry Sent"
+                    : "Claim Ownership"}
+                </p>
+                <p
+                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${
+                    enquirySent
+                      ? "text-[#ff2459] cursor-not-allowed"
+                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                  }`}
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    if (!email) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    if (!enquirySent) {
+                      setEnquiry(!enquiry);
+                    }
+                  }}
+                >
+                  <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
+                  {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                 </p>
                 <button
                   onClick={() => {
-                    handleFavourite(data._id);
-                    checkFavourite(data._id);
+                    if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    toggleFavorite(data._id);
                   }}
-                  className={`flex gap-1 bg-white  ${
-                    isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
+                  className={`flex gap-1 bg-white hover:text-[#ff2459] ${
+                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                   }`}
                 >
-                  {console.log(isFavourite(data._id),"- Status")}
                   <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
-                  {isFavourite(data._id)
-                    ? "Added to Favourites"
-                    : "Add Favourite"}
+                  {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
                 </button>
               </div>
             </div>
           </div>
-           {isPopUp && (
-          <div className="lg:hidden block">
-            <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-52 md:pt-42 md:pr-10 overflow-y-scroll z-40">
-              <div className="bg-white rounded-lg shadow-lg lg:w-full relative p-4">
-                
-                {/* Close Button */}
-                <button
-                  className="absolute top-0 right-2 text-gray-900 hover:text-red-500 text-3xl"
-                  onClick={() => setIsPopUp(false)}
-                >
-                  &times;
-                </button>
-        
-                <div className="flex flex-col gap-0 px-0 h-[170px] w-[300px] border rounded mt-6">
+          {isPopUp && (
+            <div className="lg:hidden block">
+              <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-52 md:pt-42 md:pr-10 overflow-y-scroll z-40">
+                <div className="bg-white rounded-lg shadow-lg lg:w-full relative p-4">
+                  {/* Close Button */}
                   <button
-                    className="flex gap-3 p-4 px-4 hover:text-white hover:bg-[#ff2459]"
-                    onClick={() => {
-                      setOwnership(!ownership);
-                      setIsPopUp(false);
-                    }}
+                    className="absolute top-0 right-2 text-gray-900 hover:text-red-500 text-3xl"
+                    onClick={() => setIsPopUp(false)}
                   >
-                    <IoFlagSharp className="relative top-1 lg:text-base" />
-                    Claim Ownership
+                    &times;
                   </button>
-                  <button
-                    className="flex gap-3 p-4 px-4 bg-white text-gray-900 hover:text-white hover:bg-[#ff2459]"
-                    onClick={() => {
-                      setEnquiry(!enquiry);
-                      setIsPopUp(false);
-                    }}
-                  >
-                    <CiCircleInfo className="relative top-1 lg:text-base" />
-                    Send Enquiry
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleFavourite(data._id);
-                      checkFavourite(data._id);
-                      setIsPopUp(false);
-                    }}
-                    className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                      isFavourite(data._id) ? "text-[#ff2459]" : "text-gray-900"
-                    }`}
-                  >
-                    <FaHeart className="relative top-2 lg:text-base text-sm" />
-                    {isFavourite(data._id) ? "Added to Favourites" : "Add Favourite"}
-                  </button>
+
+                  <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-6">
+                    <button
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${
+                        ownershipEnquirySent
+                          ? "text-[#ff2459] cursor-not-allowed font-bold"
+                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                      }`}
+                      onClick={() => {
+                        if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        setOwnership(!ownership);
+                      }}
+                    >
+                      <IoFlagSharp className="relative top-1 lg:text-base" />
+                      {ownershipEnquirySent
+                        ? "Claim Enquiry Sent"
+                        : "Claim Ownership"}
+                    </button>
+                    <button
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${
+                        enquirySent
+                          ? "text-[#ff2459] cursor-not-allowed font-bold"
+                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                      }`}
+                      onClick={() => {
+                        if (!isLogin) {
+                          toast.error("Please login first to send enquiry!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        if (!email) {
+                          toast.error("Email not available for this service.");
+                          return;
+                        }
+                        if (!enquirySent) {
+                          setEnquiry(!enquiry);
+                          setIsPopUp(false);
+                        }
+                      }}
+                    >
+                      <CiCircleInfo className="relative top-1 lg:text-base" />
+                      {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (!isLogin) {
+                          toast.error("Please login first to Add favorite!", {
+                            transition: Zoom,
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                          });
+                          return;
+                        }
+                        toggleFavorite(data._id);
+                        setIsPopUp(false);
+                      }}
+                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
+                        localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                      }`}
+                    >
+                      <FaHeart className="relative top-2 lg:text-base text-sm" />
+                      {localIsFavorite
+                        ? "Added to Favourites"
+                        : "Add Favourite"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
           <div className=" flex lg:flex-row flex-col py-3 ">
-          <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
-          <div className="w-[100%] md:w-[80%] lg:w-[100%] max-w-[250px] md:max-w-[400px] lg:max-w-[180px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
-            {data.profileImage ? (
-              <img
-                src={`http://old.eventsnode.com/uploads/organizer_images/${data.profileImage}`}
-                className="w-full h-auto object-contain"
-                alt="Profile"
-              />
-            ) : (
-              <span className="text-gray-500">No Image Available</span>
-            )}
-          </div>
+            <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
+              <div className="w-full border border-gray-200 shadow max-w-[250px] md:max-w-[400px] lg:max-w-[180px] h-auto aspect-[5/5] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
+                {data.profileImage ? (
+                  <img
+                    src={data.profileImage
+                      .replace(/\\/g, "/")
+                      .replace(/\/{2,}/g, "/")
+                      .replace("http:/", "http://")}
+                    className="w-full h-full object-cover"
+                    alt="Profile"
+                  />
+                ) : (
+                  <img
+                    src="/assets/staticAssets/user-icon.png"
+                    className="w-full h-full object-cover"
+                    alt="User"
+                  />
+                )}
+              </div>
 
               <div className=" lg:flex gap-2 hidden justify-center">
-                <button className="px-2 lg:flex hidden gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                  <CiCircleCheck className="relative top-1 lg:text-lg" />
-                  Follow
-                </button>
-
-                <div className="flex   gap-3 ">
-                  <button className="text-red-500 text-2xl">
-                    <a
-                      className="flex"
-                      href={data.instagramUrl ? data.instagramUrl : ""}
-                    >
-                      {data.instagramUrl ? (
-                        <FaInstagram className=" text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-
-                     <button className="text-red-500 text-2xl">
-                     <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                     {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
-                    </a>
-                       </button>
-                           <button
-                             onClick={() => handleFavourite(data._id)}
-                             disabled={isFavourite(data._id)}
-                             className={` text-2xl ${
-                              isFavourite(data._id) ? "text-red-500 cursor-not-allowed" : "text-gray-400"
-                          }`}
-                        >
-                       <FaHeart />
-                  </button>
-
-                  <button className="text-red-500 text-2xl">
-                    <a href={data.twitterUrl ? data.twitterUrl : ""}>
-                      {data.twitterUrl ? (
-                        <FaSquareXTwitter className="text-red-500" />
-                      ) : (
-                        ""
-                      )}
-                    </a>
-                  </button>
-                </div>
+                <FollowButton targetId={targetId} modelName={modelName} />
               </div>
             </div>
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
-              <button className="px-2 lg:hidden mb-2 flex w-max mt-2 gap-1 bg-gray-200 rounded-full p-1 lg:text-base text-sm ">
-                <CiCircleCheck className="relative top-1 lg:text-lg" />
-                Follow
-              </button>
-              <div className="flex   gap-5 ">
-                <button className="text-red-500 text-2xl">
-                  <a
-                    className="flex"
-                    href={data.instagramUrl ? data.instagramUrl : ""}
-                  >
-                    {data.instagramUrl ? (
-                      <FaInstagram className=" text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
-               <button className="text-red-500 text-2xl">
-                <a href={data.facebookUrl ? data.facebookUrl : ""}>
-                  {data.facebookUrl ? <CiFacebook className="text-red-500" /> : ""}
-                </a>
-               </button>
-             <button
-                 onClick={() => handleFavourite(data._id)}
-                 disabled={isFavourite(data._id)}
-                  className={` text-2xl ${
-                 isFavourite(data._id) ? "text-red-500 cursor-not-allowed" : "text-gray-400"
-                }`}
-                >
-               <FaHeart />
-              </button>
-                                             
-                <button className="text-red-500 text-2xl">
-                  <a href={data.twitterUrl ? data.twitterUrl : ""}>
-                    {data.twitterUrl ? (
-                      <FaSquareXTwitter className="text-red-500" />
-                    ) : (
-                      ""
-                    )}
-                  </a>
-                </button>
-              </div>
+              <FollowButton
+                targetId={targetId}
+                modelName={modelName}
+                variant="mobile"
+              />
             </div>
-            <div className="lg:w-[70%]  h-[500px] overflow-scroll  scrollbar-hide  rounded-lg">
-            <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
-            <button
-                  className={`px-2 ${
-                    about ? "border-b-2 border-b-red-600" : ""
-                  }`}
-                  onClick={() => {
-                    setAbout(true);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  ABOUT
-                </button>
-                <button
-                  className={`${
-                    upcoming ? "border-b-2 border-b-red-600" : ""
-                  } p-2`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(true);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  UPCOMING EVENT
-                </button>
-                <button
-                  className={`${
-                    facebook ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(true);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  FACEBOOK
-                </button>
-                <button
-                  className={`${
-                    twitter ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(true);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  TWITTER
-                </button>
-                <button
-                  className={`${
-                    instagram ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(true);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                >
-                  INSTAGRAM
-                </button>
-                <button
-                  className={`${
-                    youtube ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(true);
-                    setStat(false);
-                  }}
-                >
-                  YOUTUBE
-                </button>
-                <button
-                  className={`${
-                    stat ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setTwitter(false);
-                    setInstagram(false);
-                    setYoutube(false);
-                    setStat(true);
-                  }}
-                >
-                  STAT
-                </button>
+
+            {hoveredTab && (
+              <div className="fixed bottom-1 left-2 text-xs text-white bg-gray-900 px-2 py-1 rounded shadow">
+                {`${HrefUrl}#${hoveredTab}`}
               </div>
-              
-              <div className="lg:px-4 border bg-white  rounded-lg h-full overflow-auto" >
-              {about && data ? (
-                <div className="py-5 space-y-6 bg-white shadow-md rounded-lg p-6">
-                 <h2 className="text-2xl font-semibold text-gray-800">About the Venue</h2>
-                  {/* Venue Description */}
-                  <p className="py-1 text-gray-600">
-                    {data?.description || "No description available"}
-                  </p>
+            )}
 
-                  {/* Venue Details */}
-                  <div className="border-b pb-4">
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-6">
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Venue Type</h3>
-                      <p className="text-gray-600">{data?.type || "Not specified"}</p>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Website</h3>
-                      {data?.url ? (
-                        <a href={data.url} target="_blank" className="text-blue-500 hover:underline">
-                          {data.url}
-                        </a>
-                      ) : "Not available"}
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Amenities</h3>
-                      <p className="text-gray-600">{data?.amenities || "Not specified"}</p>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Seated Guests</h3>
-                      <p className="text-gray-600">{data?.noOfSeatedGuest || "Not provided"}</p>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Standing Guests</h3>
-                      <p className="text-gray-600">{data?.noOfStandingGuest || "Not provided"}</p>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Neighbourhood</h3>
-                      <p className="text-gray-600">{data?.neighbourhoods || "Not mentioned"}</p>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Pricing</h3>
-                      <p className="text-gray-600">{data?.pricing || "Not specified"}</p>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Food & Beverages</h3>
-                      <p className="text-gray-600">{data?.foodAndBeveragesDetails || "Not mentioned"}</p>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Quoted Form</h3>
-                      <p className="text-gray-600">{data?.quotedForm || "Not specified"}</p>
-                    </div>
-
-                    <div className="bg-gray-100 p-4 rounded-lg shadow">
-                      <h3 className="text-lg font-medium text-gray-700">Availability</h3>
-                      <p className="text-gray-600">{data?.availability || "Not mentioned"}</p>
-                    </div>
-                  </div>
+            <div className="lg:w-[70%]  h-[600px] overflow-scroll  scrollbar-hide  rounded-lg">
+              <div className="sticky top-0 z-10">
+                <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
+                  <button
+                    className={`px-2 ${
+                      about ? "border-b-2 border-b-red-600" : ""
+                    }`}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    ABOUT
+                  </button>
+                  <button
+                    className={`${
+                      upcoming ? "border-b-2 border-b-red-600" : ""
+                    } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    UPCOMING EVENT
+                  </button>
+                  <button
+                    className={`${
+                      facebook ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    FACEBOOK
+                  </button>
+                  <button
+                    className={`${
+                      twitter ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(true);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${
+                      instagram ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
+                  <button
+                    className={`${
+                      youtube ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${
+                      stat ? "border-b-2 border-b-red-600" : ""
+                    } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stat")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    STAT
+                  </button>
                 </div>
-              ) : null}
-
-                {/* <p className="font-medium text-lg text-center">
-                  {upcomimg ? "" : <div className="  "></div>}
-                </p> */}
-               {upcoming && (
-          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
-        {upcomingEventData.length > 0 ? (
-          upcomingEventData.map((event, index) => (
-            <div
-              key={index}
-              className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
-            >
-              {/* 🔹 Image Container*/}
-              <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
-                <img
-                  src={event.media?.thumbnailImage || "https://via.placeholder.com/250x160?text=No+Image"}
-                  alt={event.name}
-                  className="w-full h-full object-cover"
-                />
               </div>
 
-                {/* 🔹 Event Details  */}
-                <div className="p-2 flex flex-col flex-grow gap-y-2">
-                    {/* Event Name */}
-                    <div className="text-center min-h-[40px] max-h-[40px] flex items-center justify-center">
-                      <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 break-words line-clamp-2">
-                        {event.name}
-                      </h3>
-                    </div>
+              <div className="lg:px-4 border bg-white  rounded-lg h-full overflow-auto">
+                {about && data ? (
+                  <div className="py-5 space-y-6 bg-white shadow-md rounded-lg p-6">
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                      About the Venue
+                    </h2>
+                    {/* Venue Description */}
+                    <p className="py-1 text-gray-600">
+                      {data?.description || "No description available"}
+                    </p>
 
-                    {/* Category */}
-                    <div className="text-center min-h-[20px] flex items-center justify-center">
-                      <p className="text-xs sm:text-sm text-gray-500 break-words whitespace-normal">
-                        {event.category || "Music Festival"}
-                      </p>
-                    </div>
+                    {/* Venue Details */}
+                    <div className="border-b pb-4"></div>
 
-                    {/* Date */}
-                    <div className="text-center min-h-[20px] flex items-center justify-center">
-                      <p className="text-xs sm:text-sm text-gray-400 break-words whitespace-normal">
-                        {new Date(event.startDate).toDateString()} - {new Date(event.endDate).toDateString()}
-                      </p>
-                    </div>
-
-                    {/* Venue */}
-                    <div className="text-center min-h-[25px] max-h-[40px] flex items-center justify-center flex-nowrap">
-                      <p className="text-xs sm:text-sm text-gray-600 font-medium break-words whitespace-normal">
-                        📍 {event.venue?.city || ""} {event.venue?.state || ""} {event.venue?.country || "Not Available"}
-                      </p>
-                    </div>
-                  </div>
-
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-gray-500 col-span-full p-4 text-xs sm:text-sm md:text-base">
-                          No Upcoming Events Found
+                    <div className="grid grid-cols-1 gap-6">
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Venue Type
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.type || "Not specified"}
                         </p>
-                      )}
-                    </div>
-                  )}
+                      </div>
 
-                  {facebook ? (
-                    <div className="w-full flex justify-center py-6">
-                      <div className="w-full max-w-[1200px]">
-                        <FacebookEmbeded appId={849920522233544} fbId={data.facebookUrl} />
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Website
+                        </h3>
+                        {data?.website ? (
+                          <a
+                            href={data.website}
+                            target="_blank"
+                            className="text-blue-500 hover:underline"
+                          >
+                            {data.website}
+                          </a>
+                        ) : (
+                          "Not available"
+                        )}
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Amenities
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.amenities || "Not specified"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Seated Guests
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.noOfSeatedGuest || "Not provided"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Standing Guests
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.noOfStandingGuest || "Not provided"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Neighbourhood
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.neighbourhoods || "Not mentioned"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Pricing
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.pricing || "Not specified"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Food & Beverages
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.foodAndBeveragesDetails || "Not mentioned"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Quoted Form
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.quotedForm || "Not specified"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Availability
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.availability || "Not mentioned"}
+                        </p>
                       </div>
                     </div>
-                  ) : null}
+                  </div>
+                ) : null}
 
-                  {instagram ? (
-                    <div className="font-medium text-lg text-center">
-                      <InstagramProfile instagramUrl={data.instagramUrl} />
+                {upcoming && (
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
+                    {upcomingEventData.length > 0 ? (
+                      upcomingEventData.map((event, index) => (
+                        <div
+                          key={index}
+                          className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
+                          onClick={() =>
+                            navigate(
+                              `/events/${event.category.toLowerCase()}/${
+                                event._id
+                              }`,
+                              { state: event._id }
+                            )
+                          }
+                        >
+                          {/* 🔹 Image Container*/}
+                          <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
+                            <img
+                              src={event.media?.thumbnailImage ||
+                                "https://via.placeholder.com/250x160?text=No+Image"
+                              }
+                              alt={event.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                          {/* 🔹 Event Details  */}
+                          <div className="p-2 flex flex-col flex-grow gap-y-2">
+                            {/* Event Name */}
+                            <div className="text-center min-h-[40px] max-h-[40px] flex items-center justify-center">
+                              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 break-words line-clamp-2">
+                                {event.name}
+                              </h3>
+                            </div>
+
+                            {/* Category */}
+                            <div className="text-center min-h-[20px] flex items-center justify-center">
+                              <p className="text-xs sm:text-sm text-gray-500 break-words whitespace-normal">
+                                {event.category || "Music Festival"}
+                              </p>
+                            </div>
+
+                            {/* Date */}
+                            <div className="text-center min-h-[20px] flex items-center justify-center">
+                              <p className="text-xs sm:text-sm text-gray-400 break-words whitespace-normal">
+                                {new Date(event.startDate).toDateString()} -{" "}
+                                {new Date(event.endDate).toDateString()}
+                              </p>
+                            </div>
+
+                            {/* Venue */}
+                            <div className="text-center min-h-[25px] max-h-[40px] flex items-center justify-center flex-nowrap">
+                              <p className="text-xs sm:text-sm text-gray-600 font-medium break-words whitespace-normal">
+                                📍 {event.venue?.city || ""}{" "}
+                                {event.venue?.state || ""}{" "}
+                                {event.venue?.country || "Not Available"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center text-gray-500 col-span-full p-4 text-xs sm:text-sm md:text-base">
+                        No Upcoming Events Found
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {facebook ? (
+                  <div className="w-full flex justify-center py-6">
+                    <div className="w-full max-w-[1200px]">
+                      <FacebookEmbeded
+                        appId={849920522233544}
+                        fbId={data.facebookUrl}
+                      />
                     </div>
-                  ) : null}
+                  </div>
+                ) : null}
+
+                {instagram ? (
+                  <div className="font-medium text-lg text-center">
+                    <InstagramProfile instagramUrl={data.instagramUrl} />
+                  </div>
+                ) : null}
 
                 <p className="font-medium text-lg text-center p-4">
                   {twitter ? <TwitterEmbed twitterUrl={data.twitterUrl} /> : ""}
                 </p>
-                
+
                 <p className="font-medium text-lg text-center ">
-                  {youtube ? (
-                      <YouTubeProfile youtubeEmbedUrl={data.youtubeEmbedUrl} />
-                  ) : (
-                    <div></div>
-                  )}
+                  {youtube &&
+                    (data.youtubeId ? (
+                      <YouTubeWall channelId={data.youtubeId} />
+                    ) : (
+                      <div>Not Available</div>
+                    ))}
                 </p>
                 <p className="font-medium text-lg text-center ">
                   {stat && <VenueStats data={data} />}
@@ -704,12 +848,25 @@ function GetVenueById() {
               </div>
             </div>
           </div>
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-1">
+            <h1 className="font-semibold text-xl p-2 ml-2 pb-0 ">Location</h1>
+            <MapContainer className="mb-4" data={data} />
+          </div>
+
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-0 overflow-y-scroll scrollbar-hide">
+            <FacebookComments
+              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+              numPosts={10}
+              width="auto"
+            />
+            <hr />
+          </div>
 
           <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
             <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
               <div className="rounded p-2 shadow ">
                 <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
-                  Venue Category
+                  Venue Category check
                 </h1>
                 <section className="flex lg:flex-col flex-row overflow-x-scroll gap-2 pt-3 ">
                   <div className="flex gap-2 ">
@@ -735,186 +892,122 @@ function GetVenueById() {
                 </section>
               </div>
               <div className="rounded border ">
-                <h1 className="text-lg font-medium text-gray-900 p-3 border-b flex justify-between">
-                  Find Events
-                  <div className="flex  gap-2 text-xl">
-                    <button
+                <h1 className="text-lg font-medium text-gray-900 p-4 border-b flex justify-start ">
+                  Share
+                  <div className="flex ml-4 gap-4 mt-1 text-2xl ">
+                    <FaSquareFacebook
                       onClick={() => handleShare("facebook")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaSquareFacebook className="text-red-500 relative " />
-                    </button>
-                    <button
+                      className=" text-blue-600  relative "
+                    />
+                    <FaWhatsapp
                       onClick={() => handleShare("whatsapp")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaWhatsapp className="bg-red-500 text-white p-0.5" />
-                    </button>
-                    <button
+                      className=" text-green-600  relative "
+                    />
+                    <FaFacebookMessenger
                       onClick={() => handleShare("messenger")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaFacebookMessenger className="text-red-500" />
-                    </button>
-                    <button
+                      className=" text-blue-800  relative "
+                    />
+                    <FaSquareXTwitter
                       onClick={() => handleShare("twitter")}
-                      className="flex gap-1 shadow border p-1 rounded"
-                    >
-                      <FaSquareXTwitter className="text-red-500" />
-                    </button>
+                      className=" text-white-600 relative"
+                    />
                   </div>
                 </h1>
-                <div className="flex justify-center items-center ">
-                  <div className="flex  gap-5 p-3 overflow-x-scroll ">
-                    <div className="bg-blue-600 rounded h-28 min-w-28 text-white font-medium flex flex-col gap-2 items-start p-4 ">
-                      <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                      <p>Today 0</p>
-                    </div>
-                    <div className="bg-orange-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                      <p>Tommorrow 0</p>
-                    </div>
-                    <div className="bg-blue-400 rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                      <p className="text-sm p-1">These Weekend 0</p>
-                    </div>
-                    <div className="bg-green-600  rounded h-28 min-w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                      <CalendarCheck className="text-2xl text-white font-medium" />
-                      <p>Choose Date</p>
-                    </div>
-                  </div>
-                </div>
+                <hr />
+                <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
+                  Find Events
+                </h2>
+                <CommonCalendar />
               </div>
             </div>
           </div>
-
-
         </div>
 
-        <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2">
-          <div className="flex flex-col gap-2 px-2 shadow-md p-4">
-            <div className="grid grid-cols-3 gap-2 text-xl">
-              <button
-                onClick={() => handleShare("facebook")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareFacebook className="text-red-500 relative " />
-              </button>
-              <button
-                onClick={() => handleShare("whatsapp")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaWhatsapp className="bg-red-500 text-white p-0.5" />
-                </button>
-              <button
-                onClick={() => handleShare("messenger")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaFacebookMessenger className="text-red-500" />
-              </button>
-              <button
-                onClick={() => handleShare("twitter")}
-                className="flex gap-1 shadow border p-1 rounded"
-              >
-                <span className="text-sm border-r px-2">SHARE </span>
-                <FaSquareXTwitter className="text-red-500" />
-              </button>
+        <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+            <div className=" p-3 shadow gap-2 ">
+              <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+                Share
+              </h1>
+              <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
+                <FaSquareFacebook
+                  onClick={() => handleShare("facebook")}
+                  className="text-blue-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#1877f2] transition duration-300"
+                />
+
+                <FaWhatsapp
+                  onClick={() => handleShare("whatsapp")}
+                  className="text-green-600 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#25D366] transition duration-300"
+                />
+
+                <FaFacebookMessenger
+                  onClick={() => handleShare("messenger")}
+                  className="text-blue-700 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#0084ff] transition duration-300"
+                />
+
+                <FaSquareXTwitter
+                  onClick={() => handleShare("twitter")}
+                  className="text-black-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#000000] transition duration-300"
+                />
+              </div>
             </div>
           </div>
-          <div className="rounded p-2 shadow ">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b ">
-              Venue Category
-            </h1>
-            <section className="flex flex-col gap-2 pt-3  justify-center items-center">
-              <div className="flex gap-2 ">
-                <div
-                  onClick={() => {
-                    setCategory("indoor");
-                    navigate("/venues/indoor", { state: category });
-                  }}
-                  className="bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Indoor
+
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+            <div className=" p-3  shadow gap-2 ">
+              <h1 className="text-lg font-medium text-gray-900 p-1 border-b ">
+                Services Category
+              </h1>
+              <section className="flex flex-wrap gap-3 pt-3 justify-start items-start">
+                <div className="flex gap-2 ">
+                  <div
+                    onClick={() => {
+                      setCategory("indoor");
+                      navigate("/venues/indoor", { state: category });
+                    }}
+                    className="bg-gray-200 hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Indoor
+                  </div>
+                  <div
+                    onClick={() => {
+                      setCategory("outdoor");
+                      navigate("/venues/outdoor", { state: category });
+                    }}
+                    className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
+                  >
+                    Outdoor
+                  </div>
                 </div>
-                <div
-                  onClick={() => {
-                    setCategory("outdoor");
-                    navigate("/venues/outdoor", { state: category });
-                  }}
-                  className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
-                >
-                  Outdoor
-                </div>
-              </div>
-            </section>
+              </section>
+            </div>
           </div>
-          <div className="rounded border">
-            <h1 className="text-lg font-medium text-gray-900 p-3 border-b">
+
+          <div className="border shadow w-[95%] ml-3">
+            <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
               Find Events
             </h1>
-            <div className="flex justify-center items-center ">
-              <div className="grid grid-cols-2 gap-4 p-3 ">
-                <div className="bg-blue-600 rounded h-28 w-28 text-white font-medium flex flex-col gap-2 items-start p-4">
-                  <BsCalendar2DateFill className=" text-white  text-2xl font-medium" />
-
-                  <p>Today 0</p>
-                </div>
-                <div className="bg-orange-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <BsCalendar2DateFill className=" text-white text-2xl font-medium" />
-
-                  <p>Tommorrow 0</p>
-                </div>
-                <div className="bg-blue-400 rounded h-28 w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <HiOutlineCalendarDateRange className="text-2xl text-white font-medium" />
-
-                  <p className="text-sm p-1">These Weekend 0</p>
-                </div>
-                <div className="bg-green-600 h-28 rounded w-28 font-medium flex flex-col gap-2 items-start p-4 text-white">
-                  <CalendarCheck className="text-2xl text-white font-medium" />
-                  <p>Choose Date</p>
-                </div>
-              </div>
-            </div>
+            <CommonCalendar />
           </div>
         </div>
       </div>
-
-      <h1 className="lg:text-2xl font-medium p-2 pb-1 px-6 text-lg pt-4">
-            Venue Location
-          </h1>
-          <div className="px-6 w-full flex justify-center">
-            <MapContainer data={data} />
-          </div>
-
-          {/* <div className="flex justify-between ">
-            <div className="text-sm">Visited 4133 Times , 9 Times in Day</div>
-          </div> */}
-          <div className="pl-12 pr-16 pb-2 w-full flex justify-center">
-          <FacebookComments
-              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
-              // dataHref={currentUrl}
-              numPosts={10}
-              width="1600"
-            />
-          </div>
 
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}
           name={data.name}
           ownership={ownership}
+          targetId={targetId}
+          modelName={modelName}
+          onOwnershipEnquirySent={handleOwnershipEnquirySent}
         />
       )}
       {enquiry && (
         <EnquiryForm
           setEnquiry={setEnquiry}
-          name={data.name}
+          onEnquirySent={handleEnquirySent}
+          name={name}
+          email={email}
           enquiry={enquiry}
         />
       )}

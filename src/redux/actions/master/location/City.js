@@ -61,7 +61,6 @@ export const getCity = (country, state, city) => {
       const response = await axios.get(
         `${Location.city}?country=${country}&state=${state}&search=${city}`
       );
-      console.log("response", response);
       dispatch({
         type: "GET_CITY",
         cities: response.data, // Ensure the API actually returns this structure

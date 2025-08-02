@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { GiCancel } from "react-icons/gi";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -14,9 +14,21 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
   } = useForm();
 
   const [loading, setLoading] = useState(false);
+  const modalRef = useRef(null); 
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setEnquiry(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setEnquiry]);
 
   const onSubmit = async (data) => {
-    console.log("Form Data:", data);
     const payload = {
       to: email,
       eventName: name,
@@ -26,11 +38,9 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
       subject: data.subject,
       message: data.message,
     };
-    console.log("Send Enquiry Payload:", payload);
     setLoading(true);
     try {
       const response = await axios.post(`${baseUrl}/api/enquiries`, payload);
-      console.log("Enquiry sent successfully:", response.data);
       toast.success("Enquiry sent successfully!");
       localStorage.setItem(`enquiry_sent_${name}`, "true");
       if (onEnquirySent) {
@@ -84,6 +94,7 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
       type: "text",
       required: "subject is required",
       placehoder: "Enquiry Email",
+      defaultValue: "Enquiry Email",
       pattern: "",
       message: "",
     },
@@ -93,7 +104,10 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
     <div>
       <div className="">
         <div className="fixed w-full inset-0 flex flex-col items-center   justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
-          <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full] relative">
+          <div
+            ref={modalRef}
+            className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full] relative"
+          >
             <button
               className="absolute top-0 right-3 text-gray-700 hover:text-red-500 text-3xl"
               onClick={() => setEnquiry(!enquiry)}
@@ -118,7 +132,7 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
                       className="flex flex-col p-1  gap-1 text-gray-700"
                     >
                       <label
-                        className="capitalize p-1 pb-0.5
+                        className="capitalize p-1 pb-0.5 font-semibold
                        "
                       >
                         {item.label}
@@ -126,6 +140,7 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
                       <input
                         className="bg-gray-100 rounded-md p-2 px-2"
                         placeholder={item.placehoder}
+                        defaultValue={item.defaultValue}
                         type={item.type}
                         {...register(item.name, {
                           required: item.required,
@@ -145,7 +160,7 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
                   );
                 })}
 
-                <label className="capitalize text-gray-700 p-1 px-2 ">
+                <label className="capitalize text-gray-700 p-2 px-2 font-semibold">
                   Message
                 </label>
                 <textarea

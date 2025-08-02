@@ -58,6 +58,7 @@ import { Event } from "../../../Urls";
 
 export const getEventByFilter = (
   setLoader,
+  filterValue,
   category,
   priceType,
   searchEvent,
@@ -71,6 +72,7 @@ export const getEventByFilter = (
   let api = `${Event.getEventByFilter}?page=${pageNo}&limit=9`;
 
   const filters = {
+    category: filterValue,
     category: category,
     price: priceType,
     name: searchEvent,
@@ -94,9 +96,7 @@ export const getEventByFilter = (
     try {
       const queryString = params.toString(); // Convert filters to query string
       const response = await axios.get(`${api}&${queryString}`);
-      
-      console.log("API Response:", response.data);
-      
+            
       dispatch({
         type: "GET_EVENT_BY_FILTER",
         filterEventData: response.data?.data.events || [],

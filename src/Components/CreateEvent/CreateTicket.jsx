@@ -45,30 +45,13 @@ function CreateTicket() {
   const [getTicket, setGetTicket] = useState(false);
 
   const header = ["Title", "Price", "Qty", "Order", "Actions"];
-  const isSoldOut = watch("isSoldOut"); // Watch state
-  const isDonation = watch("isDonation"); // Watch state
-  const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+  const isSoldOut = watch("isSoldOut"); 
+  const isDonation = watch("isDonation"); 
+  const today = new Date().toISOString().split("T")[0]; 
 
-  // const ticketData = {
-  //   title,
-  //   price,
-  //   order,
-  //   description,
-  //   totalTicketQuantity,
-  //   limitPerCustomer,
-  //   saleStartDate,
-  //   saleEndDate,
-  //   salePrice,
-  //   isDonation,
-  //   isSoldOut,
-  //   eventId,
-  // };
-  // console.log("ticketData to be posted:", ticketData);
-
-  const startDate = watch("saleStartDate"); // Watch start date to validate end date
-  const endDate = watch("saleEndDate"); // Watch start date to validate end date
+  const startDate = watch("saleStartDate"); 
+  const endDate = watch("saleEndDate");
   useEffect(() => {
-    console.log("✅ eventId from useParams:", eventId);
   }, [eventId]);
   
   const onSubmit = (data) => {
@@ -106,7 +89,6 @@ function CreateTicket() {
       eventId,
     };
   
-    console.log("Sending ticket data:", ticketData);
     dispatch(postTicketData(ticketData));
   
     if (editIndex !== null) {
@@ -127,7 +109,6 @@ function CreateTicket() {
   };
   
   useEffect(() => {
-    console.log(" eventId from useParams:", eventId);
   }, [eventId]);
    
   useEffect(() => {

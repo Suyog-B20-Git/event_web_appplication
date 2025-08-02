@@ -40,7 +40,7 @@ function Register() {
     try {
       if (password === confirmPassword) {
         const response = await axios.post(
-          `${baseUrl}/api/auth/setup`,
+          `${baseUrl}/auth/setup`,
           {
             username,
             email,
@@ -53,7 +53,6 @@ function Register() {
             },
           }
         );
-        console.log("REGISTER response", response);
   
         if (response.data.statusCode === 201) {
           toast.success("Registration successful!", {

@@ -34,7 +34,6 @@ function Profile() {
 
   useEffect(() => {
     let profileData = JSON.parse(localStorage.getItem("userProfile"));
-    console.log("profile dtaa in profile page", profileData);
    
     if (profileData) {
       setFormData({

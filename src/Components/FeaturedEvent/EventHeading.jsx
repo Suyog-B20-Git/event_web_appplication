@@ -9,14 +9,14 @@ import { CiTwitter } from "react-icons/ci";
 const convertUTCToLocal = (utcString) => {
   if (!utcString) return "Invalid Date";
   const date = new Date(utcString);
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString("en-IN", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
-    timeZone:"UTC",
+    timeZone:"Asia/Kolkata",
   });
 };
 
@@ -27,7 +27,7 @@ function EventHeading({ heading, startDate, endDate, by, category }) {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
     twitter: `https://twitter.com/intent/tweet?url=${currentUrl}`,
     messenger: `https://www.messenger.com/t/?link=${currentUrl}`,
-    instagram: `https://www.instagram.com/`, // No direct sharing, just opens Instagram
+    instagram: `https://www.instagram.com/`,
   };
   const handleShare = (platform) => {
     window.open(shareUrls[platform], "_blank");

@@ -58,7 +58,6 @@ export const getCountry = (country) => {
   return async (dispatch) => {
     try {
       const response = await axios.get(`${Location.country}?search=${country}`);
-      console.log("response", response);
       dispatch({
         type: "GET_COUNTRY",
         countries: response.data, // Ensure the API actually returns this structure

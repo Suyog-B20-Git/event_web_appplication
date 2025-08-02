@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { Zoom } from "react-toastify";
 import { Event } from "../../../Urls";
 export const deleteFavouriteEvent = (eventId) => {
-  console.log("Delete eventId.", eventId);
   const isLogin = JSON.parse(localStorage.getItem("isLogin")); // Convert string back to boolean
   return () => {
     axiosInstance
@@ -16,13 +15,13 @@ export const deleteFavouriteEvent = (eventId) => {
       })
       .then((response) => {
         if (!response.data.status) {
-          toast.success(response.data.message, {
+          toast.error(response.data.message, {
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
           });
         } else {
-          toast.success(response.data.message, {
+          toast.error(response.data.message, {
             transition: Zoom,
             hideProgressBar: true,
             autoClose: 2000,
@@ -39,7 +38,6 @@ export const deleteFavouriteEvent = (eventId) => {
               autoClose: 2000,
             });
           }
-          console.log(response);
         }
       })
 

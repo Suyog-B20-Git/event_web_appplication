@@ -56,16 +56,14 @@ import axios from "axios";
 import { Performer } from "../../../Urls";
 export const getPerformerById= (id,setLoader) => {
   return async (dispatch) => {
-    setLoader(true); // Start loading
-
+ if (setLoader) setLoader(true);
     try {
       const response = await axios.get(
         `${Performer.postPerformer}/${id}`
       );
-      console.log("response", response);
       dispatch({
         type: "GET_PERFORMER_BY_ID",
-        performerData: response.data, // Ensure the API actually returns this structure
+        performerData: response.data,
       });
     } catch (error) {
       console.error(
@@ -77,7 +75,7 @@ export const getPerformerById= (id,setLoader) => {
         performerData: [],
       });
     } finally {
-      setLoader(false); // Stop loading
+ if (setLoader) setLoader(false);
     }
   };
 };

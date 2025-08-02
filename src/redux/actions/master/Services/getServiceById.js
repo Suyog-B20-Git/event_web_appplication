@@ -62,7 +62,6 @@ export const getServiceById= (id,setLoader) => {
       const response = await axios.get(
         `${Service.postService}/${id}`
       );
-      console.log("response", response);
       dispatch({
         type: "GET_SERVICE_BY_ID",
         serviceData: response.data, // Ensure the API actually returns this structure

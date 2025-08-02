@@ -17,16 +17,16 @@ import OwnerShipForm from "./Components/Organizer/OwnerShipForm";
 import { ContextProvider } from "./Components/Util/ContextProvider";
 import FeaturedEvent from "./LandingPages/FeaturedEvent";
 import MyBookings from "./Components/MyBookings";
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-
-
+import ScrollToTop from "./layout/ScrollToTop";
 
 
 function App() {
   return (
     // <MyBookings/>
     <Provider store={store}>
+      <ScrollToTop />
       <ContextProvider>
+        <ScrollToTop />
         <Routess />
       </ContextProvider>
 
