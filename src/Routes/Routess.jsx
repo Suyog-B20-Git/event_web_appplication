@@ -56,6 +56,8 @@ import AdminSettings from "../Components/AdminPanel/AdminSettings";
 import AdminPromocodes from "../Components/AdminPanel/AdminPromocodes";
 import AdminComplimentaryBookings from "../Components/AdminPanel/AdminComplimentaryBookings";
 import AdminCurrencies from "../Components/AdminPanel/AdminCurrencies";
+import BlogList from "../Components/Blog/BlogList";
+import BlogPostDetail from "../Components/Blog/BlogPostDetail";
 
 
 
@@ -193,6 +195,10 @@ function Routess() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/events" element={<Viewall />} />
+
+          {/* Blog Routes */}
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/blog/:slug" element={<BlogPostDetail />} />
         </Route>
       </Routes>
     </div>

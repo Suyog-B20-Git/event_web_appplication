@@ -1,16 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { FaRegFileAlt, FaPlus, FaTrash, FaBars, FaEye, FaPencilAlt } from 'react-icons/fa';
+import { getPages } from '../../redux/actions/master/pages/getPages';
+import { deletePage as deletePageAction, bulkDeletePages as bulkDeletePagesAction } from '../../redux/actions/master/pages/deletePage';
 
-const AdminPages = ({ 
-  pages, 
-  setPages, 
+const AdminPages = ({
   onNavigateToCreatePage,
   onNavigateToViewPage,
   onNavigateToEditPage,
   onNavigateToOrder
 }) => {
+  const dispatch = useDispatch();
+  const { pages, loading, error } = useSelector(state => state.getPages || { pages: [] });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPages, setSelectedPages] = useState([]);
+  const [hasFetched, setHasFetched] = useState(false);
+
+  // Fetch pages when component mounts
+  useEffect(() => {
+    if (!hasFetched && !loading) {
+      setHasFetched(true);
+      dispatch(getPages());
+    }
+  }, [dispatch, hasFetched, loading]);
 
 
   const sortedAndFilteredPages = useMemo(() =>
@@ -23,7 +35,7 @@ const AdminPages = ({
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      setSelectedPages(sortedAndFilteredPages.map(p => p.id));
+      setSelectedPages(sortedAndFilteredPages.map(p => p._id));
     } else {
       setSelectedPages([]);
     }
@@ -37,24 +49,34 @@ const AdminPages = ({
     }
   };
 
-  const handleBulkDelete = () => {
+  const handleBulkDelete = async () => {
     if (selectedPages.length === 0) {
       alert('Please select pages to delete');
       return;
     }
-    
+
     if (window.confirm(`Are you sure you want to delete ${selectedPages.length} page(s)?`)) {
-      setPages(prev => prev.filter(page => !selectedPages.includes(page.id)));
-      setSelectedPages([]);
-      alert('Selected pages deleted successfully!');
+      try {
+        const result = await dispatch(bulkDeletePagesAction(selectedPages));
+        if (result.success) {
+          setSelectedPages([]);
+        }
+      } catch (error) {
+        console.error('Bulk delete error:', error);
+      }
     }
   };
 
-  const handleDeleteSingle = (pageId) => {
+  const handleDeleteSingle = async (pageId) => {
     if (window.confirm('Are you sure you want to delete this page?')) {
-      setPages(prev => prev.filter(page => page.id !== pageId));
-      setSelectedPages(prev => prev.filter(id => id !== pageId));
-      alert('Page deleted successfully!');
+      try {
+        const result = await dispatch(deletePageAction(pageId));
+        if (result.success) {
+          setSelectedPages(prev => prev.filter(id => id !== pageId));
+        }
+      } catch (error) {
+        console.error('Delete error:', error);
+      }
     }
   };
 
@@ -78,6 +100,24 @@ const AdminPages = ({
     }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg text-gray-600">Loading pages...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Header Section */}
@@ -85,21 +125,21 @@ const AdminPages = ({
         <div className="flex items-center space-x-4">
           <FaRegFileAlt className="text-2xl text-gray-600" />
           <h1 className="text-2xl font-bold text-gray-800">Pages</h1>
-          
+
           <div className="flex items-center space-x-2">
-            <button 
+            <button
               onClick={() => onNavigateToCreatePage()}
               className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
             >
               <FaPlus className="mr-2" /> Add New
             </button>
-            <button 
+            <button
               onClick={handleBulkDelete}
               className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
             >
               <FaTrash className="mr-2" /> Bulk Delete
             </button>
-            <button 
+            <button
               onClick={onNavigateToOrder}
               className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
             >
@@ -123,8 +163,8 @@ const AdminPages = ({
           </div>
           <div className="flex items-center space-x-2 text-sm">
             <span>Search:</span>
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -138,7 +178,7 @@ const AdminPages = ({
             <thead>
               <tr className="bg-gray-100">
                 <th className="p-3 text-left w-10">
-                  <input 
+                  <input
                     type="checkbox"
                     onChange={handleSelectAll}
                     checked={selectedPages.length > 0 && selectedPages.length === sortedAndFilteredPages.length}
@@ -154,44 +194,43 @@ const AdminPages = ({
             <tbody>
               {sortedAndFilteredPages.length > 0 ? (
                 sortedAndFilteredPages.map(page => (
-                  <tr key={page.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150">
+                  <tr key={page._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150">
                     <td className="p-3">
-                      <input 
+                      <input
                         type="checkbox"
-                        checked={selectedPages.includes(page.id)}
-                        onChange={(e) => handleSelectOne(e, page.id)}
+                        checked={selectedPages.includes(page._id)}
+                        onChange={(e) => handleSelectOne(e, page._id)}
                         className="rounded"
                       />
                     </td>
                     <td className="p-3 text-sm font-medium text-gray-900">{page.title}</td>
                     <td className="p-3 text-sm">
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        page.status === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800' 
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${page.isActive
+                        ? 'bg-green-100 text-green-800'
                         : 'bg-red-100 text-red-800'
-                      }`}>
-                        {page.status}
+                        }`}>
+                        {page.isActive ? 'ACTIVE' : 'INACTIVE'}
                       </span>
                     </td>
-                    <td className="p-3 text-sm text-gray-600">{page.createdAt}</td>
+                    <td className="p-3 text-sm text-gray-600">{new Date(page.createdAt).toLocaleDateString()}</td>
                     <td className="p-3 text-sm">
                       <div className="flex justify-end space-x-2">
-                        <button 
+                        <button
                           onClick={() => handleViewPage(page)}
                           className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-full text-sm transition-colors duration-200 flex items-center"
                           title="View Page Details"
                         >
                           <FaEye className="mr-1" /> View
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleEditPage(page)}
                           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-full text-sm transition-colors duration-200 flex items-center"
                           title="Edit Page"
                         >
                           <FaPencilAlt className="mr-1" /> Edit
                         </button>
-                        <button 
-                          onClick={() => handleDeleteSingle(page.id)}
+                        <button
+                          onClick={() => handleDeleteSingle(page._id)}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full text-sm transition-colors duration-200 flex items-center"
                           title="Delete Page"
                         >
@@ -211,7 +250,7 @@ const AdminPages = ({
             </tbody>
           </table>
         </div>
-        
+
         <div className="flex justify-between items-center mt-4">
           <div className="text-sm text-gray-600">
             Showing 1 to {sortedAndFilteredPages.length} of {sortedAndFilteredPages.length} entries

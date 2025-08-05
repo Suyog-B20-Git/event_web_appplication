@@ -21,7 +21,7 @@ import Events from './AdminEvents';
 import Categories from './AdminCategories';
 import Dashboard from './AdminDashboard';
 import AdminPages from './AdminPages';
-import OrderPages from './OrderPages'; 
+import OrderPages from './OrderPages';
 import AdminBlogPost from './AdminBlogPost';
 import AdminCreatePage from './AdminCreatePage';
 import AdminViewPage from './AdminViewPage';
@@ -29,7 +29,7 @@ import AdminAddPost from './AdminAddPost';
 import AdminTags from './AdminTags';
 import AdminBookings from './AdminBookings';
 import AdminHeaderMenu from './AdminHeaderMenu';
-import AdminFooterMenu from './AdminFooterMenu'; 
+import AdminFooterMenu from './AdminFooterMenu';
 import AdminCommissions from './AdminCommissions';
 import AdminTaxes from './AdminTaxes';
 import AdminUsers from './AdminUsers';
@@ -69,17 +69,6 @@ const AdminPanelOverview = () => {
     const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const [selectedPage, setSelectedPage] = useState(null);
     const [selectedPost, setSelectedPost] = useState(null);
-    
-    const [pages, setPages] = useState([
-        { id: 1, title: "About Us", content: "Learn more about our company...", status: "ACTIVE", createdAt: "2024-01-15", updatedAt: "2024-01-15", author: "John Doe", slug: "about-us", metaDescription: "About our company...", order: 0 },
-        { id: 2, title: "Contact Information", content: "Get in touch with us...", status: "ACTIVE", createdAt: "2024-01-16", updatedAt: "2024-01-20", author: "Jane Smith", slug: "contact", metaDescription: "Contact us for inquiries", order: 1 },
-        { id: 3, title: "Privacy Policy", content: "Our commitment to protecting your privacy...", status: "ACTIVE", createdAt: "2024-01-17", updatedAt: "2024-02-01", author: "Legal Team", slug: "privacy-policy", metaDescription: "Privacy policy...", order: 2 },
-        { id: 4, title: "Terms of Service", content: "Terms and conditions for using our services...", status: "INACTIVE", createdAt: "2024-01-18", updatedAt: "2024-01-18", author: "Legal Team", slug: "terms-of-service", metaDescription: "Terms and conditions...", order: 3 },
-        { id: 5, title: "FAQ Page", content: "Frequently asked questions...", status: "ACTIVE", createdAt: "2024-01-19", updatedAt: "2024-02-10", author: "Support Team", slug: "faq", metaDescription: "Frequently asked questions", order: 4 },
-        { id: 6, title: "Our Services", content: "Comprehensive overview of all services...", status: "ACTIVE", createdAt: "2024-01-20", updatedAt: "2024-02-15", author: "Marketing Team", slug: "services", metaDescription: "Our range of services", order: 5 },
-        { id: 7, title: "Career Opportunities", content: "Join our team and build your career...", status: "ACTIVE", createdAt: "2024-01-21", updatedAt: "2024-02-20", author: "HR Team", slug: "careers", metaDescription: "Career opportunities", order: 6 },
-        { id: 8, title: "Company Blog", content: "Latest news, updates, and insights...", status: "INACTIVE", createdAt: "2024-01-22", updatedAt: "2024-01-22", author: "Content Team", slug: "blog", metaDescription: "Company blog", order: 7 }
-    ]);
 
     const profileDropdownRef = useRef(null);
     const userEmail = "superadmin@eventsnode.com";
@@ -106,7 +95,7 @@ const AdminPanelOverview = () => {
         { name: "Users", icon: <ImUsers />, id: "adminUsers" },
         { name: "Contacts", icon: <RiContactsBook3Line />, id: "adminContacts" },
         { name: "Media", icon: <MdOutlinePermMedia />, id: "adminMedia" },
-        { name: "Banners", icon: <GiVerticalBanner />, id: "adminBanners" }, 
+        { name: "Banners", icon: <GiVerticalBanner />, id: "adminBanners" },
         { name: "Pages", icon: <FaRegFileAlt />, id: "adminPages" },
         { name: "Blog Posts", icon: <MdOutlineDocumentScanner />, id: "adminBlogPosts" },
         { name: "HeaderMenu", icon: <PiListBulletsFill />, id: "adminHeaderMenu" },
@@ -116,7 +105,7 @@ const AdminPanelOverview = () => {
         { name: "PromoCodes", icon: <TbTagStarred />, id: "adminPromoCodes" },
         { name: "Complimentary Bookings", icon: <BsPuzzleFill />, id: "adminComplimentaryBookings" },
         { name: "Currencies", icon: <FaRupeeSign />, id: "adminCurrencies" },
-        { name: "Scan Tickets", icon: <MdOutlineDocumentScanner />, id: "adminScanTickets" }, 
+        { name: "Scan Tickets", icon: <MdOutlineDocumentScanner />, id: "adminScanTickets" },
     ];
 
     const activeSectionName = sections.find(sec => sec.id === activeSection)?.name || 'Dashboard';
@@ -153,14 +142,10 @@ const AdminPanelOverview = () => {
     };
 
     const handlePageCreate = (newPage) => {
-        setPages(prev => [newPage, ...prev]);
         setActiveSection("adminPages");
     };
 
     const handlePageUpdate = (updatedPage) => {
-        setPages(prev => prev.map(page => 
-            page.id === updatedPage.id ? updatedPage : page
-        ));
         setActiveSection("adminPages");
     };
 
@@ -240,25 +225,24 @@ const AdminPanelOverview = () => {
                         <IoClose size={28} />
                     </button>
                 </div>
-                
+
                 <div className="flex items-center space-x-3 mb-4 p-2 rounded-lg">
                     <FaUserCircle className="w-8 h-8 rounded-full min-w-[32px] flex-shrink-0" />
                     <span className={`text-white font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>Admin</span>
                 </div>
-                
+
                 <nav className="space-y-1">
                     {sections.map((item) => (
                         <div
                             key={item.id}
                             onClick={() => handleNavigate(item.id)}
                             title={item.name}
-                            className={`flex items-center space-x-4 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${
-                                activeSection === item.id || 
-                                (item.id === "adminPages" && ["adminViewPage", "adminEditPage", "adminCreatePage", "adminOrderPages"].includes(activeSection)) ||
-                                (item.id === "adminBlogPosts" && ["adminAddPost", "adminEditPost"].includes(activeSection))
-                                ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg" 
-                                : "text-gray-300"
-                            }`}
+                            className={`flex items-center space-x-4 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === item.id ||
+                                    (item.id === "adminPages" && ["adminViewPage", "adminEditPage", "adminCreatePage", "adminOrderPages"].includes(activeSection)) ||
+                                    (item.id === "adminBlogPosts" && ["adminAddPost", "adminEditPost"].includes(activeSection))
+                                    ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
+                                    : "text-gray-300"
+                                }`}
                         >
                             <div className="text-xl flex-shrink-0">{item.icon}</div>
                             <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>{item.name}</span>
@@ -335,12 +319,10 @@ const AdminPanelOverview = () => {
                     {activeSection === "adminCommissions" && <Commissions />}
                     {activeSection === "adminTaxes" && <Taxes />}
                     {activeSection === "adminUsers" && <Users />}
-                    
-                   
+
+
                     {activeSection === "adminPages" && (
                         <AdminPages
-                            pages={pages}
-                            setPages={setPages}
                             onNavigateToCreatePage={handleNavigateToCreatePage}
                             onNavigateToViewPage={handleNavigateToViewPage}
                             onNavigateToEditPage={handleNavigateToEditPage}
@@ -372,35 +354,33 @@ const AdminPanelOverview = () => {
                     )}
                     {activeSection === "adminOrderPages" && (
                         <OrderPages
-                            pages={pages}
-                            setPages={setPages}
                             onBack={handleBackToPages}
                         />
                     )}
-                    
-                  
+
+
                     {activeSection === "adminBlogPosts" && (
-                        <AdminBlogPost 
+                        <AdminBlogPost
                             onNavigateToAddPost={handleNavigateToAddPost}
                             onNavigateToEditPost={handleNavigateToEditPost}
                         />
                     )}
                     {activeSection === "adminAddPost" && (
-                        <AdminAddPost 
+                        <AdminAddPost
                             onBack={handleBackToPosts}
                             onPostCreate={handlePostCreate}
                         />
                     )}
                     {activeSection === "adminEditPost" && selectedPost && (
-                        <AdminAddPost 
+                        <AdminAddPost
                             postData={selectedPost}
                             isEdit={true}
                             onBack={handleBackToPosts}
                             onPostCreate={handlePostUpdate}
                         />
                     )}
-                    
-                    
+
+
                     {activeSection === "adminCommissions" && <Commissions />}
                     {activeSection === "adminTaxes" && <Taxes />}
                     {activeSection === "adminUsers" && <Users />}

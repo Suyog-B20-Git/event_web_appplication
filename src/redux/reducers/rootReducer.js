@@ -32,8 +32,8 @@ import addFavouriteEventReducer from "./pages/Events/addFavouriteEvent";
 import getFavoriteEventReducer from "./pages/Events/getFavoriteEvent";
 
 import getFavoriteOrganizerReducer from "./pages/getFavouriteOrganizerReducer";
-import postFavouriteOrganizerReducer  from "./pages/postFavouriteOragnizerReducer";
-import removeFavouriteOrganizerReducer  from "./pages/deleteFavouriteOrganizerReducer";
+import postFavouriteOrganizerReducer from "./pages/postFavouriteOragnizerReducer";
+import removeFavouriteOrganizerReducer from "./pages/deleteFavouriteOrganizerReducer";
 
 import addFavouritePerformerReducer from "./pages/Performer/postFavouritePerformerReducer";
 import getFavoritePerformerReducer from "./pages/Performer/getFavouritePerformerReducer";
@@ -46,9 +46,16 @@ import addFavouriteServiceReducer from "./pages/Services/postFavouriteServiceRed
 import deleteFavouriteEventReducer from "./pages/Events/deleteFavouriteEvent";
 
 import profileReducer from "./pages/profileReducer";
-import changePasswordReducer  from "./pages/authReducer";
+import changePasswordReducer from "./pages/authReducer";
 
-import ticketReducer  from "./pages/Events/ticketReducer";
+import ticketReducer from "./pages/Events/ticketReducer";
+
+// Page Reducers
+import createPageReducer from "./pages/createPage";
+import getPagesReducer from "./pages/getPages";
+
+// Blog Post Reducers
+import blogPostsReducer from "./BlogPosts/blogPosts";
 
 // ** Reducers Import **//
 
@@ -84,9 +91,9 @@ const rootReducer = combineReducers({
   addFavouriteEventReducer,
   getFavoriteEventReducer,
 
-  postFavouriteOrganizerReducer ,
+  postFavouriteOrganizerReducer,
   getFavoriteOrganizerReducer,
-  removeFavouriteOrganizerReducer ,
+  removeFavouriteOrganizerReducer,
 
   addFavouritePerformerReducer,
   getFavoritePerformerReducer,
@@ -101,6 +108,13 @@ const rootReducer = combineReducers({
   profileReducer,
   changePasswordReducer,
   ticketReducer,
+
+  // Page Reducers
+  createPage: createPageReducer,
+  getPages: getPagesReducer,
+
+  // Blog Post Reducers
+  blogPosts: blogPostsReducer,
 });
 
 export default rootReducer;

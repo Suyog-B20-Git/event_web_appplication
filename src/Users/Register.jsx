@@ -5,11 +5,11 @@ import Button from "../Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
 import { HiOutlineDeviceMobile, HiEye, HiEyeOff } from "react-icons/hi";
-import axios from "axios";
+import { axiosInstance } from "../../utility/utils";
 import { Auth } from "../redux/Urls";
 import { toast } from "react-toastify";
 
-const baseUrl = import.meta.env.VITE_API_URL;
+const baseUrl = "http://localhost:5000/api";
 
 function Register() {
   const [username, setUsername] = useState("");
@@ -34,10 +34,9 @@ function Register() {
       return;
     }
     try {
-      const response = await axios.post(
-        `${baseUrl}/auth/setup`,
-        { username, email, password },
-        { headers: { "Content-Type": "application/json" } }
+      const response = await axiosInstance.post(
+        `/auth/setup`,
+        { username, email, password }
       );
 
       if (response.data.statusCode === 201) {
@@ -124,14 +123,14 @@ function Register() {
             />
 
             <Button
-                  variant={"primary"}
-                  text={"Register"}
-                  textPos={"text-center"}
-                  rounded={"rounded-md"}
-                  textSize={"text-lg"}
-                  onClick={handleRegister}
-                />
-            
+              variant={"primary"}
+              text={"Register"}
+              textPos={"text-center"}
+              rounded={"rounded-md"}
+              textSize={"text-lg"}
+              onClick={handleRegister}
+            />
+
             <div className="text-center mt-2 text-sm">
               <Link to="/login" className="underline text-[#FF2459] hover:text-[#c40044]">
                 Already have an account? Log In

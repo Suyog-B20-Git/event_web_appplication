@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { FaChevronRight, FaImage, FaArrowLeft } from 'react-icons/fa';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { useDispatch, useSelector } from 'react-redux';
+import { createBlogPost } from '../../redux/actions/master/BlogPosts/createBlogPost';
+import { updateBlogPost } from '../../redux/actions/master/BlogPosts/updateBlogPost';
 
 const Card = ({ title, children, titleBgColor = '' }) => (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-6">
@@ -47,6 +50,9 @@ const TextareaField = ({ label, name, value, onChange, placeholder = '', rows = 
 );
 
 const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate }) => {
+    const dispatch = useDispatch();
+    const { createLoading, updateLoading, error } = useSelector(state => state.blogPosts);
+
     const [formData, setFormData] = useState({
         title: '',
         content: '',
@@ -64,7 +70,7 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-  
+
     useEffect(() => {
         if (isEdit && postData) {
             setFormData({
@@ -110,23 +116,16 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        
-        try {
-            
-            const postToSave = {
-                ...formData,
-                id: isEdit ? postData.id : Date.now(), 
-                createdAt: isEdit ? postData.createdAt : new Date().toISOString().slice(0, 19).replace('T', ' '),
-                updatedAt: new Date().toISOString().slice(0, 19).replace('T', ' ')
-            };
 
-            console.log(isEdit ? 'Updating post:' : 'Creating post:', postToSave);
-            
-           
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
+        try {
+            if (isEdit) {
+                await dispatch(updateBlogPost(postData._id, formData));
+            } else {
+                await dispatch(createBlogPost(formData));
+            }
+
             if (onPostCreate) {
-                onPostCreate(postToSave);
+                onPostCreate();
             }
         } catch (error) {
             console.error('Error saving post:', error);
@@ -146,7 +145,7 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
             {/* --- HEADER & BREADCRUMBS --- */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center space-x-4">
-                    <button 
+                    <button
                         onClick={handleCancel}
                         className="flex items-center justify-center w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full transition-colors"
                     >
@@ -166,13 +165,13 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                     </span>
                 </nav>
             </div>
-            
+
             <form onSubmit={handleSubmit}>
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* --- LEFT COLUMN --- */}
                     <div className="flex-grow">
                         <Card title="Post Title">
-                            <InputField 
+                            <InputField
                                 label="The title for your post"
                                 name="title"
                                 value={formData.title}
@@ -218,31 +217,84 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                         </Card>
 
                         <Card title="Excerpt">
-                            <TextareaField
-                                label="Post Excerpt"
-                                name="excerpt"
-                                value={formData.excerpt}
-                                onChange={handleChange}
-                                helpText="Small description of the post"
-                                placeholder="Brief description of your post..."
-                            />
+                            <div className="mb-4">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Post Excerpt</label>
+                                <div className="border border-gray-300 rounded-md">
+                                    <CKEditor
+                                        editor={ClassicEditor}
+                                        data={formData.excerpt}
+                                        onChange={(event, editor) => {
+                                            setFormData(prevData => ({
+                                                ...prevData,
+                                                excerpt: editor.getData()
+                                            }));
+                                        }}
+                                        config={{
+                                            toolbar: [
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'bulletedList',
+                                                'numberedList',
+                                                '|',
+                                                'undo',
+                                                'redo'
+                                            ],
+                                            placeholder: 'Brief description of your post...',
+                                            height: '200px'
+                                        }}
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">Small description of the post</p>
+                            </div>
                         </Card>
-                        
+
                         <Card title="Additional Fields">
-                            <TextareaField
-                                label="Additional Content"
-                                name="additionalFields"
-                                value={formData.additionalFields}
-                                onChange={handleChange}
-                                placeholder="Any additional information..."
-                            />
+                            <div className="mb-4">
+                                <label className="block text-sm font-semibold text-gray-700 mb-1">Additional Content</label>
+                                <div className="border border-gray-300 rounded-md">
+                                    <CKEditor
+                                        editor={ClassicEditor}
+                                        data={formData.additionalFields}
+                                        onChange={(event, editor) => {
+                                            setFormData(prevData => ({
+                                                ...prevData,
+                                                additionalFields: editor.getData()
+                                            }));
+                                        }}
+                                        config={{
+                                            toolbar: [
+                                                'heading',
+                                                '|',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'bulletedList',
+                                                'numberedList',
+                                                '|',
+                                                'outdent',
+                                                'indent',
+                                                '|',
+                                                'imageUpload',
+                                                'blockQuote',
+                                                'insertTable',
+                                                'mediaEmbed',
+                                                'undo',
+                                                'redo'
+                                            ],
+                                            placeholder: 'Any additional information...',
+                                            height: '300px'
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         </Card>
                     </div>
 
                     {/* --- RIGHT COLUMN (SIDEBAR) --- */}
                     <div className="lg:w-96 flex-shrink-0">
                         <Card title="Post Details" titleBgColor="bg-orange-500">
-                            <InputField 
+                            <InputField
                                 label="URL Slug"
                                 name="slug"
                                 value={formData.slug}
@@ -252,9 +304,9 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                             />
                             <div className="mb-4">
                                 <label htmlFor="status" className="block text-sm font-semibold text-gray-700 mb-1">Post Status</label>
-                                <select 
-                                    id="status" 
-                                    name="status" 
+                                <select
+                                    id="status"
+                                    name="status"
                                     value={formData.status}
                                     onChange={handleChange}
                                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -265,9 +317,9 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-1">Post Category</label>
-                                <select 
-                                    id="category" 
-                                    name="category" 
+                                <select
+                                    id="category"
+                                    name="category"
                                     value={formData.category}
                                     onChange={handleChange}
                                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -279,7 +331,7 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                                 </select>
                             </div>
                             <div className="flex items-center">
-                                <input 
+                                <input
                                     type="checkbox"
                                     id="isFeatured"
                                     name="isFeatured"
@@ -290,19 +342,19 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                                 <label htmlFor="isFeatured" className="ml-2 block text-sm font-semibold text-gray-700">Featured Post</label>
                             </div>
                         </Card>
-                        
+
                         <Card title="Post Image" titleBgColor="bg-blue-500">
                             <div className="mb-4">
                                 <label htmlFor="postImage" className="w-full cursor-pointer bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md px-3 py-8 text-sm text-center block transition-colors">
                                     <FaImage className="mx-auto mb-2 text-gray-400 text-2xl" />
                                     <span className="text-gray-600">Choose Image File</span>
                                 </label>
-                                <input 
-                                    type="file" 
-                                    id="postImage" 
-                                    name="image" 
-                                    onChange={handleFileChange} 
-                                    className="hidden" 
+                                <input
+                                    type="file"
+                                    id="postImage"
+                                    name="image"
+                                    onChange={handleFileChange}
+                                    className="hidden"
                                     accept="image/*"
                                 />
                                 {formData.image && (
@@ -314,9 +366,9 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                                 )}
                             </div>
                         </Card>
-                        
+
                         <Card title="SEO Content">
-                            <TextareaField 
+                            <TextareaField
                                 label="Meta Description"
                                 name="metaDescription"
                                 value={formData.metaDescription}
@@ -325,7 +377,7 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                                 placeholder="Brief description for search engines..."
                                 helpText="Recommended: 150-160 characters"
                             />
-                            <InputField 
+                            <InputField
                                 label="Meta Keywords"
                                 name="metaKeywords"
                                 value={formData.metaKeywords}
@@ -333,7 +385,7 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                                 placeholder="keyword1, keyword2, keyword3"
                                 helpText="Comma-separated keywords"
                             />
-                            <InputField 
+                            <InputField
                                 label="SEO Title"
                                 name="seoTitle"
                                 value={formData.seoTitle}
@@ -342,21 +394,21 @@ const AdminAddPost = ({ postData = null, isEdit = false, onBack, onPostCreate })
                                 helpText="Title that appears in search results"
                             />
                         </Card>
-                        
+
                         <div className="flex gap-3">
-                            <button 
+                            <button
                                 type="button"
                                 onClick={handleCancel}
                                 className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2.5 px-4 rounded-lg transition-colors shadow-md"
                             >
                                 Cancel
                             </button>
-                            <button 
+                            <button
                                 type="submit"
-                                disabled={isSubmitting}
+                                disabled={isSubmitting || createLoading || updateLoading}
                                 className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-2.5 px-4 rounded-lg transition-colors shadow-md"
                             >
-                                {isSubmitting ? (isEdit ? 'Updating...' : 'Creating...') : (isEdit ? 'Update Post' : 'Create Post')}
+                                {isSubmitting || createLoading || updateLoading ? (isEdit ? 'Updating...' : 'Creating...') : (isEdit ? 'Update Post' : 'Create Post')}
                             </button>
                         </div>
                     </div>
