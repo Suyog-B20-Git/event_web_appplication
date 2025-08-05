@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer"; // Remove curly braces
+import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer";
 import Index from "../Main/Index";
 import Home from "../LandingPages/Home";
 import { text_data } from "../Components/Events/menuData";
@@ -34,9 +34,31 @@ import BookTicket from "../LandingPages/BookTicket";
 import Terms from "../Components/Home/Terms";
 import About from "../Components/Home/About";
 import ContactUs from "../Components/Home/ContactUs";
-import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
+import EventFilterBar from "../LandingPages/EventFilterBar";
 import AdminPanelOverview from "../Components/AdminPanel/AdminPanelOverview";
 import AdminMyEvents from "../Components/AdminPanel/AdminMyEvents";
+import AdminBlogPost from "../Components/AdminPanel/AdminBlogPost";
+import AdminCreatePage from "../Components/AdminPanel/AdminCreatePage";
+import AdminAddPost from "../Components/AdminPanel/AdminAddPost";
+import DashCreateEvent from "../Components/DashboardCreateEvent/DashCreateEvent";
+import AdminTags from "../Components/AdminPanel/AdminTags";
+import AdminBookings from "../Components/AdminPanel/AdminBookings";
+import AdminHeaderMenu from "../Components/AdminPanel/AdminHeaderMenu";
+import AdminCommissions from "../Components/AdminPanel/AdminCommissions";
+import AdminFooterMenu from "../Components/AdminPanel/AdminFooterMenu";
+import AdminTaxes from "../Components/AdminPanel/AdminTaxes";
+// import AdminUsers from "../Components/AdminPanel/AdminUsers";
+import AdminUsers from "../Components/AdminPanel/AdminUsers";
+import AdminContacts from "../Components/AdminPanel/AdminContacts";
+import AdminBanners from "../Components/AdminPanel/AdminBanners";
+import AdminVenues from "../Components/AdminPanel/AdminVenues";
+import AdminSettings from "../Components/AdminPanel/AdminSettings";
+import AdminPromocodes from "../Components/AdminPanel/AdminPromocodes";
+import AdminComplimentaryBookings from "../Components/AdminPanel/AdminComplimentaryBookings";
+import AdminCurrencies from "../Components/AdminPanel/AdminCurrencies";
+
+
+
 
 
 function Routess() {
@@ -49,7 +71,7 @@ function Routess() {
 
           {text_data.map((item) => (
             <React.Fragment key={item.path}>
-              {/* Parent route (e.g., /events, /organisers, /venues, etc.) */}
+
               <Route
                 path={item.path}
                 element={
@@ -67,7 +89,6 @@ function Routess() {
                 }
               />
 
-              {/* Submenu routes */}
               {item.popUpMenu &&
                 item.popUpMenu.map(
                   (subItem) =>
@@ -96,23 +117,51 @@ function Routess() {
 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
-         <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
-         <Route path="/admin/dashboard/create-event" element={<DashCreateEvent />} />
-        
+          <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
 
-         <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />
-         <Route path="/adminMyEvents" element={<AdminMyEvents />} />
+          <Route path="/eventfilerbar" element={<EventFilterBar />} />
+
+
+
+
+
+          <Route path="/header-menu" element={<AdminHeaderMenu />} />
+          <Route path="/commission" element={<AdminCommissions />} />
+          <Route path="/banners" element={<AdminBanners />} />
+          <Route path="/admin-panel" element={<AdminPanelOverview />} />
+          <Route path="/admin/tags" element={<AdminTags />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/posts" element={<AdminBlogPost />} />
+          <Route path="/admin/add-post" element={<AdminAddPost />} />
+          <Route path="/admin/edit-post/:id" element={<AdminAddPost />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/contacts" element={<AdminContacts />} />
+          <Route path="/admin/venues" element={<AdminVenues />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/promocodes" element={<AdminPromocodes />} />
+          <Route path="/admin/complimentary-bookings" element={<AdminComplimentaryBookings />} />
+          <Route path="/admin/currencies" element={<AdminCurrencies />} />
+
+
+
+
+          <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
+          <Route path="/admin/dashboard/create-event" element={<DashCreateEvent />} />
+
+
+          <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />
+          <Route path="/adminMyEvents" element={<AdminMyEvents />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create-page" element={<CreatePage />} />
           <Route path="/organizers" element={<GetOrganizer />} />
-          <Route path="/organizers/wedding-planner" element={<GetOrganizer />}   />
+          <Route path="/organizers/wedding-planner" element={<GetOrganizer />} />
           <Route path="/organizers/adventure" element={<GetOrganizer />} />
           <Route path="/organizers/event-planner" element={<GetOrganizer />} />
           <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="/oauth-failure" element={<OAuthFailure />} />
-         
+
           <Route path="/Organizer/:organizerId" element={<GetOrganizerById />} />
           <Route path="/city/:cityName/listing/organizers/:organizerName" element={<GetOrganizerById />} />
 
@@ -126,11 +175,15 @@ function Routess() {
           <Route path="/events/live-music/:eventId" element={<FeaturedEvent />} />
           <Route path="/city/location" element={<SearchData />} />
           <Route path='event/:eventId' element={<FeaturedEvent />} />
-          <Route path="/bookTicket" element={<BookTicket/>} />
+          <Route path="/bookTicket" element={<BookTicket />} />
 
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
           <Route path="/profile" element={<Profile />} />
+
+
+
+
           <Route path="/admin-panel" element={<AdminPanelOverview />} />
           <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -139,9 +192,9 @@ function Routess() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
+          <Route path="/events" element={<Viewall />} />
         </Route>
-
-          </Routes>
+      </Routes>
     </div>
   );
 }
