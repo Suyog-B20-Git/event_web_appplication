@@ -36,7 +36,23 @@ export const updatePage = (pageId, pageData) => {
                 throw new Error('Authentication token not found');
             }
 
-            const response = await axiosInstance.put(`/pages/${pageId}`, pageData);
+            // Create FormData for file upload
+            const formData = new FormData();
+
+            // Append all form fields
+            Object.keys(pageData).forEach(key => {
+                if (key === 'pageImage' && pageData[key] instanceof File) {
+                    formData.append('pageImage', pageData[key]);
+                } else if (key !== 'pageImage') {
+                    formData.append(key, pageData[key]);
+                }
+            });
+
+            const response = await axiosInstance.put(`/pages/${pageId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
 
             if (!response.data.status) {
                 throw new Error(response.data.message || "Page update failed");

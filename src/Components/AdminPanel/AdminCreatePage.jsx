@@ -137,10 +137,28 @@ const AdminCreatePage = ({ onNavigate, onPageCreate, pageData = null, isEdit = f
 
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'file' ? files[0] : value
-    }));
+
+    if (type === 'file') {
+      // Handle file upload
+      const file = files[0];
+      if (file) {
+        // Validate file size (2MB limit)
+        if (file.size > 2 * 1024 * 1024) {
+          alert('File size must be less than 2MB');
+          return;
+        }
+        setFormData((prev) => ({
+          ...prev,
+          [name]: file
+        }));
+      }
+    } else {
+      // Handle other form fields
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value
+      }));
+    }
 
 
     if (name === 'title') {
@@ -405,17 +423,56 @@ const AdminCreatePage = ({ onNavigate, onPageCreate, pageData = null, isEdit = f
             {/* Page Image */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
-              <input
-                type="file"
-                name="pageImage"
-                accept="image/*"
-                onChange={handleInputChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
+              <div className="space-y-2">
+                <input
+                  type="file"
+                  name="pageImage"
+                  accept="image/*"
+                  onChange={handleInputChange}
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                <p className="text-xs text-gray-500">Maximum file size: 2MB. Supported formats: JPG, PNG, GIF</p>
+                {formData.pageImage && !(formData.pageImage instanceof File) && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, pageImage: null }))}
+                    className="text-sm text-red-600 hover:text-red-800 underline"
+                  >
+                    Remove Current Image
+                  </button>
+                )}
+              </div>
               {formData.pageImage && (
-                <p className="mt-2 text-sm text-gray-600 flex items-center">
-                  Selected: {formData.pageImage.name}
-                </p>
+                <div className="mt-2">
+                  {formData.pageImage instanceof File ? (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600 flex items-center">
+                        Selected: {formData.pageImage.name}
+                      </p>
+                      <img
+                        src={URL.createObjectURL(formData.pageImage)}
+                        alt="Selected page image"
+                        className="w-32 h-32 object-cover rounded-md border"
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">Current Image:</p>
+                      <img
+                        src={formData.pageImage}
+                        alt="Current page image"
+                        className="w-32 h-32 object-cover rounded-md border"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'block';
+                        }}
+                      />
+                      <p className="text-xs text-gray-500" style={{ display: 'none' }}>
+                        Image failed to load
+                      </p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 

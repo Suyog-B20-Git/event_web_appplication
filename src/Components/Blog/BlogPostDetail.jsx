@@ -176,9 +176,10 @@ const BlogPostDetail = () => {
                         {/* Excerpt */}
                         {post.excerpt && (
                             <div className="mb-8">
-                                <p className="text-lg text-gray-600 leading-relaxed italic">
-                                    {post.excerpt}
-                                </p>
+                                <div
+                                    className="text-lg text-gray-600 leading-relaxed italic blog-content"
+                                    dangerouslySetInnerHTML={{ __html: post.excerpt }}
+                                />
                             </div>
                         )}
 
