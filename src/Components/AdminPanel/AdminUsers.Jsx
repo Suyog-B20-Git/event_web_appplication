@@ -55,7 +55,7 @@ const AdminUsers = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedUsers, setSelectedUsers] = useState([]);
 
-   
+
     const filteredUsers = useMemo(() => {
         if (!searchTerm) return users;
         return users.filter(user =>
@@ -64,14 +64,14 @@ const AdminUsers = () => {
         );
     }, [searchTerm, users]);
 
-   
+
     const handleSelect = (id) => {
         setSelectedUsers(prev =>
             prev.includes(id) ? prev.filter(userId => userId !== id) : [...prev, id]
         );
     };
-    
-   
+
+
     const handleBulkDelete = () => {
         if (selectedUsers.length === 0) return alert('Please select users to delete.');
         if (window.confirm(`Are you sure you want to delete ${selectedUsers.length} user(s)?`)) {
@@ -80,15 +80,15 @@ const AdminUsers = () => {
         }
     };
 
-   
+
     const handleDeleteSingle = (userId) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             setUsers(prev => prev.filter(user => user.id !== userId));
             setSelectedUsers(prev => prev.filter(id => id !== userId));
         }
     };
-    
-   
+
+
     const StatusBadge = ({ status }) => {
         const styles = {
             Enabled: 'bg-green-100 text-green-800',
@@ -105,7 +105,7 @@ const AdminUsers = () => {
                         <div className="bg-green-100 p-2 rounded-lg"><FaUsers className="text-2xl text-green-600" /></div>
                         <h1 className="text-3xl font-bold text-gray-800">Users</h1>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2">
                         <button className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
                             <FaPlus className="mr-2" /> Add New
@@ -129,11 +129,11 @@ const AdminUsers = () => {
             <div className="space-y-5">
                 {filteredUsers.length > 0 ? filteredUsers.map(user => (
                     <div key={user.id} className={`bg-white rounded-lg shadow-sm border transition-all duration-300 hover:shadow-lg ${selectedUsers.includes(user.id) ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200 hover:border-indigo-300'}`}>
-                        
+
                         <input type="checkbox" checked={selectedUsers.includes(user.id)} onChange={() => handleSelect(user.id)} className="absolute m-4 h-5 w-5 rounded text-indigo-600 border-gray-300 focus:ring-indigo-500 z-10" />
 
                         <header className="p-4 border-b border-gray-200 flex justify-between items-center flex-wrap gap-2">
-                            <div className="pl-8"> 
+                            <div className="pl-8">
                                 <h3 className="font-bold text-lg text-indigo-700">{user.name}</h3>
                                 <p className="text-sm text-gray-500">User ID: <span className="font-medium text-gray-600">{user.id}</span></p>
                             </div>
@@ -146,11 +146,11 @@ const AdminUsers = () => {
                             <DetailItem icon={<FaBriefcase size={14} />} label="Business Type">{user.businessType || 'N/A'}</DetailItem>
                             <DetailItem icon={<FaCalendarAlt size={14} />} label="Created At">{new Date(user.createdAt).toLocaleDateString()}</DetailItem>
                         </div>
-                        
+
                         <footer className="p-3 bg-gray-50 rounded-b-lg flex justify-end items-center space-x-2">
-                           <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors"><FaEye className="mr-2"/>View</button>
-                           <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"><FaPencilAlt className="mr-2"/>Edit</button>
-                           <button onClick={() => handleDeleteSingle(user.id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"><FaTrash className="mr-2"/>Delete</button>
+                            <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors"><FaEye className="mr-2" />View</button>
+                            <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"><FaPencilAlt className="mr-2" />Edit</button>
+                            <button onClick={() => handleDeleteSingle(user.id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"><FaTrash className="mr-2" />Delete</button>
                         </footer>
                     </div>
                 )) : (
