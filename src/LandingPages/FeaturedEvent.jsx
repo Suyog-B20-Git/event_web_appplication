@@ -287,7 +287,7 @@ function FeaturedEvent() {
     <div className="">
       <div className="flex lg:flex-row flex-col gap-4 ">
         <div
-          className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px] mt-20 sm:mt-0 relative"
+          className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px] mt-20 sm:mt-0 relative"
           style={{
             backgroundImage: `url(${
               formatImageUrl(posterImage) ||
@@ -310,7 +310,7 @@ function FeaturedEvent() {
             </p>
           </div>
 
-          <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
+          <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
             <p
               onClick={() => {
                 if (!isLogin) {
@@ -329,7 +329,7 @@ function FeaturedEvent() {
                   setEnquiry(!enquiry);
                 }
               }}
-              className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
+              className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
                 enquirySent
                   ? "text-[#ff2459] cursor-not-allowed"
                   : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
@@ -380,7 +380,7 @@ function FeaturedEvent() {
           </div>
         </div>
 
-        <div className="rounded-xl lg:m-0 m-2 lg:p-4 p-2  shadow-lg lg:w-[20%] ">
+        <div className="rounded-xl lg:m-0 m-2 lg:p-4 p-2  shadow-lg lg:w-[20%] ">
           <h1 className="font-bold flex justify-start break-words text-xl p-2 mt-0 sm:mt-4 ">
             {" "}
             {receivedData.name}
@@ -398,7 +398,7 @@ function FeaturedEvent() {
                 }}
               />
             </div>
-            <div className="text-gray-600 md:text-base  text-xs font-medium space-y-4">
+            <div className="text-gray-600 md:text-base  text-xs font-medium space-y-4">
               <p>{receivedData.category}</p>
               <p>{receivedData?.startDate ? updateStartDateTime : "--"}</p>
               <p></p>
@@ -437,8 +437,8 @@ function FeaturedEvent() {
                 });
               }}
               className="relative lg:text-lg text-xs font-medium rounded-md p-2 px-4 bg-[#ff2459] text-white transition-all duration-300 
-            before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
-            hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
+              before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
+              hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
             >
               <p className="relative">Get Ticket</p>
             </button>
@@ -446,8 +446,8 @@ function FeaturedEvent() {
         </div>
       </div>
 
-      <div className="lg:flex p-3 mt-5 flex lg:flex-row md:flex-row flex-col  gap-7">
-        <div className="lg:w-[80%] md:w-[90%]  ">
+      <div className="lg:flex p-3 mt-5 flex lg:flex-row md:flex-row flex-col  gap-7">
+        <div className="lg:w-[80%] md:w-[90%]  ">
           {receivedData ? (
             <EventHeading
               heading={receivedData.name}
@@ -470,7 +470,7 @@ function FeaturedEvent() {
                 Get Tickets Now
               </p>
               <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
-              <p className="font-semibold text-lg  ml-3 mb-6">
+              <p className="font-semibold text-lg  ml-3 mb-6">
                 {receivedData?.startDate ? updateStartDateTime : "-"}
               </p>
               <hr />
@@ -508,19 +508,22 @@ function FeaturedEvent() {
 
                   <div className="text-md font-semibold text-gray-700 mb-2">
                     Repeats on: {receivedData.repetitiveType}
-                 
-                  {receivedData.repetitiveType === "Daily" &&
-                  receivedData.repeatExcept &&
-                    receivedData.repeatExcept.length > 0 && (
-                      <h1 className="text-2xl font-bold text-red-700">
-                        Except : <span className="text-red-700"> {receivedData.repeatExcept.join(",")} </span>
-                      </h1>
-                    )}
- </div>
+                    {receivedData.repetitiveType === "Daily" &&
+                      receivedData.repeatExcept &&
+                      receivedData.repeatExcept.length > 0 && (
+                        <h1 className="text-2xl font-bold text-red-700">
+                          Except :{" "}
+                          <span className="text-red-700">
+                            {" "}
+                            {receivedData.repeatExcept.join(",")}{" "}
+                          </span>
+                        </h1>
+                      )}
+                  </div>
                   {receivedData.repetitiveType === "Monthly" && (
                     <div className="flex flex-wrap gap-2 mb-3">
                       {receivedData.repeatDates
-                        .sort((a, b) => parseInt(a) - parseInt(b)) // Sort dates numerically
+                        .sort((a, b) => parseInt(a) - parseInt(b)) 
                         .map((date, idx) => (
                           <div
                             key={idx}
@@ -536,7 +539,8 @@ function FeaturedEvent() {
                     <div className="flex flex-wrap gap-2 mb-3">
                       {receivedData.repeatDays
                         .sort((a, b) => {
-                          // Define the order of days starting from Monday
+                        
+
                           const dayOrder = {
                             Monday: 1,
                             Tuesday: 2,
@@ -625,15 +629,62 @@ function FeaturedEvent() {
                 )}
               </div>
 
-              <div ref={LocationRef} className="px-0 sm:px-6 mb-3 mt-4">
-                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
+              
+              <div ref={LocationRef} className="px-0 sm:px-6 mt-8">
+                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold mb-4">
                   Location
                 </h1>
-                <MapContainer className="p-4 ml-2" location={googleLocation} />
-              </div>
+                <div className="lg:flex lg:gap-6 w-full shadow-md bg-white rounded-lg p-4 border">
+                 
 
-              <div className="px-0 sm:px-6 mb-3">
-                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-4">
+                  <div className="lg:w-2/5 w-full mb-4 lg:mb-0 h-64 rounded-lg overflow-hidden">
+                    <MapContainer location={googleLocation} />
+                  </div>
+                 
+
+                  <div className="lg:w-3/5 w-full flex flex-col justify-center">
+                    <h2 className="font-semibold text-xl pb-2 border-b mb-4">
+                      Venue Details
+                    </h2>
+                    <div className="space-y-4 text-gray-700">
+                      {VenuesData.length > 0 ? (
+                        <>
+                          {VenuesData[0]?.name && (
+                            <div className="flex items-start gap-3">
+                              <PiBuildingApartmentFill className="text-gray-500 mt-1 text-xl shrink-0" />
+                              <p className="font-semibold">
+                                {VenuesData[0].name}
+                              </p>
+                            </div>
+                          )}
+                          <div className="flex items-start gap-3">
+                            <CiLocationOn className="text-gray-500 mt-1 text-xl shrink-0" />
+                            <span>
+                              {[
+                                VenuesData[0]?.addressLine1,
+                                VenuesData[0]?.addressLine2,
+                                VenuesData[0]?.city,
+                                VenuesData[0]?.state,
+                                VenuesData[0]?.country,
+                                VenuesData[0]?.pincode,
+                              ]
+                                .filter(Boolean)
+                                .join(", ")}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="text-gray-500">
+                          No venue details available.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+             
+              <div className="px-0 sm:px-6 mt-8">
+                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold mb-4">
                   Event Gallery
                 </h1>
                 {Array.isArray(receivedData?.media?.images) &&
@@ -645,14 +696,15 @@ function FeaturedEvent() {
                   </p>
                 )}
               </div>
+             
 
-              <div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
+              <div className="px-0 sm:px-6 mt-8">
                 {Array.isArray(receivedData.youtubeVideoUrls) &&
                 receivedData.youtubeVideoUrls.some(
                   (url) => url && url.trim() !== ""
                 ) ? (
                   <>
-                    <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
+                    <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold mb-4">
                       Watch Videos
                     </h1>
                     <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
@@ -661,26 +713,28 @@ function FeaturedEvent() {
                   <p className="text-lg text-gray-600 mt-2"></p>
                 )}
               </div>
+             
+
             </div>
           </div>
         </div>
 
         <div className="lg:flex-1 md:w-full w-full flex flex-col gap-3">
           <div className="p-4 flex flex-col items-center w-full border rounded-xl">
-            {/* Title */}
+            
             <h1 className="text-xl font-semibold text-left px-6 pb-3 lg:pb-5">
               Organizer
             </h1>
 
-            {/* Organizer Image */}
+            
             <Collapsible
               trigger={
-                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
+                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
                   View Organizer Details
                 </div>
               }
               triggerWhenOpen={
-                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
+                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
                   Hide Organizer Details
                 </div>
               }
@@ -692,14 +746,14 @@ function FeaturedEvent() {
                   {receivedData.organizer?.username?.charAt(0) || ""}
                 </div>
 
-                {/* Organizer Name */}
+                
                 <p className="font-semibold lg:text-base text-sm pt-2 text-center">
                   {receivedData.organizer?.name ||
                     receivedData.organizer?.username ||
                     "Organizer Name"}
                 </p>
 
-                {/* Organizer Info */}
+                
                 <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-2 gap-2 pt-4 text-center">
                   <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
                     <PiBuildingApartmentFill className="text-lg" />
@@ -725,7 +779,7 @@ function FeaturedEvent() {
                   </p>
                 </div>
 
-                {/* Contact Organizer Button */}
+               
                 <button
                   onClick={() => {
                     if (!organizerEmail) {
@@ -756,11 +810,11 @@ function FeaturedEvent() {
               Google Location
             </button>
             <p className="flex font-semibold ">
-              {/* <CiLocationOn className="relative top-1 text-pink-500" />  {receivedData.venue.googleSearchLocation ? receivedData.venue.googleSearchLocation :""} */}
+              {/* <CiLocationOn className="relative top-1 text-pink-500" />  {receivedData.venue.googleSearchLocation ? receivedData.venue.googleSearchLocation :""} */}
             </p>
-            {/* <p className="text-gray-400 ">Goa, india</p> */}
+            
           </div>
-          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2  items-center">
+          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2  items-center">
             <p className="text-gray-400 ml-2">Page visited By </p>
             <p className="font-semibold ml-2">
               {receivedData.dailyVisits} Times
@@ -769,14 +823,13 @@ function FeaturedEvent() {
         </div>
       </div>
       <div className="px-3 sm:px-10 py-2 ">
-        {/* <Speakers />
-        <Dj /> */}
-        {/* <RatingReview /> */}
+        
+        
       </div>
       {isFormOpen && (
         <div className="w-[60%]">
-          <div className="fixed w-full inset-0 flex flex-col bg-white/50 items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
-            <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
+          <div className="fixed w-full inset-0 flex flex-col bg-white/50 items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
+            <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
               <OrganiserContact
                 isFormOpen={isFormOpen}
                 setIsFormOpen={setIsFormOpen}
@@ -789,8 +842,8 @@ function FeaturedEvent() {
       )}
 
       {login && (
-        <div className="fixed w-full lg:h-[120vh] pt-[40px] p-10  h-[100vh]  inset-0 flex flex-col items-center justify-center z-70 bg-white/30 overflow-x-hidden">
-          <div className="bg-white p-6 rounded-lg shadow-lg  overflow-y-scroll scrollbar-hide  lg:w-[full] w-[max-content]">
+        <div className="fixed w-full lg:h-[120vh] pt-[40px] p-10  h-[100vh]  inset-0 flex flex-col items-center justify-center z-70 bg-white/30 overflow-x-hidden">
+          <div className="bg-white p-6 rounded-lg shadow-lg  overflow-y-scroll scrollbar-hide  lg:w-[full] w-[max-content]">
             <div className="flex justify-end lg:p-0 mt-3 relative lg:bottom-3 -bottom-8">
               <Button
                 text={"X"}
@@ -804,11 +857,11 @@ function FeaturedEvent() {
               />
             </div>
 
-            {/* Render components based on state */}
+            
             {account ? <LoginModal /> : guest ? <Guest /> : <RegisterModal />}
 
             <div className="flex gap-2 justify-center relative top-2">
-              {/* Toggle between states */}
+            
               {!guest && (
                 <p
                   className="cursor-pointer break-words lg:text-base text-sm"

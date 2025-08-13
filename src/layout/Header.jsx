@@ -472,12 +472,11 @@ const Header = () => {
   }, [search]);
 
   return (
-    
-      <div className="bg-gray-900 text-white p-1 fixed w-full z-40">
-        <div className="flex w-full h-[80px] items-center justify-between bg-opacity-50 px-4 relative gap-4">
-          {/* Logo and Mobile Location Icon */}
-          <div className="flex items-center gap-2 lg:gap-0 flex-shrink-0">
-            <img
+    <div className="bg-gray-900 text-white p-1 fixed w-full z-40">
+      <div className="flex w-full h-[80px] items-center justify-between bg-opacity-50 px-4 relative gap-4">
+        {/* Logo and Mobile Location Icon */}
+        <div className="flex items-center gap-2 lg:gap-0 flex-shrink-0">
+          <img
             src="/assets/staticAssets/logo.png"
             className="lg:w-[150px] md:w-[120px] w-[100px] cursor-pointer"
             alt="logo"
@@ -669,24 +668,35 @@ const Header = () => {
           />
         </div>
 
-        {/* User Profile */}
-        <div
-          onMouseEnter={() => setIsLog(true)}
-          onMouseLeave={() => setIsLog(false)}
-          className="relative flex items-center flex-shrink-0 text-white"
-        >
+      
+        <div className="relative flex items-center flex-shrink-0 text-white">
           {userName ? (
-            <div ref={dropdownRef} className="relative hidden lg:block">
+            <div 
+              ref={dropdownRef} 
+              className="relative hidden lg:block"
+              onMouseEnter={() => setIsLog(true)}
+              onMouseLeave={() => setIsLog(false)}
+            >
               <span
                 onClick={() => setIsLog(!isLog)}
                 className="p-1 gap-1 cursor-pointer font-medium break-words lg:text-lg md:text-sm flex lg:gap-1 md:gap-0.5 relative z-60 hover:text-[#ff2459] transition-colors items-center"
               >
                 {userName} <IoMdArrowDropdown className="text-lg" />
               </span>
+              
+             
+              {isLog && (
+                <div className="absolute top-full left-0 right-0 h-2 bg-transparent z-40"></div>
+              )}
+              
               {isLog && (
                 <div
                   ref={boxRef}
-                  className="bg-white rounded-lg text-gray-900 absolute w-40 h-max mt-1 right-0 shadow-lg z-50"
+                  className="bg-white rounded-lg text-gray-900 absolute w-40 h-max right-0 shadow-lg z-50"
+                  style={{ 
+                    marginTop: '8px',
+                    top: '100%'
+                  }}
                 >
                   {role === "organizer" && (
                     <button
@@ -694,7 +704,7 @@ const Header = () => {
                         setIsLog(false);
                         navigate("/dashboard");
                       }}
-                      className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
+                      className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200 rounded-t-lg"
                     >
                       <MdDashboard className="hover:text-white relative top-1" />
                       Dashboard
@@ -712,21 +722,13 @@ const Header = () => {
                     <button
                       onClick={() => {
                         setIsLog(false);
-                        
                         navigate("/admin-panel");
                       }}
-                      className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full"
+                      className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
                     >
                       🛠 Admin Panel
                     </button>
                   )}
-                  {/* <button
-                    onClick={handleProfileClick}
-                    className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
-                  >
-                    <CgProfile className="hover:text-white relative top-1" />
-                    Profile
-                  </button> */}
 
                   {role === "user" && (
                     <button
@@ -746,7 +748,7 @@ const Header = () => {
                       setIsLog(false);
                       setUserName("");
                     }}
-                    className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
+                    className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200 rounded-b-lg"
                   >
                     <IoIosLogOut className="hover:text-white relative top-1" />
                     Logout
@@ -989,8 +991,6 @@ const Header = () => {
 
       {ShowPopup && <Sidebar setShowPopup={setShowPopup} />}
     </div>
-
-    
   );
 };
 
