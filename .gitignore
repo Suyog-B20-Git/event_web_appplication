@@ -6,3 +6,7 @@ node_modules
 .idea/vcs.xml
 .idea/inspectionProfiles/Project_Default.xml
 .gitignore
+dist/
+dist/index.html
+dist/assets/index-BUXpEG0H.css
+dist/assets/index-DX7MEeYB.js

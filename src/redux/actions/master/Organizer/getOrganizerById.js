@@ -55,7 +55,7 @@ export const updateLiftType = (data, props, setisLoader) => {
 import axios from "axios";
 import { Organizer } from "../../../Urls";
 
-export const getOrganizerById= (id,setLoader) => {
+export const getOrganizerById = (id, setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
 

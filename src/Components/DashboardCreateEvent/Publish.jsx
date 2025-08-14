@@ -10,11 +10,12 @@ const showToast = (msg) => {
   setToast(msg);
   setTimeout(() => setToast(null), 2500);
 };
-const Publish = ({ data, setData, onSave }) => {
+const Publish = ({ data, setData, onSave, eventData: propEventData }) => {
   const [newTag, setNewTag] = useState("");
   const location = useLocation();
   const [toast, setToast] = useState(null);
-  const eventData = location.state?.event;
+  const stateEventData = location.state?.event;
+  const eventData = propEventData || stateEventData;
 
   const [tags, setTags] = useState([]);
 
@@ -26,10 +27,22 @@ const Publish = ({ data, setData, onSave }) => {
   };
 
   useEffect(() => {
-    if (eventData?.tags) {
-      setTags(eventData.tags);
+    if (!eventData) return;
+
+    // Handle tags from API response
+    if (eventData.eventTags) {
+      setTags(eventData.eventTags);
+      setData(prev => ({ ...prev, tags: eventData.eventTags }));
     }
-  }, [eventData]);
+
+    // Handle other publish settings
+    setData(prev => ({
+      ...prev,
+      isPublish: eventData.isPublish || false,
+      isFeatured: eventData.isFeatured || false,
+      isEnabled: eventData.isEnabled || false
+    }));
+  }, [eventData, setData]);
 
   const handleSave = async () => {
     const token = localStorage.getItem("authToken");

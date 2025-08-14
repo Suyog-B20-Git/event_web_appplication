@@ -37,26 +37,26 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
         time === "All"
           ? true
           : time === "Today"
-          ? eventDate.toDateString() === today.toDateString()
-          : time === "Tomorrow"
-          ? eventDate.toDateString() === tomorrow.toDateString()
-          : time === "Weekend"
-          ? eventDate.getDay() === 6 || eventDate.getDay() === 0
-          : true;
+            ? eventDate.toDateString() === today.toDateString()
+            : time === "Tomorrow"
+              ? eventDate.toDateString() === tomorrow.toDateString()
+              : time === "Weekend"
+                ? eventDate.getDay() === 6 || eventDate.getDay() === 0
+                : true;
 
       const isGenreMatch = genre === "All" ? true : event.category === genre;
 
       const isSearchMatch = search
         ? event.name.toLowerCase().includes(search.toLowerCase()) ||
-          event.venueDetails?.city.toLowerCase().includes(search.toLowerCase())
+        event.venueDetails?.city.toLowerCase().includes(search.toLowerCase())
         : true;
 
       const isPriceMatch =
         price === ""
           ? true
           : price === "free"
-          ? event.price === 0
-          : event.price > 0;
+            ? event.price === 0
+            : event.price > 0;
 
       const isCityMatch = city
         ? event.venueDetails?.city.toLowerCase() === city.toLowerCase()
@@ -105,10 +105,10 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
             {activeTime === "Weekend"
               ? "This Weekend"
               : activeTime === "Today"
-              ? "Today"
-              : activeTime === "Tomorrow"
-              ? "Tomorrow"
-              : ""}
+                ? "Today"
+                : activeTime === "Tomorrow"
+                  ? "Tomorrow"
+                  : ""}
             {activeGenre !== "All" && ` - ${activeGenre}`}
           </span>{" "}
           <span className="text-black">({filteredEvents.length})</span>
@@ -120,11 +120,10 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
             <button
               key={time}
               onClick={() => setActiveTime(time)}
-              className={`text-sm px-3 py-1.5 rounded-full border transition ${
-                activeTime === time
-                  ? "bg-red-600 text-white border-red-600"
-                  : "bg-white text-black border-gray-300 hover:bg-gray-100"
-              }`}
+              className={`text-sm px-3 py-1.5 rounded-full border transition ${activeTime === time
+                ? "bg-red-600 text-white border-red-600"
+                : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                }`}
             >
               {time}
             </button>
@@ -140,11 +139,10 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
                   <button
                     key={genre}
                     onClick={() => setActiveGenre(genre)}
-                    className={`text-xs px-3 py-1 rounded-full border shrink-0 transition ${
-                      activeGenre === genre
-                        ? "bg-red-600 text-white border-red-600"
-                        : "bg-white text-black border-gray-300 hover:bg-gray-100"
-                    }`}
+                    className={`text-xs px-3 py-1 rounded-full border shrink-0 transition ${activeGenre === genre
+                      ? "bg-red-600 text-white border-red-600"
+                      : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                      }`}
                   >
                     {genre}
                   </button>
@@ -170,10 +168,9 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
                 <div className="h-24 lg:h-52 md:h-32 w-full rounded-lg flex justify-end overflow-hidden relative">
                   <div
                     style={{
-                      backgroundImage: `url(${
-                        item.media?.thumbnailImage ||
+                      backgroundImage: `url(${item.media?.thumbnailImage ||
                         "assets/staticAssets/fallback-image.jpg"
-                      })`,
+                        })`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "cover",
                       backgroundPosition: "center",

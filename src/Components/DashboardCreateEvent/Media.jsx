@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-const Media = ({ data, setData, nextTab }) => {
+const Media = ({ data, setData, nextTab, eventData: propEventData }) => {
   const location = useLocation();
-  const eventData = location.state?.event;
+  const stateEventData = location.state?.event;
+  const eventData = propEventData || stateEventData;
 
   const handlePosterChange = (e) => {
     const file = e.target.files[0];
@@ -51,25 +52,18 @@ const Media = ({ data, setData, nextTab }) => {
   useEffect(() => {
     if (!eventData) return;
 
-    // Pre-fill single poster
-    if (eventData.poster) {
-      setPoster(eventData.poster);
+    // Pre-fill media data from API response
+    if (eventData.media) {
+      setData(prev => ({
+        ...prev,
+        posterPreview: eventData.media.posterImage || "",
+        galleryPreviews: eventData.media.images || [],
+        seatingChartPreview: eventData.media.seatingChartImage || "",
+        videoUrl: eventData.youtubeVideoUrls?.[0] || "",
+        videoId: eventData.youtubeVideoUrls?.[0] || ""
+      }));
     }
-
-    // Pre-fill gallery images
-    if (Array.isArray(eventData.gallery)) {
-      setGallery(eventData.gallery);
-    }
-
-    // Pre-fill video info
-    if (eventData.videoUrl) setVideoUrl(eventData.videoUrl);
-    if (eventData.videoId) setVideoId(eventData.videoId);
-
-    // Pre-fill seating chart
-    if (Array.isArray(eventData.seatingChart)) {
-      setSeatingChart(eventData.seatingChart);
-    }
-  }, [eventData]);
+  }, [eventData, setData]);
 
   return (
     <form className="space-y-6">

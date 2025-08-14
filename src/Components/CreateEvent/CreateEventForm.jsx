@@ -171,35 +171,35 @@ export default function EventForm() {
   const eventTag = watch("eventTag") || [];
 
   const handleKeyDown = (e) => {
-  if (e.key === "Enter" && tagInput.trim() !== "") {
-    e.preventDefault();
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      e.preventDefault();
 
-    const newTagsRaw = tagInput
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag.length > 0);
+      const newTagsRaw = tagInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
 
-    const existingTagsLowerSet = new Set(eventTags.map(tag => tag.toLowerCase()));
+      const existingTagsLowerSet = new Set(eventTags.map(tag => tag.toLowerCase()));
 
-    const uniqueNewTags = newTagsRaw.filter(tag => {
-      const isDuplicate = existingTagsLowerSet.has(tag.toLowerCase());
-      if (!isDuplicate) {
-        existingTagsLowerSet.add(tag.toLowerCase());
-        return true;
+      const uniqueNewTags = newTagsRaw.filter(tag => {
+        const isDuplicate = existingTagsLowerSet.has(tag.toLowerCase());
+        if (!isDuplicate) {
+          existingTagsLowerSet.add(tag.toLowerCase());
+          return true;
+        }
+        return false;
+      });
+
+      if (uniqueNewTags.length > 0) {
+        const updatedTags = [...eventTags, ...uniqueNewTags];
+        setEventTags(updatedTags);
+        setValue("eventTag", updatedTags);
+        clearErrors("eventTag");
       }
-      return false;
-    });
 
-    if (uniqueNewTags.length > 0) {
-      const updatedTags = [...eventTags, ...uniqueNewTags];
-      setEventTags(updatedTags);
-      setValue("eventTag", updatedTags);
-      clearErrors("eventTag");
+      setTagInput("");
     }
-
-    setTagInput("");
-  }
-};
+  };
 
 
 
@@ -388,17 +388,17 @@ export default function EventForm() {
     formData.append("repeatExcept", data.repeatExcept ?? []);
     formData.append("performers", data.performers || []);
     // formData.append("performersYtLinks", data.performersYtLinks || []);
-   if (
-  Array.isArray(data.performersYtLinks) &&
-  data.performersYtLinks.some((link) => typeof link === "string" && link.trim() !== "")
-) {
-  const linksString = data.performersYtLinks
-    .filter((link) => typeof link === "string" && link.trim() !== "")
-    .map((link) => link.trim())
-    .join(",");
+    if (
+      Array.isArray(data.performersYtLinks) &&
+      data.performersYtLinks.some((link) => typeof link === "string" && link.trim() !== "")
+    ) {
+      const linksString = data.performersYtLinks
+        .filter((link) => typeof link === "string" && link.trim() !== "")
+        .map((link) => link.trim())
+        .join(",");
 
-  formData.append("performersYtLinks", linksString);
-}
+      formData.append("performersYtLinks", linksString);
+    }
 
 
     formData.append(
@@ -910,9 +910,8 @@ export default function EventForm() {
                     type="url"
                     id="mapUrl"
                     name="mapUrl"
-                    className={`mt-1 block w-full border rounded-md p-2 ${
-                      watch("venue") ? "bg-gray-200 cursor-not-allowed" : ""
-                    }`}
+                    className={`mt-1 block w-full border rounded-md p-2 ${watch("venue") ? "bg-gray-200 cursor-not-allowed" : ""
+                      }`}
                     placeholder="Enter your Venue Map URL"
                     {...register("mapUrl", {
                       validate: (value) => {
@@ -978,11 +977,10 @@ export default function EventForm() {
                             (link) => link?.trim() !== ""
                           )}
                           classNamePrefix="react-select"
-                          className={`react-select-container ${
-                            ytLinks?.some((link) => link?.trim() !== "")
-                              ? "bg-gray-200 cursor-not-allowed"
-                              : ""
-                          }`}
+                          className={`react-select-container ${ytLinks?.some((link) => link?.trim() !== "")
+                            ? "bg-gray-200 cursor-not-allowed"
+                            : ""
+                            }`}
                         />
                         <p className="text-red-500 text-sm min-h-[1rem]">
                           {field.error?.message}
@@ -1015,11 +1013,10 @@ export default function EventForm() {
                         render={({ field }) => (
                           <input
                             type="url"
-                            className={`mt-1 block w-full border rounded-md p-2 min-h-[42px] ${
-                              performers?.length > 0
-                                ? "bg-gray-200 cursor-not-allowed"
-                                : ""
-                            }`}
+                            className={`mt-1 block w-full border rounded-md p-2 min-h-[42px] ${performers?.length > 0
+                              ? "bg-gray-200 cursor-not-allowed"
+                              : ""
+                              }`}
                             placeholder="Enter performers youtube link"
                             {...field}
                             onChange={(e) => {
@@ -1113,7 +1110,7 @@ export default function EventForm() {
                         if (e.target.showPicker) {
                           e.target.showPicker();
                         }
-                      } catch (error) {}
+                      } catch (error) { }
                     }}
                     onKeyDown={(e) => {
                       // Open picker on Enter/Space (these are valid user gestures)
@@ -1123,7 +1120,7 @@ export default function EventForm() {
                           if (e.target.showPicker) {
                             e.target.showPicker();
                           }
-                        } catch (error) {}
+                        } catch (error) { }
                       }
                       // Allow normal typing for other keys
                     }}
@@ -1147,7 +1144,7 @@ export default function EventForm() {
                         if (e.target.showPicker) {
                           e.target.showPicker();
                         }
-                      } catch (error) {}
+                      } catch (error) { }
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -1156,7 +1153,7 @@ export default function EventForm() {
                           if (e.target.showPicker) {
                             e.target.showPicker();
                           }
-                        } catch (error) {}
+                        } catch (error) { }
                       }
                     }}
                     {...register("startTime", {
@@ -1187,7 +1184,7 @@ export default function EventForm() {
                         if (e.target.showPicker) {
                           e.target.showPicker();
                         }
-                      } catch (error) {}
+                      } catch (error) { }
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -1196,7 +1193,7 @@ export default function EventForm() {
                           if (e.target.showPicker) {
                             e.target.showPicker();
                           }
-                        } catch (error) {}
+                        } catch (error) { }
                       }
                     }}
                     {...register("endDate", {
@@ -1220,7 +1217,7 @@ export default function EventForm() {
                         if (e.target.showPicker) {
                           e.target.showPicker();
                         }
-                      } catch (error) {}
+                      } catch (error) { }
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -1229,7 +1226,7 @@ export default function EventForm() {
                           if (e.target.showPicker) {
                             e.target.showPicker();
                           }
-                        } catch (error) {}
+                        } catch (error) { }
                       }
                     }}
                     {...register("endTime", {
@@ -1265,14 +1262,12 @@ export default function EventForm() {
                 <div className="flex gap-2 items-center">
                   <div
                     onClick={() => setValue("isRepetitive", !isRepetitive)}
-                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
-                      isRepetitive ? "bg-[#ff2459]" : "bg-gray-300"
-                    }`}
+                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${isRepetitive ? "bg-[#ff2459]" : "bg-gray-300"
+                      }`}
                   >
                     <div
-                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
-                        isRepetitive ? "translate-x-6" : ""
-                      }`}
+                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${isRepetitive ? "translate-x-6" : ""
+                        }`}
                     />
                   </div>
                   <p>Is Event Repetitive</p>
@@ -1419,7 +1414,7 @@ export default function EventForm() {
                             if (e.target.showPicker) {
                               e.target.showPicker();
                             }
-                          } catch (error) {}
+                          } catch (error) { }
                         }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
@@ -1428,7 +1423,7 @@ export default function EventForm() {
                               if (e.target.showPicker) {
                                 e.target.showPicker();
                               }
-                            } catch (error) {}
+                            } catch (error) { }
                           }
                         }}
                         {...register("repeatStartTime", {
@@ -1453,7 +1448,7 @@ export default function EventForm() {
                             if (e.target.showPicker) {
                               e.target.showPicker();
                             }
-                          } catch (error) {}
+                          } catch (error) { }
                         }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
@@ -1462,7 +1457,7 @@ export default function EventForm() {
                               if (e.target.showPicker) {
                                 e.target.showPicker();
                               }
-                            } catch (error) {}
+                            } catch (error) { }
                           }
                         }}
                         {...register("repeatEndTime", {})}
@@ -1826,14 +1821,12 @@ export default function EventForm() {
                         !disableEventAfterSoldOut
                       )
                     }
-                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
-                      disableEventAfterSoldOut ? "bg-[#ff2459]" : "bg-gray-300"
-                    }`}
+                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${disableEventAfterSoldOut ? "bg-[#ff2459]" : "bg-gray-300"
+                      }`}
                   >
                     <div
-                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
-                        disableEventAfterSoldOut ? "translate-x-6" : ""
-                      }`}
+                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${disableEventAfterSoldOut ? "translate-x-6" : ""
+                        }`}
                     />
                   </div>
                   <p>Disable Event after sold out</p>

@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 
-const Details = ({ data, setData, nextTab }) => {
+const Details = ({ data, setData, nextTab, eventData: propEventData }) => {
   const location = useLocation();
-  const eventData = location.state?.event;
+  const stateEventData = location.state?.event;
+  const eventData = propEventData || stateEventData;
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!eventData) return;
@@ -18,10 +22,28 @@ const Details = ({ data, setData, nextTab }) => {
       whyToAttend: eventData.whyToAttend || "",
       offlinePaymentInstructions: eventData.offlinePaymentInstructions || "",
       currency: eventData.currency || "",
-      soldOut: eventData.soldOut || false,
-      enableReview: eventData.enableReview || false,
+      soldOut: eventData.disableEventAfterSoldOut || false,
+      enableReview: eventData.enableRatingAndReview || false,
     });
   }, [eventData, setData]);
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get("http://localhost:5000/api/categories?type=Event");
+        if (response.data.status) {
+          setCategories(response.data.data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   return (
     <form className="space-y-6">
@@ -35,16 +57,14 @@ const Details = ({ data, setData, nextTab }) => {
             setData((prev) => ({ ...prev, category: e.target.value }))
           }
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 focus:outline-none hover:border-blue-500 focus:ring-2 focus:ring-pink-400"
+          disabled={loading}
         >
-          <option value="">-- Category --</option>
-          <option value="businessSeminar">Business Seminar</option>
-          <option value="festivals">Festivals</option>
-          <option value="liveMusic">Live Music</option>
-          <option value="nightlife&Club">Nightlife & Club</option>
-          <option value="professional">Professional</option>
-          <option value="social">Social</option>
-          <option value="sports&Leisure">Sports & Leisure</option>
-          <option value="theatre&Arts">Theatre and Arts</option>
+          <option value="">{loading ? "Loading categories..." : "-- Category --"}</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -146,8 +166,8 @@ const Details = ({ data, setData, nextTab }) => {
           ></textarea>
         </div>
       </div>
-      
-{/* Why to Attend*/}
+
+      {/* Why to Attend*/}
       {/* <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Why to attend event?

@@ -80,7 +80,7 @@ const AdminMyEvents = () => {
 
       if (response.status === 200) {
         const eventData = response.data;
-        navigate("/dashboard/create-event", { state: { event: eventData } });
+        navigate("/dashboard/update-event", { state: { event: eventData } });
       } else {
         showToast("Could not fetch event details.");
       }

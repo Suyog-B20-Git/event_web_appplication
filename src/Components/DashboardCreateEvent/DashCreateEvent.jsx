@@ -4,6 +4,9 @@ import Timings from "./Timing";
 // import Tickets from "./External";
 import Location from "./Location";
 import Media from "./Media";
+import Performers from "./Performers";
+import SocialMedia from "./SocialMedia";
+import Repetitive from "./Repetitive";
 import SEO from "./SEO";
 import Publish from "./Publish";
 import NewVenueForm from "./NewVenueForm";
@@ -19,6 +22,9 @@ const tabs = [
   // "External",
   "Location",
   "Media",
+  "Performers",
+  "Social Media",
+  "Repetitive",
   "SEO",
   "Publish",
 ];
@@ -32,9 +38,9 @@ const DashCreateEvent = () => {
   const [activeTab, setActiveTab] = useState("Details");
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-const [toast, setToast] = useState(null);
-const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
+
+  const [toast, setToast] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
 
 
   // for saving data coming for all pages
@@ -46,13 +52,29 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
   const [seoData, setSeoData] = useState({});
   const [publishData, setPublishData] = useState({ tags: [] });
   const [newVenueFormData, setNewVenueFormData] = useState({});
+  const [performersData, setPerformersData] = useState({ performersYtLinks: [] });
+  const [socialMediaData, setSocialMediaData] = useState({
+    performerFacebookLinks: [],
+    venueFacebookLinks: [],
+    youtubeLinks: []
+  });
+  const [repetitiveData, setRepetitiveData] = useState({
+    repeatExcept: [],
+    repeatDates: [],
+    repeatDays: [],
+    repeatStartTime: "",
+    repeatEndTime: ""
+  });
 
   useEffect(() => {
     const fetchEventData = async () => {
-      if (!eventId) return setLoading(false);
+      // Get event ID from URL params or navigation state
+      const eventIdToFetch = eventId || passedEventData?.event?._id;
+
+      if (!eventIdToFetch) return setLoading(false);
 
       try {
-        const res = await axios.get(`${baseUrl}/event/${eventId}`, {
+        const res = await axios.get(`${baseUrl}/event/${eventIdToFetch}`, {
           headers: { Authorization: token },
         });
         setEventData(res.data);
@@ -63,7 +85,7 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
       }
     };
     fetchEventData();
-  }, [eventId, token]);
+  }, [eventId, passedEventData?.event?._id, token]);
 
   const nextTab = () => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -92,7 +114,7 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
       details.offlinePaymentInstructions || ""
     );
     formData.append("currency", details.currency || "");
-    formData.append("soldOut", details.soldOut || false);
+    formData.append("disableEventAfterSoldOut", details.soldOut || false);
     formData.append("enableRatingAndReview", details.enableReview || false);
 
     // TIMING
@@ -102,14 +124,15 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
     formData.append("startDate", new Date(startDateTime).toISOString());
     formData.append("endDate", new Date(endDateTime).toISOString());
 
+    // Repetitive settings
+    formData.append("isRepetitive", timing.isRepetitive || false);
+    formData.append("repetitiveType", timing.repetitiveType || "");
+    formData.append("isSeasonal", timing.isSeasonal || false);
+
     // LOCATION
     const location = payload.location || {};
     formData.append("isOnline", location.isOnline || false);
-
-    // // EXTERNAL
-    // const external = payload.external || {};
-    // formData.append("externalUrl", external.externalUrl || "");
-    // formData.append("buttonText", external.buttonText || "");
+    formData.append("venue", location.venue || "");
 
     // MEDIA
     const media = payload.media || {};
@@ -142,10 +165,48 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
       })
     );
 
+    // PERFORMERS
+    const performers = payload.performers || {};
+    if (Array.isArray(performers.performersYtLinks)) {
+      formData.append("performersYtLinks", performers.performersYtLinks.join(","));
+    }
+
+    // SOCIAL MEDIA
+    const socialMedia = payload.socialMedia || {};
+    if (Array.isArray(socialMedia.performerFacebookLinks)) {
+      formData.append("performerFacebookLinks", socialMedia.performerFacebookLinks.join(","));
+    }
+    if (Array.isArray(socialMedia.venueFacebookLinks)) {
+      formData.append("venueFacebookLinks", socialMedia.venueFacebookLinks.join(","));
+    }
+    if (Array.isArray(socialMedia.youtubeLinks)) {
+      formData.append("youtubeLinks", socialMedia.youtubeLinks.join(","));
+    }
+
+    // REPETITIVE SETTINGS
+    const repetitive = payload.repetitive || {};
+    if (Array.isArray(repetitive.repeatExcept)) {
+      formData.append("repeatExcept", repetitive.repeatExcept.join(","));
+    }
+    if (Array.isArray(repetitive.repeatDates)) {
+      formData.append("repeatDates", repetitive.repeatDates.join(","));
+    }
+    if (Array.isArray(repetitive.repeatDays)) {
+      formData.append("repeatDays", repetitive.repeatDays.join(","));
+    }
+    formData.append("repeatStartTime", repetitive.repeatStartTime || "");
+    formData.append("repeatEndTime", repetitive.repeatEndTime || "");
+
     // TAGS (comma-separated string)
     if (Array.isArray(payload.tags)) {
-      formData.append("tags", payload.tags.join(","));
+      formData.append("eventTags", payload.tags.join(","));
     }
+
+    // PUBLISH SETTINGS
+    const publish = payload.publish || {};
+    formData.append("isPublish", publish.isPublish || false);
+    formData.append("isFeatured", publish.isFeatured || false);
+    formData.append("isEnabled", publish.isEnabled || false);
 
     return formData;
   };
@@ -154,16 +215,18 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
   const handleSaveEvent = async () => {
     const token = localStorage.getItem("authToken");
 
-    const isUpdate = detailsData?.id;
+    const isUpdate = eventData?._id;
 
     const payload = {
       details: detailsData,
       timing: timingData,
       location: locationData,
-      // external: externalData,
       media: mediaData,
+      performers: performersData,
+      socialMedia: socialMediaData,
+      repetitive: repetitiveData,
       seo: seoData,
-      tags: publishData.tags,
+      publish: publishData,
     };
     console.log("Payload being sent: ", payload);
     const formData = convertPayloadToFormData(payload);
@@ -193,6 +256,9 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
     console.log("LOCATION:", locationData);
     // console.log("EXTERNAL:", externalData);
     console.log("MEDIA:", mediaData);
+    console.log("PERFORMERS:", performersData);
+    console.log("SOCIAL MEDIA:", socialMediaData);
+    console.log("REPETITIVE:", repetitiveData);
     console.log("SEO:", seoData);
     console.log("PUBLISH:", publishData);
   }, [
@@ -201,24 +267,29 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
     locationData,
     // externalData,
     mediaData,
+    performersData,
+    socialMediaData,
+    repetitiveData,
     seoData,
     publishData,
   ]);
 
+  // Determine if we're in edit mode
+  const isEditMode = passedEventData?.event?._id || eventId || eventData;
+
   return (
     <div className="p-4 md:p-6 bg-white rounded-lg shadow-md max-w-8xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Update Event </h2>
+      <h2 className="text-2xl font-bold mb-6">{isEditMode ? "Update Event" : "Create Event"}</h2>
 
       <div className="flex flex-wrap gap-2 border-b mb-6">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-t ${
-              activeTab === tab
-                ? "bg-[#ff2459] text-white"
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-            }`}
+            className={`px-4 py-2 rounded-t ${activeTab === tab
+              ? "bg-[#ff2459] text-white"
+              : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+              }`}
           >
             {tab}
           </button>
@@ -234,6 +305,7 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
                 data={detailsData}
                 setData={setDetailsData}
                 nextTab={nextTab}
+                eventData={eventData}
               />
             )}
             {activeTab === "Timings" && (
@@ -241,6 +313,7 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
                 data={timingData}
                 setData={setTimingData}
                 nextTab={nextTab}
+                eventData={eventData}
               />
             )}
             {/* {activeTab === "External" && (
@@ -255,6 +328,7 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
                 data={locationData}
                 setData={setLocationData}
                 nextTab={nextTab}
+                eventData={eventData}
               />
             )}
             {activeTab === "Media" && (
@@ -262,16 +336,42 @@ const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
                 data={mediaData}
                 setData={setMediaData}
                 nextTab={nextTab}
+                eventData={eventData}
+              />
+            )}
+            {activeTab === "Performers" && (
+              <Performers
+                data={performersData}
+                setData={setPerformersData}
+                nextTab={nextTab}
+                eventData={eventData}
+              />
+            )}
+            {activeTab === "Social Media" && (
+              <SocialMedia
+                data={socialMediaData}
+                setData={setSocialMediaData}
+                nextTab={nextTab}
+                eventData={eventData}
+              />
+            )}
+            {activeTab === "Repetitive" && (
+              <Repetitive
+                data={repetitiveData}
+                setData={setRepetitiveData}
+                nextTab={nextTab}
+                eventData={eventData}
               />
             )}
             {activeTab === "SEO" && (
-              <SEO data={seoData} setData={setSeoData} nextTab={nextTab} />
+              <SEO data={seoData} setData={setSeoData} nextTab={nextTab} eventData={eventData} />
             )}
             {activeTab === "Publish" && (
               <Publish
                 data={publishData}
                 setData={setPublishData}
                 onSave={handleSaveEvent}
+                eventData={eventData}
               />
             )}
             {activeTab === "NewVenueForm" && (

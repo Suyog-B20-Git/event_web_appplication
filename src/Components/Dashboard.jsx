@@ -386,7 +386,10 @@ const Dashboard = () => {
                                 <IoTicket className="text-base text-red-500" />
                                 <span className="text-sm font-medium">Export Attendees</span>
                               </button>
-                              <button className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                              <button
+                                onClick={() => navigate("/dashboard/update-event", { state: { event: { _id: event.id } } })}
+                                className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                              >
                                 <FaEdit className="text-base text-blue-500" />
                                 <span className="text-sm font-medium">Edit Event</span>
                               </button>
@@ -520,13 +523,12 @@ const Dashboard = () => {
                         className="w-full h-40 object-cover"
                       />
                       <span
-                        className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold text-white ${
-                          booking.status === "upcoming"
-                            ? "bg-blue-600"
-                            : booking.status === "refunded"
+                        className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold text-white ${booking.status === "upcoming"
+                          ? "bg-blue-600"
+                          : booking.status === "refunded"
                             ? "bg-red-600"
                             : "bg-green-600"
-                        }`}
+                          }`}
                       >
                         {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                       </span>
@@ -579,9 +581,8 @@ const Dashboard = () => {
                         <div className="flex justify-between">
                           <span className="font-medium">Expired:</span>
                           <span
-                            className={`font-semibold ${
-                              booking.expired === "yes" ? "text-red-500" : "text-green-500"
-                            }`}
+                            className={`font-semibold ${booking.expired === "yes" ? "text-red-500" : "text-green-500"
+                              }`}
                           >
                             {booking.expired.charAt(0).toUpperCase() + booking.expired.slice(1)}
                           </span>

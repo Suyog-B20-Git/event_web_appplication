@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-const Timings = ({ data, setData, nextTab }) => {
+const Timings = ({ data, setData, nextTab, eventData: propEventData }) => {
   const location = useLocation();
-  const eventData = location.state?.event;
+  const stateEventData = location.state?.event;
+  const eventData = propEventData || stateEventData;
 
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -19,6 +20,7 @@ const Timings = ({ data, setData, nextTab }) => {
       if (!isNaN(start)) {
         setStartDate(start.toISOString().slice(0, 10));
         setStartTime(start.toTimeString().slice(0, 5));
+        setData(prev => ({ ...prev, startDate: start.toISOString().slice(0, 10), startTime: start.toTimeString().slice(0, 5) }));
       }
     }
 
@@ -27,11 +29,13 @@ const Timings = ({ data, setData, nextTab }) => {
       if (!isNaN(end)) {
         setEndDate(end.toISOString().slice(0, 10));
         setEndTime(end.toTimeString().slice(0, 5));
+        setData(prev => ({ ...prev, endDate: end.toISOString().slice(0, 10), endTime: end.toTimeString().slice(0, 5) }));
       }
     }
 
-    setRepeat(eventData.repetitive || false);
-  }, [eventData]);
+    setRepeat(eventData.isRepetitive || false);
+    setData(prev => ({ ...prev, isRepetitive: eventData.isRepetitive || false }));
+  }, [eventData, setData]);
 
   return (
     <form className="space-y-6">

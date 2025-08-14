@@ -107,7 +107,7 @@ function LoginModal() {
               />
             </div>
 
-           
+
             <p className="p-2 flex justify-center ">Login with</p>
             <div className="flex justify-center gap-3 p-2">
               <Link>

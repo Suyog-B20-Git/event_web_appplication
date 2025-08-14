@@ -148,7 +148,9 @@ function Routess() {
 
 
           <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
+          <Route path="/dashboard/update-event" element={<DashCreateEvent />} />
           <Route path="/admin/dashboard/create-event" element={<DashCreateEvent />} />
+          <Route path="/admin/dashboard/update-event" element={<DashCreateEvent />} />
 
 
           <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />

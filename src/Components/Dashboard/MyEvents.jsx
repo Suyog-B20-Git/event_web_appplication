@@ -38,12 +38,12 @@ const MyEvents = () => {
             },
           }
         );
-        
+
         const eventsData = Array.isArray(response.data.data)
           ? response.data.data
           : Array.isArray(response.data.data.events)
-          ? response.data.data.events
-          : [];
+            ? response.data.data.events
+            : [];
 
         setEvents(eventsData);
         setFilteredEvents(eventsData);
@@ -61,9 +61,9 @@ const MyEvents = () => {
   }, [page, rowsToShow]);
 
   const handleCreateEvent = () => {
-    navigate("/dashboard/create-event"); 
+    navigate("/dashboard/create-event");
   };
- 
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
 
@@ -176,50 +176,58 @@ const MyEvents = () => {
                         </td>
                         <td className="px-4 py-4">
                           <span
-                            className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                              event.repetitive
-                                ? "bg-green-500 text-white"
-                                : "bg-red-500 text-white"
-                            }`}
+                            className={`text-xs font-semibold px-3 py-1 rounded-full ${event.repetitive
+                              ? "bg-green-500 text-white"
+                              : "bg-red-500 text-white"
+                              }`}
                           >
                             {event.repetitive ? "Yes" : "No"}
                           </span>
                         </td>
                         <td className="px-4 py-4">
                           <span
-                            className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                              event.seasonal
-                                ? "bg-green-500 text-white"
-                                : "bg-blue-900 text-white"
-                            }`}
+                            className={`text-xs font-semibold px-3 py-1 rounded-full ${event.seasonal
+                              ? "bg-green-500 text-white"
+                              : "bg-blue-900 text-white"
+                              }`}
                           >
                             {event.seasonal ? "Yes" : "No"}
                           </span>
                         </td>
                         <td className="px-4 py-4">
                           <span
-                            className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                              event.publish
-                                ? "bg-green-500 text-white"
-                                : "bg-gray-400 text-white"
-                            }`}
+                            className={`text-xs font-semibold px-3 py-1 rounded-full ${event.publish
+                              ? "bg-green-500 text-white"
+                              : "bg-gray-400 text-white"
+                              }`}
                           >
                             {event.publish ? "Published" : "Unpublished"}
                           </span>
                         </td>
                         <td className="px-4 py-4">
                           <span
-                            className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                              event.status === "enabled"
-                                ? "bg-green-500 text-white"
-                                : "bg-red-500 text-white"
-                            }`}
+                            className={`text-xs font-semibold px-3 py-1 rounded-full ${event.status === "enabled"
+                              ? "bg-green-500 text-white"
+                              : "bg-red-500 text-white"
+                              }`}
                           >
                             {event.status || "Unknown"}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-right">
-                          <button className="text-xl">⋮</button>
+                        <td className="px-4 py-4 text-right relative">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Add dropdown functionality here if needed
+                              navigate("/dashboard/update-event", {
+                                state: { event: { _id: event._id } }
+                              });
+                            }}
+                            className="text-xl hover:text-blue-600 transition-colors"
+                            title="Edit Event"
+                          >
+                            ✏️
+                          </button>
                         </td>
                       </tr>
                     ))

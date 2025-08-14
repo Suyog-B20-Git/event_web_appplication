@@ -43,24 +43,24 @@ const CustomDateIcon = ({ date, bgColor }) => (
 );
 
 // Simple Calendar Component (replacing react-calendar)
-const SimpleCalendar = ({ 
-  value, 
-  onChange, 
-  tileContent, 
-  tileDisabled, 
+const SimpleCalendar = ({
+  value,
+  onChange,
+  tileContent,
+  tileDisabled,
   showNavigation = true,
   activeStartDate,
-  restrictToWeek = false 
+  restrictToWeek = false
 }) => {
   const [currentDate, setCurrentDate] = useState(activeStartDate || value || new Date());
-  
+
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
-  
+
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  
+
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -68,48 +68,48 @@ const SimpleCalendar = ({
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
+
     const days = [];
-    
+
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-    
+
     // Add all days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       days.push(new Date(year, month, day));
     }
-    
+
     return days;
   };
-  
+
   const days = getDaysInMonth(currentDate);
-  
+
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   };
-  
+
   const handleNextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
-  
+
   const handleDateClick = (date) => {
     if (date && (!tileDisabled || !tileDisabled({ date, view: 'month' }))) {
       onChange(date);
     }
   };
-  
+
   const isSelected = (date) => {
     if (!date || !value) return false;
     return date.toDateString() === value.toDateString();
   };
-  
+
   const isDisabled = (date) => {
     if (!date || !tileDisabled) return false;
     return tileDisabled({ date, view: 'month' });
   };
-  
+
   return (
     <div className="calendar-container" style={{ width: '100%', maxWidth: '320px' }}>
       {showNavigation && (
@@ -121,7 +121,7 @@ const SimpleCalendar = ({
           borderBottom: '1px solid #e0e0e0',
           marginBottom: '10px'
         }}>
-          <button 
+          <button
             onClick={handlePrevMonth}
             style={{
               background: 'none',
@@ -136,15 +136,15 @@ const SimpleCalendar = ({
           >
             ‹
           </button>
-          <h3 style={{ 
-            margin: 0, 
-            fontSize: '16px', 
+          <h3 style={{
+            margin: 0,
+            fontSize: '16px',
             fontWeight: '600',
             color: '#333'
           }}>
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </h3>
-          <button 
+          <button
             onClick={handleNextMonth}
             style={{
               background: 'none',
@@ -161,7 +161,7 @@ const SimpleCalendar = ({
           </button>
         </div>
       )}
-      
+
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(7, 1fr)',
@@ -180,7 +180,7 @@ const SimpleCalendar = ({
           </div>
         ))}
       </div>
-      
+
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(7, 1fr)',
@@ -311,8 +311,8 @@ const CommonCalendar = () => {
         });
 
         // Your actual API URL
-        
-        
+
+
         // Construct URLs for different date ranges
         const todayUrl = `${baseUrl}?startDate=${todayStr}&endDate=${todayStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`;
         const tomorrowUrl = `${baseUrl}?startDate=${tomorrowStr}&endDate=${tomorrowStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`;
@@ -366,7 +366,7 @@ const CommonCalendar = () => {
       } catch (err) {
         console.error("Error fetching event data:", err);
         setError(err.message || 'Failed to fetch event data');
-        
+
         // Fallback to mock data if API fails
         console.log('Using fallback mock data due to API error');
         const mockEvents = [
@@ -377,7 +377,7 @@ const CommonCalendar = () => {
           { title: "Conference", startDate: new Date(2025, 5, 15).toISOString() },
           { title: "Training Session", startDate: new Date(2025, 5, 20).toISOString() },
         ];
-        
+
         setEvents(mockEvents);
         setTodayCount(2);
         setTomorrowCount(1);
@@ -444,10 +444,10 @@ const CommonCalendar = () => {
           +{dailyEvents.length - 3}
         </span>
       )}
-    </div>  
+    </div>
   );
 
-  const tileContent = ({date, view }) => {
+  const tileContent = ({ date, view }) => {
     if (view !== "month") return null;
     const dailyEvents = getEventsForDate(date);
     console.log("DAILY EVENTS", dailyEvents);
@@ -497,8 +497,8 @@ const CommonCalendar = () => {
               listStyle: "none",
             }}>
               {dailyEvents.map((event, idx) => (
-                <li key={idx} style={{ 
-                  marginBottom: 6, 
+                <li key={idx} style={{
+                  marginBottom: 6,
                   fontSize: 11,
                   lineHeight: "1.4",
                   color: "#6b7280"
@@ -549,7 +549,7 @@ const CommonCalendar = () => {
           <strong>Warning:</strong> {error}. Using mock data for demonstration.
         </div>
       )}
-      
+
       <div className="flex flex-wrap justify-center gap-4">
         <div className={`${boxClasses} bg-blue-600 cursor-default`}>
           <CustomDateIcon date={today.getDate()} bgColor="#2563EB" />
