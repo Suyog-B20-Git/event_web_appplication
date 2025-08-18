@@ -18,7 +18,7 @@ const AdminEvents = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get(`${baseUrl}?page=${page}}`, {
+      const response = await axios.get(`${baseUrl}?page=${page}`, {
         headers: { Authorization: token },
       });
       // console.log("total events", response.data)

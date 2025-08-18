@@ -13,13 +13,13 @@ export const createNewEvent = (data) => {
       //   data,
       // });
       const response = await axiosInstance.post(Event.createEvent, data,
-        // {
+        {
 
-        //       headers: {
-        //         Authorization: `Bearer ${authToken}`,
-        //         "Content-Type": "application/json",
-        //       },  
-        //     }
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       if (!response.data.status) {
         toast.error(response.data.message || "Event creation failed", {

@@ -216,6 +216,9 @@ export default function EventForm() {
 
     if (storedData) {
       const parsedData = JSON.parse(storedData);
+      console.log("Parsed data from localStorage:", parsedData);
+      console.log("selectedRadio value:", parsedData.selectedRadio);
+
       if (parsedData.eventType == "Public") {
         setValue("isPublish", true);
         // return;
@@ -223,10 +226,13 @@ export default function EventForm() {
         setValue("isPublish", false);
       }
       if (parsedData.selectedRadio == "Tickets") {
+        console.log("Setting ticketFormat to true");
         setValue("isOnline", true);
         setTicketFormat(true);
       } else {
+        console.log("Setting ticketFormat to false");
         setValue("isOnline", false);
+        setTicketFormat(false);
       }
 
       // ✅ Ensure `category` is always set
@@ -347,7 +353,7 @@ export default function EventForm() {
 
   useEffect(() => {
     const hasPerformers = performers?.length > 0;
-    const hasYtLinks = ytLinks && ytLinks.some((link) => link?.trim() !== "");
+    const hasYtLinks = ytLinks && ytLinks.some((link) => link && typeof link === 'string' && link.trim() !== "");
 
     if (!hasPerformers && !hasYtLinks) {
       setError("performers", {
@@ -390,10 +396,10 @@ export default function EventForm() {
     // formData.append("performersYtLinks", data.performersYtLinks || []);
     if (
       Array.isArray(data.performersYtLinks) &&
-      data.performersYtLinks.some((link) => typeof link === "string" && link.trim() !== "")
+      data.performersYtLinks.some((link) => link && typeof link === "string" && link.trim() !== "")
     ) {
       const linksString = data.performersYtLinks
-        .filter((link) => typeof link === "string" && link.trim() !== "")
+        .filter((link) => link && typeof link === "string" && link.trim() !== "")
         .map((link) => link.trim())
         .join(",");
 
@@ -495,36 +501,51 @@ export default function EventForm() {
   }, []);
 
   const handleNextClick = handleSubmit(async (data) => {
-    const formData = new FormData();
-    const category = data.selectedEvent || data.category;
-    data.category = category;
-    formData.append("name", data.name);
-    formData.append("category", category);
-    formData.append("excerpt", data.excerpt);
-    formData.append(
-      "disableEventAfterSoldOut",
-      data.disableEventAfterSoldOut ?? false
-    );
-    formData.append("enableRatingReview", data.enableRatingReview);
-    formData.append("isRepetitive", data.isRepetitive ?? false);
-    formData.append("repetitiveType", data.repetitiveType);
-    formData.append("isPublish", data.isPublish ?? true);
-    formData.append("isSeasonal", data.isSeasonal ?? false);
-    formData.append("isOnline", data.isOnline ?? true);
-    formData.append("venue", data.venue || "");
-    formData.append("mapUrl", data.mapUrl || "");
-    formData.append("repeatExcept", data.repeatExcept ?? []);
-    formData.append("performers", data.performers || []);
-    // formData.append("performersYtLinks", data.performersYtLinks);
-    if (
-      data.performersYtLinks &&
-      data.performersYtLinks.length > 0 &&
-      data.performersYtLinks[0] !== ""
-    ) {
-      const linksString = data.performersYtLinks
-        .filter((link) => link.trim() !== "")
-        .join(",");
+    console.log("handleNextClick called - saving form data and showing ticket form");
+    // Save form data to localStorage for later use
+    localStorage.setItem("eventFormData", JSON.stringify(data));
+    // Just show the ticket form without creating the event yet
+    setShowTicketForm(true);
+  });
 
+  const handleCreateTicket = async (e) => {
+    e.preventDefault();
+
+    // First, create the event
+    const eventFormData = localStorage.getItem("eventFormData");
+    if (!eventFormData) {
+      toast.error("Event form data not found. Please fill the event form first.");
+      return;
+    }
+
+    const eventData = JSON.parse(eventFormData);
+    const formData = new FormData();
+
+    // Prepare event data
+    const category = eventData.selectedEvent || eventData.category;
+    formData.append("name", eventData.name);
+    formData.append("category", category);
+    formData.append("excerpt", eventData.excerpt);
+    formData.append("disableEventAfterSoldOut", eventData.disableEventAfterSoldOut ?? false);
+    formData.append("enableRatingReview", eventData.enableRatingReview);
+    formData.append("isRepetitive", eventData.isRepetitive ?? false);
+    formData.append("repetitiveType", eventData.repetitiveType);
+    formData.append("isPublish", eventData.isPublish ?? true);
+    formData.append("isSeasonal", eventData.isSeasonal ?? false);
+    formData.append("isOnline", eventData.isOnline ?? true);
+    formData.append("venue", eventData.venue || "");
+    formData.append("mapUrl", eventData.mapUrl || "");
+    formData.append("repeatExcept", eventData.repeatExcept ?? []);
+    formData.append("performers", eventData.performers || []);
+
+    if (
+      eventData.performersYtLinks &&
+      eventData.performersYtLinks.length > 0 &&
+      eventData.performersYtLinks.some(link => link && link.trim() !== "")
+    ) {
+      const linksString = eventData.performersYtLinks
+        .filter((link) => link && typeof link === 'string' && link.trim() !== "")
+        .join(",");
       formData.append("performersYtLinks", linksString);
     }
 
@@ -539,26 +560,20 @@ export default function EventForm() {
 
     formData.append("repeatDates", repeatDates.join(","));
     formData.append("repeatDays", repeatDays.join(","));
-    formData.append(
-      "repeatStartTime",
-      data.repeatStartTime ? data.repeatStartTime : ""
-    );
-    formData.append("repeatEndTime", data.repeatEndTime);
-    formData.append("youtubeLinks", data.youtubeLinks);
-    formData.append("startDate", `${data.startDate}T${data.startTime}`);
-    formData.append("endDate", `${data.endDate}T${data.endTime}`);
-    formData.append("description", data.description1);
-    formData.append(
-      "offlinePaymentInstructions",
-      data.offlinePaymentInstructions
-    );
-    formData.append("eventTags", data.eventTag);
-    const seoTags = data.seo.metaTags.join(",");
+    formData.append("repeatStartTime", eventData.repeatStartTime ? eventData.repeatStartTime : "");
+    formData.append("repeatEndTime", eventData.repeatEndTime);
+    formData.append("youtubeLinks", eventData.youtubeLinks);
+    formData.append("startDate", `${eventData.startDate}T${eventData.startTime}`);
+    formData.append("endDate", `${eventData.endDate}T${eventData.endTime}`);
+    formData.append("description", eventData.description1);
+    formData.append("offlinePaymentInstructions", eventData.offlinePaymentInstructions);
+    formData.append("eventTags", eventData.eventTag);
+    const seoTags = eventData.seo.metaTags.join(",");
     formData.append("seo", JSON.stringify(seoTags));
 
-    const thumbnailImage = data.media?.thumbnailImage;
-    const posterImage = data.media?.posterImage;
-    const seatingChartImage = data.media?.seatingChartImage;
+    const thumbnailImage = eventData.media?.thumbnailImage;
+    const posterImage = eventData.media?.posterImage;
+    const seatingChartImage = eventData.media?.seatingChartImage;
 
     if (thumbnailImage) {
       formData.append("thumbnailImage", thumbnailImage);
@@ -570,23 +585,20 @@ export default function EventForm() {
       formData.append("seatingChartImage", seatingChartImage);
     }
 
-    if (data.media?.images?.length > 0) {
-      data.media.images.forEach((image) => {
+    if (eventData.media?.images?.length > 0) {
+      eventData.media.images.forEach((image) => {
         const fileToUpload = image.file instanceof File ? image.file : image;
         if (fileToUpload instanceof File) {
           formData.append("images", fileToUpload);
-        } else {
         }
       });
     }
-
-    localStorage.setItem("eventFormData", JSON.stringify(data));
 
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
     const token = localStorage.getItem("authToken");
 
     if (!isLogin || !token) {
-      localStorage.setItem("eventData", JSON.stringify({ ...data }));
+      localStorage.setItem("eventData", JSON.stringify({ ...eventData }));
       toast.error("Please login to continue");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");
@@ -594,59 +606,50 @@ export default function EventForm() {
     }
 
     try {
-      for (let [key, value] of formData.entries()) {
-      }
+      // Create the event first
       const response = await dispatch(createNewEvent(formData));
-      const eventId4 = response?.event._id;
-      localStorage.setItem("createdEventId", eventId4);
-      setShowTicketForm(true);
-    } catch (error) {
-      toast.error("Failed to create event.");
-    }
-  });
+      const eventId = response?.event._id;
 
-  const handleCreateTicket = async (e) => {
-    e.preventDefault();
+      if (!eventId) {
+        toast.error("Failed to create event.");
+        return;
+      }
 
-    const event = localStorage.getItem("createdEventId");
-    if (!event) {
-      toast.error("Event ID not found. Please create the event first.");
-      return;
-    }
+      localStorage.setItem("createdEventId", eventId);
 
-    const promoCodeArray = promoCodes
-      .split(",")
-      .map((code) => code.trim())
-      .filter(Boolean);
+      // Now create the ticket
+      const promoCodeArray = promoCodes
+        .split(",")
+        .map((code) => code.trim())
+        .filter(Boolean);
 
-    const bookedSeatArray = bookedSeats
-      .split(",")
-      .map((seat) => parseInt(seat.trim(), 10))
-      .filter((n) => !isNaN(n));
+      const bookedSeatArray = bookedSeats
+        .split(",")
+        .map((seat) => parseInt(seat.trim(), 10))
+        .filter((n) => !isNaN(n));
 
-    const ticketData = {
-      event,
-      title,
-      price: Number(price),
-      totalTicketQuantity: Number(totalTicketQuantity),
-      limitPerCustomer: Number(limitPerCustomer),
-      description,
-      promoCodes: promoCodeArray || [],
-      isSale: isSale,
-      salePrice: Number(salePrice) || null,
-      saleStartDate: saleStartDate
-        ? new Date(saleStartDate).toISOString()
-        : null,
-      saleEndDate: saleEndDate ? new Date(saleEndDate).toISOString() : null,
-      soldOut: isSoldOut || false,
-      seatingPoints: [],
-      bookedSeats: bookedSeatArray,
-      noOfBookedSeats: bookedSeatArray.length,
-    };
+      const ticketData = {
+        event: eventId,
+        title,
+        price: Number(price),
+        totalTicketQuantity: Number(totalTicketQuantity),
+        limitPerCustomer: Number(limitPerCustomer),
+        description,
+        promoCodes: promoCodeArray || [],
+        isSale: isSale,
+        salePrice: Number(salePrice) || null,
+        saleStartDate: saleStartDate
+          ? new Date(saleStartDate).toISOString()
+          : null,
+        saleEndDate: saleEndDate ? new Date(saleEndDate).toISOString() : null,
+        soldOut: isSoldOut || false,
+        seatingPoints: [],
+        bookedSeats: bookedSeatArray,
+        noOfBookedSeats: bookedSeatArray.length,
+      };
 
-    try {
-      const token = localStorage.getItem("authToken");
-      const response = await axios.post(
+      // Create the ticket
+      const ticketResponse = await axios.post(
         `${baseUrl}/ticketFormat`,
         ticketData,
         {
@@ -655,10 +658,14 @@ export default function EventForm() {
           },
         }
       );
-      toast.success("Ticket created successfully!");
+
+      toast.success("Event and ticket created successfully!");
+      localStorage.removeItem("eventFormData"); // Clean up
+      localStorage.removeItem("createdEventId"); // Clean up
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Failed to create ticket.");
+      console.error("Error creating event/ticket:", error);
+      toast.error("Failed to create event and ticket.");
     }
   };
 
@@ -945,7 +952,7 @@ export default function EventForm() {
                     rules={{
                       validate: (value) => {
                         const ytLinksFilled = ytLinks?.some(
-                          (link) => link?.trim() !== ""
+                          (link) => link && typeof link === 'string' && link.trim() !== ""
                         );
                         if (!value?.length && !ytLinksFilled) {
                           return "Either Performer or Performers YT URL is required.";
@@ -974,10 +981,10 @@ export default function EventForm() {
                           isClearable
                           noOptionsMessage={() => "Type... to see performers"}
                           isDisabled={ytLinks?.some(
-                            (link) => link?.trim() !== ""
+                            (link) => link && typeof link === 'string' && link.trim() !== ""
                           )}
                           classNamePrefix="react-select"
-                          className={`react-select-container ${ytLinks?.some((link) => link?.trim() !== "")
+                          className={`react-select-container ${ytLinks?.some((link) => link && typeof link === 'string' && link.trim() !== "")
                             ? "bg-gray-200 cursor-not-allowed"
                             : ""
                             }`}
@@ -1833,6 +1840,7 @@ export default function EventForm() {
                 </div>
               </div>
 
+              {console.log("showTicketForm:", showTicketForm, "selectedRadio:", selectedRadio)}
               {showTicketForm && selectedRadio === "Tickets" && (
                 <form
                   onSubmit={handleCreateTicket}
@@ -2027,7 +2035,7 @@ export default function EventForm() {
                     onClick={handleCreateTicket}
                     className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
                   >
-                    Create Ticket
+                    Create Event & Ticket
                   </button>
                 </form>
               )}
@@ -2039,10 +2047,16 @@ export default function EventForm() {
                   rounded={"rounded-lg"}
                   onClick={() => navigate("/create-event")}
                 />
+                {console.log("ticketFormat value:", ticketFormat)}
                 {ticketFormat ? (
                   <button
                     type="button"
-                    onClick={handleNextClick}
+                    onClick={() => {
+                      console.log("Next button clicked");
+                      console.log("Form errors:", errors);
+                      console.log("Form is valid:", isValid);
+                      handleNextClick();
+                    }}
                     className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
                   >
                     Next

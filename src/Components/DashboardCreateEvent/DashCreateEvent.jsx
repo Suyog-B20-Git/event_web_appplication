@@ -6,7 +6,6 @@ import Location from "./Location";
 import Media from "./Media";
 import Performers from "./Performers";
 import SocialMedia from "./SocialMedia";
-import Repetitive from "./Repetitive";
 import SEO from "./SEO";
 import Publish from "./Publish";
 import NewVenueForm from "./NewVenueForm";
@@ -24,7 +23,6 @@ const tabs = [
   "Media",
   "Performers",
   "Social Media",
-  "Repetitive",
   "SEO",
   "Publish",
 ];
@@ -278,7 +276,7 @@ const DashCreateEvent = () => {
   const isEditMode = passedEventData?.event?._id || eventId || eventData;
 
   return (
-    <div className="p-4 md:p-6 bg-white rounded-lg shadow-md max-w-8xl mx-auto">
+    <div className="p-4 md:p-6 bg-white rounded-lg shadow-md max-w-8xl mx-auto min-h-[calc(100vh-2rem)] md:min-h-[calc(100vh-3rem)] lg:min-h-screen">
       <h2 className="text-2xl font-bold mb-6">{isEditMode ? "Update Event" : "Create Event"}</h2>
 
       <div className="flex flex-wrap gap-2 border-b mb-6">
@@ -314,6 +312,8 @@ const DashCreateEvent = () => {
                 setData={setTimingData}
                 nextTab={nextTab}
                 eventData={eventData}
+                repetitiveData={repetitiveData}
+                setRepetitiveData={setRepetitiveData}
               />
             )}
             {/* {activeTab === "External" && (
@@ -351,14 +351,6 @@ const DashCreateEvent = () => {
               <SocialMedia
                 data={socialMediaData}
                 setData={setSocialMediaData}
-                nextTab={nextTab}
-                eventData={eventData}
-              />
-            )}
-            {activeTab === "Repetitive" && (
-              <Repetitive
-                data={repetitiveData}
-                setData={setRepetitiveData}
                 nextTab={nextTab}
                 eventData={eventData}
               />
