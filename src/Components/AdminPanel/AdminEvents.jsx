@@ -173,7 +173,7 @@ const AdminEvents = () => {
                   <td className="p-3">{formatDate(event.startDate)}</td>
                   <td className="p-3">{formatDate(event.endDate)}</td>
                   <td className="p-3">{event.isPublish}</td>
-                  <td className="p-3">{event.status}</td>
+                  <td className="p-3">{event.isEnabled}</td>
                   <td className="p-3 relative">
                     <button
                       className="bg-green-500 text-white px-2 py-1  w-16 h-8 flex items-center justify-center rounded-xl h "

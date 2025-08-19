@@ -15,12 +15,15 @@ const Publish = ({ data, setData, onSave }) => {
   const [toast, setToast] = useState(null);
   const [eventTags, setEventTags] = useState(data.tags || []);
 
-  // Update eventTags when data.tags changes
+  // Initialize and sync local state with centralized state
   useEffect(() => {
-    if (data.tags && JSON.stringify(data.tags) !== JSON.stringify(eventTags)) {
+    // Always sync with centralized state to ensure consistency
+    if (data.tags) {
       setEventTags(data.tags);
+    } else {
+      setEventTags([]);
     }
-  }, [data.tags, eventTags]);
+  }, [data.tags]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && tagInput.trim() !== "") {

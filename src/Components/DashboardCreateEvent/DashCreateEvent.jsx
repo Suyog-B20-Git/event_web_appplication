@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { Tabs, TabList, Tab, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import './DashCreateEvent.css';
 import Details from "./Details";
 import Timings from "./Timing";
 // import Tickets from "./External";
@@ -20,15 +23,15 @@ import { updateEvent } from "../../redux/actions/master/Events/UpdateEvent";
 const baseUrl = "http://localhost:5000/api";
 
 const tabs = [
-  "Details",
-  "Timings",
-  // "External",
-  "Location",
-  "Media",
-  "Performers",
-  "Social Media",
-  "SEO",
-  "Publish",
+  { id: 0, label: "Details" },
+  { id: 1, label: "Timings" },
+  // { id: 2, label: "External" },
+  { id: 2, label: "Location" },
+  { id: 3, label: "Media" },
+  { id: 4, label: "Performers" },
+  { id: 5, label: "Social Media" },
+  { id: 6, label: "SEO" },
+  { id: 7, label: "Publish" },
 ];
 
 // Initial state structure
@@ -65,11 +68,20 @@ const getInitialState = () => ({
   // Media
   poster: null,
   posterPreview: null,
+  thumbnail: null,
   thumbnailPreview: null,
   gallery: [],
+  galleryPreviews: [],
   seatingChart: null,
+  seatingChartPreview: null,
   videoUrl: "",
   videoId: "",
+  media: {
+    posterImage: null,
+    thumbnailImage: null,
+    images: [],
+    seatingChartImage: null,
+  },
 
   // Performers
   performers: [],
@@ -108,7 +120,7 @@ const DashCreateEvent = () => {
   const { eventId } = useParams();
   const token = localStorage.getItem("authToken");
 
-  const [activeTab, setActiveTab] = useState("Details");
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -158,10 +170,16 @@ const DashCreateEvent = () => {
       venueData: data.venue || null,
 
       // Media
-      posterPreview: data.media?.posterImage || data.media?.thumbnailImage || null,
+      posterPreview: data.media?.posterImage || null,
       thumbnailPreview: data.media?.thumbnailImage || null,
       videoUrl: data.videoUrl || "",
       videoId: data.videoId || "",
+      media: {
+        posterImage: data.media?.posterImage || null,
+        thumbnailImage: data.media?.thumbnailImage || null,
+        images: Array.isArray(data.media?.images) ? data.media.images : [],
+        seatingChartImage: data.media?.seatingChartImage || null,
+      },
 
       // Performers
       performers: Array.isArray(data.performers)
@@ -331,11 +349,15 @@ const DashCreateEvent = () => {
   const getMediaData = () => ({
     poster: formState.poster,
     posterPreview: formState.posterPreview,
+    thumbnail: formState.thumbnail,
     thumbnailPreview: formState.thumbnailPreview,
     gallery: formState.gallery,
+    galleryPreviews: formState.galleryPreviews,
     seatingChart: formState.seatingChart,
+    seatingChartPreview: formState.seatingChartPreview,
     videoUrl: formState.videoUrl,
     videoId: formState.videoId,
+    media: formState.media,
   });
 
   const setMediaData = (updates) => {
@@ -344,11 +366,15 @@ const DashCreateEvent = () => {
         const currentMedia = {
           poster: prev.poster,
           posterPreview: prev.posterPreview,
+          thumbnail: prev.thumbnail,
           thumbnailPreview: prev.thumbnailPreview,
           gallery: prev.gallery,
+          galleryPreviews: prev.galleryPreviews,
           seatingChart: prev.seatingChart,
+          seatingChartPreview: prev.seatingChartPreview,
           videoUrl: prev.videoUrl,
           videoId: prev.videoId,
+          media: prev.media,
         };
         const newMedia = updates(currentMedia);
         return { ...prev, ...newMedia };
@@ -475,10 +501,13 @@ const DashCreateEvent = () => {
   };
 
   const nextTab = () => {
-    const currentIndex = tabs.indexOf(activeTab);
-    if (currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1]);
+    if (selectedTabIndex < tabs.length - 1) {
+      setSelectedTabIndex(selectedTabIndex + 1);
     }
+  };
+
+  const handleTabSelect = (index) => {
+    setSelectedTabIndex(index);
   };
 
   // Convert form state to FormData
@@ -638,92 +667,87 @@ const DashCreateEvent = () => {
       <div className="p-4 md:p-6 bg-white rounded-lg shadow-md max-w-8xl mx-auto min-h-[calc(100vh-2rem)] md:min-h-[calc(100vh-3rem)] lg:min-h-screen">
         <h2 className="text-2xl font-bold mb-6">{isEditMode ? "Update Event" : "Create Event"}</h2>
 
-        <div className="flex flex-wrap gap-2 border-b mb-6">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-t ${activeTab === tab
-                ? "bg-[#ff2459] text-white"
-                : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+        {!loading && (
+          <Tabs
+            selectedIndex={selectedTabIndex}
+            onSelect={handleTabSelect}
+            className="react-tabs"
+          >
+            <TabList>
+              {tabs.map((tab) => (
+                <Tab key={tab.id}>
+                  {tab.label}
+                </Tab>
+              ))}
+            </TabList>
 
-        {/* Conditional Tab Content */}
-        <div>
-          {!loading && (
-            <>
-              {activeTab === "Details" && (
-                <Details
-                  data={getDetailsData()}
-                  setData={setDetailsData}
-                  nextTab={nextTab}
-                />
-              )}
-              {activeTab === "Timings" && (
-                <Timings
-                  data={getTimingData()}
-                  setData={setTimingData}
-                  nextTab={nextTab}
-                  repetitiveData={getRepetitiveData()}
-                  setRepetitiveData={setRepetitiveData}
-                />
-              )}
-              {activeTab === "Location" && (
-                <Location
-                  data={getLocationData()}
-                  setData={setLocationData}
-                  nextTab={nextTab}
-                />
-              )}
-              {activeTab === "Media" && (
-                <Media
-                  data={getMediaData()}
-                  setData={setMediaData}
-                  nextTab={nextTab}
-                />
-              )}
-              {activeTab === "Performers" && (
-                <Performers
-                  data={getPerformersData()}
-                  setData={setPerformersData}
-                  nextTab={nextTab}
-                />
-              )}
-              {activeTab === "Social Media" && (
-                <SocialMedia
-                  data={getSocialMediaData()}
-                  setData={setSocialMediaData}
-                  nextTab={nextTab}
-                />
-              )}
-              {activeTab === "SEO" && (
-                <SEO
-                  data={getSeoData()}
-                  setData={setSeoData}
-                  nextTab={nextTab}
-                />
-              )}
-              {activeTab === "Publish" && (
-                <Publish
-                  data={getPublishData()}
-                  setData={setPublishData}
-                  onSave={handleSaveEvent}
-                />
-              )}
-              {activeTab === "NewVenueForm" && (
-                <NewVenueForm
-                  data={getLocationData()}
-                  settData={setLocationData}
-                />
-              )}
-            </>
-          )}
-        </div>
+            <TabPanel key="details" forceRender={true}>
+              <Details
+                data={getDetailsData()}
+                setData={setDetailsData}
+                nextTab={nextTab}
+              />
+            </TabPanel>
+
+            <TabPanel key="timings" forceRender={true}>
+              <Timings
+                data={getTimingData()}
+                setData={setTimingData}
+                nextTab={nextTab}
+                repetitiveData={getRepetitiveData()}
+                setRepetitiveData={setRepetitiveData}
+              />
+            </TabPanel>
+
+            <TabPanel key="location" forceRender={true}>
+              <Location
+                data={getLocationData()}
+                setData={setLocationData}
+                nextTab={nextTab}
+              />
+            </TabPanel>
+
+            <TabPanel key="media" forceRender={true}>
+              <Media
+                data={getMediaData()}
+                setData={setMediaData}
+                nextTab={nextTab}
+              />
+            </TabPanel>
+
+            <TabPanel key="performers" forceRender={true}>
+              <Performers
+                data={getPerformersData()}
+                setData={setPerformersData}
+                nextTab={nextTab}
+              />
+            </TabPanel>
+
+            <TabPanel key="social-media" forceRender={true}>
+              <SocialMedia
+                data={getSocialMediaData()}
+                setData={setSocialMediaData}
+                nextTab={nextTab}
+              />
+            </TabPanel>
+
+            <TabPanel key="seo" forceRender={true}>
+              <SEO
+                data={getSeoData()}
+                setData={setSeoData}
+                nextTab={nextTab}
+              />
+            </TabPanel>
+
+            <TabPanel key="publish" forceRender={true}>
+              <Publish
+                data={getPublishData()}
+                setData={setPublishData}
+                onSave={handleSaveEvent}
+              />
+            </TabPanel>
+          </Tabs>
+        )}
       </div>
     </>
   );

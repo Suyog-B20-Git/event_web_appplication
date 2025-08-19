@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import Select from "react-select";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,16 +16,55 @@ const Location = ({ data, setData, nextTab }) => {
   const [query, setQuery] = useState("");
   const [venueError, setVenueError] = useState("");
   const [mapUrlError, setMapUrlError] = useState("");
+  const [userHasSelectedVenue, setUserHasSelectedVenue] = useState(false);
 
-  // Update local states when data changes
+  // Get venue data from Redux store - moved before useEffect to avoid hoisting issues
+  const store = useSelector((state) => state.venuesReducer) || { venues: [] };
+  const venuesData = store?.venues || []; // Ensure data is always an array
+
+  // Create venue options from API data - memoized to prevent infinite re-renders
+  const venueOptions = useMemo(() => {
+    return venuesData.map((venue) => ({
+      value: venue._id,
+      label: venue.name,
+    }));
+  }, [venuesData]);
+
+  // Initialize and sync local state with centralized state
   useEffect(() => {
-    if (data.isOnline !== isOnline) {
-      setIsOnline(data.isOnline || false);
-    }
-    if (data.venue !== selectedVenue) {
+    // Always sync with centralized state to ensure consistency
+    setIsOnline(data.isOnline || false);
+
+    // Only sync venue selection if user hasn't manually selected one
+    if (!userHasSelectedVenue) {
       setSelectedVenue(data.venue || "");
+
+      // Handle venue option initialization and updates
+      if (data.venue) {
+        // Use stored venue data if available (preferred)
+        if (data.venueData && data.venueData._id && data.venueData.name) {
+          setCurrentVenueOption({
+            value: data.venueData._id,
+            label: data.venueData.name
+          });
+        } else {
+          // Try to find in current options
+          const existingOption = venueOptions.find(option => option.value === data.venue);
+          if (existingOption) {
+            setCurrentVenueOption(existingOption);
+          } else {
+            // Set basic option as fallback
+            setCurrentVenueOption({
+              value: data.venue,
+              label: `Venue ${data.venue.slice(-4)}`
+            });
+          }
+        }
+      } else {
+        setCurrentVenueOption(null);
+      }
     }
-  }, [data.isOnline, data.venue, isOnline, selectedVenue]);
+  }, [data.isOnline, data.venue, data.venueData, venueOptions, userHasSelectedVenue]);
 
   // Fetch API data whenever `query` updates
   useEffect(() => {
@@ -34,14 +73,10 @@ const Location = ({ data, setData, nextTab }) => {
     }
   }, [dispatch, query]);
 
-  const store = useSelector((state) => state.venuesReducer) || { venues: [] };
-  const venuesData = store?.venues || []; // Ensure data is always an array
-
-  // Create venue options from API data
-  const venueOptions = venuesData.map((venue) => ({
-    value: venue._id,
-    label: venue.name,
-  }));
+  // Reset user selection flag when data changes (new event loaded)
+  useEffect(() => {
+    setUserHasSelectedVenue(false);
+  }, [data.venueData]); // Reset when venueData changes (new event loaded)
 
   // If we have a selected venue from data but it's not in the options,
   // we need to add it to show it in the dropdown
@@ -49,57 +84,7 @@ const Location = ({ data, setData, nextTab }) => {
     ? { value: data.venue, label: "Selected Venue" }
     : null;
 
-  // Initialize current venue option when component mounts with existing data
-  useEffect(() => {
-    // Only initialize if we don't already have a venue option or if data has changed
-    const hasChanged = data.venue !== (currentVenueOption?.value || null);
 
-    if (data.venue && hasChanged) {
-      // First, check if we have full venue object stored in formState
-      if (data.venueData && data.venueData._id && data.venueData.name) {
-        setCurrentVenueOption({
-          value: data.venueData._id,
-          label: data.venueData.name
-        });
-      } else {
-        // Try to find the venue in the current options first
-        const existingOption = venueOptions.find(option => option.value === data.venue);
-        if (existingOption) {
-          setCurrentVenueOption(existingOption);
-        } else {
-          // If not found, we'll need to fetch venue details
-          const fetchVenueDetails = async () => {
-            try {
-              const response = await dispatch(getVenueById(data.venue));
-              if (response?.venueData) {
-                setCurrentVenueOption({
-                  value: response.venueData._id,
-                  label: response.venueData.name
-                });
-              } else {
-                // Fallback if fetch fails
-                setCurrentVenueOption({
-                  value: data.venue,
-                  label: `Venue ${data.venue.slice(-4)}`
-                });
-              }
-            } catch (error) {
-              console.error('Failed to fetch venue details:', error);
-              setCurrentVenueOption({
-                value: data.venue,
-                label: `Venue ${data.venue.slice(-4)}`
-              });
-            }
-          };
-
-          fetchVenueDetails();
-        }
-      }
-    } else if (!data.venue && currentVenueOption) {
-      // Clear venue option if no venue is selected
-      setCurrentVenueOption(null);
-    }
-  }, [data.venue, data.venueData, currentVenueOption, venueOptions, dispatch]);
 
   // Combine API options with selected venue if needed
   const allVenueOptions = selectedVenueOption
@@ -192,6 +177,9 @@ const Location = ({ data, setData, nextTab }) => {
               setData(prev => ({ ...prev, venue: venueId }));
               setSelectedVenue(venueId);
               setCurrentVenueOption(selectedOption);
+
+              // Mark that user has made a selection
+              setUserHasSelectedVenue(true);
 
               // Clear errors when venue is selected
               if (venueId) {

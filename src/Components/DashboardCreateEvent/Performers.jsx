@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getPerformers } from "../../redux/actions/master/Events/GetPerformer";
@@ -13,75 +13,53 @@ const Performers = ({ data, setData, nextTab }) => {
     const [performersYtLinks, setPerformersYtLinks] = useState(data.performersYtLinks || [""]);
     const [performerError, setPerformerError] = useState("");
     const [ytLinksError, setYtLinksError] = useState("");
+    const [userHasSelectedPerformers, setUserHasSelectedPerformers] = useState(false);
 
-    // Update performersYtLinks when data changes
+    // Get performer data from Redux store - moved before useEffect to avoid hoisting issues
+    const store1 = useSelector((state) => state.performersReducer) || {
+        performers: [],
+    };
+    const performersData = store1?.performers || []; // Ensure data is always an array
+
+    // Create performer options from API data - memoized to prevent infinite re-renders
+    const performerOptions = useMemo(() => {
+        return performersData.map((performer) => ({
+            value: performer._id,
+            label: performer.name,
+        }));
+    }, [performersData]);
+
+    // Initialize and sync local state with centralized state
     useEffect(() => {
-        if (data.performersYtLinks && JSON.stringify(data.performersYtLinks) !== JSON.stringify(performersYtLinks)) {
+        // Always sync performersYtLinks with centralized state
+        if (data.performersYtLinks) {
             setPerformersYtLinks(data.performersYtLinks);
         }
-    }, [data.performersYtLinks, performersYtLinks]);
 
-    // Initialize selected performers when component mounts with existing data
-    useEffect(() => {
-        // Only initialize if we don't already have selected performers or if data has changed
-        const currentPerformerIds = selectedPerformers.map(p => p.value);
-        const dataPerformerIds = data.performers || [];
-
-        // Check if the data has actually changed
-        const hasChanged = dataPerformerIds.length !== currentPerformerIds.length ||
-            dataPerformerIds.some(id => !currentPerformerIds.includes(id));
-
-        if (hasChanged) {
+        // Only sync performers selection if user hasn't manually selected them
+        if (!userHasSelectedPerformers) {
+            // Handle performers initialization and updates
             if (data.performers && data.performers.length > 0) {
-                // First, check if we have full performer objects stored in formState
+                // Use stored performer data if available (preferred)
                 if (data.performersData && data.performersData.length > 0) {
-                    // Use the stored performer data directly
                     const performerOptions = data.performersData.map(performer => ({
                         value: performer._id,
                         label: performer.name
                     }));
                     setSelectedPerformers(performerOptions);
                 } else {
-                    // Fetch performer details to get their names
-                    const fetchPerformerDetails = async () => {
-                        const performerOptions = [];
-
-                        for (const performerId of data.performers) {
-                            try {
-                                // Dispatch action to fetch performer details
-                                const response = await dispatch(getPerformerById(performerId));
-                                if (response?.performerData) {
-                                    performerOptions.push({
-                                        value: response.performerData._id,
-                                        label: response.performerData.name
-                                    });
-                                } else {
-                                    // Fallback if fetch fails
-                                    performerOptions.push({
-                                        value: performerId,
-                                        label: `Performer ${performerId.slice(-4)}`
-                                    });
-                                }
-                            } catch (error) {
-                                console.error(`Failed to fetch performer ${performerId}:`, error);
-                                // Fallback if fetch fails
-                                performerOptions.push({
-                                    value: performerId,
-                                    label: `Performer ${performerId.slice(-4)}`
-                                });
-                            }
-                        }
-
-                        setSelectedPerformers(performerOptions);
-                    };
-
-                    fetchPerformerDetails();
+                    // Create basic options with IDs as fallback
+                    const performerOptions = data.performers.map(id => ({
+                        value: id,
+                        label: `Performer ${id.slice(-4)}`
+                    }));
+                    setSelectedPerformers(performerOptions);
                 }
             } else {
                 setSelectedPerformers([]);
             }
         }
-    }, [data.performers, data.performersData, dispatch, selectedPerformers]);
+    }, [data.performers, data.performersData, data.performersYtLinks, userHasSelectedPerformers]);
 
     // Fetch API data whenever `performer` updates
     useEffect(() => {
@@ -90,14 +68,10 @@ const Performers = ({ data, setData, nextTab }) => {
         }
     }, [dispatch, performer]);
 
-    const store1 = useSelector((state) => state.performersReducer) || {
-        performers: [],
-    };
-    const performersData = store1?.performers || []; // Ensure data is always an array
-    const performerOptions = performersData.map((performer) => ({
-        value: performer._id,
-        label: performer.name,
-    })); // Convert API response to Select format
+    // Reset user selection flag when data changes (new event loaded)
+    useEffect(() => {
+        setUserHasSelectedPerformers(false);
+    }, [data.performersData]); // Reset when performersData changes (new event loaded)
 
     const handleAddPerformerLink = () => {
         setPerformersYtLinks([...performersYtLinks, ""]);
@@ -171,6 +145,9 @@ const Performers = ({ data, setData, nextTab }) => {
                                     ? selectedOptions.map((option) => option.value)
                                     : [];
                                 setData(prev => ({ ...prev, performers: selectedIDs }));
+
+                                // Mark that user has made a selection
+                                setUserHasSelectedPerformers(true);
 
                                 // Clear errors when performers are selected
                                 if (selectedIDs.length > 0) {
