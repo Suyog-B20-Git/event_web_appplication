@@ -1,54 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-const Timings = ({ data, setData, nextTab, eventData: propEventData, repetitiveData, setRepetitiveData }) => {
-  const location = useLocation();
-  const stateEventData = location.state?.event;
-  const eventData = propEventData || stateEventData;
-
-  const [startDate, setStartDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [repeat, setRepeat] = useState(false);
-  const [isRepetitive, setIsRepetitive] = useState(false);
-
-  useEffect(() => {
-    if (!eventData) return;
-
-    if (eventData.startDate) {
-      const start = new Date(eventData.startDate);
-      if (!isNaN(start)) {
-        setStartDate(start.toISOString().slice(0, 10));
-        setStartTime(start.toTimeString().slice(0, 5));
-        setData(prev => ({ ...prev, startDate: start.toISOString().slice(0, 10), startTime: start.toTimeString().slice(0, 5) }));
-      }
-    }
-
-    if (eventData.endDate) {
-      const end = new Date(eventData.endDate);
-      if (!isNaN(end)) {
-        setEndDate(end.toISOString().slice(0, 10));
-        setEndTime(end.toTimeString().slice(0, 5));
-        setData(prev => ({ ...prev, endDate: end.toISOString().slice(0, 10), endTime: end.toTimeString().slice(0, 5) }));
-      }
-    }
-
-    setRepeat(eventData.isRepetitive || false);
-    setIsRepetitive(eventData.isRepetitive || false);
-    setData(prev => ({ ...prev, isRepetitive: eventData.isRepetitive || false }));
-
-    // Set repetitive data
-    setRepetitiveData({
-      isRepetitive: eventData.isRepetitive || false,
-      repetitiveType: eventData.repetitiveType || "Weekly",
-      repeatExcept: eventData.repeatExcept || [],
-      repeatDates: eventData.repeatDates || [],
-      repeatDays: eventData.repeatDays || [],
-      repeatStartTime: eventData.repeatStartTime || "",
-      repeatEndTime: eventData.repeatEndTime || "",
-    });
-  }, [eventData, setData, setRepetitiveData]);
+const Timings = ({ data, setData, nextTab, repetitiveData, setRepetitiveData }) => {
+  const [startDate, setStartDate] = useState(data.startDate || "");
+  const [startTime, setStartTime] = useState(data.startTime || "");
+  const [endDate, setEndDate] = useState(data.endDate || "");
+  const [endTime, setEndTime] = useState(data.endTime || "");
+  const [repeat, setRepeat] = useState(data.isRepetitive || false);
+  const [isRepetitive, setIsRepetitive] = useState(data.isRepetitive || false);
 
   const handleRepetitiveToggle = (checked) => {
     setIsRepetitive(checked);
@@ -117,7 +76,7 @@ const Timings = ({ data, setData, nextTab, eventData: propEventData, repetitiveD
       </div>
 
       {/* Duration Display */}
-      <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-2 rounded">
+      {/* <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-2 rounded">
         <p>
           <strong>Start:</strong> 04 Jul 2025 | <strong>End:</strong> 15 Jul
           2025
@@ -125,7 +84,7 @@ const Timings = ({ data, setData, nextTab, eventData: propEventData, repetitiveD
         <p className="text-sm mt-1">
           <strong>Duration:</strong> 12 days | 266:00 hour
         </p>
-      </div>
+      </div> */}
 
       {/* Repetitive Event Settings */}
       <div className="border-t pt-6">
@@ -216,8 +175,8 @@ const Timings = ({ data, setData, nextTab, eventData: propEventData, repetitiveD
                         setRepetitiveData(prev => ({ ...prev, repeatDays: newDays }));
                       }}
                       className={`px-3 py-1 rounded-full text-sm ${(repetitiveData.repeatDays || []).includes(day)
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-200 text-gray-700"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
                         }`}
                     >
                       {day}

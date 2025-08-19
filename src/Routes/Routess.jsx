@@ -193,6 +193,7 @@ function Routess() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
           <Route path="/create-ticket" element={<CreateTicket />} />
+          <Route path="/create-ticket/:eventId" element={<CreateTicket />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />

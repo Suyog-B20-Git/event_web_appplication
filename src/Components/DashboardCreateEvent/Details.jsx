@@ -2,30 +2,11 @@ import React, { useEffect, useState, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-const Details = ({ data, setData, nextTab, eventData: propEventData }) => {
-  const location = useLocation();
-  const stateEventData = location.state?.event;
-  const eventData = propEventData || stateEventData;
+const Details = ({ data, setData, nextTab }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!eventData) return;
-    setData({
-      category: eventData.category || "",
-      type: eventData.type || "",
-      eventName: eventData.name || "",
-      eventUrl: eventData.eventUrl || "",
-      shortUrl: eventData.shortUrl || "",
-      excerpt: eventData.excerpt || "",
-      description: eventData.description || "",
-      whyToAttend: eventData.whyToAttend || "",
-      offlinePaymentInstructions: eventData.offlinePaymentInstructions || "",
-      currency: eventData.currency || "",
-      soldOut: eventData.disableEventAfterSoldOut || false,
-      enableReview: eventData.enableRatingAndReview || false,
-    });
-  }, [eventData, setData]);
+
 
   // Fetch categories
   useEffect(() => {
@@ -44,6 +25,17 @@ const Details = ({ data, setData, nextTab, eventData: propEventData }) => {
     };
     fetchCategories();
   }, []);
+
+  // Ensure current event category is selectable when updating
+  useEffect(() => {
+    if (!data.category) return;
+    if (!categories || categories.length === 0) return;
+
+    const exists = categories.some((cat) => cat?.name === data.category);
+    if (!exists) {
+      setCategories((prev) => [{ _id: "current-category", name: data.category }, ...prev]);
+    }
+  }, [data.category, categories]);
 
   return (
     <form className="space-y-6">
@@ -69,7 +61,7 @@ const Details = ({ data, setData, nextTab, eventData: propEventData }) => {
       </div>
 
       <div className="grid md:grid-cols-1 gap-6">
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Event Type
           </label>
@@ -84,7 +76,7 @@ const Details = ({ data, setData, nextTab, eventData: propEventData }) => {
               setData((prev) => ({ ...prev, type: e.target.value }))
             }
           />
-        </div>
+        </div> */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Event Name
@@ -205,7 +197,7 @@ const Details = ({ data, setData, nextTab, eventData: propEventData }) => {
       </div>
 
       {/* Currency */}
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Event Specific Currency (Optional)
         </label>
@@ -218,31 +210,24 @@ const Details = ({ data, setData, nextTab, eventData: propEventData }) => {
           placeholder="e.g. USD / INR"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 placeholder-gray-400 focus:outline-none hover:border-blue-500"
         />
-      </div>
+      </div> */}
 
-      {/* Checkboxes */}
-      <div className="flex flex-col gap-3">
-        <label className="inline-flex items-center gap-2">
+      {/* Event Sold Out Toggle */}
+      <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+        <div>
+          <label className="text-sm font-medium text-gray-700">Event Sold Out</label>
+          <p className="text-xs text-gray-500">Disable event after sold out</p>
+        </div>
+        <label className="inline-flex relative items-center cursor-pointer">
           <input
             type="checkbox"
+            className="sr-only peer"
             checked={data.soldOut || false}
             onChange={(e) =>
               setData((prev) => ({ ...prev, soldOut: e.target.checked }))
             }
-            className="w-4 h-4 rounded border-gray-300"
           />
-          <span className="text-sm text-gray-700">Event Sold Out</span>
-        </label>
-        <label className="inline-flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={data.enableReview || false}
-            onChange={(e) =>
-              setData((prev) => ({ ...prev, enableReview: e.target.checked }))
-            }
-            className="w-4 h-4 rounded border-gray-300"
-          />
-          <span className="text-sm text-gray-700">Enable Rating & Review</span>
+          <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-red-500 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:w-5 after:h-5 after:bg-white after:rounded-full after:transition-all"></div>
         </label>
       </div>
 

@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-const Media = ({ data, setData, nextTab, eventData: propEventData }) => {
-  const location = useLocation();
-  const stateEventData = location.state?.event;
-  const eventData = propEventData || stateEventData;
+const Media = ({ data, setData, nextTab }) => {
 
   const handlePosterChange = (e) => {
     const file = e.target.files[0];
@@ -49,28 +46,14 @@ const Media = ({ data, setData, nextTab, eventData: propEventData }) => {
     }
   };
 
-  useEffect(() => {
-    if (!eventData) return;
 
-    // Pre-fill media data from API response
-    if (eventData.media) {
-      setData(prev => ({
-        ...prev,
-        posterPreview: eventData.media.posterImage || "",
-        galleryPreviews: eventData.media.images || [],
-        seatingChartPreview: eventData.media.seatingChartImage || "",
-        videoUrl: eventData.youtubeVideoUrls?.[0] || "",
-        videoId: eventData.youtubeVideoUrls?.[0] || ""
-      }));
-    }
-  }, [eventData, setData]);
 
   return (
     <form className="space-y-6">
       {/* Poster Image */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Upload Poster Image
+          Upload Poster Image {data.thumbnailPreview && !data.posterPreview && "(showing thumbnail)"}
         </label>
         <input
           type="file"
@@ -78,7 +61,13 @@ const Media = ({ data, setData, nextTab, eventData: propEventData }) => {
           className="block w-full border border-gray-300 rounded-2xl px-3 py-2 text-gray-500 hover:border-blue-500"
           onChange={handlePosterChange}
         />
-        {data.posterPreview && <img src={data.posterPreview} alt="Poster" />}
+        {(data.posterPreview || data.thumbnailPreview) && (
+          <img
+            src={data.posterPreview || data.thumbnailPreview}
+            alt="Poster"
+            className="w-36 h-24 object-cover rounded-2xl mt-2"
+          />
+        )}
       </div>
 
       {/* Gallery Images */}
@@ -108,7 +97,7 @@ const Media = ({ data, setData, nextTab, eventData: propEventData }) => {
 
       {/* YouTube Video */}
       <div className="space-y-3">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        {/* <label className="block text-sm font-medium text-gray-700 mb-1">
           YouTube Video URL (optional)
         </label>
         <input
@@ -117,7 +106,7 @@ const Media = ({ data, setData, nextTab, eventData: propEventData }) => {
           value={data.videoUrl || ""}
           onChange={handleVideoUrlChange}
           className="w-full border border-gray-300 rounded-2xl px-4 py-2 text-gray-600 hover:border-blue-500"
-        />
+        /> */}
 
         {/* <label className="block text-sm font-medium text-gray-700 mb-1">
           Enter Video ID Only

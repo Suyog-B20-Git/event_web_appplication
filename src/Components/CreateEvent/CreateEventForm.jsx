@@ -19,7 +19,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
-import { postTicketData } from "../../redux/actions/master/Events/updateTicket";
+import { postTicketData } from "../../redux/actions/master/Events/createTicket";
 import { toast } from "react-toastify";
 const baseUrl = import.meta.env.VITE_API_URL;
 import axios from "axios";
@@ -44,23 +44,7 @@ export default function EventForm() {
   const dispatch = useDispatch();
   const [youtubeLinks, setYoutubeLinks] = useState([""]);
   const [performersYtLinks, setperformersYtLinks] = useState([""]);
-  const [showTicketForm, setShowTicketForm] = useState(false);
-
   const selectedRadio = localStorage.getItem("selectedRadio");
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [order, setOrder] = useState("");
-  const [totalTicketQuantity, setTotalTicketQuantity] = useState("");
-  const [limitPerCustomer, setLimitPerCustomer] = useState("");
-  const [description, setDescription] = useState("");
-  const [promoCodes, setPromoCodes] = useState("");
-  const [bookedSeats, setBookedSeats] = useState("");
-  const [saleStartDate, setSaleStartDate] = useState("");
-  const [saleEndDate, setSaleEndDate] = useState("");
-  const [salePrice, setSalePrice] = useState("");
-  const [isDonation, setIsDonation] = useState(false);
-  const [isSoldOut, setIsSoldOut] = useState(false);
-  const [isSale, setIsSale] = useState(false);
 
   // Fetch API data whenever `query` updates
   useEffect(() => {
@@ -353,7 +337,7 @@ export default function EventForm() {
 
   useEffect(() => {
     const hasPerformers = performers?.length > 0;
-    const hasYtLinks = ytLinks && ytLinks.some((link) => link && typeof link === 'string' && link.trim() !== "");
+    const hasYtLinks = ytLinks && ytLinks.some((link) => link?.trim() !== "");
 
     if (!hasPerformers && !hasYtLinks) {
       setError("performers", {
@@ -396,10 +380,10 @@ export default function EventForm() {
     // formData.append("performersYtLinks", data.performersYtLinks || []);
     if (
       Array.isArray(data.performersYtLinks) &&
-      data.performersYtLinks.some((link) => link && typeof link === "string" && link.trim() !== "")
+      data.performersYtLinks.some((link) => typeof link === "string" && link.trim() !== "")
     ) {
       const linksString = data.performersYtLinks
-        .filter((link) => link && typeof link === "string" && link.trim() !== "")
+        .filter((link) => typeof link === "string" && link.trim() !== "")
         .map((link) => link.trim())
         .join(",");
 
@@ -501,49 +485,34 @@ export default function EventForm() {
   }, []);
 
   const handleNextClick = handleSubmit(async (data) => {
-    console.log("handleNextClick called - saving form data and showing ticket form");
-    // Save form data to localStorage for later use
-    localStorage.setItem("eventFormData", JSON.stringify(data));
-    // Just show the ticket form without creating the event yet
-    setShowTicketForm(true);
-  });
+    console.log("handleNextClick called - creating event first");
 
-  const handleCreateTicket = async (e) => {
-    e.preventDefault();
-
-    // First, create the event
-    const eventFormData = localStorage.getItem("eventFormData");
-    if (!eventFormData) {
-      toast.error("Event form data not found. Please fill the event form first.");
-      return;
-    }
-
-    const eventData = JSON.parse(eventFormData);
+    // Create the event first
     const formData = new FormData();
+    const category = data.selectedEvent || data.category;
 
     // Prepare event data
-    const category = eventData.selectedEvent || eventData.category;
-    formData.append("name", eventData.name);
+    formData.append("name", data.name);
     formData.append("category", category);
-    formData.append("excerpt", eventData.excerpt);
-    formData.append("disableEventAfterSoldOut", eventData.disableEventAfterSoldOut ?? false);
-    formData.append("enableRatingReview", eventData.enableRatingReview);
-    formData.append("isRepetitive", eventData.isRepetitive ?? false);
-    formData.append("repetitiveType", eventData.repetitiveType);
-    formData.append("isPublish", eventData.isPublish ?? true);
-    formData.append("isSeasonal", eventData.isSeasonal ?? false);
-    formData.append("isOnline", eventData.isOnline ?? true);
-    formData.append("venue", eventData.venue || "");
-    formData.append("mapUrl", eventData.mapUrl || "");
-    formData.append("repeatExcept", eventData.repeatExcept ?? []);
-    formData.append("performers", eventData.performers || []);
+    formData.append("excerpt", data.excerpt);
+    formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut ?? false);
+    formData.append("enableRatingReview", data.enableRatingReview);
+    formData.append("isRepetitive", data.isRepetitive ?? false);
+    formData.append("repetitiveType", data.repetitiveType);
+    formData.append("isPublish", data.isPublish ?? true);
+    formData.append("isSeasonal", data.isSeasonal ?? false);
+    formData.append("isOnline", data.isOnline ?? true);
+    formData.append("venue", data.venue || "");
+    formData.append("mapUrl", data.mapUrl || "");
+    formData.append("repeatExcept", data.repeatExcept ?? []);
+    formData.append("performers", data.performers || []);
 
     if (
-      eventData.performersYtLinks &&
-      eventData.performersYtLinks.length > 0 &&
-      eventData.performersYtLinks.some(link => link && link.trim() !== "")
+      data.performersYtLinks &&
+      data.performersYtLinks.length > 0 &&
+      data.performersYtLinks.some(link => link && typeof link === 'string' && link.trim() !== "")
     ) {
-      const linksString = eventData.performersYtLinks
+      const linksString = data.performersYtLinks
         .filter((link) => link && typeof link === 'string' && link.trim() !== "")
         .join(",");
       formData.append("performersYtLinks", linksString);
@@ -560,20 +529,20 @@ export default function EventForm() {
 
     formData.append("repeatDates", repeatDates.join(","));
     formData.append("repeatDays", repeatDays.join(","));
-    formData.append("repeatStartTime", eventData.repeatStartTime ? eventData.repeatStartTime : "");
-    formData.append("repeatEndTime", eventData.repeatEndTime);
-    formData.append("youtubeLinks", eventData.youtubeLinks);
-    formData.append("startDate", `${eventData.startDate}T${eventData.startTime}`);
-    formData.append("endDate", `${eventData.endDate}T${eventData.endTime}`);
-    formData.append("description", eventData.description1);
-    formData.append("offlinePaymentInstructions", eventData.offlinePaymentInstructions);
-    formData.append("eventTags", eventData.eventTag);
-    const seoTags = eventData.seo.metaTags.join(",");
+    formData.append("repeatStartTime", data.repeatStartTime ? data.repeatStartTime : "");
+    formData.append("repeatEndTime", data.repeatEndTime);
+    formData.append("youtubeLinks", data.youtubeLinks);
+    formData.append("startDate", `${data.startDate}T${data.startTime}`);
+    formData.append("endDate", `${data.endDate}T${data.endTime}`);
+    formData.append("description", data.description1);
+    formData.append("offlinePaymentInstructions", data.offlinePaymentInstructions);
+    formData.append("eventTags", data.eventTag);
+    const seoTags = data.seo.metaTags.join(",");
     formData.append("seo", JSON.stringify(seoTags));
 
-    const thumbnailImage = eventData.media?.thumbnailImage;
-    const posterImage = eventData.media?.posterImage;
-    const seatingChartImage = eventData.media?.seatingChartImage;
+    const thumbnailImage = data.media?.thumbnailImage;
+    const posterImage = data.media?.posterImage;
+    const seatingChartImage = data.media?.seatingChartImage;
 
     if (thumbnailImage) {
       formData.append("thumbnailImage", thumbnailImage);
@@ -585,8 +554,8 @@ export default function EventForm() {
       formData.append("seatingChartImage", seatingChartImage);
     }
 
-    if (eventData.media?.images?.length > 0) {
-      eventData.media.images.forEach((image) => {
+    if (data.media?.images?.length > 0) {
+      data.media.images.forEach((image) => {
         const fileToUpload = image.file instanceof File ? image.file : image;
         if (fileToUpload instanceof File) {
           formData.append("images", fileToUpload);
@@ -598,7 +567,7 @@ export default function EventForm() {
     const token = localStorage.getItem("authToken");
 
     if (!isLogin || !token) {
-      localStorage.setItem("eventData", JSON.stringify({ ...eventData }));
+      localStorage.setItem("eventData", JSON.stringify({ ...data }));
       toast.error("Please login to continue");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");
@@ -615,41 +584,59 @@ export default function EventForm() {
         return;
       }
 
-      localStorage.setItem("createdEventId", eventId);
+      toast.success("Event created successfully! Now manage your tickets.");
 
-      // Now create the ticket
-      const promoCodeArray = promoCodes
-        .split(",")
-        .map((code) => code.trim())
-        .filter(Boolean);
+      // Navigate to ticket management with the created eventId
+      navigate(`/create-ticket/${eventId}`);
 
-      const bookedSeatArray = bookedSeats
-        .split(",")
-        .map((seat) => parseInt(seat.trim(), 10))
-        .filter((n) => !isNaN(n));
+    } catch (error) {
+      console.error("Error creating event:", error);
+      toast.error("Failed to create event.");
+    }
+  });
 
-      const ticketData = {
-        event: eventId,
-        title,
-        price: Number(price),
-        totalTicketQuantity: Number(totalTicketQuantity),
-        limitPerCustomer: Number(limitPerCustomer),
-        description,
-        promoCodes: promoCodeArray || [],
-        isSale: isSale,
-        salePrice: Number(salePrice) || null,
-        saleStartDate: saleStartDate
-          ? new Date(saleStartDate).toISOString()
-          : null,
-        saleEndDate: saleEndDate ? new Date(saleEndDate).toISOString() : null,
-        soldOut: isSoldOut || false,
-        seatingPoints: [],
-        bookedSeats: bookedSeatArray,
-        noOfBookedSeats: bookedSeatArray.length,
-      };
+  const handleCreateTicket = async (e) => {
+    e.preventDefault();
 
-      // Create the ticket
-      const ticketResponse = await axios.post(
+    const event = localStorage.getItem("createdEventId");
+    if (!event) {
+      toast.error("Event ID not found. Please create the event first.");
+      return;
+    }
+
+    const promoCodeArray = promoCodes
+      .split(",")
+      .map((code) => code.trim())
+      .filter(Boolean);
+
+    const bookedSeatArray = bookedSeats
+      .split(",")
+      .map((seat) => parseInt(seat.trim(), 10))
+      .filter((n) => !isNaN(n));
+
+    const ticketData = {
+      event,
+      title,
+      price: Number(price),
+      totalTicketQuantity: Number(totalTicketQuantity),
+      limitPerCustomer: Number(limitPerCustomer),
+      description,
+      promoCodes: promoCodeArray || [],
+      isSale: isSale,
+      salePrice: Number(salePrice) || null,
+      saleStartDate: saleStartDate
+        ? new Date(saleStartDate).toISOString()
+        : null,
+      saleEndDate: saleEndDate ? new Date(saleEndDate).toISOString() : null,
+      soldOut: isSoldOut || false,
+      seatingPoints: [],
+      bookedSeats: bookedSeatArray,
+      noOfBookedSeats: bookedSeatArray.length,
+    };
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
         `${baseUrl}/ticketFormat`,
         ticketData,
         {
@@ -658,14 +645,10 @@ export default function EventForm() {
           },
         }
       );
-
-      toast.success("Event and ticket created successfully!");
-      localStorage.removeItem("eventFormData"); // Clean up
-      localStorage.removeItem("createdEventId"); // Clean up
+      toast.success("Ticket created successfully!");
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error creating event/ticket:", error);
-      toast.error("Failed to create event and ticket.");
+      toast.error("Failed to create ticket.");
     }
   };
 
@@ -952,7 +935,7 @@ export default function EventForm() {
                     rules={{
                       validate: (value) => {
                         const ytLinksFilled = ytLinks?.some(
-                          (link) => link && typeof link === 'string' && link.trim() !== ""
+                          (link) => link?.trim() !== ""
                         );
                         if (!value?.length && !ytLinksFilled) {
                           return "Either Performer or Performers YT URL is required.";
@@ -981,10 +964,10 @@ export default function EventForm() {
                           isClearable
                           noOptionsMessage={() => "Type... to see performers"}
                           isDisabled={ytLinks?.some(
-                            (link) => link && typeof link === 'string' && link.trim() !== ""
+                            (link) => link?.trim() !== ""
                           )}
                           classNamePrefix="react-select"
-                          className={`react-select-container ${ytLinks?.some((link) => link && typeof link === 'string' && link.trim() !== "")
+                          className={`react-select-container ${ytLinks?.some((link) => link?.trim() !== "")
                             ? "bg-gray-200 cursor-not-allowed"
                             : ""
                             }`}
@@ -1840,205 +1823,7 @@ export default function EventForm() {
                 </div>
               </div>
 
-              {console.log("showTicketForm:", showTicketForm, "selectedRadio:", selectedRadio)}
-              {showTicketForm && selectedRadio === "Tickets" && (
-                <form
-                  onSubmit={handleCreateTicket}
-                  className="w-full max-w-8xl px-1 sm:px-4 lg:px-8 xl:px-0 lg:ml-0 lg:mr-auto p-2 bg-gray-100 rounded-lg space-y-6"
-                >
-                  <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
-                    CREATE TICKET
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block mb-1 font-medium">Title*</label>
-                      <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Ticket Title"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
 
-                    <div>
-                      <label className="block mb-1 font-medium">Price*</label>
-                      <input
-                        type="number"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        placeholder="Ticket Price"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">Order*</label>
-                      <input
-                        type="text"
-                        value={order}
-                        onChange={(e) => setOrder(e.target.value)}
-                        placeholder="Display Order"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Total Ticket Quantity*
-                      </label>
-                      <input
-                        type="number"
-                        value={totalTicketQuantity}
-                        onChange={(e) => setTotalTicketQuantity(e.target.value)}
-                        placeholder="Total Quantity"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Limit Per Customer*
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={limitPerCustomer}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value === "") {
-                            setLimitPerCustomer("");
-                          } else {
-                            const numValue = parseFloat(value);
-                            if (!isNaN(numValue) && numValue >= 0) {
-                              setLimitPerCustomer(numValue);
-                            }
-                          }
-                        }}
-                        onBlur={(e) => {
-                          if (e.target.value === "") {
-                            setLimitPerCustomer(0);
-                          }
-                        }}
-                        placeholder="Limit per customer"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Sale Price
-                      </label>
-                      <input
-                        type="number"
-                        value={salePrice}
-                        onChange={(e) => setSalePrice(e.target.value)}
-                        placeholder="Optional Sale Price"
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Sale Start Date
-                      </label>
-                      <input
-                        type="datetime-local"
-                        value={saleStartDate}
-                        onChange={(e) => setSaleStartDate(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Sale End Date
-                      </label>
-                      <input
-                        type="datetime-local"
-                        value={saleEndDate}
-                        onChange={(e) => setSaleEndDate(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Promo Codes
-                      </label>
-                      <input
-                        type="text"
-                        value={promoCodes}
-                        onChange={(e) => setPromoCodes(e.target.value)}
-                        placeholder="Comma separated promo codes (e.g. VIP32,EARLYBIRD)"
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Booked Seats
-                      </label>
-                      <input
-                        type="text"
-                        value={bookedSeats}
-                        onChange={(e) => setBookedSeats(e.target.value)}
-                        placeholder="Comma separated seat numbers (e.g. 1,2,3)"
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block mb-1 font-medium">
-                      Description*
-                    </label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Enter ticket description"
-                      rows={4}
-                      required
-                      className="w-full border border-gray-300 rounded-md px-4 py-2"
-                    />
-                  </div>
-
-                  <div className="flex flex-wrap gap-6 items-center">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={isDonation}
-                        onChange={(e) => setIsDonation(e.target.checked)}
-                        className="accent-blue-500"
-                      />
-                      <span>Is Donation</span>
-                    </label>
-
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={isSoldOut}
-                        onChange={(e) => setIsSoldOut(e.target.checked)}
-                        className="accent-red-500"
-                      />
-                      <span>Is Sold Out</span>
-                    </label>
-                  </div>
-
-                  <button
-                    type="submit"
-                    onClick={handleCreateTicket}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
-                  >
-                    Create Event & Ticket
-                  </button>
-                </form>
-              )}
 
               <div className="flex justify-around p-0">
                 <Button

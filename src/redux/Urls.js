@@ -21,7 +21,10 @@ export const Event = {
   getEventByFilter: `${baseUrl}event/filter?`,
   getRecentlyView: `${baseUrl}event/recently-viewed?page=1&limit=10`,
   addFavouriteEvent: `${baseUrl}event/favorites`,
-  updateTicket: `${baseUrl}ticket`,
+  createTicket: `${baseUrl}ticketFormat`,
+  updateTicket: `${baseUrl}ticketFormat`,
+  getTicketFormatsByEvent: `${baseUrl}ticketFormat/event`,
+  updateTicketFormatsAndPublish: `${baseUrl}event/updateTicketFormatAndIsPublish`,
 };
 
 export const Performer = {

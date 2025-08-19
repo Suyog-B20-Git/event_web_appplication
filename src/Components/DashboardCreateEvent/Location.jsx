@@ -1,63 +1,135 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Select from "react-select";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getVenue } from "../../redux/actions/master/Events/GetVenue";
+import { getVenueById } from "../../redux/actions/master/Venue/getVenueById";
 import NewVenueForm from "./NewVenueForm";
 
-const Location = ({ data, setData, nextTab, eventData: propEventData }) => {
-  const location = useLocation();
-  const stateEventData = location.state?.event;
-  const eventData = propEventData || stateEventData;
+const Location = ({ data, setData, nextTab }) => {
+  const dispatch = useDispatch();
 
-  const [isOnline, setIsOnline] = useState(false);
-  const [selectedVenue, setSelectedVenue] = useState("");
+  const [isOnline, setIsOnline] = useState(data.isOnline || false);
+  const [selectedVenue, setSelectedVenue] = useState(data.venue || "");
+  const [currentVenueOption, setCurrentVenueOption] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [query, setQuery] = useState("");
-  const [venues, setVenues] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [venueError, setVenueError] = useState("");
+  const [mapUrlError, setMapUrlError] = useState("");
 
+  // Update local states when data changes
   useEffect(() => {
-    if (!eventData) return;
+    if (data.isOnline !== isOnline) {
+      setIsOnline(data.isOnline || false);
+    }
+    if (data.venue !== selectedVenue) {
+      setSelectedVenue(data.venue || "");
+    }
+  }, [data.isOnline, data.venue, isOnline, selectedVenue]);
 
-    setIsOnline(eventData.isOnline || false);
-    setSelectedVenue(eventData.venue?._id || "");
-    setData(prev => ({
-      ...prev,
-      isOnline: eventData.isOnline || false,
-      venue: eventData.venue?._id || "",
-      mapUrl: eventData.mapUrl || ""
-    }));
-  }, [eventData, setData]);
-
-  // Fetch venues when query changes
+  // Fetch API data whenever `query` updates
   useEffect(() => {
     if (query) {
-      const fetchVenues = async () => {
-        setLoading(true);
-        try {
-          const response = await axios.get(`http://localhost:5000/api/venue?search=${query.toLowerCase()}`);
-          if (response.data.status) {
-            setVenues(response.data.data || []);
-          }
-        } catch (error) {
-          console.error("Error fetching venues:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchVenues();
-    } else {
-      setVenues([]);
+      dispatch(getVenue(query.toLowerCase())); // Dispatch Redux action to fetch data
     }
-  }, [query]);
+  }, [dispatch, query]);
 
-  const venueOptions = venues.map((venue) => ({
+  const store = useSelector((state) => state.venuesReducer) || { venues: [] };
+  const venuesData = store?.venues || []; // Ensure data is always an array
+
+  // Create venue options from API data
+  const venueOptions = venuesData.map((venue) => ({
     value: venue._id,
     label: venue.name,
   }));
 
+  // If we have a selected venue from data but it's not in the options,
+  // we need to add it to show it in the dropdown
+  const selectedVenueOption = data?.venue && !venueOptions.find(option => option.value === data.venue)
+    ? { value: data.venue, label: "Selected Venue" }
+    : null;
+
+  // Initialize current venue option when component mounts with existing data
+  useEffect(() => {
+    // Only initialize if we don't already have a venue option or if data has changed
+    const hasChanged = data.venue !== (currentVenueOption?.value || null);
+
+    if (data.venue && hasChanged) {
+      // First, check if we have full venue object stored in formState
+      if (data.venueData && data.venueData._id && data.venueData.name) {
+        setCurrentVenueOption({
+          value: data.venueData._id,
+          label: data.venueData.name
+        });
+      } else {
+        // Try to find the venue in the current options first
+        const existingOption = venueOptions.find(option => option.value === data.venue);
+        if (existingOption) {
+          setCurrentVenueOption(existingOption);
+        } else {
+          // If not found, we'll need to fetch venue details
+          const fetchVenueDetails = async () => {
+            try {
+              const response = await dispatch(getVenueById(data.venue));
+              if (response?.venueData) {
+                setCurrentVenueOption({
+                  value: response.venueData._id,
+                  label: response.venueData.name
+                });
+              } else {
+                // Fallback if fetch fails
+                setCurrentVenueOption({
+                  value: data.venue,
+                  label: `Venue ${data.venue.slice(-4)}`
+                });
+              }
+            } catch (error) {
+              console.error('Failed to fetch venue details:', error);
+              setCurrentVenueOption({
+                value: data.venue,
+                label: `Venue ${data.venue.slice(-4)}`
+              });
+            }
+          };
+
+          fetchVenueDetails();
+        }
+      }
+    } else if (!data.venue && currentVenueOption) {
+      // Clear venue option if no venue is selected
+      setCurrentVenueOption(null);
+    }
+  }, [data.venue, data.venueData, currentVenueOption, venueOptions, dispatch]);
+
+  // Combine API options with selected venue if needed
+  const allVenueOptions = selectedVenueOption
+    ? [selectedVenueOption, ...venueOptions]
+    : venueOptions;
+
+  const validateLocation = () => {
+    const hasVenue = !!data.venue;
+    const hasMapUrl = !!data.mapUrl && data.mapUrl.trim() !== "";
+
+    // Clear previous errors
+    setVenueError("");
+    setMapUrlError("");
+
+    // Check if at least one is provided
+    if (!hasVenue && !hasMapUrl) {
+      setVenueError("Either Venue or Google Map URL is required.");
+      setMapUrlError("Either Venue or Google Map URL is required.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSave = () => {
-    console.log("Saved Location:", { isOnline, selectedVenue });
+    if (!validateLocation()) {
+      return; // Don't proceed if validation fails
+    }
+
+    console.log("Saved Location:", { isOnline, selectedVenue, mapUrl: data.mapUrl });
     nextTab(); // move to next tab after saving
   };
 
@@ -103,7 +175,7 @@ const Location = ({ data, setData, nextTab, eventData: propEventData }) => {
           </label>
           <Select
             isClearable
-            options={venueOptions}
+            options={allVenueOptions}
             placeholder="Search venue..."
             getOptionLabel={(option) => option.label}
             getOptionValue={(option) => option.value}
@@ -119,13 +191,24 @@ const Location = ({ data, setData, nextTab, eventData: propEventData }) => {
               const venueId = selectedOption ? selectedOption.value : null;
               setData(prev => ({ ...prev, venue: venueId }));
               setSelectedVenue(venueId);
+              setCurrentVenueOption(selectedOption);
+
+              // Clear errors when venue is selected
+              if (venueId) {
+                setVenueError("");
+                setMapUrlError("");
+              }
             }}
-            value={venueOptions.find(option => option.value === data.venue) || null}
-            noOptionsMessage={() => loading ? "Loading venues..." : "Type... to see Venues"}
+            value={currentVenueOption || allVenueOptions.find(option => option.value === data.venue) || null}
+            noOptionsMessage={() => "Type... to see Venues"}
             isDisabled={!!data.mapUrl}
             className={data.mapUrl ? "bg-gray-200 cursor-not-allowed" : ""}
-            isLoading={loading}
           />
+          {venueError && (
+            <p className="text-red-500 text-sm min-h-[1rem]">
+              {venueError}
+            </p>
+          )}
         </div>
 
         {/* OR separator */}
@@ -148,9 +231,22 @@ const Location = ({ data, setData, nextTab, eventData: propEventData }) => {
             className={`mt-1 block w-full border rounded-md p-2 ${data.venue ? "bg-gray-200 cursor-not-allowed" : ""}`}
             placeholder="Enter your Venue Map URL"
             value={data.mapUrl || ""}
-            onChange={(e) => setData(prev => ({ ...prev, mapUrl: e.target.value }))}
+            onChange={(e) => {
+              setData(prev => ({ ...prev, mapUrl: e.target.value }));
+
+              // Clear errors when map URL is entered
+              if (e.target.value.trim() !== "") {
+                setVenueError("");
+                setMapUrlError("");
+              }
+            }}
             disabled={!!data.venue}
           />
+          {mapUrlError && (
+            <p className="text-red-500 text-sm min-h-[1rem]">
+              {mapUrlError}
+            </p>
+          )}
         </div>
       </div>
 
