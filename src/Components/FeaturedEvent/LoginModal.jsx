@@ -24,7 +24,7 @@ function LoginModal() {
 
     try {
       const response = await axios.post(
-        // "http://localhost:5000/api/auth/login",
+        // "http://dev.eventsnode.com:3000/api/auth/login",
         `${Auth.login}`,
         {
           email,

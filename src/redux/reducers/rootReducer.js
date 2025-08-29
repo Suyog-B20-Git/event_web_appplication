@@ -57,6 +57,10 @@ import getPagesReducer from "./pages/getPages";
 // Blog Post Reducers
 import blogPostsReducer from "./BlogPosts/blogPosts";
 
+// Venue Admin Reducers
+import getVenuesAdminReducer from "./pages/Venue/getVenuesAdmin";
+import venueOpsReducer from "./pages/Venue/venueOps";
+
 // ** Reducers Import **//
 
 const rootReducer = combineReducers({
@@ -115,6 +119,10 @@ const rootReducer = combineReducers({
 
   // Blog Post Reducers
   blogPosts: blogPostsReducer,
+
+  // Venue Admin Reducers
+  getVenuesAdmin: getVenuesAdminReducer,
+  venueOps: venueOpsReducer,
 });
 
 export default rootReducer;

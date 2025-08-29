@@ -18,17 +18,17 @@ import { createNewService } from "../../redux/actions/master/Services/PostServic
 import { createNewVenue } from "../../redux/actions/master/Venue/postVenue";
 import { Country, State, City } from "country-state-city";
 import ReCAPTCHA from "react-google-recaptcha";
-import { Eye } from "lucide-react"; 
+import { Eye } from "lucide-react";
 import Modal from "react-modal";
 // import axios from "axios";
 import FacebookEmbeded from "../SocialMedia/Facebook";
-import InstagramEmbed  from "../SocialMedia/Instagram";
+import InstagramEmbed from "../SocialMedia/Instagram";
 import YouTubeProfile from "../SocialMedia/Youtube";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 import { useNavigate } from "react-router-dom";
-const baseUrl = import.meta.env.VITE_API_URL;
+const baseUrl = "http://dev.eventsnode.com:3000";
 
 
 function CreatePage() {
@@ -42,7 +42,7 @@ function CreatePage() {
     reset,
     formState: { errors },
   } = useForm();
-  
+
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
   const [selectedTagKeywords, setSelectedTagKeywords] = useState([]);
@@ -61,7 +61,7 @@ function CreatePage() {
       : [];
     setSelectedTags(newTags);
   };
-  
+
   const handleSubcategoryChange = (selectedOptions) => {
     let newSubCategory;
     if (Array.isArray(selectedOptions)) {
@@ -80,42 +80,42 @@ function CreatePage() {
     { value: "Venue", label: "Venue" },
   ];
 
-useEffect(() => {
-  const fetchSubCategories = async () => {
-    if (!selectedCategory) {
-      setSubCategoryList([]);
-      return;
-    }
+  useEffect(() => {
+    const fetchSubCategories = async () => {
+      if (!selectedCategory) {
+        setSubCategoryList([]);
+        return;
+      }
 
-    try {
-      const response = await fetch(`${baseUrl}/api/categories?type=${selectedCategory.value}`);
-       const data= await response.json(); 
+      try {
+        const response = await fetch(`${baseUrl}/api/categories?type=${selectedCategory.value}`);
+        const data = await response.json();
 
-   const formatted =
-     data.data?.map((sub) => ({
-       label: sub.name,
-       value: sub.name,
-     })) || [];
+        const formatted =
+          data.data?.map((sub) => ({
+            label: sub.name,
+            value: sub.name,
+          })) || [];
 
 
-      setSubCategoryList(formatted);
-    } catch (error) {
-      setSubCategoryList([]);
-    }
-  };
+        setSubCategoryList(formatted);
+      } catch (error) {
+        setSubCategoryList([]);
+      }
+    };
 
-  fetchSubCategories();
-}, [selectedCategory]);
+    fetchSubCategories();
+  }, [selectedCategory]);
 
-  
+
   const place_id = watch("location");
 
   const socialProfile = [
-  { label: "Facebook Url", value: "facebookUrl", placeholder: "https://www.facebook.com/abc" },
-  { label: "Twitter Url", value: "twitterUrl", placeholder: "https://www.twitter.com/abc" },
-  { label: "Youtube Url", value: "youtubeUrl", placeholder: "https://www.youtube.com/@tseries" },
-  { label: "Instagram Url", value: "instagramUrl", placeholder: "https://www.instagram.com/Adidas" },
-];
+    { label: "Facebook Url", value: "facebookUrl", placeholder: "https://www.facebook.com/abc" },
+    { label: "Twitter Url", value: "twitterUrl", placeholder: "https://www.twitter.com/abc" },
+    { label: "Youtube Url", value: "youtubeUrl", placeholder: "https://www.youtube.com/@tseries" },
+    { label: "Instagram Url", value: "instagramUrl", placeholder: "https://www.instagram.com/Adidas" },
+  ];
 
   const tagKeywordList = [
     { value: "Event Planner", label: "Event Planner" },
@@ -147,31 +147,31 @@ useEffect(() => {
       { value: "Catering", label: "Catering" },
     ],
   };
-  
-const [soundcloudUrl, setSoundCloudUrl] = useState("");
 
-const handleSoundCloudChange = (e) => {
-  setSoundCloudUrl(e.target.value);
-};
+  const [soundcloudUrl, setSoundCloudUrl] = useState("");
+
+  const handleSoundCloudChange = (e) => {
+    setSoundCloudUrl(e.target.value);
+  };
 
 
   const handleTagKeywordChange = (selectedOptions) => {
     const selectedValues = selectedOptions ? selectedOptions.map((opt) => opt.value) : [];
     setSelectedTagKeywords([...selectedValues, ...selectedTagKeywords.filter(tag => !tagKeywordList.some(t => t.value === tag))]);
   };
-  
-  
+
+
   const handleCustomTagChange = (e) => {
     setCustomTag(e.target.value);
   };
-  
+
   const addCustomTag = () => {
     if (customTag.trim() !== "") {
       setSelectedTagKeywords([...selectedTagKeywords, customTag.trim()]);
       setCustomTag(""); // Reset input
     }
   };
-  
+
   const handleCustomTagAdd = (event) => {
     if (event.key === "Enter" && event.target.value.trim() !== "") {
       const newTag = event.target.value.trim();
@@ -185,13 +185,13 @@ const handleSoundCloudChange = (e) => {
   const handleTagRemove = (tagToRemove) => {
     setSelectedTagKeywords(selectedTagKeywords.filter(tag => tag !== tagToRemove));
   };
-  
+
   useEffect(() => {
     setSelectedTagKeywords([]); // Clear tag keywords when category changes
   }, [selectedCategory]);
-  
+
   const [subCategoryList, setSubCategoryList] = useState([]);
- 
+
   const validateBusinessHours = (value) => {
     if (!value) return "Time is required";
     const [hours, minutes] = value.split(":").map(Number);
@@ -200,7 +200,7 @@ const handleSoundCloudChange = (e) => {
     }
     return true;
   };
- 
+
   const dispatch = useDispatch();
   const [check, setCheck] = useState(false);
   const [country, setCountry] = useState("");
@@ -216,28 +216,28 @@ const handleSoundCloudChange = (e) => {
     value: country.isoCode,
     label: country.name,
   }));
-  
+
   const stateOptions = selectedCountry
-  ? State.getStatesOfCountry(selectedCountry.value).map((state) => ({
+    ? State.getStatesOfCountry(selectedCountry.value).map((state) => ({
       value: state.isoCode,
       label: state.name,
     }))
-  : [];
+    : [];
 
-  
+
   const cityOptions = selectedState
-  ? City.getCitiesOfState(selectedCountry.value, selectedState.value).map((city) => ({
+    ? City.getCitiesOfState(selectedCountry.value, selectedState.value).map((city) => ({
       value: city.name,
       label: city.name,
     }))
-  : [];
+    : [];
 
   useEffect(() => {
     if (location) {
       dispatch(getLocation(location));
     }
   }, [dispatch, location]);
-  
+
   const store3 = useSelector((state) => state.locationsReducer) || {
     locations: [],
   };
@@ -246,39 +246,39 @@ const handleSoundCloudChange = (e) => {
     value: item.place_id,
     label: item.description,
   }));
-  
+
   useEffect(() => {
     if (place_id) {
       dispatch(getLocationDetails(place_id));
     }
   }, [dispatch, place_id]);
-  
+
   const store4 = useSelector((state) => state.locationDetailsReducer) || {
     locationDetails: [],
   };
   const data4 = store4.locationDetails ? store4.locationDetails : [];
 
-// handle page-redirection and data saving
+  // handle page-redirection and data saving
 
-useEffect(() => {
-  const savedData = localStorage.getItem("savedFormData");
-  const savedUIState = localStorage.getItem("savedUIState");
-  if (savedData) {
-    const parsedData = JSON.parse(savedData);
-    reset(parsedData); // react-hook-form's reset function to preload form
-    localStorage.removeItem("savedFormData"); // Clean up
-  }
-   if (savedUIState) {
-    const uiState = JSON.parse(savedUIState);
-  setSelectedCountry(uiState.selectedCountry || null);
-    setSelectedState(uiState.selectedState || null);
-    setSelectedCity(uiState.selectedCity || null);
-    setSelectedSubCategory(uiState.selectedSubCategory || []);
-    setSelectedTagKeywords(uiState.selectedTagKeywords || []);
-    setImage(uiState.image || null);
-  localStorage.removeItem("savedUIState");
-   }
-}, []);
+  useEffect(() => {
+    const savedData = localStorage.getItem("savedFormData");
+    const savedUIState = localStorage.getItem("savedUIState");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      reset(parsedData); // react-hook-form's reset function to preload form
+      localStorage.removeItem("savedFormData"); // Clean up
+    }
+    if (savedUIState) {
+      const uiState = JSON.parse(savedUIState);
+      setSelectedCountry(uiState.selectedCountry || null);
+      setSelectedState(uiState.selectedState || null);
+      setSelectedCity(uiState.selectedCity || null);
+      setSelectedSubCategory(uiState.selectedSubCategory || []);
+      setSelectedTagKeywords(uiState.selectedTagKeywords || []);
+      setImage(uiState.image || null);
+      localStorage.removeItem("savedUIState");
+    }
+  }, []);
 
 
   // Handle Image Selection
@@ -291,19 +291,19 @@ useEffect(() => {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (!file) {
-        toast.error("No file selected");
-        return;
+      toast.error("No file selected");
+      return;
     }
-  
+
     if (file.size > 2 * 1024 * 1024) {
       setImageError("File size must be less than 2MB");
       return;
     }
-  
+
     setImage(file);
     setImageError(""); // Clear previous error if valid image is selected
   };
-  
+
 
   console.log(image);
 
@@ -317,109 +317,109 @@ useEffect(() => {
   //     setError("You must accept the terms.");
   //     return; // Prevent form submission
   //   }
-  
+
   //   setError(""); // Clear error if checkbox is checked
 
 
-    const onSubmit = async (data) => {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        alert("Please login first.");
-        localStorage.setItem("redirectAfterLogin", "/createPage");
-        navigate("/login");
+  const onSubmit = async (data) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      alert("Please login first.");
+      localStorage.setItem("redirectAfterLogin", "/createPage");
+      navigate("/login");
+      return;
+    }
+
+    try {
+
+      if (!check) {
+        setError("Please accept the terms.");
         return;
       }
 
-      try {
-        
-          if (!check) {
-          setError("Please accept the terms.");
-          return;
-        }
-            
-        setError(""); // Clear checkbox errors
-        console.log("All checks passed. Submitting data:", data);
+      setError(""); // Clear checkbox errors
+      console.log("All checks passed. Submitting data:", data);
 
 
-    const formData = new FormData();
-    formData.append("profileImage", image); // Append file
+      const formData = new FormData();
+      formData.append("profileImage", image); // Append file
 
-    selectedSubCategory.forEach((subCategory) =>
-      formData.append("categories[]", subCategory)
-    );
-    formData.append("country", selectedCountry ? selectedCountry.label : "");
-    formData.append("state", selectedState ? selectedState.label : "");
-    formData.append("city", selectedCity ? selectedCity.label : "");
-    
-    formData.append("country", data.country);
-    formData.append("state", data.state);
-    formData.append("city", data.city);
-    formData.append("location", data.location);
-    formData.append("name", data.listingTitle);
-    formData.append("description", data.listingDescription);
-    formData.append("address", data4.address);
-    formData.append("googleSearchLocation", data.location);
-    formData.append("googleSearchLat", data4.location.lat);
-    formData.append("googleSearchLong", data4.location.lng);
+      selectedSubCategory.forEach((subCategory) =>
+        formData.append("categories[]", subCategory)
+      );
+      formData.append("country", selectedCountry ? selectedCountry.label : "");
+      formData.append("state", selectedState ? selectedState.label : "");
+      formData.append("city", selectedCity ? selectedCity.label : "");
 
-    //  Update map pin here
-    
-    selectedTagKeywords.forEach((tag) => formData.append("tags[]", tag));
+      formData.append("country", data.country);
+      formData.append("state", data.state);
+      formData.append("city", data.city);
+      formData.append("location", data.location);
+      formData.append("name", data.listingTitle);
+      formData.append("description", data.listingDescription);
+      formData.append("address", data4.address);
+      formData.append("googleSearchLocation", data.location);
+      formData.append("googleSearchLat", data4.location.lat);
+      formData.append("googleSearchLong", data4.location.lng);
 
-    if (data.phone) formData.append("phoneNumber", data.phone);
-    if (data.email) formData.append("email", data.email);
-    if (data.availableTime)
-      formData.append("availableTime", data.availableTime || "9 AM to 6 PM");
-    if (data.website) formData.append("website", data.website);
-    formData.append("facebookUrl", data.facebookUrl);
-    formData.append("instagramUrl", data.instagramUrl);
-    formData.append("youtubeUrl", data.youtubeUrl);
-    formData.append("twitterUrl", data.twitterUrl);
+      //  Update map pin here
 
-    if (selectedCategory.value === "Performer") {
-      formData.append("soundcloudUrl", data.soundcloudUrl);
-      formData.append("spotifyUrl", data.spotifyUrl);
-      dispatch(createNewPerformer(formData));
-      navigate("/home");
+      selectedTagKeywords.forEach((tag) => formData.append("tags[]", tag));
+
+      if (data.phone) formData.append("phoneNumber", data.phone);
+      if (data.email) formData.append("email", data.email);
+      if (data.availableTime)
+        formData.append("availableTime", data.availableTime || "9 AM to 6 PM");
+      if (data.website) formData.append("website", data.website);
+      formData.append("facebookUrl", data.facebookUrl);
+      formData.append("instagramUrl", data.instagramUrl);
+      formData.append("youtubeUrl", data.youtubeUrl);
+      formData.append("twitterUrl", data.twitterUrl);
+
+      if (selectedCategory.value === "Performer") {
+        formData.append("soundcloudUrl", data.soundcloudUrl);
+        formData.append("spotifyUrl", data.spotifyUrl);
+        dispatch(createNewPerformer(formData));
+        navigate("/home");
+      }
+
+      if (selectedCategory.value === "Organizer") {
+        dispatch(createNewOrganizer(formData));
+        navigate("/home");
+      }
+
+      if (selectedCategory.value === "Service") {
+        dispatch(createNewService(formData));
+        navigate("/home");
+      }
+
+      if (selectedCategory.value === "Venue") {
+        formData.append("coverImage", coverImage);
+        formData.append("website", data.url);
+        formData.append("zipcode", data.zipcode);
+        formData.append("quotedForm", data.quotedForm);
+        formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
+        formData.append("availability", data.availability);
+        formData.append("pricing", data.pricing);
+        formData.append("neighbourhoods", data.neighbourhoods);
+        formData.append("noOfStandingGuest", data.noOfStandingGuest);
+        formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
+        formData.append("amenities", data.amenities);
+        formData.append("type", data.type);
+        dispatch(createNewVenue(formData));
+        navigate("/home");
+      }
+
+    } catch (error) {
+      alert("An error occurred during submission.");
     }
-
-    if (selectedCategory.value === "Organizer") {
-      dispatch(createNewOrganizer(formData));
-      navigate("/home");
-    }
-
-    if (selectedCategory.value === "Service") {
-      dispatch(createNewService(formData));
-      navigate("/home");
-    }
-
-    if (selectedCategory.value === "Venue") {
-      formData.append("coverImage", coverImage);
-      formData.append("website", data.url);
-      formData.append("zipcode", data.zipcode);
-      formData.append("quotedForm", data.quotedForm);
-      formData.append("foodAndBeveragesDetails", data.foodAndBeveragesDetails);
-      formData.append("availability", data.availability);
-      formData.append("pricing", data.pricing);
-      formData.append("neighbourhoods", data.neighbourhoods);
-      formData.append("noOfStandingGuest", data.noOfStandingGuest);
-      formData.append("noOfSeatedGuest", data.noOfSeatedGuest);
-      formData.append("amenities", data.amenities);
-      formData.append("type", data.type);
-      dispatch(createNewVenue(formData));
-      navigate("/home");
-    }
-
-  } catch (error) {
-    alert("An error occurred during submission.");
-  }
-};
+  };
 
 
-    const onPreview = () => {
-    const formValues = watch(); 
+  const onPreview = () => {
+    const formValues = watch();
     setFormData({
-      profileImage: formValues.Image, 
+      profileImage: formValues.Image,
       title: formValues.listingTitle,
       website: formValues.website,
       address: formValues.address,
@@ -433,11 +433,11 @@ useEffect(() => {
         youtube: formValues.youtubeUrl,
         spotifyUrl: formValues.spotifyUrl,
       },
-      about: formValues.listingDescription, 
+      about: formValues.listingDescription,
     });
     setIsPreviewOpen(true);
   };
-   
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -485,9 +485,9 @@ useEffect(() => {
               name="subCategory"
               control={control}
               rules={{ required: "Subcategory is required" }}
-              render={({ field }) =>   (
+              render={({ field }) => (
                 <Select
-                {...field}
+                  {...field}
                   isMulti
                   options={subCategoryList}
                   isDisabled={!selectedCategory}
@@ -539,9 +539,9 @@ useEffect(() => {
             name="listingDescription"
             className="mt-1 block w-full border rounded-md p-2 resize-y"
             onInput={(e) => {
-                    e.target.style.height = "auto";
-                    e.target.style.height = `${e.target.scrollHeight}px`;
-                  }}
+              e.target.style.height = "auto";
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
             placeholder="Enter Description"
             {...register("listingDescription", {
               required: "Listing description is required",
@@ -706,7 +706,7 @@ useEffect(() => {
               >
                 Availability
               </label>
-              <textarea                
+              <textarea
                 name="availability"
                 className="mt-1 block w-full border rounded-md mb-3  p-2 "
                 placeholder="Enter availability"
@@ -715,7 +715,7 @@ useEffect(() => {
               />
             </div>
 
-            
+
           </div>
         )}
 
@@ -1007,12 +1007,12 @@ useEffect(() => {
                 <label className="text-gray-700 font-medium">
                   Available Time*
                 </label>
-               <input
+                <input
                   type="text"
                   placeholder="9 AM to 6 PM"
                   {...register("availableTime", {
                     required: "Available time is required",
-                    
+
                   })}
                   className="border p-2 rounded"
                 />
@@ -1312,11 +1312,10 @@ useEffect(() => {
                 ].map((tab) => (
                   <button
                     key={tab}
-                    className={`py-2 px-3 sm:px-4 transition-all ${
-                      activeTab === tab
-                        ? "border-b-2 border-blue-500 font-bold"
-                        : "text-gray-500"
-                    }`}
+                    className={`py-2 px-3 sm:px-4 transition-all ${activeTab === tab
+                      ? "border-b-2 border-blue-500 font-bold"
+                      : "text-gray-500"
+                      }`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {tab}

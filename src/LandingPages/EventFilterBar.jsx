@@ -71,7 +71,7 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
       setLoading(true);
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/event/filter?startDate=2025-06-01&endDate=2025-06-30&page=1&limit=100&sortBy=startDate&sortOrder=asc"
+          "http://dev.eventsnode.com:3000/api/event/filter?startDate=2025-06-01&endDate=2025-06-30&page=1&limit=100&sortBy=startDate&sortOrder=asc"
         );
         const allEvents = res.data?.data.events || [];
         setEvents(allEvents);

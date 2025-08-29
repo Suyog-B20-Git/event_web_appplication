@@ -302,7 +302,7 @@ const CommonCalendar = () => {
           weekEnd: sundayStr
         });
 
-        const baseUrl = 'http://localhost:5000/api/event/filter';
+        const baseUrl = 'http://dev.eventsnode.com:3000/api/event/filter';
         console.log('API URLs:', {
           todayUrl: `${baseUrl}?startDate=${todayStr}&endDate=${todayStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`,
           tomorrowUrl: `${baseUrl}?startDate=${tomorrowStr}&endDate=${tomorrowStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`,

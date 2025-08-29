@@ -15,6 +15,7 @@ import { BsBuildingsFill, BsPuzzleFill } from "react-icons/bs";
 import { TbTagStarred } from "react-icons/tb";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 
 import Events from './AdminEvents';
@@ -33,9 +34,24 @@ import AdminFooterMenu from './AdminFooterMenu';
 import AdminCommissions from './AdminCommissions';
 import AdminTaxes from './AdminTaxes';
 import AdminUsers from './AdminUsers';
+import AdminOrganizers from './AdminOrganizers';
+import AdminViewOrganizer from './AdminViewOrganizer';
+import AdminEditOrganizer from './AdminEditOrganizer';
+import AdminAddOrganizer from './AdminAddOrganizer';
+import AdminPerformers from './AdminPerformers';
+import AdminViewPerformer from './AdminViewPerformer';
+import AdminEditPerformer from './AdminEditPerformer';
+import AdminAddPerformer from './AdminAddPerformer';
 import AdminContacts from './AdminContacts';
 import AdminBanners from './AdminBanners';
 import AdminVenues from './AdminVenues';
+import AdminEditVenue from './AdminEditVenue';
+import AdminViewVenue from './AdminViewVenue';
+import AdminAddVenue from './AdminAddVenue';
+import AdminServices from './AdminServices';
+import AdminViewService from './AdminViewService';
+import AdminEditService from './AdminEditService';
+import AdminAddService from './AdminAddService';
 import AdminSettings from './AdminSettings';
 import AdminPromocodes from './AdminPromocodes';
 import AdminComplimentaryBookings from './AdminComplimentaryBookings';
@@ -69,6 +85,11 @@ const AdminPanelOverview = () => {
     const [isProfileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const [selectedPage, setSelectedPage] = useState(null);
     const [selectedPost, setSelectedPost] = useState(null);
+    const [selectedOrganizer, setSelectedOrganizer] = useState(null);
+    const [selectedPerformer, setSelectedPerformer] = useState(null);
+    const [selectedVenue, setSelectedVenue] = useState(null);
+    const [selectedService, setSelectedService] = useState(null);
+    const [isEntitiesDropdownOpen, setIsEntitiesDropdownOpen] = useState(false);
 
     const profileDropdownRef = useRef(null);
     const userEmail = "superadmin@eventsnode.com";
@@ -100,12 +121,19 @@ const AdminPanelOverview = () => {
         { name: "Blog Posts", icon: <MdOutlineDocumentScanner />, id: "adminBlogPosts" },
         { name: "HeaderMenu", icon: <PiListBulletsFill />, id: "adminHeaderMenu" },
         { name: "FooterMenu", icon: <PiListBulletsFill />, id: "adminFooterMenu" },
-        { name: "Venues", icon: <BsBuildingsFill />, id: "adminVenues" },
         { name: "Settings", icon: <FiSettings />, id: "adminSettings" },
         { name: "PromoCodes", icon: <TbTagStarred />, id: "adminPromoCodes" },
         { name: "Complimentary Bookings", icon: <BsPuzzleFill />, id: "adminComplimentaryBookings" },
         { name: "Currencies", icon: <FaRupeeSign />, id: "adminCurrencies" },
         { name: "Scan Tickets", icon: <MdOutlineDocumentScanner />, id: "adminScanTickets" },
+    ];
+
+    // Entities dropdown items
+    const entitiesItems = [
+        { name: "Organizers", icon: <FaUserCircle />, id: "adminOrganizers" },
+        { name: "Performers", icon: <FaPuzzlePiece />, id: "adminPerformers" },
+        { name: "Venues", icon: <BsBuildingsFill />, id: "adminVenues" },
+        { name: "Services", icon: <FaPuzzlePiece />, id: "adminServices" },
     ];
 
     const activeSectionName = sections.find(sec => sec.id === activeSection)?.name || 'Dashboard';
@@ -120,6 +148,10 @@ const AdminPanelOverview = () => {
         setIsMobileSidebarOpen(false);
         setSelectedPage(null);
         setSelectedPost(null);
+    };
+
+    const toggleEntitiesDropdown = () => {
+        setIsEntitiesDropdownOpen(!isEntitiesDropdownOpen);
     };
 
     const handleNavigateToCreatePage = (pageData = null) => {
@@ -169,6 +201,93 @@ const AdminPanelOverview = () => {
         setSelectedPost(null);
     };
 
+    const handleNavigateToViewOrganizer = (organizer) => {
+        setSelectedOrganizer(organizer);
+        setActiveSection("adminViewOrganizer");
+    };
+
+    const handleNavigateToEditOrganizer = (organizer) => {
+        setSelectedOrganizer(organizer);
+        setActiveSection("adminEditOrganizer");
+    };
+
+    const handleNavigateToAddOrganizer = () => {
+        setSelectedOrganizer(null);
+        setActiveSection("adminAddOrganizer");
+    };
+
+    const handleBackToOrganizers = () => {
+        setActiveSection("adminOrganizers");
+        setSelectedOrganizer(null);
+    };
+
+    const handleOrganizerCreate = (newOrganizer) => {
+        setActiveSection("adminOrganizers");
+        setSelectedOrganizer(null);
+    };
+
+    const handleOrganizerUpdate = (updatedOrganizer) => {
+        setActiveSection("adminOrganizers");
+        setSelectedOrganizer(null);
+    };
+
+    // Performer navigation handlers
+    const handleNavigateToViewPerformer = (performer) => {
+        setSelectedPerformer(performer);
+        setActiveSection("adminViewPerformer");
+    };
+
+    const handleNavigateToEditPerformer = (performer) => {
+        setSelectedPerformer(performer);
+        setActiveSection("adminEditPerformer");
+    };
+
+    const handleNavigateToAddPerformer = () => {
+        setSelectedPerformer(null);
+        setActiveSection("adminAddPerformer");
+    };
+
+    const handleBackToPerformers = () => {
+        setActiveSection("adminPerformers");
+        setSelectedPerformer(null);
+    };
+
+    const handlePerformerUpdate = () => {
+        setActiveSection("adminPerformers");
+        setSelectedPerformer(null);
+    };
+
+    // Venue navigation handlers
+    const handleNavigateToViewVenue = (venue) => {
+        setSelectedVenue(venue);
+        setActiveSection("adminViewVenue");
+    };
+
+    const handleNavigateToEditVenue = (venue) => {
+        setSelectedVenue(venue);
+        setActiveSection("adminEditVenue");
+    };
+
+    const handleNavigateToAddVenue = () => {
+        setSelectedVenue(null);
+        setActiveSection("adminAddVenue");
+    };
+
+    const handleBackToVenues = () => {
+        setActiveSection("adminVenues");
+        setSelectedVenue(null);
+    };
+
+    const handleVenueCreate = (newVenue) => {
+        setActiveSection("adminVenues");
+        setSelectedVenue(null);
+    };
+
+    const handleVenueUpdate = (updatedVenue) => {
+        setActiveSection("adminVenues");
+        setSelectedVenue(null);
+    };
+
     const handlePostCreate = (newPost) => {
         console.log('New post created:', newPost);
         setActiveSection("adminBlogPosts");
@@ -195,6 +314,38 @@ const AdminPanelOverview = () => {
                 return "Add New Post";
             case "adminEditPost":
                 return selectedPost ? `Edit: ${selectedPost.title}` : "Edit Post";
+            case "adminOrganizers":
+                return "Organizers";
+            case "adminViewOrganizer":
+                return selectedOrganizer ? `View: ${selectedOrganizer.name}` : "View Organizer";
+            case "adminEditOrganizer":
+                return selectedOrganizer ? `Edit: ${selectedOrganizer.name}` : "Edit Organizer";
+            case "adminAddOrganizer":
+                return "Add New Organizer";
+            case "adminPerformers":
+                return "Performers";
+            case "adminViewPerformer":
+                return selectedPerformer ? `View: ${selectedPerformer.name}` : "View Performer";
+            case "adminEditPerformer":
+                return selectedPerformer ? `Edit: ${selectedPerformer.name}` : "Edit Performer";
+            case "adminAddPerformer":
+                return "Add New Performer";
+            case "adminVenues":
+                return "Venues";
+            case "adminViewVenue":
+                return selectedVenue ? `View: ${selectedVenue.name}` : "View Venue";
+            case "adminEditVenue":
+                return selectedVenue ? `Edit: ${selectedVenue.name}` : "Edit Venue";
+            case "adminAddVenue":
+                return "Add New Venue";
+            case "adminServices":
+                return "Services";
+            case "adminViewService":
+                return selectedService ? `View: ${selectedService.name}` : "View Service";
+            case "adminEditService":
+                return selectedService ? `Edit: ${selectedService.name}` : "Edit Service";
+            case "adminAddService":
+                return "Add New Service";
             default:
                 return activeSectionName;
         }
@@ -232,21 +383,69 @@ const AdminPanelOverview = () => {
                 </div>
 
                 <nav className="space-y-1">
-                    {sections.map((item) => (
-                        <div
-                            key={item.id}
-                            onClick={() => handleNavigate(item.id)}
-                            title={item.name}
-                            className={`flex items-center space-x-4 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === item.id ||
+                    {sections.map((item, index) => (
+                        <React.Fragment key={item.id}>
+                            <div
+                                onClick={() => handleNavigate(item.id)}
+                                title={item.name}
+                                className={`flex items-center space-x-4 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === item.id ||
                                     (item.id === "adminPages" && ["adminViewPage", "adminEditPage", "adminCreatePage", "adminOrderPages"].includes(activeSection)) ||
                                     (item.id === "adminBlogPosts" && ["adminAddPost", "adminEditPost"].includes(activeSection))
                                     ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
                                     : "text-gray-300"
-                                }`}
-                        >
-                            <div className="text-xl flex-shrink-0">{item.icon}</div>
-                            <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>{item.name}</span>
-                        </div>
+                                    }`}
+                            >
+                                <div className="text-xl flex-shrink-0">{item.icon}</div>
+                                <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>{item.name}</span>
+                            </div>
+
+                            {/* Insert Entities Dropdown after Events */}
+                            {item.id === "adminEvents" && (
+                                <div className="mt-4">
+                                    <div
+                                        onClick={toggleEntitiesDropdown}
+                                        className={`flex items-center justify-between cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${["adminOrganizers", "adminPerformers", "adminVenues", "adminServices"].includes(activeSection)
+                                            ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
+                                            : "text-gray-300"
+                                            }`}
+                                    >
+                                        <div className="flex items-center space-x-4">
+                                            <div className="text-xl flex-shrink-0">
+                                                <FaPuzzlePiece />
+                                            </div>
+                                            <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+                                                Entities
+                                            </span>
+                                        </div>
+                                        <div className={`transition-transform duration-200 ${isEntitiesDropdownOpen ? 'rotate-180' : 'rotate-0'} ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+                                            {isEntitiesDropdownOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                                        </div>
+                                    </div>
+
+                                    {/* Dropdown Items */}
+                                    {isEntitiesDropdownOpen && (
+                                        <div className="ml-4 mt-1 space-y-1">
+                                            {entitiesItems.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    onClick={() => handleNavigate(item.id)}
+                                                    title={item.name}
+                                                    className={`flex items-center space-x-4 cursor-pointer p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === item.id
+                                                        ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
+                                                        : "text-gray-300"
+                                                        }`}
+                                                >
+                                                    <div className="text-lg flex-shrink-0">{item.icon}</div>
+                                                    <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+                                                        {item.name}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </React.Fragment>
                     ))}
                 </nav>
             </aside>
@@ -273,6 +472,24 @@ const AdminPanelOverview = () => {
                             {["adminAddPost", "adminEditPost"].includes(activeSection) && (
                                 <>
                                     <span className="cursor-pointer hover:text-gray-900" onClick={() => handleNavigate('adminBlogPosts')}>Posts</span>
+                                    <span className="mx-2 font-light text-gray-400">&gt;</span>
+                                </>
+                            )}
+                            {["adminOrganizers", "adminViewOrganizer", "adminEditOrganizer", "adminAddOrganizer", "adminPerformers", "adminVenues", "adminViewVenue", "adminEditVenue", "adminAddVenue", "adminServices"].includes(activeSection) && (
+                                <>
+                                    <span className="cursor-pointer hover:text-gray-900" onClick={() => toggleEntitiesDropdown()}>Entities</span>
+                                    <span className="mx-2 font-light text-gray-400">&gt;</span>
+                                </>
+                            )}
+                            {["adminViewOrganizer", "adminEditOrganizer", "adminAddOrganizer"].includes(activeSection) && (
+                                <>
+                                    <span className="cursor-pointer hover:text-gray-900" onClick={() => handleBackToOrganizers()}>Organizers</span>
+                                    <span className="mx-2 font-light text-gray-400">&gt;</span>
+                                </>
+                            )}
+                            {["adminViewVenue", "adminEditVenue", "adminAddVenue"].includes(activeSection) && (
+                                <>
+                                    <span className="cursor-pointer hover:text-gray-900" onClick={() => handleBackToVenues()}>Venues</span>
                                     <span className="mx-2 font-light text-gray-400">&gt;</span>
                                 </>
                             )}
@@ -320,6 +537,115 @@ const AdminPanelOverview = () => {
                     {activeSection === "adminTaxes" && <Taxes />}
                     {activeSection === "adminUsers" && <Users />}
 
+                    {/* Entities Sections */}
+                    {activeSection === "adminOrganizers" && (
+                        <AdminOrganizers
+                            onNavigateToViewOrganizer={handleNavigateToViewOrganizer}
+                            onNavigateToEditOrganizer={handleNavigateToEditOrganizer}
+                            onNavigateToAddOrganizer={handleNavigateToAddOrganizer}
+                        />
+                    )}
+                    {activeSection === "adminViewOrganizer" && selectedOrganizer && (
+                        <AdminViewOrganizer
+                            organizer={selectedOrganizer}
+                            onBack={handleBackToOrganizers}
+                            onEdit={handleNavigateToEditOrganizer}
+                        />
+                    )}
+                    {activeSection === "adminEditOrganizer" && selectedOrganizer && (
+                        <AdminEditOrganizer
+                            organizer={selectedOrganizer}
+                            onBack={handleBackToOrganizers}
+                            onUpdate={handleOrganizerUpdate}
+                        />
+                    )}
+                    {activeSection === "adminAddOrganizer" && (
+                        <AdminAddOrganizer
+                            onBack={handleBackToOrganizers}
+                            onCreate={handleOrganizerCreate}
+                        />
+                    )}
+                    {activeSection === "adminPerformers" && (
+                        <AdminPerformers
+                            onNavigateToViewPerformer={handleNavigateToViewPerformer}
+                            onNavigateToEditPerformer={handleNavigateToEditPerformer}
+                            onNavigateToAddPerformer={handleNavigateToAddPerformer}
+                        />
+                    )}
+                    {activeSection === "adminViewPerformer" && selectedPerformer && (
+                        <AdminViewPerformer
+                            performer={selectedPerformer}
+                            onBack={handleBackToPerformers}
+                            onEdit={handleNavigateToEditPerformer}
+                        />
+                    )}
+                    {activeSection === "adminEditPerformer" && selectedPerformer && (
+                        <AdminEditPerformer
+                            performer={selectedPerformer}
+                            onBack={handleBackToPerformers}
+                            onUpdate={handlePerformerUpdate}
+                        />
+                    )}
+                    {activeSection === "adminAddPerformer" && (
+                        <AdminAddPerformer
+                            onBack={handleBackToPerformers}
+                            onCreate={handlePerformerUpdate}
+                        />
+                    )}
+                    {activeSection === "adminVenues" && (
+                        <AdminVenues
+                            onNavigateToViewVenue={handleNavigateToViewVenue}
+                            onNavigateToEditVenue={handleNavigateToEditVenue}
+                            onNavigateToAddVenue={handleNavigateToAddVenue}
+                        />
+                    )}
+                    {activeSection === "adminAddVenue" && (
+                        <AdminAddVenue
+                            onBack={handleBackToVenues}
+                            onCreate={handleVenueCreate}
+                        />
+                    )}
+                    {activeSection === "adminViewVenue" && selectedVenue && (
+                        <AdminViewVenue
+                            venue={selectedVenue}
+                            onBack={handleBackToVenues}
+                            onEdit={handleNavigateToEditVenue}
+                        />
+                    )}
+                    {activeSection === "adminEditVenue" && selectedVenue && (
+                        <AdminEditVenue
+                            venue={selectedVenue}
+                            onBack={handleBackToVenues}
+                            onUpdate={handleVenueUpdate}
+                        />
+                    )}
+                    {activeSection === "adminServices" && (
+                        <AdminServices
+                            onNavigateToViewService={(service) => { setSelectedService(service); setActiveSection("adminViewService"); }}
+                            onNavigateToEditService={(service) => { setSelectedService(service); setActiveSection("adminEditService"); }}
+                            onNavigateToAddService={() => { setSelectedService(null); setActiveSection("adminAddService"); }}
+                        />
+                    )}
+                    {activeSection === "adminViewService" && selectedService && (
+                        <AdminViewService
+                            service={selectedService}
+                            onBack={() => { setActiveSection("adminServices"); setSelectedService(null); }}
+                            onEdit={(service) => { setSelectedService(service); setActiveSection("adminEditService"); }}
+                        />
+                    )}
+                    {activeSection === "adminEditService" && selectedService && (
+                        <AdminEditService
+                            service={selectedService}
+                            onBack={() => { setActiveSection("adminServices"); setSelectedService(null); }}
+                            onUpdate={() => { setActiveSection("adminServices"); setSelectedService(null); }}
+                        />
+                    )}
+                    {activeSection === "adminAddService" && (
+                        <AdminAddService
+                            onBack={() => { setActiveSection("adminServices"); setSelectedService(null); }}
+                            onCreate={() => { setActiveSection("adminServices"); setSelectedService(null); }}
+                        />
+                    )}
 
                     {activeSection === "adminPages" && (
                         <AdminPages
@@ -383,11 +709,9 @@ const AdminPanelOverview = () => {
 
                     {activeSection === "adminCommissions" && <Commissions />}
                     {activeSection === "adminTaxes" && <Taxes />}
-                    {activeSection === "adminUsers" && <Users />}
                     {activeSection === "adminContacts" && <Contacts />}
                     {activeSection === "adminMedia" && <Media />}
                     {activeSection === "adminBanners" && <Banners />}
-                    {activeSection === "adminVenues" && <Venues />}
                     {activeSection === "adminSettings" && <Settings />}
                     {activeSection === "adminPromoCodes" && <PromoCodes />}
                     {activeSection === "adminComplimentaryBookings" && <ComplimentaryBookings />}
