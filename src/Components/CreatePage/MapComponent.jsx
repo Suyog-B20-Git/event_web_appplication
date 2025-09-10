@@ -34,51 +34,83 @@ const parsedLocation = isValidLocation
 
   // Load Google Maps script and initialize map
   useEffect(() => {
+    // Check if Google Maps is already loaded
+    if (window.google && window.google.maps) {
+      initializeMap();
+      return;
+    }
+
+    // Check if script is already being loaded
+    const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+    if (existingScript) {
+      existingScript.onload = initializeMap;
+      return;
+    }
+
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=marker`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&loading=async`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
 
-    script.onload = () => {
-      const { AdvancedMarkerElement } = window.google.maps.marker;
-      const map = new window.google.maps.Map(mapRef.current, {
-        zoom: 13,
-        center: defaultLocation,
-        mapId: "76087fe6f44211bc",
-      });
-      mapInstanceRef.current = map;
+    script.onload = initializeMap;
 
-      // Set initial marker to default location
-      markerRef.current = new AdvancedMarkerElement({
-        position: defaultLocation,
-        map,
-        title: "Default Marker",
-      });
-    };
+    function initializeMap() {
+      try {
+        if (!window.google || !window.google.maps) {
+          console.error("Google Maps API not loaded");
+          return;
+        }
+
+        const map = new window.google.maps.Map(mapRef.current, {
+          zoom: 13,
+          center: defaultLocation,
+        });
+        mapInstanceRef.current = map;
+
+        // Set initial marker to default location using standard Marker
+        markerRef.current = new window.google.maps.Marker({
+          position: defaultLocation,
+          map,
+          title: "Default Marker",
+        });
+      } catch (error) {
+        console.error("Error initializing Google Maps:", error);
+      }
+    }
 
     return () => {
-      document.head.removeChild(script);
+      // Don't remove the script as it might be used by other components
+      // Just clean up the map instance
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current = null;
+      }
+      if (markerRef.current) {
+        markerRef.current = null;
+      }
     };
   }, []);
 
   // Update marker and center when location is selected
-useEffect(() => {
-  if (mapInstanceRef.current && isValidLocation) {
-    mapInstanceRef.current.setCenter(parsedLocation);
+  useEffect(() => {
+    if (mapInstanceRef.current && isValidLocation && window.google && window.google.maps) {
+      try {
+        mapInstanceRef.current.setCenter(parsedLocation);
 
-    if (markerRef.current) {
-      markerRef.current.position = parsedLocation;
-    } else {
-      const { AdvancedMarkerElement } = window.google.maps.marker;
-      markerRef.current = new AdvancedMarkerElement({
-        position: parsedLocation,
-        map: mapInstanceRef.current,
-        title: "Selected Marker",
-      });
+        if (markerRef.current) {
+          markerRef.current.setPosition(parsedLocation);
+        } else {
+          markerRef.current = new window.google.maps.Marker({
+            position: parsedLocation,
+            map: mapInstanceRef.current,
+            title: "Selected Marker",
+          });
+        }
+      } catch (error) {
+        console.error("Error updating map location:", error);
+      }
     }
-  }
-}, [location]);
+  }, [location, isValidLocation, parsedLocation]);
 
 
 

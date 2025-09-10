@@ -28,9 +28,13 @@ const PerformersSection = ({ performerIds }) => {
   useEffect(() => {
     if (performerIds && performerIds.length > 0) {
       performerIds.forEach((id, index) => {
-        setTimeout(() => {
-          dispatch(getPerformerById(id));
-        }, index * 500);
+        // Ensure we have a valid string ID for the API call
+        const performerId = typeof id === 'string' ? id : (id?._id || id?.id);
+        if (performerId) {
+          setTimeout(() => {
+            dispatch(getPerformerById(performerId));
+          }, index * 500);
+        }
       });
     }
   }, [dispatch, performerIds]);
@@ -142,13 +146,15 @@ const PerformersSection = ({ performerIds }) => {
           }}
         >
           {performerIds && performerIds.length > 0 ? (
-            performerIds.map((id) => {
-              const performer = loadedPerformers[id];
+            performerIds.map((id, index) => {
+              // Ensure we have a valid string ID for the key and navigation
+              const performerId = typeof id === 'string' ? id : (id?._id || id?.id || `performer-${index}`);
+              const performer = loadedPerformers[performerId];
 
               return performer ? (
                 <div
-                  key={id}
-                  onClick={() => navigate(`/Performer/${id}`)}
+                  key={performerId}
+                  onClick={() => navigate(`/Performer/${performerId}`)}
                   className="cursor-pointer border rounded-xl p-4 shadow hover:shadow-lg hover:shadow-red-300 hover:border-red-400 transition duration-300 transform hover:-translate-y-1 flex-shrink-0"
                   style={{ width: "270px", maxWidth: "calc(100vw - 40px)" }}
                 >
@@ -172,7 +178,7 @@ const PerformersSection = ({ performerIds }) => {
                 </div>
               ) : (
                 <div
-                  key={id}
+                  key={performerId}
                   className="border rounded-xl p-4 bg-gray-100 text-center text-gray-500 flex-shrink-0"
                   style={{ width: "270px", maxWidth: "calc(100vw - 40px)" }}
                 >

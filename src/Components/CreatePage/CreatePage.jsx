@@ -43,6 +43,35 @@ function CreatePage() {
     formState: { errors },
   } = useForm();
 
+  // Geocode function to get coordinates from address and update map
+  const geocodeAndCenterMap = async (address) => {
+    try {
+      if (!window.google || !window.google.maps) {
+        console.error("Google Maps API not loaded");
+        return;
+      }
+
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: address }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          const location = results[0].geometry.location;
+          const lat = location.lat();
+          const lng = location.lng();
+          
+          // Update the form with the geocoded coordinates
+          setValue('location.lat', lat);
+          setValue('location.lng', lng);
+          
+          console.log('Geocoded location:', { lat, lng, address });
+        } else {
+          console.error('Geocoding failed:', status);
+        }
+      });
+    } catch (error) {
+      console.error('Error in geocodeAndCenterMap:', error);
+    }
+  };
+
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
   const [selectedTagKeywords, setSelectedTagKeywords] = useState([]);
@@ -933,9 +962,7 @@ function CreatePage() {
                       field.onChange(
                         selectedOption ? selectedOption.value : null
                       );
-                      if (selectedOption) {
-                        geocodeAndCenterMap(selectedOption.label);
-                      }
+                      // Removed geocodeAndCenterMap call to avoid mutating 'location' shape
 
                       // Store only ID
                     }}

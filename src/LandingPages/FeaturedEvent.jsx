@@ -613,9 +613,9 @@ function FeaturedEvent() {
                   Event Performers
                 </h2>
                 <hr />
-                <p className="text-lg text-gray-600 mt-2">
+                <div className="text-lg text-gray-600 mt-2">
                   <PerformersSection performerIds={receivedData.performers} />
-                </p>
+                </div>
               </div>
 
               <div className="p-4 px-0 sm:px-6 mt-3 rounded-xl">

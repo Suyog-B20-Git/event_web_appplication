@@ -482,6 +482,7 @@ export default function EventForm() {
       });
 
       localStorage.setItem("eventData", JSON.stringify(dataToSave));
+      localStorage.setItem("cameFromAuth", "true"); // Set flag to show toast after login
       toast.error("Please log in to create an event.");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");
@@ -512,6 +513,10 @@ export default function EventForm() {
         try {
           const parsedData = JSON.parse(savedData);
           console.log("Restoring saved data:", parsedData);
+
+          // Check if user came from login/registration flow
+          const cameFromAuth = localStorage.getItem("cameFromAuth");
+          const shouldShowToast = cameFromAuth === "true";
 
           // Reset the form with saved data
           reset(parsedData);
@@ -560,11 +565,17 @@ export default function EventForm() {
 
           // Clear the saved data after successful restoration
           localStorage.removeItem("eventData");
+          localStorage.removeItem("cameFromAuth"); // Clear the auth flag
           await clearFormImages();
-          toast.success("Form data restored successfully, including images.");
+          
+          // Only show toast if user came from login/registration
+          if (shouldShowToast) {
+            toast.success("Form data restored successfully, including images.");
+          }
         } catch (error) {
           console.error("Error restoring saved data:", error);
           localStorage.removeItem("eventData");
+          localStorage.removeItem("cameFromAuth"); // Clear the auth flag on error too
           await clearFormImages();
         }
       }
@@ -690,6 +701,7 @@ export default function EventForm() {
       });
 
       localStorage.setItem("eventData", JSON.stringify(dataToSave));
+      localStorage.setItem("cameFromAuth", "true"); // Set flag to show toast after login
       toast.error("Please login to continue");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");
