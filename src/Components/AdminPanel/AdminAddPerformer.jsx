@@ -33,7 +33,7 @@ const AdminAddPerformer = ({ onBack, onCreate }) => {
     useEffect(() => {
         const fetchSubCategories = async () => {
             try {
-                const res = await fetch(`http://dev.eventsnode.com:3000/api/categories?type=Performer`);
+                const res = await fetch(`http://localhost:5000/api/categories?type=Performer`);
                 const data = await res.json();
                 const formatted = data.data?.map((sub) => ({ label: sub.name, value: sub.name })) || [];
                 setSubCategoryList(formatted);

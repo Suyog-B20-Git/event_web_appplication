@@ -5,6 +5,8 @@ export const getAllUsers = (params = {}) => {
     const authToken = localStorage.getItem("authToken");
     return async (dispatch) => {
         try {
+            dispatch({ type: "GET_ALL_USERS_REQUEST" });
+
             // Build query parameters
             const queryParams = new URLSearchParams();
 
@@ -20,17 +22,35 @@ export const getAllUsers = (params = {}) => {
 
             if (response.status === 200) {
                 if (response.data.status) {
+                    dispatch({
+                        type: "GET_ALL_USERS_SUCCESS",
+                        payload: response.data.data
+                    });
                     return response.data.data;
                 } else {
-                    toast.error(response.data.message || "Failed to fetch users");
-                    throw new Error(response.data.message);
+                    const errorMessage = response.data.message || "Failed to fetch users";
+                    dispatch({
+                        type: "GET_ALL_USERS_FAILURE",
+                        payload: errorMessage
+                    });
+                    toast.error(errorMessage);
+                    throw new Error(errorMessage);
                 }
             } else {
-                toast.error("Failed to fetch users");
-                throw new Error("Failed to fetch users");
+                const errorMessage = "Failed to fetch users";
+                dispatch({
+                    type: "GET_ALL_USERS_FAILURE",
+                    payload: errorMessage
+                });
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
             }
         } catch (error) {
             const errorMessage = error?.response?.data?.message || error?.message || "Something went wrong!";
+            dispatch({
+                type: "GET_ALL_USERS_FAILURE",
+                payload: errorMessage
+            });
             toast.error(errorMessage);
             throw error;
         }

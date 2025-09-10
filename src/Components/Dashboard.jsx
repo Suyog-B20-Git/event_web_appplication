@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaCheckCircle, FaEdit, FaTrash } from "react-icons/fa";
 import { FaUser, FaTag, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaMapMarkedAlt, FaClipboardList, FaTicketAlt, FaBuilding, FaUserFriends, FaBars, FaWallet } from "react-icons/fa";
 import { FaChartLine, FaMoneyBillAlt, FaShoppingBag } from "react-icons/fa";
@@ -19,7 +19,7 @@ import CommonCalendar from "./CommonCalendar";
 import { FaUserCircle, FaPuzzlePiece } from "react-icons/fa";
 import { BsBuildingsFill } from "react-icons/bs";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import AdminEvents from './AdminPanel/AdminEvents';
+import AdminMyEvents from './AdminPanel/AdminMyEvents';
 import AdminOrganizers from './AdminPanel/AdminOrganizers';
 import AdminViewOrganizer from './AdminPanel/AdminViewOrganizer';
 import AdminEditOrganizer from './AdminPanel/AdminEditOrganizer';
@@ -36,6 +36,9 @@ import AdminServices from './AdminPanel/AdminServices';
 import AdminViewService from './AdminPanel/AdminViewService';
 import AdminEditService from './AdminPanel/AdminEditService';
 import AdminAddService from './AdminPanel/AdminAddService';
+import AdminGuests from './AdminPanel/AdminGuests';
+import AdminClaims from './AdminPanel/AdminClaims';
+import AdminSubOrganizers from './AdminPanel/AdminSubOrganizers';
 
 const Dashboard = () => {
     const [activeSection, setActiveSection] = useState("dashboard");
@@ -60,6 +63,7 @@ const Dashboard = () => {
         { name: "My Tags", icon: <FaTags />, id: "my-tags" },
         { name: "My Venues", icon: <FaMapLocation />, id: "my-venues" },
         { name: "Guests", icon: <MdGroups2 />, id: "guests" },
+        { name: "Claims", icon: <FaClipboardList />, id: "claims" },
         { name: "Sub Organizers", icon: <FaPeopleArrows />, id: "sub-organizers" },
         { name: "Reviews", icon: <FaStarHalfAlt />, id: "reviews" },
     ];
@@ -184,6 +188,25 @@ const Dashboard = () => {
         setActiveSection(sectionId);
     };
 
+    const handleToggleSidebar = () => {
+        setIsExpanded((prev) => {
+            const next = !prev;
+            if (!next) {
+                setIsEntitiesDropdownOpen(false);
+            }
+            return next;
+        });
+    };
+
+    const handleEntitiesClick = () => {
+        if (isExpanded) {
+            toggleEntitiesDropdown();
+        } else {
+            setIsExpanded(true);
+            setIsEntitiesDropdownOpen(true);
+        }
+    };
+
     // Organizer navigation handlers
     const handleNavigateToViewOrganizer = (organizer) => {
         setSelectedOrganizer(organizer);
@@ -304,83 +327,100 @@ const Dashboard = () => {
     return (
         <div className="flex min-h-screen bg-gray-50">
             <aside
-                className={`bg-gray-800 text-white flex flex-col py-6 space-y-4 transition-all duration-300 fixed left-0 top-[5.5rem] h-[calc(100vh-5.5rem)] z-50
+                className={`bg-gray-800 text-white flex flex-col transition-all duration-300 sticky top-0 h-screen overflow-y-auto overflow-x-hidden overscroll-contain scrollbar-hide
         ${isExpanded ? "w-48 items-start px-4" : "w-20 items-center"}`}
             >
-                {sections.map((item) => (
-                    <React.Fragment key={item.id}>
-                        <div
-                            key={item.id}
-                            className={`relative flex items-center px-4 cursor-pointer py-2 rounded-md transition-all group
+                <div className="py-6 space-y-4 min-h-full">
+                    {sections.map((item) => (
+                        <React.Fragment key={item.id}>
+                            <div
+                                className={`relative flex items-center px-4 cursor-pointer py-2 rounded-md transition-all group
       ${activeSection === item.id ? "bg-red-500 text-white" : "text-white hover:bg-gray-700"}`}
-                            onClick={() => setActiveSection(item.id)}
-                            onMouseEnter={(e) => {
-                                const tooltip = e.currentTarget.querySelector(".tooltip");
-                                tooltip && (tooltip.style.opacity = "1");
-                            }}
-                            onMouseLeave={(e) => {
-                                const tooltip = e.currentTarget.querySelector(".tooltip");
-                                tooltip && (tooltip.style.opacity = "0");
-                            }}
-                        >
-                            <div className="text-xl">{item.icon}</div>
-                            {isExpanded ? (
-                                <span className="ml-3 whitespace-nowrap">{item.name}</span>
-                            ) : (
-                                <span
-                                    className="tooltip absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-white text-black text-sm font-semibold px-2 py-1 rounded opacity-0 pointer-events-none transition-opacity duration-200 z-50"
-                                >
-                                    {item.name}
-                                </span>
-                            )}
-                        </div>
-                        {item.id === 'my-events' && (
-                            <div className="w-full">
-                                <div
-                                    onClick={toggleEntitiesDropdown}
-                                    className={`relative flex items-center justify-between px-4 cursor-pointer py-2 rounded-md transition-all group text-white hover:bg-gray-700`}
-                                >
-                                    <div className="flex items-center">
-                                        <div className="text-xl"><FaPuzzlePiece /></div>
-                                        {isExpanded && <span className="ml-3 whitespace-nowrap">Entities</span>}
+                                onClick={() => setActiveSection(item.id)}
+                                onMouseEnter={(e) => {
+                                    const tooltip = e.currentTarget.querySelector(".tooltip");
+                                    tooltip && (tooltip.style.opacity = "1");
+                                }}
+                                onMouseLeave={(e) => {
+                                    const tooltip = e.currentTarget.querySelector(".tooltip");
+                                    tooltip && (tooltip.style.opacity = "0");
+                                }}
+                            >
+                                <div className="text-xl">{item.icon}</div>
+                                {isExpanded ? (
+                                    <span className="ml-3 whitespace-nowrap">{item.name}</span>
+                                ) : (
+                                    <span
+                                        className="tooltip absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded-md opacity-0 pointer-events-none transition-opacity duration-200 z-50 shadow-lg"
+                                    >
+                                        {item.name}
+                                    </span>
+                                )}
+                            </div>
+                            {item.id === 'my-events' && (
+                                <div className={`${isExpanded ? 'w-full' : ''}`}>
+                                    <div
+                                        onClick={handleEntitiesClick}
+                                        onMouseEnter={(e) => {
+                                            const tooltip = e.currentTarget.querySelector('.tooltip');
+                                            tooltip && (tooltip.style.opacity = '1');
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            const tooltip = e.currentTarget.querySelector('.tooltip');
+                                            tooltip && (tooltip.style.opacity = '0');
+                                        }}
+                                        className={`relative flex items-center ${isExpanded ? 'justify-between px-4' : 'justify-center'} py-2 rounded-md transition-all group text-white hover:bg-gray-700 cursor-pointer`}
+                                    >
+                                        <div className="flex items-center">
+                                            <div className="text-xl"><FaPuzzlePiece /></div>
+                                            {isExpanded ? (
+                                                <span className="ml-3 whitespace-nowrap">Entities</span>
+                                            ) : (
+                                                <span
+                                                    className="tooltip absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs font-medium px-2 py-1 rounded-md opacity-0 pointer-events-none transition-opacity duration-200 z-50 shadow-lg"
+                                                >
+                                                    Entities
+                                                </span>
+                                            )}
+                                        </div>
+                                        {isExpanded && (
+                                            <div className={`transition-transform duration-200 ${isEntitiesDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>
+                                                {isEntitiesDropdownOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                                            </div>
+                                        )}
                                     </div>
-                                    {isExpanded && (
-                                        <div className={`transition-transform duration-200 ${isEntitiesDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>
-                                            {isEntitiesDropdownOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+
+                                    {isEntitiesDropdownOpen && isExpanded && (
+                                        <div className="ml-4 mt-1 space-y-1">
+                                            {entitiesItems.map((entity) => (
+                                                <div
+                                                    key={entity.id}
+                                                    onClick={() => handleNavigate(entity.id)}
+                                                    title={entity.name}
+                                                    className={`flex items-center space-x-4 cursor-pointer p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === entity.id
+                                                        ? "text-white bg-red-500 shadow-lg"
+                                                        : "text-gray-300"
+                                                        }`}
+                                                >
+                                                    <div className="text-lg flex-shrink-0">{entity.icon}</div>
+                                                    <span className={`text-sm font-medium whitespace-nowrap`}>
+                                                        {entity.name}
+                                                    </span>
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                 </div>
-
-                                {isEntitiesDropdownOpen && isExpanded && (
-                                    <div className="ml-4 mt-1 space-y-1">
-                                        {entitiesItems.map((entity) => (
-                                            <div
-                                                key={entity.id}
-                                                onClick={() => handleNavigate(entity.id)}
-                                                title={entity.name}
-                                                className={`flex items-center space-x-4 cursor-pointer p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === entity.id
-                                                    ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
-                                                    : "text-gray-300"
-                                                    }`}
-                                            >
-                                                <div className="text-lg flex-shrink-0">{entity.icon}</div>
-                                                <span className={`text-sm font-medium whitespace-nowrap`}>
-                                                    {entity.name}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </React.Fragment>
-                ))}
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
             </aside>
 
-            <main className={`flex-1 p-8 ${isExpanded ? "ml-48" : "ml-20"} transition-all duration-300 overflow-y-auto`}>
+            <main className={`flex-1 p-8 transition-all duration-300 overflow-y-auto`}>
                 <div
                     className="flex items-center cursor-pointer mb-6"
-                    onClick={() => setIsExpanded(!isExpanded)}
+                    onClick={handleToggleSidebar}
                 >
                     <FaBars className="text-2xl text-gray-800" />
                 </div>
@@ -476,7 +516,7 @@ const Dashboard = () => {
                         </div>
                     )}
 
-                    {activeSection === "my-events" && <AdminEvents />}
+                    {activeSection === "my-events" && <AdminMyEvents />}
 
                     {activeSection === "adminOrganizers" && (
                         <AdminOrganizers
@@ -907,62 +947,11 @@ const Dashboard = () => {
                         </div>
                     )}
 
-                    {activeSection === "guests" && (
-                        <div className="w-full px-4">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-3xl font-extrabold text-gray-900">Manage Guests</h2>
-                                <div className="flex gap-2">
-                                    <button className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition shadow-md">
-                                        <FaCalendarPlus className="text-md" />
-                                        <span className="text-sm font-semibold">Create GuestsList</span>
-                                    </button>
-                                    <button className="flex items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition shadow-md">
-                                        <FaCalendarPlus className="text-md" />
-                                        <span className="text-sm font-semibold">Create Guest</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-                                    <thead className="bg-gray-100 text-left">
-                                        <tr>
-                                            <th className="px-4 py-3 font-bold border-r w-1/3">Name</th>
-                                            <th className="px-4 py-3 font-bold border-r w-1/3">Total Guests</th>
-                                            <th className="px-4 py-3 font-bold w-1/3">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr className="border-t">
-                                            <td colSpan={3} className="px-4 py-6 text-center text-gray-700">No Guest Found!</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
+                    {activeSection === "guests" && <AdminGuests />}
 
-                    {activeSection === "sub-organizers" && (
-                        <div>
-                            <h2 className="text-3xl font-extrabold text-gray-900">Manage Sub Organizers</h2>
-                            <div className="overflow-x-auto p-6">
-                                <table className="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-                                    <thead className="bg-gray-100 text-left">
-                                        <tr>
-                                            <th className="px-4 py-3 font-bold border-r">Name</th>
-                                            <th className="px-4 py-3 font-bold border-r">Email</th>
-                                            <th className="px-4 py-3 font-bold border-r">Role</th>
-                                            <th className="px-4 py-3 font-bold border-r">Delete</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr className="border-t">
-                                            <td className="px-4 py-4 text-center text-gray-800" colSpan={4}>No Sub Organizers Found!</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
+                    {activeSection === "sub-organizers" && <AdminSubOrganizers />}
+
+                    {activeSection === "claims" && <AdminClaims />}
 
                     {activeSection === "reviews" && (
                         <div>

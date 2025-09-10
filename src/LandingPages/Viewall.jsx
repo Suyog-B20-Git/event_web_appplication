@@ -31,13 +31,13 @@ function Viewall() {
   const filterValue = value?.toLowerCase() || "";
 
   const [filter, setFilter] = useState(false);
-  
+
   // Price options
   const priceOptions = [
     { value: "free", label: "Free" },
     { value: "paid", label: "Paid" },
   ];
-  
+
   // City options
   const cityOptions = [
     { value: "mumbai", label: "Mumbai" },
@@ -174,10 +174,9 @@ function Viewall() {
               }}
               disabled={!(priceType || searchEvent || cityType)} // Include city in condition
               className={`flex gap-1 font-medium lg:text-base md:text-base text-xs
-                ${
-                  priceType || searchEvent || cityType // Include city in condition
-                    ? "text-[#ff2459] border border-[#ff2459]"
-                    : "text-gray-400 border border-gray-400 cursor-not-allowed"
+                ${priceType || searchEvent || cityType // Include city in condition
+                  ? "text-[#ff2459] border border-[#ff2459]"
+                  : "text-gray-400 border border-gray-400 cursor-not-allowed"
                 }
                 p-1 rounded`}
             >

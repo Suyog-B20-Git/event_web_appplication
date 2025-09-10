@@ -24,6 +24,7 @@ import { toast } from "react-toastify";
 const baseUrl = import.meta.env.VITE_API_URL;
 import axios from "axios";
 import { useWatch } from "react-hook-form";
+import { saveFormImages, restoreFormImages, clearFormImages } from "../../utility/imageStore";
 
 // import DatePicker from "react-datepicker";
 // import "react-datepicker/dist/react-datepicker.css";
@@ -354,7 +355,7 @@ export default function EventForm() {
     }
   }, [performers, ytLinks]);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("FORM DATA", data);
     const formData = new FormData();
     const category = data.selectedEvent || data.category;
@@ -449,7 +450,38 @@ export default function EventForm() {
     const authToken = localStorage.getItem("authToken");
 
     if (!isLogin || !authToken) {
-      localStorage.setItem("eventData", JSON.stringify({ ...data }));
+      // Save form data for restoration after login
+      const dataToSave = {
+        ...data,
+        // Save additional state that's not in the form data
+        eventTags: eventTags,
+        repeatDatesRaw: repeatDatesRaw,
+        repeatExceptList: repeatExceptList,
+        youtubeLinks: youtubeLinks,
+        performersYtLinks: performersYtLinks,
+        selectedPerformers: selectedPerformers,
+        // Don't save file objects to localStorage
+        media: {
+          thumbnailImage: null,
+          posterImage: null,
+          seatingChartImage: null,
+          images: []
+        }
+      };
+
+      // Persist image Files to IndexedDB
+      const imageFiles = (data.media?.images?.length ? data.media.images : selectedImages)
+        .map((img) => (img && img.file instanceof File ? img.file : (img instanceof File ? img : null)))
+        .filter(Boolean);
+
+      await saveFormImages({
+        thumbnail: data.media?.thumbnailImage || thumbnailImage || null,
+        poster: data.media?.posterImage || posterImage || null,
+        seatingChart: data.media?.seatingChartImage || seatingChartImage || null,
+        images: imageFiles || []
+      });
+
+      localStorage.setItem("eventData", JSON.stringify(dataToSave));
       toast.error("Please log in to create an event.");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");
@@ -464,6 +496,7 @@ export default function EventForm() {
       setPosterPreview(null);
       setSeatingChartPreview(null);
       localStorage.removeItem("eventData");
+      await clearFormImages();
       navigate("/home");
     } catch (error) {
       const errorMessage =
@@ -473,12 +506,71 @@ export default function EventForm() {
   };
 
   useEffect(() => {
-    const savedData = localStorage.getItem("eventData");
-    if (savedData) {
-      reset(JSON.parse(savedData));
-      localStorage.removeItem("eventData");
-    }
-  }, []);
+    const restore = async () => {
+      const savedData = localStorage.getItem("eventData");
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          console.log("Restoring saved data:", parsedData);
+
+          // Reset the form with saved data
+          reset(parsedData);
+
+          // Restore additional state that's not part of the form
+          if (parsedData.eventTags) setEventTags(parsedData.eventTags);
+          if (parsedData.repeatDatesRaw) setRepeatDatesRaw(parsedData.repeatDatesRaw);
+          if (parsedData.repeatExceptList) setRepeatExceptList(parsedData.repeatExceptList);
+          if (parsedData.youtubeLinks) setYoutubeLinks(parsedData.youtubeLinks);
+          if (parsedData.performersYtLinks) setperformersYtLinks(parsedData.performersYtLinks);
+          if (parsedData.selectedPerformers) setSelectedPerformers(parsedData.selectedPerformers);
+
+          // Restore images from IndexedDB and rebuild previews
+          const imgs = await restoreFormImages();
+          if (imgs) {
+            if (imgs.thumbnail instanceof Blob) {
+              const file = new File([imgs.thumbnail], "thumbnail.jpg", { type: imgs.thumbnail.type || "image/jpeg" });
+              setThumbnailImage(file);
+              setValue("media.thumbnailImage", file);
+              setThumnPreview(URL.createObjectURL(file));
+            }
+            if (imgs.poster instanceof Blob) {
+              const file = new File([imgs.poster], "poster.jpg", { type: imgs.poster.type || "image/jpeg" });
+              setPosterImage(file);
+              setValue("media.posterImage", file);
+              setPosterPreview(URL.createObjectURL(file));
+            }
+            if (imgs.seatingChart instanceof Blob) {
+              const file = new File([imgs.seatingChart], "seating-chart.jpg", { type: imgs.seatingChart.type || "image/jpeg" });
+              setSeatingChartImage(file);
+              setValue("media.seatingChartImage", file);
+              setSeatingChartPreview(URL.createObjectURL(file));
+            }
+            if (Array.isArray(imgs.images) && imgs.images.length) {
+              const rebuilt = imgs.images.map((blob, idx) => {
+                const f = blob instanceof Blob ? new File([blob], `image-${idx + 1}.jpg`, { type: blob.type || "image/jpeg" }) : null;
+                if (!f) return null;
+                return { file: f, preview: URL.createObjectURL(f) };
+              }).filter(Boolean);
+              if (rebuilt.length) {
+                setSelectedImages(rebuilt);
+                setValue("media.images", rebuilt);
+              }
+            }
+          }
+
+          // Clear the saved data after successful restoration
+          localStorage.removeItem("eventData");
+          await clearFormImages();
+          toast.success("Form data restored successfully, including images.");
+        } catch (error) {
+          console.error("Error restoring saved data:", error);
+          localStorage.removeItem("eventData");
+          await clearFormImages();
+        }
+      }
+    };
+    restore();
+  }, [reset, setValue]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -567,7 +659,37 @@ export default function EventForm() {
     const token = localStorage.getItem("authToken");
 
     if (!isLogin || !token) {
-      localStorage.setItem("eventData", JSON.stringify({ ...data }));
+      // Save form data for restoration after login
+      const dataToSave = {
+        ...data,
+        // Save additional state that's not in the form data
+        eventTags: eventTags,
+        repeatDatesRaw: repeatDatesRaw,
+        repeatExceptList: repeatExceptList,
+        youtubeLinks: youtubeLinks,
+        performersYtLinks: performersYtLinks,
+        selectedPerformers: selectedPerformers,
+        media: {
+          thumbnailImage: null,
+          posterImage: null,
+          seatingChartImage: null,
+          images: []
+        }
+      };
+
+      // Persist image Files to IndexedDB
+      const imageFiles = (data.media?.images?.length ? data.media.images : selectedImages)
+        .map((img) => (img && img.file instanceof File ? img.file : (img instanceof File ? img : null)))
+        .filter(Boolean);
+
+      await saveFormImages({
+        thumbnail: data.media?.thumbnailImage || thumbnailImage || null,
+        poster: data.media?.posterImage || posterImage || null,
+        seatingChart: data.media?.seatingChartImage || seatingChartImage || null,
+        images: imageFiles || []
+      });
+
+      localStorage.setItem("eventData", JSON.stringify(dataToSave));
       toast.error("Please login to continue");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");

@@ -2,8 +2,8 @@ import { getPerformers } from "./actions/master/Events/GetPerformer";
 import { getVenue } from "./actions/master/Events/GetVenue";
 import { getLocationDetails } from "./actions/master/location/locationDetail";
 
-export const baseUrl = "http://dev.eventsnode.com:3000/api/";
-// export const baseUrl = "http://dev.eventsnode.com:3000/api/";
+export const baseUrl = "http://localhost:5000/api/";
+// export const baseUrl = "http://localhost:5000/api/";
 
 
 export const Auth = {
@@ -43,6 +43,7 @@ export const Organizer = {
   addFavouriteOrganizer: `${baseUrl}organizer/favorites`,
   postFavouriteOrganizer: `${baseUrl}organizer/favorites`,
   deleteFavouriteOrganizer: `${baseUrl}organizer/favorites`,
+  postOrganizer: `${baseUrl}organizer`,
 }
 
 export const Venue = {

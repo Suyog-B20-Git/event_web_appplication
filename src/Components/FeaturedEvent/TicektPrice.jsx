@@ -4,14 +4,14 @@ import axios from "axios";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const TicketPrice = ({ ticketFormatId }) => {
-    // console.log("TicketFormatId:", ticketFormatId);
+  // console.log("TicketFormatId:", ticketFormatId);
   const [ticketData, setTicketData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const authToken = localStorage.getItem("authToken");
   const fetchTicketFormat = async () => {
     try {
-      
+
       const response = await axios.get(`${baseUrl}/ticketFormat/${ticketFormatId}`, {
         headers: {
           Authorization: authToken,
@@ -22,7 +22,7 @@ const TicketPrice = ({ ticketFormatId }) => {
     } catch (error) {
       console.error("Failed to fetch ticket format:", error);
     } finally {
-      
+
     }
   };
 
@@ -32,7 +32,7 @@ const TicketPrice = ({ ticketFormatId }) => {
     }
   }, [ticketFormatId]);
 
-  
+
   if (!ticketData) return <span>Price not available</span>;
 
   const now = new Date();

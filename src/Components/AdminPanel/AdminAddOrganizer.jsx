@@ -80,7 +80,7 @@ const AdminAddOrganizer = ({ onBack, onCreate }) => {
     useEffect(() => {
         const fetchSubCategories = async () => {
             try {
-                const response = await fetch(`http://dev.eventsnode.com:3000/api/categories?type=Organizer`);
+                const response = await fetch(`http://localhost:5000/api/categories?type=Organizer`);
                 const data = await response.json();
 
                 const formatted = data.data?.map((sub) => ({

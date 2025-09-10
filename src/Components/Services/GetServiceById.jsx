@@ -59,6 +59,24 @@ import YouTubeWall from "../SocialMedia/YouTubeWall.jsx";
 function GetServiceById() {
   const { serviceId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
+
+  // Validate serviceId
+  if (!serviceId || serviceId === 'undefined') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Invalid Service</h2>
+          <p className="text-gray-600">The service you're looking for doesn't exist or the URL is incorrect.</p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
   const [category, setCategory] = useState("");
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
@@ -291,8 +309,8 @@ function GetServiceById() {
                   {!hasPhoneNumber
                     ? "Not available"
                     : showNumber
-                    ? data.phoneNumber
-                    : "View Contact"}
+                      ? data.phoneNumber
+                      : "View Contact"}
                 </p>
               </div>
 
@@ -356,11 +374,10 @@ function GetServiceById() {
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
-                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
-                    ownershipEnquirySent
-                      ? "text-[#ff2459] cursor-not-allowed"
-                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                  }`}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${ownershipEnquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                    }`}
                   onClick={() => {
                     if (!isLogin) {
                       toast.error("Please login first to send enquiry!", {
@@ -379,11 +396,10 @@ function GetServiceById() {
                     : "Claim Ownership"}
                 </p>
                 <p
-                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${
-                    enquirySent
-                      ? "text-[#ff2459] cursor-not-allowed"
-                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                  }`}
+                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${enquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                    }`}
                   onClick={() => {
                     if (!isLogin) {
                       toast.error("Please login to send enquiry!", {
@@ -417,9 +433,8 @@ function GetServiceById() {
                     }
                     toggleFavorite(data._id);
                   }}
-                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
-                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-                  }`}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                    }`}
                 >
                   <FaHeart className="relative top-1 lg:text-base text-xs hover:text-[#ff2459]" />{" "}
                   {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
@@ -441,11 +456,10 @@ function GetServiceById() {
 
                   <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-6">
                     <button
-                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${
-                        ownershipEnquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                      }`}
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${ownershipEnquirySent
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        }`}
                       onClick={() => {
                         if (!isLogin) {
                           toast.error("Please login first to send enquiry!", {
@@ -464,11 +478,10 @@ function GetServiceById() {
                         : "Claim Ownership"}
                     </button>
                     <button
-                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${
-                        enquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                      }`}
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${enquirySent
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        }`}
                       onClick={() => {
                         if (!isLogin) {
                           toast.error("Please login first to send enquiry!", {
@@ -504,9 +517,8 @@ function GetServiceById() {
                         toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
-                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                        localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-                      }`}
+                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                        }`}
                     >
                       <FaHeart className="relative top-2 lg:text-base text-sm" />
                       {localIsFavorite
@@ -559,9 +571,8 @@ function GetServiceById() {
               <div className="sticky top-0 z-10">
                 <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-x-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  ">
                   <button
-                    className={`px-2 ${
-                      about ? "border-b-2 border-b-red-600" : ""
-                    }`}
+                    className={`px-2 ${about ? "border-b-2 border-b-red-600" : ""
+                      }`}
                     onClick={() => {
                       setAbout(true);
                       setUpcoming(false);
@@ -577,9 +588,8 @@ function GetServiceById() {
                     ABOUT
                   </button>
                   <button
-                    className={`${
-                      upcoming ? "border-b-2 border-b-red-600" : ""
-                    } p-2`}
+                    className={`${upcoming ? "border-b-2 border-b-red-600" : ""
+                      } p-2`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(true);
@@ -595,9 +605,8 @@ function GetServiceById() {
                     UPCOMING EVENT
                   </button>
                   <button
-                    className={`${
-                      facebook ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${facebook ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -613,9 +622,8 @@ function GetServiceById() {
                     FACEBOOK
                   </button>
                   <button
-                    className={`${
-                      twitter ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${twitter ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -631,9 +639,8 @@ function GetServiceById() {
                     TWITTER
                   </button>
                   <button
-                    className={`${
-                      instagram ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${instagram ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -650,9 +657,8 @@ function GetServiceById() {
                   </button>
 
                   <button
-                    className={`${
-                      youtube ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${youtube ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -668,9 +674,8 @@ function GetServiceById() {
                     YOUTUBE
                   </button>
                   <button
-                    className={`${
-                      stat ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${stat ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -1058,6 +1063,8 @@ function GetServiceById() {
           name={name}
           email={email}
           enquiry={enquiry}
+          targetId={data?._id}
+          modelName="Service"
         />
       )}
     </div>

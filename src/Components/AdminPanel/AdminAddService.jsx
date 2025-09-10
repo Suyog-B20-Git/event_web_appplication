@@ -29,7 +29,7 @@ const AdminAddService = ({ onBack, onCreate }) => {
 
     useEffect(() => {
         const fetchSubs = async () => {
-            try { const res = await fetch(`http://dev.eventsnode.com:3000/api/categories?type=Service`); const data = await res.json(); setSubCategoryList((data.data || []).map(s => ({ label: s.name, value: s.name }))); } catch { setSubCategoryList([]); }
+            try { const res = await fetch(`http://localhost:5000/api/categories?type=Service`); const data = await res.json(); setSubCategoryList((data.data || []).map(s => ({ label: s.name, value: s.name }))); } catch { setSubCategoryList([]); }
         };
         fetchSubs();
     }, []);

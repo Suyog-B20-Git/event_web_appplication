@@ -61,6 +61,15 @@ import blogPostsReducer from "./BlogPosts/blogPosts";
 import getVenuesAdminReducer from "./pages/Venue/getVenuesAdmin";
 import venueOpsReducer from "./pages/Venue/venueOps";
 
+// Guests Reducers
+import guestsReducer from "./pages/guests";
+
+// Users Reducers
+import usersReducer from "./pages/users";
+
+// Claims Reducers
+import claimsReducer from "./pages/claims";
+
 // ** Reducers Import **//
 
 const rootReducer = combineReducers({
@@ -123,6 +132,15 @@ const rootReducer = combineReducers({
   // Venue Admin Reducers
   getVenuesAdmin: getVenuesAdminReducer,
   venueOps: venueOpsReducer,
+
+  // Guests Reducers
+  guests: guestsReducer,
+
+  // Users Reducers
+  users: usersReducer,
+
+  // Claims Reducers
+  claims: claimsReducer,
 });
 
 export default rootReducer;

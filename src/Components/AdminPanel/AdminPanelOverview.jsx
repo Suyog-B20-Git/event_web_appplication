@@ -7,6 +7,7 @@ import { GiWallet, GiVerticalBanner } from "react-icons/gi";
 import { ImUsers } from "react-icons/im";
 import { HiOutlineLogout } from "react-icons/hi";
 import { HiClipboardDocumentList, HiOutlineUserCircle, HiOutlineUser, HiOutlineGlobeAlt } from "react-icons/hi2";
+import { FaClipboardList } from "react-icons/fa";
 import { RiContactsBook3Line } from "react-icons/ri";
 import { MdOutlinePermMedia, MdOutlineDocumentScanner } from "react-icons/md";
 import { PiListBulletsFill } from "react-icons/pi";
@@ -56,6 +57,7 @@ import AdminSettings from './AdminSettings';
 import AdminPromocodes from './AdminPromocodes';
 import AdminComplimentaryBookings from './AdminComplimentaryBookings';
 import AdminCurrencies from './AdminCurrencies';
+import AdminClaims from './AdminClaims';
 
 
 
@@ -114,6 +116,7 @@ const AdminPanelOverview = () => {
         { name: "Commissions", icon: <GiWallet />, id: "adminCommissions" },
         { name: "Taxes", icon: <HiClipboardDocumentList />, id: "adminTaxes" },
         { name: "Users", icon: <ImUsers />, id: "adminUsers" },
+        { name: "Claims", icon: <FaClipboardList />, id: "adminClaims" },
         { name: "Contacts", icon: <RiContactsBook3Line />, id: "adminContacts" },
         { name: "Media", icon: <MdOutlinePermMedia />, id: "adminMedia" },
         { name: "Banners", icon: <GiVerticalBanner />, id: "adminBanners" },
@@ -536,6 +539,7 @@ const AdminPanelOverview = () => {
                     {activeSection === "adminCommissions" && <Commissions />}
                     {activeSection === "adminTaxes" && <Taxes />}
                     {activeSection === "adminUsers" && <Users />}
+                    {activeSection === "adminClaims" && <AdminClaims />}
 
                     {/* Entities Sections */}
                     {activeSection === "adminOrganizers" && (

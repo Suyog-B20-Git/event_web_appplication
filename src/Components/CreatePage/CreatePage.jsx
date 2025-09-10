@@ -28,7 +28,7 @@ import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 import { useNavigate } from "react-router-dom";
-const baseUrl = "http://dev.eventsnode.com:3000";
+const baseUrl = "http://localhost:5000";
 
 
 function CreatePage() {
@@ -347,13 +347,11 @@ function CreatePage() {
       selectedSubCategory.forEach((subCategory) =>
         formData.append("categories[]", subCategory)
       );
+
+      // Use the selected dropdown values, not the form data values
       formData.append("country", selectedCountry ? selectedCountry.label : "");
       formData.append("state", selectedState ? selectedState.label : "");
       formData.append("city", selectedCity ? selectedCity.label : "");
-
-      formData.append("country", data.country);
-      formData.append("state", data.state);
-      formData.append("city", data.city);
       formData.append("location", data.location);
       formData.append("name", data.listingTitle);
       formData.append("description", data.listingDescription);

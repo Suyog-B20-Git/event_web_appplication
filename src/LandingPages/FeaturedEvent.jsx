@@ -100,8 +100,8 @@ function FeaturedEvent() {
   const VenuesData = Array.isArray(receivedData?.venue)
     ? receivedData?.venue
     : receivedData?.venue
-    ? [receivedData.venue]
-    : [];
+      ? [receivedData.venue]
+      : [];
   const thumbnailImage = receivedData?.media?.thumbnailImage;
   const posterImage = receivedData?.media?.posterImage;
   const phoneNumber = receivedData?.organizer?.phoneNumber?.trim();
@@ -135,11 +135,16 @@ function FeaturedEvent() {
   useEffect(() => {
     setEnquirySent(false);
 
-    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    // Check for both old and new localStorage keys for backward compatibility
+    const eventId = receivedData?._id;
+    const oldKey = `enquiry_sent_${name}`;
+    const newKey = eventId ? `enquiry_sent_${eventId}` : oldKey;
+
+    const sent = localStorage.getItem(newKey) || localStorage.getItem(oldKey);
     if (sent === "true") {
       setEnquirySent(true);
     }
-  }, [name]);
+  }, [name, receivedData?._id]);
 
   const handleEnquirySent = () => {
     setEnquirySent(true);
@@ -179,9 +184,8 @@ function FeaturedEvent() {
 
   useEffect(() => {
     if (receivedData && receivedData.category && receivedData._id) {
-      const newPath = `/events/${(receivedData.category || "").toLowerCase()}/${
-        receivedData._id
-      }`;
+      const newPath = `/events/${(receivedData.category || "").toLowerCase()}/${receivedData._id
+        }`;
       const currentPath = window.location.pathname;
 
       if (currentPath !== newPath) {
@@ -289,11 +293,10 @@ function FeaturedEvent() {
         <div
           className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px] mt-20 sm:mt-0 relative"
           style={{
-            backgroundImage: `url(${
-              formatImageUrl(posterImage) ||
+            backgroundImage: `url(${formatImageUrl(posterImage) ||
               formatImageUrl(thumbnailImage) ||
               "assets/staticAssets/fallback-image.jpg"
-            })`,
+              })`,
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
@@ -329,11 +332,10 @@ function FeaturedEvent() {
                   setEnquiry(!enquiry);
                 }
               }}
-              className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
-                enquirySent
-                  ? "text-[#ff2459] cursor-not-allowed"
-                  : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-              }`}
+              className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${enquirySent
+                ? "text-[#ff2459] cursor-not-allowed"
+                : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                }`}
             >
               <IoIosInformationCircleOutline className="text-lg" />
               {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
@@ -351,9 +353,8 @@ function FeaturedEvent() {
                 }
                 toggleFavorite(receivedData._id);
               }}
-              className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer hover:text-[#ff2459] ${
-                localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-              }`}
+              className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer hover:text-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                }`}
             >
               <FaHeart className="text-lg" />
               {localIsFavorite ? "Added to Favourites" : "Add To Favourite"}
@@ -508,15 +509,15 @@ function FeaturedEvent() {
 
                   <div className="text-md font-semibold text-gray-700 mb-2">
                     Repeats on: {receivedData.repetitiveType}
-                 
-                  {receivedData.repetitiveType === "Daily" &&
-                  receivedData.repeatExcept &&
-                    receivedData.repeatExcept.length > 0 && (
-                      <h1 className="text-2xl font-bold text-red-700">
-                        Except : <span className="text-red-700"> {receivedData.repeatExcept.join(",")} </span>
-                      </h1>
-                    )}
- </div>
+
+                    {receivedData.repetitiveType === "Daily" &&
+                      receivedData.repeatExcept &&
+                      receivedData.repeatExcept.length > 0 && (
+                        <h1 className="text-2xl font-bold text-red-700">
+                          Except : <span className="text-red-700"> {receivedData.repeatExcept.join(",")} </span>
+                        </h1>
+                      )}
+                  </div>
                   {receivedData.repetitiveType === "Monthly" && (
                     <div className="flex flex-wrap gap-2 mb-3">
                       {receivedData.repeatDates
@@ -582,15 +583,18 @@ function FeaturedEvent() {
                   Event Tags
                 </h2>
                 {Array.isArray(receivedData?.eventTags) &&
-                receivedData.eventTags.filter((tag) => tag && tag.trim() !== "")
-                  .length > 0 ? (
+                  receivedData.eventTags
+                    .map(tag => typeof tag === 'object' && tag !== null ? tag.name : tag)
+                    .filter(tagName => tagName && tagName.trim() !== "")
+                    .length > 0 ? (
                   <div className="flex flex-wrap gap-3 mt-2">
                     {receivedData.eventTags
-                      .filter((tag) => tag && tag.trim() !== "")
-                      .map((tag, index) => (
+                      .map(tag => typeof tag === 'object' && tag !== null ? tag.name : tag)
+                      .filter(tagName => tagName && tagName.trim() !== "")
+                      .map((tagName, index) => (
                         <Button
                           key={index}
-                          text={tag}
+                          text={tagName}
                           variant={"primary"}
                           textSize={"text-sm"}
                           rounded={"rounded-2xl"}
@@ -637,7 +641,7 @@ function FeaturedEvent() {
                   Event Gallery
                 </h1>
                 {Array.isArray(receivedData?.media?.images) &&
-                receivedData.media.images.length > 0 ? (
+                  receivedData.media.images.length > 0 ? (
                   <EventGallery data={receivedData.media.images} />
                 ) : (
                   <p className="text-lg text-gray-600 mt-2">
@@ -648,9 +652,9 @@ function FeaturedEvent() {
 
               <div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
                 {Array.isArray(receivedData.youtubeVideoUrls) &&
-                receivedData.youtubeVideoUrls.some(
-                  (url) => url && url.trim() !== ""
-                ) ? (
+                  receivedData.youtubeVideoUrls.some(
+                    (url) => url && url.trim() !== ""
+                  ) ? (
                   <>
                     <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
                       Watch Videos
@@ -834,8 +838,8 @@ function FeaturedEvent() {
                 {account
                   ? "Register here"
                   : guest
-                  ? "Back to Register/Login"
-                  : "Checkout as Guest"}
+                    ? "Back to Register/Login"
+                    : "Checkout as Guest"}
               </p>
             </div>
           </div>
@@ -848,6 +852,8 @@ function FeaturedEvent() {
           name={name}
           email={organizerEmail}
           enquiry={enquiry}
+          targetId={receivedData?._id}
+          modelName="Event"
         />
       )}
     </div>

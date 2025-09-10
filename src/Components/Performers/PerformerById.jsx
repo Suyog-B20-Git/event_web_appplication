@@ -61,6 +61,24 @@ import YouTubeWall from "../SocialMedia/YouTubeWall";
 function GetPerformerById() {
   const { performerId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
+
+  // Validate performerId
+  if (!performerId || performerId === 'undefined') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Invalid Performer</h2>
+          <p className="text-gray-600">The performer you're looking for doesn't exist or the URL is incorrect.</p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
   const [category, setCategory] = useState("");
   const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const [enquiry, setEnquiry] = useState(false);
@@ -285,91 +303,90 @@ function GetPerformerById() {
               </p>
             </div>
             <div className="grid grid-cols-2 gap-6 px-2 lg:px-0 lg:mt-2 lg:w-[60%]">
-                        {/* Phone Section */}
-                        <div className="flex gap-2 p-0 py-0 cursor-pointer ">
-                          <p
-                            className="max-w-md"
-                            onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
-                          >
-                            <FaPhoneAlt
-                              className="text-red-500 relative top-1"
-                              style={{ textShadow: "1px 1px 1px black" }}
-                            />
-                          </p>
-                          <p onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}>
-                            {!hasPhoneNumber
-                              ? "Not available"
-                              : showNumber
-                              ? data.phoneNumber
-                              : "View Contact"}
-                          </p>
-                        </div>
-          
-                        {/* Available Time Section */}
-                        {data.availableTime && (
-                          <div className="flex gap-2 p-0 py-0 cursor-default">
-                            <p>
-                              <FaClock
-                                className="text-red-500 relative top-1 text-xl"
-                                style={{ textShadow: "1px 1px 1px black" }}
-                              />
-                            </p>
-                            <p>{data.availableTime}</p>
-                          </div>
-                        )}
-                      </div>
-          
-                      <div className="grid lg:grid-cols-2 gap-4 px-2 py-1 lg:px-0 lg:py-0 sm:mt-2 lg:w-[60%]">
-                        {/* Website Section */}
-                        {data.website && (
-                          <div className="flex gap-2 items-center p-0 py-0">
-                            <p>
-                              <FaGlobe
-                                className="text-red-500 relative top-1 text-xl"
-                                style={{ textShadow: "1px 1px 1px black" }}
-                              />
-                            </p>
-                            <a
-                              href={
-                                data.website.startsWith("http")
-                                  ? data.website
-                                  : `https://${data.website}`
-                              }
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-white underline hover:text-blue-400 break-all"
-                            >
-                              {data.website}
-                            </a>
-                          </div>
-                        )}
-          
-                        {/* Email Section */}
-                        {data.email && (
-                          <div className="flex gap-2 items-center p-0 py-0">
-                            <p>
-                              <MdEmail  
-                                className="text-red-500 relative top-1 text-xl"
-                                style={{ textShadow: "1px 1px 1px black" }}
-                              />
-                            </p>
-                            <a
-                              href={`mailto:${data.email}`}
-                              className="text-white underline hover:text-blue-400 break-all"
-                            >
-                              {data.email}
-                            </a>
-                          </div>
-                        )}
-                      </div>
+              {/* Phone Section */}
+              <div className="flex gap-2 p-0 py-0 cursor-pointer ">
+                <p
+                  className="max-w-md"
+                  onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+                >
+                  <FaPhoneAlt
+                    className="text-red-500 relative top-1"
+                    style={{ textShadow: "1px 1px 1px black" }}
+                  />
+                </p>
+                <p onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}>
+                  {!hasPhoneNumber
+                    ? "Not available"
+                    : showNumber
+                      ? data.phoneNumber
+                      : "View Contact"}
+                </p>
+              </div>
+
+              {/* Available Time Section */}
+              {data.availableTime && (
+                <div className="flex gap-2 p-0 py-0 cursor-default">
+                  <p>
+                    <FaClock
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <p>{data.availableTime}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-4 px-2 py-1 lg:px-0 lg:py-0 sm:mt-2 lg:w-[60%]">
+              {/* Website Section */}
+              {data.website && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <FaGlobe
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={
+                      data.website.startsWith("http")
+                        ? data.website
+                        : `https://${data.website}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.website}
+                  </a>
+                </div>
+              )}
+
+              {/* Email Section */}
+              {data.email && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <MdEmail
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={`mailto:${data.email}`}
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.email}
+                  </a>
+                </div>
+              )}
+            </div>
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
-                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
-                    ownershipEnquirySent
-                      ? "text-[#ff2459] cursor-not-allowed"
-                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                  }`}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${ownershipEnquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                    }`}
                   onClick={() => {
                     if (!isLogin) {
                       toast.error("Please login first to send enquiry!", {
@@ -388,11 +405,10 @@ function GetPerformerById() {
                     : "Claim Ownership"}
                 </p>
                 <p
-                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${
-                    enquirySent
-                      ? "text-[#ff2459] cursor-not-allowed"
-                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                  }`}
+                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${enquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                    }`}
                   onClick={() => {
                     if (!isLogin) {
                       toast.error("Please login first to send enquiry!", {
@@ -426,9 +442,8 @@ function GetPerformerById() {
                     }
                     toggleFavorite(data._id);
                   }}
-                  className={`flex gap-1 bg-white  ${
-                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-                  }`}
+                  className={`flex gap-1 bg-white  ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                    }`}
                 >
                   <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
                   {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
@@ -450,11 +465,10 @@ function GetPerformerById() {
 
                   <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-6">
                     <button
-                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${
-                        ownershipEnquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                      }`}
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${ownershipEnquirySent
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        }`}
                       onClick={() => {
                         if (!isLogin) {
                           toast.error("Please login first to send enquiry!", {
@@ -473,11 +487,10 @@ function GetPerformerById() {
                         : "Claim Ownership"}
                     </button>
                     <button
-                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${
-                        enquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                      }`}
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${enquirySent
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        }`}
                       onClick={() => {
                         if (!isLogin) {
                           toast.error("Please login first to send enquiry!", {
@@ -513,9 +526,8 @@ function GetPerformerById() {
                         toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
-                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                        localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-                      }`}
+                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                        }`}
                     >
                       <FaHeart className="relative top-2 lg:text-base text-sm" />
                       {localIsFavorite
@@ -552,7 +564,7 @@ function GetPerformerById() {
             </div>
 
             <div className="flex lg:hidden gap-4 p-2 justify-center ">
-              <FollowButton targetId={targetId} modelName={modelName} variant="mobile"  />
+              <FollowButton targetId={targetId} modelName={modelName} variant="mobile" />
             </div>
 
             {hoveredTab && (
@@ -563,188 +575,179 @@ function GetPerformerById() {
 
             <div className="lg:w-[70%]  h-[600px] overflow-scroll scrollbar-hide  rounded-lg">
               <div className="sticky top-0 z-10">
-              <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
-                <button
-                  className={`px-2 ${
-                    about ? "border-b-2 border-b-red-600" : ""
-                  }`}
-                  onClick={() => {
-                    setAbout(true);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setSoundCloud(false);
-                    setTwitter(false);
-                    setInstgram(false);
-                    setSpotify(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("about")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  ABOUT
-                </button>
-                <button
-                  className={`${
-                    upcoming ? "border-b-2 border-b-red-600" : ""
-                  } p-2`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(true);
-                    setFacebook(false);
-                    setSoundCloud(false);
-                    setTwitter(false);
-                    setInstgram(false);
-                    setSpotify(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("upcoming-event")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  UPCOMING EVENT
-                </button>
-                <button
-                  className={`${
-                    facebook ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(true);
-                    setSoundCloud(false);
-                    setTwitter(false);
-                    setInstgram(false);
-                    setSpotify(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("facebook")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  FACEBOOK
-                </button>
-                <button
-                  className={`${
-                    twitter ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setSoundCloud(false);
-                    setTwitter(true);
-                    setInstgram(false);
-                    setSpotify(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("twitter")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  TWITTER
-                </button>
-                <button
-                  className={`${
-                    instagram ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setSoundCloud(false);
-                    setTwitter(false);
-                    setInstgram(true);
-                    setSpotify(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("instagram")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  INSTAGRAM
-                </button>
-                <button
-                  className={`${
-                    soundCloud ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setSoundCloud(true);
-                    setTwitter(false);
-                    setInstgram(false);
-                    setSpotify(false);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("soundcloud")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  SOUNDCLOUD
-                </button>
-                <button
-                  className={`${
-                    spotify ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setSoundCloud(false);
-                    setTwitter(false);
-                    setInstgram(false);
-                    setSpotify(true);
-                    setYoutube(false);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("spotify")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  SPOTIFY
-                </button>
-                <button
-                  className={`${
-                    youtube ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setSoundCloud(false);
-                    setTwitter(false);
-                    setInstgram(false);
-                    setSpotify(false);
-                    setYoutube(true);
-                    setStat(false);
-                  }}
-                  onMouseEnter={() => setHoveredTab("youtube")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  YOUTUBE
-                </button>
-                <button
-                  className={`${
-                    stat ? "border-b-2 border-b-red-600" : ""
-                  } p-2 lg:px-0 px-4`}
-                  onClick={() => {
-                    setAbout(false);
-                    setUpcoming(false);
-                    setFacebook(false);
-                    setSoundCloud(false);
-                    setTwitter(false);
-                    setInstgram(false);
-                    setSpotify(false);
-                    setYoutube(false);
-                    setStat(true);
-                  }}
-                  onMouseEnter={() => setHoveredTab("stat")}
-                  onMouseLeave={() => setHoveredTab(null)}
-                >
-                  STAT
-                </button>
-              </div>
+                <div className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  lg:gap-16 font-medium lg:px-10 p-2  ">
+                  <button
+                    className={`px-2 ${about ? "border-b-2 border-b-red-600" : ""
+                      }`}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setSoundCloud(false);
+                      setTwitter(false);
+                      setInstgram(false);
+                      setSpotify(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    ABOUT
+                  </button>
+                  <button
+                    className={`${upcoming ? "border-b-2 border-b-red-600" : ""
+                      } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setSoundCloud(false);
+                      setTwitter(false);
+                      setInstgram(false);
+                      setSpotify(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    UPCOMING EVENT
+                  </button>
+                  <button
+                    className={`${facebook ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setSoundCloud(false);
+                      setTwitter(false);
+                      setInstgram(false);
+                      setSpotify(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    FACEBOOK
+                  </button>
+                  <button
+                    className={`${twitter ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setSoundCloud(false);
+                      setTwitter(true);
+                      setInstgram(false);
+                      setSpotify(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${instagram ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setSoundCloud(false);
+                      setTwitter(false);
+                      setInstgram(true);
+                      setSpotify(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
+                  <button
+                    className={`${soundCloud ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setSoundCloud(true);
+                      setTwitter(false);
+                      setInstgram(false);
+                      setSpotify(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("soundcloud")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    SOUNDCLOUD
+                  </button>
+                  <button
+                    className={`${spotify ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setSoundCloud(false);
+                      setTwitter(false);
+                      setInstgram(false);
+                      setSpotify(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("spotify")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    SPOTIFY
+                  </button>
+                  <button
+                    className={`${youtube ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setSoundCloud(false);
+                      setTwitter(false);
+                      setInstgram(false);
+                      setSpotify(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${stat ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setSoundCloud(false);
+                      setTwitter(false);
+                      setInstgram(false);
+                      setSpotify(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stat")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    STAT
+                  </button>
+                </div>
               </div>
               <div className="lg:px-4 p-2 border bg-white rounded-lg h-full overflow-auto">
                 {about && data ? (
@@ -765,7 +768,7 @@ function GetPerformerById() {
                         <div
                           key={index}
                           className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
-                          onClick={() => navigate(`/events/${event.category.toLowerCase()}/${event._id}`, { state: event._id }) }
+                          onClick={() => navigate(`/events/${event.category.toLowerCase()}/${event._id}`, { state: event._id })}
                         >
                           {/* 🔹 Image Container*/}
                           <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
@@ -866,7 +869,7 @@ function GetPerformerById() {
                   )}
                 </p>
                 <p>
-                 {youtube &&
+                  {youtube &&
                     (data.youtubeId ? (
                       <YouTubeWall channelId={data.youtubeId} />
                     ) : (
@@ -967,7 +970,7 @@ function GetPerformerById() {
                 <h2 className="text-lg font-medium text-gray-900 p-2 border-b flex justify-start ml-2">
                   Find Events
                 </h2>
-                <CommonCalendar /> 
+                <CommonCalendar />
               </div>
             </div>
           </div>
@@ -1061,7 +1064,7 @@ function GetPerformerById() {
             <h1 className="text-lg font-medium border-b text-gray-900 p-2 w-[95%] ml-2">
               Find Events
             </h1>
-            <CommonCalendar /> 
+            <CommonCalendar />
           </div>
         </div>
       </div>
@@ -1083,6 +1086,8 @@ function GetPerformerById() {
           name={name}
           email={email}
           enquiry={enquiry}
+          targetId={data?._id}
+          modelName="Performer"
         />
       )}
     </div>

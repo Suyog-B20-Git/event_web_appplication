@@ -42,27 +42,27 @@ function Home() {
 
   const heading = [];
   const store = useSelector((state) => state.eventReducer) || { eventData: [] };
-  const data = store.eventData;
+  const data = Array.isArray(store.eventData) ? store.eventData : [];
 
   const store1 = useSelector((state) => state.upcomingEventReducer) || {
     upcomingEventData: [],
   };
-  const data1 = store1.upcomingEventData;
+  const data1 = Array.isArray(store1.upcomingEventData) ? store1.upcomingEventData : [];
 
   const store2 = useSelector((state) => state.featuredEventReducer) || {
     featuredEventData: [],
   };
-  const data2 = store2.featuredEventData;
+  const data2 = Array.isArray(store2.featuredEventData) ? store2.featuredEventData : [];
 
   const store3 = useSelector((state) => state.getOrganizerReducer) || {
     organizerData: [],
   };
-  const data3 = store3.organizerData;
+  const data3 = Array.isArray(store3.organizerData) ? store3.organizerData : [];
 
   const store4 = useSelector((state) => state.getVenueReducer) || {
     venueData: [],
   };
-  const data4 = store4.venueData;
+  const data4 = Array.isArray(store4.venueData) ? store4.venueData : [];
   const data5 = [...new Set(data4)];
 
   // Create initial slides from your dynamic data
@@ -178,12 +178,11 @@ function Home() {
                         state: slide.eventId
                       });
                     }}
-                    className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg transition-all duration-5000 cursor-pointer border border-black sm:mx-4 sm:ml-[10px] ${
-                      index === currentSlide ? "border-2 border-black opacity-100 scale-115" : "opacity-50 scale-80"
-                    }`}
+                    className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg transition-all duration-5000 cursor-pointer border border-black sm:mx-4 sm:ml-[10px] ${index === currentSlide ? "border-2 border-black opacity-100 scale-115" : "opacity-50 scale-80"
+                      }`}
                   >
                     <h4 className="absolute top-4 left-4 text-white text-lg font-bold bg-[#ff4259] rounded-full px-2 z-10">
-                     <span className="justify-center items-center">  {slide.category} </span>
+                      <span className="justify-center items-center">  {slide.category} </span>
                     </h4>
                     <img
                       src={slide.bgImage}
@@ -224,12 +223,12 @@ function Home() {
         <p></p>
       )}
       {data3.length >= 0 ? (
-        <CardData data={data3} heading={"ORGANIZERS"} navigation={"/organizers"}/>
+        <CardData data={data3} heading={"ORGANIZERS"} navigation={"/organizers"} />
       ) : (
         <p></p>
       )}
       {data5.length > 0 ? (
-        <CardData data={data5} heading={"VENUES"} navigation={"/venues"}/>
+        <CardData data={data5} heading={"VENUES"} navigation={"/venues"} />
       ) : (
         <p></p>
       )}

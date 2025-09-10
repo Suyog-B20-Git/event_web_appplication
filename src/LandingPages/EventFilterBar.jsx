@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronRight } from "lucide-react";
 import { FaEye } from "react-icons/fa";
 import { MdEvent } from "react-icons/md";
 import { CiLocationOn } from "react-icons/ci";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Event } from "../redux/Urls";
 
 const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal, navigate }) => {
   const [activeTime, setActiveTime] = useState("All");
@@ -12,6 +13,41 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const inFlightKeyRef = useRef(null);
+  const abortRef = useRef(null);
+
+  const formatYMD = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  const getDateRangeForTime = (time) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    if (time === "Today") {
+      return { startDate: formatYMD(today), endDate: formatYMD(today) };
+    }
+    if (time === "Tomorrow") {
+      return { startDate: formatYMD(tomorrow), endDate: formatYMD(tomorrow) };
+    }
+    if (time === "Weekend") {
+      // Compute Saturday and Sunday of the current week (Mon-Sun week)
+      const day = today.getDay(); // 0=Sun..6=Sat
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - ((day + 6) % 7));
+      const saturday = new Date(monday);
+      saturday.setDate(monday.getDate() + 5);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      return { startDate: formatYMD(saturday), endDate: formatYMD(sunday) };
+    }
+    return { startDate: null, endDate: null };
+  };
 
   const timeOptions = ["All", "Today", "Tomorrow", "Weekend"];
   const genres = [
@@ -68,12 +104,38 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
 
   useEffect(() => {
     const fetchEvents = async () => {
+      const { startDate, endDate } = getDateRangeForTime(activeTime);
+
+      const params = new URLSearchParams();
+      if (startDate && endDate) {
+        params.append("startDate", startDate);
+        params.append("endDate", endDate);
+      }
+      params.append("page", "1");
+      params.append("limit", "20");
+      params.append("sortBy", "startDate");
+      params.append("sortOrder", "desc");
+
+      const url = `${Event.getEventByFilter}${params.toString()}`;
+
+      // Prevent duplicate calls for the same query (e.g., React StrictMode)
+      if (inFlightKeyRef.current === url) {
+        return; // identical request already in-flight
+      }
+
+      // Abort any previous request
+      if (abortRef.current) {
+        abortRef.current.abort();
+      }
+
+      const controller = new AbortController();
+      abortRef.current = controller;
+      inFlightKeyRef.current = url;
       setLoading(true);
+
       try {
-        const res = await axios.get(
-          "http://dev.eventsnode.com:3000/api/event/filter?startDate=2025-06-01&endDate=2025-06-30&page=1&limit=100&sortBy=startDate&sortOrder=asc"
-        );
-        const allEvents = res.data?.data.events || [];
+        const res = await axios.get(url, { signal: controller.signal });
+        const allEvents = res.data?.data?.events || [];
         setEvents(allEvents);
         const filtered = filterEvents(
           allEvents,
@@ -81,14 +143,20 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
           activeGenre,
           searchEvent,
           priceType,
-          cityFilter // Use cityFilter here
+          cityFilter
         );
         setFilteredEvents(filtered);
       } catch (err) {
-        console.error("Fetch error:", err);
+        if (err.name !== "CanceledError" && err.name !== "AbortError") {
+          console.error("Fetch error:", err);
+        }
         setEvents([]);
         setFilteredEvents([]);
       } finally {
+        // Clear in-flight key only if it matches this request's url
+        if (inFlightKeyRef.current === url) {
+          inFlightKeyRef.current = null;
+        }
         setLoading(false);
       }
     };

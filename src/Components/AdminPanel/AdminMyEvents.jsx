@@ -21,7 +21,7 @@ const AdminMyEvents = () => {
   const [selectedOrganizer, setSelectedOrganizer] = useState("");
   const dropdownRef = useRef(null);
   const token = localStorage.getItem("authToken");
-  const baseUrl = "http://dev.eventsnode.com:3000/api";
+  const baseUrl = "http://localhost:5000/api";
 
   const [toast, setToast] = useState(null);
   const [totalPages, setTotalPages] = useState(1);

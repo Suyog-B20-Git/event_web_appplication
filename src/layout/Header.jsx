@@ -26,7 +26,7 @@ import gsap from "gsap";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const baseUrl = import.meta.env.VITE_API_URL;
+const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -295,11 +295,15 @@ const Header = () => {
   const handleLocationIconClick = () => {
     setShowLocationPopup(true);
     setQuery("");
-    gsap.from(locationPopupRef.current, {
-      scale: 0.8,
-      opacity: 0,
-      duration: 0.3,
-      ease: "back.out(1.2)",
+    requestAnimationFrame(() => {
+      if (locationPopupRef.current) {
+        gsap.from(locationPopupRef.current, {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.3,
+          ease: "back.out(1.2)",
+        });
+      }
     });
   };
 
@@ -435,7 +439,8 @@ const Header = () => {
           const response = await axios.get(
             `${baseUrl}/location/locationSuggestions?search=${searchValue}`
           );
-          setSuggestions(response.data || []);
+          const data = Array.isArray(response.data) ? response.data : [];
+          setSuggestions(data);
         } catch (error) {
           console.error("Error fetching location suggestions:", error);
           setSuggestions([]);

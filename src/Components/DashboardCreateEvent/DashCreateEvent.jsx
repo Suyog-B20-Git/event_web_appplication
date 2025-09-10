@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
 import { updateEvent } from "../../redux/actions/master/Events/UpdateEvent";
 
-const baseUrl = "http://dev.eventsnode.com:3000/api";
+const baseUrl = "http://localhost:5000/api";
 
 const tabs = [
   { id: 0, label: "Details" },
@@ -212,7 +212,11 @@ const DashCreateEvent = () => {
       isPublish: data.isPublish || false,
       isFeatured: data.isFeatured || false,
       isEnabled: data.isEnabled || false,
-      tags: Array.isArray(data.eventTags) ? data.eventTags.filter(tag => tag !== "undefined") : [],
+      tags: Array.isArray(data.eventTags)
+        ? data.eventTags
+          .map(tag => typeof tag === 'object' && tag !== null ? tag.name : tag)
+          .filter(tag => tag !== null && tag !== undefined && tag !== "undefined")
+        : [],
     };
 
     setFormState(initializedState);

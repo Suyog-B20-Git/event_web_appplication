@@ -154,7 +154,7 @@ function Footer() {
 
               <Link to={"https://mail.google.com/Mail/"} className="hover:text-[#ff2459]">
                 mail@info.com
-                </Link>
+              </Link>
             </div>
           </div>
         </div>
@@ -222,7 +222,7 @@ function Footer() {
               </li>
               <li>
                 <Link to="/blog" className="hover:text-[#ff2459]">
-                   Blog
+                  Blog
                 </Link>
 
               </li>
@@ -261,10 +261,9 @@ function Footer() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className={`bg-[#ff2459] text-white px-4 md:px-2 lg:px-4 py-2 rounded-r-md ${
-                  (isSubscribed ? "bg-red-600" : "bg-[#ff2459]",
-                  isLoading ? "opacity-50 cursor-not-allowed" : "")
-                }`}
+                className={`bg-[#ff2459] text-white px-4 md:px-2 lg:px-4 py-2 rounded-r-md ${(isSubscribed ? "bg-red-600" : "bg-[#ff2459]",
+                    isLoading ? "opacity-50 cursor-not-allowed" : "")
+                  }`}
               >
                 {isSubscribed ? (
                   <>
@@ -391,7 +390,7 @@ function Footer() {
         </div>
       </div>
     </footer>
-  
+
   );
 }
 

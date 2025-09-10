@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-const baseUrl = "http://dev.eventsnode.com:3000/api";
+const baseUrl = "http://localhost:5000/api";
 
 
 
