@@ -16,6 +16,38 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
   const inFlightKeyRef = useRef(null);
   const abortRef = useRef(null);
 
+  // Function to get the correct price from ticketFormats
+  const getEventPrice = (event) => {
+    if (!event.ticketFormats || event.ticketFormats.length === 0) {
+      return "FREE";
+    }
+
+    // Find the minimum price among all ticket formats
+    let minPrice = Infinity;
+    let hasValidPrice = false;
+
+    event.ticketFormats.forEach(ticket => {
+      if (ticket.price !== undefined && ticket.price !== null) {
+        hasValidPrice = true;
+        
+        // Check if ticket is on sale
+        const now = new Date();
+        const isOnSale = ticket.isSale && 
+          new Date(ticket.saleStartDate) <= now && 
+          now <= new Date(ticket.saleEndDate);
+        
+        const currentPrice = isOnSale ? ticket.salePrice : ticket.price;
+        minPrice = Math.min(minPrice, currentPrice);
+      }
+    });
+
+    if (!hasValidPrice || minPrice === Infinity) {
+      return "FREE";
+    }
+
+    return `₹${minPrice} ONWARDS`;
+  };
+
   const formatYMD = (date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -87,12 +119,16 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
         event.venueDetails?.city.toLowerCase().includes(search.toLowerCase())
         : true;
 
-      const isPriceMatch =
-        price === ""
-          ? true
-          : price === "free"
-            ? event.price === 0
-            : event.price > 0;
+      const isPriceMatch = (() => {
+        if (price === "") return true;
+        
+        const eventPrice = getEventPrice(event);
+        if (price === "free") {
+          return eventPrice === "FREE";
+        } else {
+          return eventPrice !== "FREE";
+        }
+      })();
 
       const isCityMatch = city
         ? event.venueDetails?.city.toLowerCase() === city.toLowerCase()
@@ -266,7 +302,7 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
                     {item.venueDetails?.city} - {item.venueDetails?.country}
                   </p>
                   <div className="mt-auto flex justify-between items-center text-sm">
-                    <span>{item.price === 0 ? "FREE" : `$${item.price} ONWARDS`}</span>
+                    <span>{getEventPrice(item)}</span>
                     <button
                       className="relative hover:text-white rounded shadow p-2 text-xs bg-white transition-all duration-300 
                                   before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-[#ff2459] before:transition-all before:duration-300 

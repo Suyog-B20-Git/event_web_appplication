@@ -61,7 +61,6 @@ const Dashboard = () => {
         { name: "My Bookings", icon: <FaMoneyCheckDollar />, id: "my-bookings" },
         { name: "My Earnings", icon: <FaWallet />, id: "my-earnings" },
         { name: "My Tags", icon: <FaTags />, id: "my-tags" },
-        { name: "My Venues", icon: <FaMapLocation />, id: "my-venues" },
         { name: "Guests", icon: <MdGroups2 />, id: "guests" },
         { name: "Claims", icon: <FaClipboardList />, id: "claims" },
         { name: "Sub Organizers", icon: <FaPeopleArrows />, id: "sub-organizers" },

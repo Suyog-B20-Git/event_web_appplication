@@ -491,18 +491,26 @@ export default function EventForm() {
     try {
       for (let [key, value] of formData.entries()) {
       }
-      dispatch(createNewEvent(formData));
-      reset();
-      setThumnPreview(null);
-      setPosterPreview(null);
-      setSeatingChartPreview(null);
-      localStorage.removeItem("eventData");
-      await clearFormImages();
-      navigate("/home");
+      const response = await dispatch(createNewEvent(formData));
+      
+      // Check if event creation was successful
+      if (response && response.event) {
+        reset();
+        setThumnPreview(null);
+        setPosterPreview(null);
+        setSeatingChartPreview(null);
+        localStorage.removeItem("eventData");
+        await clearFormImages();
+        navigate("/home");
+      } else {
+        // Stay on page and show error if event creation failed
+        toast.error("Failed to create event. Please try again.");
+      }
     } catch (error) {
       const errorMessage =
         error?.response?.message || error?.message || "Something went wrong!";
       toast.error(errorMessage);
+      // Stay on page for registration flow
     }
   };
 
@@ -711,11 +719,11 @@ export default function EventForm() {
     try {
       // Create the event first
       const response = await dispatch(createNewEvent(formData));
-      const eventId = response?.event._id;
+      const eventId = response?.event?._id;
 
       if (!eventId) {
-        toast.error("Failed to create event.");
-        return;
+        toast.error("Failed to create event. Please try again.");
+        return; // Stay on page
       }
 
       toast.success("Event created successfully! Now manage your tickets.");
@@ -725,7 +733,8 @@ export default function EventForm() {
 
     } catch (error) {
       console.error("Error creating event:", error);
-      toast.error("Failed to create event.");
+      toast.error("Failed to create event. Please try again.");
+      // Stay on page for registration flow
     }
   });
 

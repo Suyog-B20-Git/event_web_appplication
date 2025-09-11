@@ -34,31 +34,18 @@ const parsedLocation = isValidLocation
 
   // Load Google Maps script and initialize map
   useEffect(() => {
-    // Check if Google Maps is already loaded
-    if (window.google && window.google.maps) {
-      initializeMap();
-      return;
-    }
-
-    // Check if script is already being loaded
-    const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-    if (existingScript) {
-      existingScript.onload = initializeMap;
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&loading=async`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-
-    script.onload = initializeMap;
+    let isMounted = true;
 
     function initializeMap() {
       try {
-        if (!window.google || !window.google.maps) {
-          console.error("Google Maps API not loaded");
+        // Check if component is still mounted
+        if (!isMounted || !mapRef.current) {
+          return;
+        }
+
+        // Wait for Google Maps to be fully loaded
+        if (!window.google || !window.google.maps || !window.google.maps.Map) {
+          console.error("Google Maps API not fully loaded");
           return;
         }
 
@@ -79,7 +66,38 @@ const parsedLocation = isValidLocation
       }
     }
 
+    function waitForGoogleMaps() {
+      if (window.google && window.google.maps && window.google.maps.Map) {
+        initializeMap();
+      } else {
+        // Retry after a short delay
+        setTimeout(waitForGoogleMaps, 100);
+      }
+    }
+
+    // Check if Google Maps is already loaded
+    if (window.google && window.google.maps && window.google.maps.Map) {
+      initializeMap();
+      return;
+    }
+
+    // Check if script is already being loaded
+    const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+    if (existingScript) {
+      existingScript.onload = waitForGoogleMaps;
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&loading=async`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    script.onload = waitForGoogleMaps;
+
     return () => {
+      isMounted = false;
       // Don't remove the script as it might be used by other components
       // Just clean up the map instance
       if (mapInstanceRef.current) {
@@ -93,7 +111,7 @@ const parsedLocation = isValidLocation
 
   // Update marker and center when location is selected
   useEffect(() => {
-    if (mapInstanceRef.current && isValidLocation && window.google && window.google.maps) {
+    if (mapInstanceRef.current && isValidLocation && window.google && window.google.maps && window.google.maps.Marker) {
       try {
         mapInstanceRef.current.setCenter(parsedLocation);
 

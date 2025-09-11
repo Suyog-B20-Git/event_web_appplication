@@ -504,6 +504,7 @@ const AdminMyEvents = () => {
             type="text"
             className="border p-2 rounded-lg w-full max-w-lg  hover:border-blue-500"
             value={searchQuery}
+            placeholder="Search by Event Name"
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setPage(1);
@@ -574,15 +575,8 @@ const AdminMyEvents = () => {
             ) : (
               events.map((event) => (
                 <tr key={event._id} className="border-t hover:bg-gray-50">
-                  <td className="p-3 flex items-center gap-2">
-                    <img
-                      src={event.thumbnail || "/no-img.png"}
-                      alt="thumb"
-                      className="w-12 h-12 rounded object-cover"
-                    />
-                    <div>
-                      <div className="font-semibold">{event.name}</div>
-                    </div>
+                  <td className="p-3">
+                    <div className="font-semibold">{event.name}</div>
                   </td>
                   <td className="p-3">{formatDate(event.startDate)}</td>
                   <td className="p-3">{formatDate(event.endDate)}</td>
