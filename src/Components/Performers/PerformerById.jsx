@@ -302,7 +302,7 @@ function GetPerformerById() {
                 <div className="flex items-center shrink-0 gap-2 md:gap-4">
                     <FollowButton targetId={targetId} modelName={modelName} />
                     <button className="lg:hidden" onClick={() => setIsPopUp(!isPopUp)}>
-                        <CiMenuKebab className="text-white text-2xl md:text-3xl"/>
+                        <CiMenuKebab className="text-white text-2xl md:text-3xl"/> 
                     </button>
                 </div>
               </div>
@@ -648,7 +648,7 @@ function GetPerformerById() {
                                     ? "bg-white text-orange-500 font-semibold border-t border-x"
                                     : "text-gray-500 hover:text-orange-500"
                             } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                        >
+                        > 
                             <FaSoundcloud /> SoundCloud
                         </button>
                     </div>
@@ -668,7 +668,7 @@ function GetPerformerById() {
             </div>
           </div>
           
-          <div className="lg:flex lg:gap-4 mt-4 w-full">
+          <div className="lg:flex lg:gap-4 mt-4 w-full"> 
             <div className="lg:w-1/2 w-full mb-4 lg:mb-0">
                 <div className="shadow-lg bg-white h-full rounded-lg overflow-hidden">
                     <h1 className="font-semibold text-xl p-3 border-b">Location</h1>
