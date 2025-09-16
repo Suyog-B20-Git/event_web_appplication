@@ -60,42 +60,38 @@ export const getPerformer = (setLoader, filter, page, category) => {
   switch (filter) {
     case "title asc":
       if (category) {
-        api = `${
-          Performer.getPerformerByFilter
-        }?categories=${encodeURIComponent(
-          category
-        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
+        api = `${Performer.getPerformerByFilter
+          }?categories=${encodeURIComponent(
+            category
+          )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       } else
         api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       break;
 
     case "title desc":
       if (category) {
-        api = `${
-          Performer.getPerformerByFilter
-        }?categories=${encodeURIComponent(
-          category
-        )}&page=${page}&limit=9&sortOrder=desc&sortBy=name`;
+        api = `${Performer.getPerformerByFilter
+          }?categories=${encodeURIComponent(
+            category
+          )}&page=${page}&limit=9&sortOrder=desc&sortBy=name`;
       } else
         api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=desc&sortBy=name`;
       break;
 
     case "alphabetical":
       if (category) {
-        api = `${
-          Performer.getPerformerByFilter
-        }?categories=${encodeURIComponent(
-          category
-        )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
+        api = `${Performer.getPerformerByFilter
+          }?categories=${encodeURIComponent(
+            category
+          )}&page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       } else
         api = `${Performer.getPerformerByFilter}?page=${page}&limit=9&sortOrder=asc&sortBy=name`;
       break;
 
     default:
       if (category) {
-        api = ` ${
-          Performer.getPerformerByFilter
-        }?categories=${encodeURIComponent(category)}&page=${page}&limit=9`;
+        api = ` ${Performer.getPerformerByFilter
+          }?categories=${encodeURIComponent(category)}&page=${page}&limit=9`;
       } else api = ` ${Performer.getPerformerByFilter}?page=${page}&limit=9`;
       break;
   }
@@ -108,7 +104,7 @@ export const getPerformer = (setLoader, filter, page, category) => {
       dispatch({
         type: "GET_PERFORMER",
         performerData: response.data.performers, // Ensure the API actually returns this structure
-        totalPages:response.data.totalPages
+        totalPages: response.data.totalPages
       });
     } catch (error) {
       console.error(

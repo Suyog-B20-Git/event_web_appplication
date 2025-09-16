@@ -60,6 +60,24 @@ import YouTubeWall from "../SocialMedia/YouTubeWall.jsx";
 function GetVenueById() {
   const { venueId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
+
+  // Validate venueId
+  if (!venueId || venueId === 'undefined') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Invalid Venue</h2>
+          <p className="text-gray-600">The venue you're looking for doesn't exist or the URL is incorrect.</p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
   const [category, setCategory] = useState("");
   const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const [enquiry, setEnquiry] = useState(false);
@@ -319,10 +337,31 @@ function GetVenueById() {
                 {data.city},{data.state},{data.country}
               </p>
             </div>
-            <div className="lg:flex hidden w-full justify-end p-1 mt-auto">
-              <div ref={shareRef} className="relative flex items-center bg-white text-gray-900 w-max p-1.5 lg:text-base text-xs px-2 rounded-full shadow-sm">
+            <div
+              className="flex gap-2 lg:px-0 px-2 lg:p-0 p-2 py-0 cursor-pointer"
+              onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+            >
+              <p>
+                <FaPhoneAlt
+                  className="text-red-500 relative top-1"
+                  style={{ textShadow: "1px 1px 1px black" }}
+                />
+              </p>
+              <p>
+                {!hasPhoneNumber
+                  ? "Not available"
+                  : showNumber
+                    ? data.phoneNumber
+                    : "View Contact"}
+              </p>
+            </div>
+
+            <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
+              <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
-                  className={`py-1 px-3 flex items-center gap-1.5 cursor-pointer hover:text-[#ff2459] ${ownershipEnquirySent ? "text-[#ff2459] cursor-not-allowed" : ""
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${ownershipEnquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
                     if (!isLogin) toast.error("Please login first to send enquiry!");
@@ -333,7 +372,9 @@ function GetVenueById() {
                   {ownershipEnquirySent ? "Claim Enquiry Sent" : "Claim Ownership"}
                 </p>
                 <p
-                  className={`py-1 px-3 flex items-center gap-1.5 cursor-pointer hover:text-[#ff2459] ${enquirySent ? "text-[#ff2459] cursor-not-allowed" : ""
+                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${enquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
                     if (!isLogin) toast.error("Please login first to send enquiry!");
@@ -346,8 +387,18 @@ function GetVenueById() {
                 </p>
                 <div className="border-l h-5 mx-2 bg-gray-200"></div>
                 <button
-                  onClick={() => toggleFavorite(data._id)}
-                  className={`py-1 px-3 flex items-center gap-1.5 hover:text-[#ff2459] rounded-full hover:bg-gray-100 ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    toggleFavorite(data._id);
+                  }}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                     }`}
                 >
                   <FaHeart />
@@ -384,8 +435,8 @@ function GetVenueById() {
                   <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-6">
                     <button
                       className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${ownershipEnquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                         }`}
                       onClick={() => {
                         if (!isLogin) {
@@ -406,8 +457,8 @@ function GetVenueById() {
                     </button>
                     <button
                       className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${enquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                         }`}
                       onClick={() => {
                         if (!isLogin) {
@@ -462,30 +513,121 @@ function GetVenueById() {
               <div className="sticky top-0 z-10 bg-gray-50">
                 <div className="text-gray-500 lg:text-base text-sm flex border-b font-medium justify-around p-2">
                   <button
-                    className={`px-3 py-2 rounded-lg ${about ? "bg-white shadow" : "hover:bg-gray-100"
+                    className={`px-2 ${about ? "border-b-2 border-b-red-600" : ""
                       }`}
-                    onClick={() => handleMainTabClick("about")}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
                   >
                     ABOUT
                   </button>
                   <button
-                    className={`px-3 py-2 rounded-lg ${upcoming ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("upcoming")}
+                    className={`${upcoming ? "border-b-2 border-b-red-600" : ""
+                      } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
                   >
-                    EVENT
+                    UPCOMING EVENT
                   </button>
                   <button
-                    className={`px-3 py-2 rounded-lg ${social ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("social")}
+                    className={`${facebook ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
                   >
                     SOCIAL
                   </button>
                   <button
-                    className={`px-3 py-2 rounded-lg ${stat ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("stat")}
+                    className={`${twitter ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(true);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${instagram ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
+                  <button
+                    className={`${youtube ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${stat ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stat")}
+                    onMouseLeave={() => setHoveredTab(null)}
                   >
                     STAT
                   </button>
@@ -500,123 +642,145 @@ function GetVenueById() {
                     <p className="py-1 text-gray-600">
                       {data?.description || "No description available"}
                     </p>
-                    
-                  
-                    <div className="pt-4">
-                        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Venue Highlights</h2>
-                        <ul className="space-y-4 list-disc list-inside text-gray-700">
-                          <li>
-                            <strong>Spacious Main Hall:</strong> Accommodates up to 500 guests, perfect for large weddings and corporate events.
-                          </li>
-                          <li>
-                            <strong>State-of-the-Art Sound System:</strong> Equipped with professional-grade audio equipment for crystal-clear sound.
-                          </li>
-                          <li>
-                            <strong>Ample Parking Space:</strong> On-site parking available for over 200 vehicles with valet service options.
-                          </li>
-                          <li>
-                            <strong>In-House Catering:</strong> Award-winning culinary team offering a diverse range of menu options.
-                          </li>
-                          <li>
-                            <strong>Scenic Outdoor Area:</strong> Beautifully landscaped garden area for outdoor ceremonies and receptions.
-                          </li>
-                          <li>
-                            <strong>Fully Air-Conditioned:</strong> Complete climate control for comfort in any season.
-                          </li>
-                        </ul>
+
+                    {/* Venue Details */}
+                    <div className="border-b pb-4"></div>
+
+                    <div className="grid grid-cols-1 gap-6">
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Venue Type
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.type || "Not specified"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Website
+                        </h3>
+                        {data?.website ? (
+                          <a
+                            href={data.website}
+                            target="_blank"
+                            className="text-blue-500 hover:underline"
+                          >
+                            {data.website}
+                          </a>
+                        ) : (
+                          "Not available"
+                        )}
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Amenities
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.amenities || "Not specified"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Seated Guests
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.noOfSeatedGuest || "Not provided"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Standing Guests
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.noOfStandingGuest || "Not provided"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Neighbourhood
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.neighbourhoods || "Not mentioned"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Pricing
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.pricing || "Not specified"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Food & Beverages
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.foodAndBeveragesDetails || "Not mentioned"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Quoted Form
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.quotedForm || "Not specified"}
+                        </p>
+                      </div>
+
+                      <div className="bg-gray-100 p-4 rounded-lg shadow">
+                        <h3 className="text-lg font-medium text-gray-700">
+                          Availability
+                        </h3>
+                        <p className="text-gray-600">
+                          {data?.availability || "Not mentioned"}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                )}
+                ) : null}
+
                 {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
+                    {upcomingEventData.length > 0 ? (
+                      upcomingEventData.map((event, index) => (
+                        <div
+                          key={index}
+                          className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
+                          onClick={() =>
+                            navigate(
+                              `/events/${event.category.toLowerCase()}/${event._id
+                              }`,
+                              { state: event._id }
+                            )
+                          }
+                        >
+                          {/* 🔹 Image Container*/}
+                          <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
+                            <img
+                              src={event.media?.thumbnailImage ||
+                                "https://via.placeholder.com/250x160?text=No+Image"
+                              }
+                              alt={event.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
 
-                  </div>
-                )}
-                {social && (
-                  <div>
-                    <div className="flex border-b my-4 space-x-4 lg:space-x-6 text-sm lg:text-base overflow-x-auto scrollbar-hide">
-                      <button
-                        onClick={() => data.facebookUrl && setActiveSocialTab("facebook")}
-                        disabled={!data.facebookUrl}
-                        className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "facebook"
-                            ? "bg-white text-blue-600 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-blue-600"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaFacebook /> Facebook
-                      </button>
-                      <button
-                        onClick={() => data.instagramUrl && setActiveSocialTab("instagram")}
-                        disabled={!data.instagramUrl}
-                        className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "instagram"
-                            ? "bg-white text-pink-600 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-pink-600"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaInstagram /> Instagram
-                      </button>
-                      <button
-                        onClick={() => data.youtubeId && setActiveSocialTab("youtube")}
-                        disabled={!data.youtubeId}
-                        className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "youtube"
-                            ? "bg-white text-red-600 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-red-600"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaYoutube /> YouTube
-                      </button>
-                      <button
-                        onClick={() => data.twitterUrl && setActiveSocialTab("twitter")}
-                        disabled={!data.twitterUrl}
-                        className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "twitter"
-                            ? "bg-white text-sky-500 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-sky-500"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaTwitter /> Twitter
-                      </button>
-                    </div>
-                    <div className="py-4">
-                      {activeSocialTab === 'facebook' && data.facebookUrl && <FacebookEmbeded appId="849920522233544" fbId={data.facebookUrl} />}
-                      {activeSocialTab === 'instagram' && data.instagramUrl && <InstagramProfile instagramUrl={data.instagramUrl} />}
-                      {activeSocialTab === 'youtube' && data.youtubeId && <YouTubeWall channelId={data.youtubeId} />}
-                      {activeSocialTab === 'twitter' && data.twitterUrl && <TwitterEmbed twitterUrl={data.twitterUrl} />}
-                      {activeSocialTab === '' && <p className="text-center text-gray-500 p-8">No social media profiles available for this venue.</p>}
-                    </div>
-                  </div>
-                )}
-                {stat && <VenueStats data={data} />}
-              </div>
-            </div>
-          </div>
-          
-          <div className="lg:flex lg:gap-4 mt-4 w-full">
-            <div className="lg:w-1/2 w-full mb-4 lg:mb-0">
-                <div className="shadow-lg bg-white h-full rounded-lg overflow-hidden">
-                    <h1 className="font-semibold text-xl p-3 border-b">Location</h1>
-                    <MapContainer data={data} />
-                </div>
-            </div>
-            <div className="lg:w-1/2 w-full">
-                <div className="shadow-lg bg-white h-full rounded-lg p-4 flex flex-col">
-                    <h1 className="font-semibold text-xl pb-3 border-b mb-4">Venue Details</h1>
-                    <div className="flex flex-col gap-y-4">
-                        {fullAddress && (
-                            <div className="flex items-start gap-4">
-                                <FaLocationDot className="text-gray-500 mt-1 text-xl shrink-0" />
-                                <span className="text-gray-700">{fullAddress}</span>
-                            </div>
-                        )}
-                        {data.phoneNumber && (
-                            <div className="flex items-center gap-4">
-                                <FaPhoneAlt className="text-gray-500 text-xl shrink-0" />
-                                <span className="text-gray-700">{data.phoneNumber}</span>
-                            </div>
-                        )}
-                        {email && (
-                            <div className="flex items-center gap-4">
-                                <MdEmail className="text-gray-500 text-xl shrink-0" />
-                                <a href={`mailto:${email}`} className="text-blue-600 hover:underline break-all">{email}</a>
+                          {/* 🔹 Event Details  */}
+                          <div className="p-2 flex flex-col flex-grow gap-y-2">
+                            {/* Event Name */}
+                            <div className="text-center min-h-[40px] max-h-[40px] flex items-center justify-center">
+                              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 break-words line-clamp-2">
+                                {event.name}
+                              </h3>
                             </div>
                         )}
                         {data.website && (
@@ -757,6 +921,8 @@ function GetVenueById() {
           name={name}
           email={email}
           enquiry={enquiry}
+          targetId={data?._id}
+          modelName="Venue"
         />
       )}
     </div>

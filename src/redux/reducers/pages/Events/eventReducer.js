@@ -7,7 +7,7 @@ const initialState = {
   eventData: []
 }
 
-const eventReducer = (state = initialState,action) => {
+const eventReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'GET_EVENT':
       return {
@@ -15,8 +15,26 @@ const eventReducer = (state = initialState,action) => {
         eventData: action.eventData
       }
 
+    case 'CLONE_EVENT':
+      return {
+        ...state,
+        eventData: action.event
+      }
+
+    case 'MAKE_EVENT_PRIVATE':
+      return {
+        ...state,
+        eventData: action.event
+      }
+
+    case 'MAKE_EVENT_PUBLIC':
+      return {
+        ...state,
+        eventData: action.event
+      }
+
     default:
-      return {...state}
+      return { ...state }
   }
 }
 export default eventReducer

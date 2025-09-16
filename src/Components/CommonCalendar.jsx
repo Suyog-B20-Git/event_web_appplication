@@ -212,8 +212,8 @@ const SimpleCalendar = ({
                   backgroundColor: isSelected(date)
                     ? "#4a90e2"
                     : hasEventOnDate(date)
-                    ? "#9b59b6"
-                    : "transparent",
+                      ? "#9b59b6"
+                      : "transparent",
                   color: isSelected(date) || hasEventOnDate(date) ? "white" : "#333",
                   borderRadius: "8px",
                   fontSize: "16px",
@@ -728,7 +728,7 @@ const CommonCalendar = () => {
               showNavigation={false}
               activeStartDate={tomorrow}
               getEventsForDate={getEventsForTomorrowDate}
-              
+
               hoveredDate={hoveredDate}
               eventDays={eventDays}
               setHoveredDate={setHoveredDate}

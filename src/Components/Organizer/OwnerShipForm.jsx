@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { GiCancel } from "react-icons/gi";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { submitOwnershipClaim } from "../../redux/actions/master/Claims";
 import { toast } from "react-toastify";
-const baseUrl = import.meta.env.VITE_API_URL;
 
 function OwnerShipForm({
   ownership,
@@ -20,7 +20,8 @@ function OwnerShipForm({
     formState: { errors },
   } = useForm();
 
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.claims || {});
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -44,26 +45,18 @@ function OwnerShipForm({
       contactNumber: data.contactNumber,
       message: data.claim,
     };
-    setLoading(true);
+
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await axios.post(`${baseUrl}/api/claims`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-      });
+      await dispatch(submitOwnershipClaim(payload));
       toast.success("Claim Enquiry sent successfully!");
       localStorage.setItem(`enquiry_sent_${targetId}`, "true");
       if (onOwnershipEnquirySent) {
-        onOwnershipEnquirySent(); 
+        onOwnershipEnquirySent();
       }
       reset();
       setOwnership(false);
     } catch (error) {
       toast.error("Error sending enquiry. Please try again later.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -190,9 +183,8 @@ function OwnerShipForm({
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${
-                      loading ? "opacity-70 cursor-not-allowed" : ""
-                    }`}
+                    className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${loading ? "opacity-70 cursor-not-allowed" : ""
+                      }`}
                   >
                     {loading && (
                       <svg

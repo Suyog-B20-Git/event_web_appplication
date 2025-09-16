@@ -61,6 +61,24 @@ import YouTubeWall from "../SocialMedia/YouTubeWall.jsx";
 function GetServiceById() {
   const { serviceId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
+
+  // Validate serviceId
+  if (!serviceId || serviceId === 'undefined') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Invalid Service</h2>
+          <p className="text-gray-600">The service you're looking for doesn't exist or the URL is incorrect.</p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
   const [category, setCategory] = useState("");
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
@@ -324,10 +342,90 @@ function GetServiceById() {
                 {data.city},{data.state},{data.country}
               </p>
             </div>
-            <div className="lg:flex hidden w-full justify-end p-1 mt-auto">
-              <div ref={shareRef} className="relative flex items-center bg-white text-gray-900 w-max p-1.5 lg:text-base text-xs px-2 rounded-full shadow-sm">
+            <div className="grid grid-cols-2 gap-6 px-2 lg:px-0 lg:mt-2 lg:w-[60%]">
+              {/* Phone Section */}
+              <div className="flex gap-2 p-0 py-0 cursor-pointer ">
                 <p
-                  className={`py-1 px-3 flex items-center gap-1.5 cursor-pointer hover:text-[#ff2459] ${ownershipEnquirySent ? "text-[#ff2459] cursor-not-allowed" : ""
+                  className="max-w-md"
+                  onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+                >
+                  <FaPhoneAlt
+                    className="text-red-500 relative top-1"
+                    style={{ textShadow: "1px 1px 1px black" }}
+                  />
+                </p>
+                <p onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}>
+                  {!hasPhoneNumber
+                    ? "Not available"
+                    : showNumber
+                      ? data.phoneNumber
+                      : "View Contact"}
+                </p>
+              </div>
+
+              {/* Available Time Section */}
+              {data.availableTime && (
+                <div className="flex gap-2 p-0 py-0 cursor-default">
+                  <p>
+                    <FaClock
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <p>{data.availableTime}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-4 px-2 py-1 lg:px-0 lg:py-0 sm:mt-2 lg:w-[60%]">
+              {/* Website Section */}
+              {data.website && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <FaGlobe
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={
+                      data.website.startsWith("http")
+                        ? data.website
+                        : `https://${data.website}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.website}
+                  </a>
+                </div>
+              )}
+
+              {/* Email Section */}
+              {data.email && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <MdEmail
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={`mailto:${data.email}`}
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.email}
+                  </a>
+                </div>
+              )}
+            </div>
+            <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
+              <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
+                <p
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${ownershipEnquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
                     if (!isLogin) toast.error("Please login first to send enquiry!");
@@ -338,7 +436,9 @@ function GetServiceById() {
                   {ownershipEnquirySent ? "Claim Enquiry Sent" : "Claim Ownership"}
                 </p>
                 <p
-                  className={`py-1 px-3 flex items-center gap-1.5 cursor-pointer hover:text-[#ff2459] ${enquirySent ? "text-[#ff2459] cursor-not-allowed" : ""
+                  className={`flex gap-1 bg-white  hover:text-[#ff2459] ${enquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
                     if (!isLogin) toast.error("Please login to send enquiry!");
@@ -351,8 +451,18 @@ function GetServiceById() {
                 </p>
                 <div className="border-l h-5 mx-2 bg-gray-200"></div>
                 <button
-                  onClick={() => toggleFavorite(data._id)}
-                  className={`py-1 px-3 flex items-center gap-1.5 hover:text-[#ff2459] rounded-full hover:bg-gray-100 ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    toggleFavorite(data._id);
+                  }}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                     }`}
                 >
                   <FaHeart />
@@ -389,8 +499,8 @@ function GetServiceById() {
                   <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-6">
                     <button
                       className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${ownershipEnquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                         }`}
                       onClick={() => {
                         if (!isLogin) {
@@ -411,8 +521,8 @@ function GetServiceById() {
                     </button>
                     <button
                       className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${enquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                         }`}
                       onClick={() => {
                         if (!isLogin) {
@@ -467,32 +577,124 @@ function GetServiceById() {
               <div className="sticky top-0 z-10 bg-gray-50">
                 <div className="text-gray-500 lg:text-base text-sm flex border-b font-medium justify-around p-2">
                   <button
-                    className={`px-3 py-2 rounded-lg ${about ? "bg-white shadow" : "hover:bg-gray-100"
+                    className={`px-2 ${about ? "border-b-2 border-b-red-600" : ""
                       }`}
-                    onClick={() => handleMainTabClick("about")}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
                   >
                     ABOUT
                   </button>
                   <button
-                    className={`px-3 py-2 rounded-lg ${upcoming ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("upcoming")}
+                    className={`${upcoming ? "border-b-2 border-b-red-600" : ""
+                      } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
                   >
-                    EVENT
+                    UPCOMING EVENT
                   </button>
                   <button
-                    className={`px-3 py-2 rounded-lg ${social ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("social")}
+                    className={`${facebook ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
                   >
                     SOCIAL
                   </button>
                   <button
-                    className={`px-3 py-2 rounded-lg ${stat ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("stat")}
+                    className={`${twitter ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(true);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
                   >
-                    STAT
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${instagram ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
+
+                  <button
+                    className={`${youtube ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${stat ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stats")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    STATS
                   </button>
                 </div>
               </div>
@@ -904,6 +1106,8 @@ function GetServiceById() {
           name={name}
           email={email}
           enquiry={enquiry}
+          targetId={data?._id}
+          modelName="Service"
         />
       )}
     </div>

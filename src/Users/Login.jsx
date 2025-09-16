@@ -4,13 +4,13 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import Button from "../Components/Button";
 import { FaFacebookSquare } from "react-icons/fa";
 import { ImGoogle } from "react-icons/im";
-import { HiOutlineDeviceMobile, HiEye, HiEyeOff } from "react-icons/hi"; 
+import { HiOutlineDeviceMobile, HiEye, HiEyeOff } from "react-icons/hi";
 import jwtDecode from "jwt-decode";
-import axios from "axios";
+import { axiosInstance } from "../../utility/utils";
 import { Auth } from "../redux/Urls";
 import { toast } from "react-toastify";
 
-const baseUrl = import.meta.env.VITE_API_URL;
+const baseUrl = "http://localhost:5000/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ function Login() {
     setErrorMessage("");
     setSuccessMessage("");
     try {
-      const response = await axios.post(`${baseUrl}/auth/login`, { email, password });
+      const response = await axiosInstance.post(`/auth/login`, { email, password });
       if (response.status === 200) {
         const token = response.data.token;
         const decodedToken = jwtDecode(token);
@@ -66,11 +66,11 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-white to-blue-100 py-6 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row shadow-2xl rounded-3xl overflow-hidden w-full max-w-4xl bg-white animate-fadeIn">
-        
+
         <div className="hidden md:flex md:w-1/2 items-center justify-center bg-gradient-to-br from-[#FF2459] to-pink-300 relative">
           <div className="absolute inset-0 bg-black bg-opacity-30"></div>
           <div className="relative z-10 p-8 flex flex-col items-center text-center">
-           
+
             <h2 className="text-2xl font-bold text-white tracking-tight mb-2">Welcome Back!</h2>
             <p className="text-white/80 font-medium">
               Login to access your account & exclusive features.
@@ -101,7 +101,7 @@ function Login() {
               placeholder="••••••••"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              showToggle 
+              showToggle
             >
               {/* Eye icon for password visibility */}
               <span
@@ -147,16 +147,16 @@ function Login() {
               <span className="px-3 text-gray-500 text-xs">OR</span>
               <hr className="flex-1 border-t border-gray-200" />
             </div>
-            <div className="flex flex-wrap gap-3 justify-center"> 
+            <div className="flex flex-wrap gap-3 justify-center">
               <button
                 type="button"
-                className="flex items-center px-4 py-2 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 transition font-semibold text-sm" 
+                className="flex items-center px-4 py-2 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 transition font-semibold text-sm"
               >
                 <FaFacebookSquare className="text-blue-600 mr-2 text-xl" /> Facebook
               </button>
               <button
                 type="button"
-                className="flex items-center px-4 py-2 rounded-lg bg-red-50 border border-red-200 hover:bg-red-100 transition font-semibold text-sm" 
+                className="flex items-center px-4 py-2 rounded-lg bg-red-50 border border-red-200 hover:bg-red-100 transition font-semibold text-sm"
                 onClick={handleGoogleLogin}
               >
                 <ImGoogle className="text-red-500 mr-2 text-xl" /> Google

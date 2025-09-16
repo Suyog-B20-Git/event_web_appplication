@@ -1,30 +1,26 @@
 import axios from "axios";
-const token = localStorage.getItem("authToken");
 
-const API_URL = import.meta.env.VITE_API_URL; // ✅ Use `import.meta.env` in Vite
-const AUTH_TOKEN = token;
+// Use the same base URL as the rest of the codebase
+const API_URL = "http://localhost:5000/api";
 
- const axiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
-    // "Content-Type": "application/json",
-    // "Content-Type": "multipart/form-data",
-
-    Authorization: `${AUTH_TOKEN}`, // ✅ Hardcoded token
+    "Content-Type": "application/json",
   },
 });
 
 axiosInstance.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("authToken");
-      if (token) {
-        config.headers.Authorization = token;
-      }
-      return config;
-    },
-    (error) => Promise.reject(error)
+  (config) => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      config.headers.Authorization = token;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
 );
 
-export {axiosInstance};
-{/*---------------------------------------------------------------*/}
+export { axiosInstance };
+{/*---------------------------------------------------------------*/ }
 

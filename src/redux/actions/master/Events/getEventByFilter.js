@@ -96,7 +96,7 @@ export const getEventByFilter = (
     try {
       const queryString = params.toString(); // Convert filters to query string
       const response = await axios.get(`${api}&${queryString}`);
-            
+
       dispatch({
         type: "GET_EVENT_BY_FILTER",
         filterEventData: response.data?.data.events || [],

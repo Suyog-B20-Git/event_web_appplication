@@ -60,10 +60,12 @@ export const getEventData = (setLoader) => {
     setLoader(true); // Start loading
 
     try {
-      const response = await axios.get(Event.getAllEvents);
+      // Use the public filter endpoint instead of the authenticated getAllEvents endpoint
+      const response = await axios.get(`${Event.getEventByFilter}page=1&limit=20&sortBy=startDate&sortOrder=asc`);
+      console.log("Event API Response:", response.data); // Debug log
       dispatch({
         type: "GET_EVENT",
-        eventData: response.data.events, // Ensure the API actually returns this structure
+        eventData: response.data.data?.events || [], // Access the events array from the nested data structure
       });
     } catch (error) {
       console.error(
@@ -79,3 +81,7 @@ export const getEventData = (setLoader) => {
     }
   };
 };
+export { getAllUsers } from "./GetAllUsers";
+export { createUser } from "./CreateUser";
+export { updateUser, getUserById } from "./UpdateUser";
+export { enableUser, disableUser, deleteUser, bulkEnableUsers, bulkDisableUsers, bulkDeleteUsers } from "./UserOps";

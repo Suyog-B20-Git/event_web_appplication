@@ -26,7 +26,7 @@ import gsap from "gsap";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const baseUrl = import.meta.env.VITE_API_URL;
+const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -47,6 +47,10 @@ const Header = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [currentLocation, setCurrentLocation] = useState("Select Location");
   const [headerVisible, setHeaderVisible] = useState(true);
+
+  // Add hover delay refs
+  const hoverTimeoutRef = useRef(null);
+  const userHoverTimeoutRef = useRef(null);
 
   const desktopSearchBarContainerRef = useRef(null);
   const mobileSearchBarContainerRef = useRef(null);
@@ -291,11 +295,15 @@ const Header = () => {
   const handleLocationIconClick = () => {
     setShowLocationPopup(true);
     setQuery("");
-    gsap.from(locationPopupRef.current, {
-      scale: 0.8,
-      opacity: 0,
-      duration: 0.3,
-      ease: "back.out(1.2)",
+    requestAnimationFrame(() => {
+      if (locationPopupRef.current) {
+        gsap.from(locationPopupRef.current, {
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.3,
+          ease: "back.out(1.2)",
+        });
+      }
     });
   };
 
@@ -412,7 +420,16 @@ const Header = () => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      // Cleanup timeouts on unmount
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+      if (userHoverTimeoutRef.current) {
+        clearTimeout(userHoverTimeoutRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -422,7 +439,8 @@ const Header = () => {
           const response = await axios.get(
             `${baseUrl}/location/locationSuggestions?search=${searchValue}`
           );
-          setSuggestions(response.data || []);
+          const data = Array.isArray(response.data) ? response.data : [];
+          setSuggestions(data);
         } catch (error) {
           console.error("Error fetching location suggestions:", error);
           setSuggestions([]);
@@ -472,6 +490,7 @@ const Header = () => {
   }, [search]);
 
   return (
+
     <div className="bg-gray-900 text-white p-1 fixed w-full z-40">
       <div className="flex w-full h-[80px] items-center justify-between bg-opacity-50 px-4 relative gap-4">
         {/* Logo and Mobile Location Icon */}
@@ -522,8 +541,19 @@ const Header = () => {
             <div
               key={index}
               className="relative pb-2"
-              onMouseEnter={() => setActiveIndex(index)}
-              onMouseLeave={() => setActiveIndex(null)}
+              onMouseEnter={() => {
+                // Clear any existing timeout
+                if (hoverTimeoutRef.current) {
+                  clearTimeout(hoverTimeoutRef.current);
+                }
+                setActiveIndex(index);
+              }}
+              onMouseLeave={() => {
+                // Add delay before hiding the dropdown
+                hoverTimeoutRef.current = setTimeout(() => {
+                  setActiveIndex(null);
+                }, 150); // 150ms delay
+              }}
             >
               <button
                 className="font-medium text-lg flex items-center gap-1 relative z-60 text-white hover:text-[#ff2459] transition-colors duration-200"
@@ -541,6 +571,18 @@ const Header = () => {
                 <div
                   ref={boxRef}
                   className="bg-white rounded-lg text-gray-900 absolute top-full left-1/2 -translate-x-1/2 h-max mt-1 shadow-lg z-50 min-w-[180px]"
+                  onMouseEnter={() => {
+                    // Clear timeout when hovering over dropdown
+                    if (hoverTimeoutRef.current) {
+                      clearTimeout(hoverTimeoutRef.current);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    // Add delay before hiding the dropdown
+                    hoverTimeoutRef.current = setTimeout(() => {
+                      setActiveIndex(null);
+                    }, 150); // 150ms delay
+                  }}
                 >
                   {item.popUpMenu.map((menuItem, menuIndex) => (
                     <button
@@ -548,6 +590,7 @@ const Header = () => {
                       onClick={() => {
                         setSelectedCategory(menuItem.name);
                         navigate(menuItem.path, { state: menuItem.name });
+                        setActiveIndex(null); // Close dropdown after selection
                       }}
                       className="flex justify-start gap-2 p-2.5 font-medium hover:text-white whitespace-nowrap hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
                     >
@@ -668,15 +711,25 @@ const Header = () => {
           />
         </div>
 
-      
-        <div className="relative flex items-center flex-shrink-0 text-white">
+        {/* User Profile */}
+        <div
+          onMouseEnter={() => {
+            // Clear any existing timeout
+            if (userHoverTimeoutRef.current) {
+              clearTimeout(userHoverTimeoutRef.current);
+            }
+            setIsLog(true);
+          }}
+          onMouseLeave={() => {
+            // Add delay before hiding the dropdown
+            userHoverTimeoutRef.current = setTimeout(() => {
+              setIsLog(false);
+            }, 150); // 150ms delay
+          }}
+          className="relative flex items-center flex-shrink-0 text-white"
+        >
           {userName ? (
-            <div 
-              ref={dropdownRef} 
-              className="relative hidden lg:block"
-              onMouseEnter={() => setIsLog(true)}
-              onMouseLeave={() => setIsLog(false)}
-            >
+            <div ref={dropdownRef} className="relative hidden lg:block">
               <span
                 onClick={() => setIsLog(!isLog)}
                 className="p-1 gap-1 cursor-pointer font-medium break-words lg:text-lg md:text-sm flex lg:gap-1 md:gap-0.5 relative z-60 hover:text-[#ff2459] transition-colors items-center"
@@ -692,10 +745,18 @@ const Header = () => {
               {isLog && (
                 <div
                   ref={boxRef}
-                  className="bg-white rounded-lg text-gray-900 absolute w-40 h-max right-0 shadow-lg z-50"
-                  style={{ 
-                    marginTop: '8px',
-                    top: '100%'
+                  className="bg-white rounded-lg text-gray-900 absolute w-40 h-max mt-1 right-0 shadow-lg z-50"
+                  onMouseEnter={() => {
+                    // Clear timeout when hovering over dropdown
+                    if (userHoverTimeoutRef.current) {
+                      clearTimeout(userHoverTimeoutRef.current);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    // Add delay before hiding the dropdown
+                    userHoverTimeoutRef.current = setTimeout(() => {
+                      setIsLog(false);
+                    }, 150); // 150ms delay
                   }}
                 >
                   {role === "organizer" && (
@@ -722,6 +783,7 @@ const Header = () => {
                     <button
                       onClick={() => {
                         setIsLog(false);
+
                         navigate("/admin-panel");
                       }}
                       className="flex gap-2 p-2 font-medium hover:text-white hover:bg-[#ff2459] w-full text-left transition-colors duration-200"
@@ -991,6 +1053,8 @@ const Header = () => {
 
       {ShowPopup && <Sidebar setShowPopup={setShowPopup} />}
     </div>
+
+
   );
 };
 

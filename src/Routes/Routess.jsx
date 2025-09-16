@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer"; 
+import { Orgnizer } from "../../views/pages/Orgnizer/Orgnizer";
 import Index from "../Main/Index";
 import Home from "../LandingPages/Home";
 import { text_data } from "../Components/Events/menuData";
@@ -45,10 +45,13 @@ import AdminTags from "../Components/AdminPanel/AdminTags";
 import AdminBookings from "../Components/AdminPanel/AdminBookings";
 import AdminHeaderMenu from "../Components/AdminPanel/AdminHeaderMenu";
 import AdminCommissions from "../Components/AdminPanel/AdminCommissions";
-import AdminFooterMenu from "../Components/AdminPanel/AdminFooterMenu"; 
+import AdminFooterMenu from "../Components/AdminPanel/AdminFooterMenu";
 import AdminTaxes from "../Components/AdminPanel/AdminTaxes";
 // import AdminUsers from "../Components/AdminPanel/AdminUsers";
 import AdminUsers from "../Components/AdminPanel/AdminUsers";
+import AddUser from "../Components/AdminPanel/AddUser";
+import EditUser from "../Components/AdminPanel/EditUser";
+import ViewUser from "../Components/AdminPanel/ViewUser";
 import AdminContacts from "../Components/AdminPanel/AdminContacts";
 import AdminBanners from "../Components/AdminPanel/AdminBanners";
 import AdminVenues from "../Components/AdminPanel/AdminVenues";
@@ -56,6 +59,8 @@ import AdminSettings from "../Components/AdminPanel/AdminSettings";
 import AdminPromocodes from "../Components/AdminPanel/AdminPromocodes";
 import AdminComplimentaryBookings from "../Components/AdminPanel/AdminComplimentaryBookings";
 import AdminCurrencies from "../Components/AdminPanel/AdminCurrencies";
+import BlogList from "../Components/Blog/BlogList";
+import BlogPostDetail from "../Components/Blog/BlogPostDetail";
 
 
 
@@ -71,7 +76,7 @@ function Routess() {
 
           {text_data.map((item) => (
             <React.Fragment key={item.path}>
-              
+
               <Route
                 path={item.path}
                 element={
@@ -135,6 +140,9 @@ function Routess() {
           <Route path="/admin/add-post" element={<AdminAddPost />} />
           <Route path="/admin/edit-post/:id" element={<AdminAddPost />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/add-user" element={<AddUser />} />
+          <Route path="/admin/edit-user/:userId" element={<EditUser />} />
+          <Route path="/admin/view-user/:userId" element={<ViewUser />} />
           <Route path="/contacts" element={<AdminContacts />} />
           <Route path="/admin/venues" element={<AdminVenues />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
@@ -145,6 +153,14 @@ function Routess() {
 
 
 
+          <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
+          <Route path="/dashboard/update-event" element={<DashCreateEvent />} />
+          <Route path="/admin/dashboard/create-event" element={<DashCreateEvent />} />
+          <Route path="/admin/dashboard/update-event" element={<DashCreateEvent />} />
+
+
+          <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />
+          <Route path="/adminMyEvents" element={<AdminMyEvents />} />
 
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -174,18 +190,24 @@ function Routess() {
           <Route path="/featuredEvent" element={<FeaturedEvent />} />
           <Route path="/getOrganizerByFilter" element={<GetOrganizerByFilter />} />
           <Route path="/profile" element={<Profile />} />
-          
-         
-         
-          
+
+
+
+
+          <Route path="/admin-panel" element={<AdminPanelOverview />} />
           <Route path="/myBookings" element={<MyBookings />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/myBookingDetails" element={<MybookingDetail />} />
           <Route path="/create-ticket" element={<CreateTicket />} />
+          <Route path="/create-ticket/:eventId" element={<CreateTicket />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactUs />} />
           <Route path="/events" element={<Viewall />} />
+
+          {/* Blog Routes */}
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/blog/:slug" element={<BlogPostDetail />} />
         </Route>
       </Routes>
     </div>

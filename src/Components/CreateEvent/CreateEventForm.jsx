@@ -19,11 +19,12 @@ import { useForm, Controller } from "react-hook-form";
 import { Checkbox, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
-import { postTicketData } from "../../redux/actions/master/Events/updateTicket";
+import { postTicketData } from "../../redux/actions/master/Events/createTicket";
 import { toast } from "react-toastify";
 const baseUrl = import.meta.env.VITE_API_URL;
 import axios from "axios";
 import { useWatch } from "react-hook-form";
+import { saveFormImages, restoreFormImages, clearFormImages } from "../../utility/imageStore";
 
 // import DatePicker from "react-datepicker";
 // import "react-datepicker/dist/react-datepicker.css";
@@ -44,23 +45,7 @@ export default function EventForm() {
   const dispatch = useDispatch();
   const [youtubeLinks, setYoutubeLinks] = useState([""]);
   const [performersYtLinks, setperformersYtLinks] = useState([""]);
-  const [showTicketForm, setShowTicketForm] = useState(false);
-
   const selectedRadio = localStorage.getItem("selectedRadio");
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [order, setOrder] = useState("");
-  const [totalTicketQuantity, setTotalTicketQuantity] = useState("");
-  const [limitPerCustomer, setLimitPerCustomer] = useState("");
-  const [description, setDescription] = useState("");
-  const [promoCodes, setPromoCodes] = useState("");
-  const [bookedSeats, setBookedSeats] = useState("");
-  const [saleStartDate, setSaleStartDate] = useState("");
-  const [saleEndDate, setSaleEndDate] = useState("");
-  const [salePrice, setSalePrice] = useState("");
-  const [isDonation, setIsDonation] = useState(false);
-  const [isSoldOut, setIsSoldOut] = useState(false);
-  const [isSale, setIsSale] = useState(false);
 
   // Fetch API data whenever `query` updates
   useEffect(() => {
@@ -171,35 +156,35 @@ export default function EventForm() {
   const eventTag = watch("eventTag") || [];
 
   const handleKeyDown = (e) => {
-  if (e.key === "Enter" && tagInput.trim() !== "") {
-    e.preventDefault();
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      e.preventDefault();
 
-    const newTagsRaw = tagInput
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag.length > 0);
+      const newTagsRaw = tagInput
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
 
-    const existingTagsLowerSet = new Set(eventTags.map(tag => tag.toLowerCase()));
+      const existingTagsLowerSet = new Set(eventTags.map(tag => tag.toLowerCase()));
 
-    const uniqueNewTags = newTagsRaw.filter(tag => {
-      const isDuplicate = existingTagsLowerSet.has(tag.toLowerCase());
-      if (!isDuplicate) {
-        existingTagsLowerSet.add(tag.toLowerCase());
-        return true;
+      const uniqueNewTags = newTagsRaw.filter(tag => {
+        const isDuplicate = existingTagsLowerSet.has(tag.toLowerCase());
+        if (!isDuplicate) {
+          existingTagsLowerSet.add(tag.toLowerCase());
+          return true;
+        }
+        return false;
+      });
+
+      if (uniqueNewTags.length > 0) {
+        const updatedTags = [...eventTags, ...uniqueNewTags];
+        setEventTags(updatedTags);
+        setValue("eventTag", updatedTags);
+        clearErrors("eventTag");
       }
-      return false;
-    });
 
-    if (uniqueNewTags.length > 0) {
-      const updatedTags = [...eventTags, ...uniqueNewTags];
-      setEventTags(updatedTags);
-      setValue("eventTag", updatedTags);
-      clearErrors("eventTag");
+      setTagInput("");
     }
-
-    setTagInput("");
-  }
-};
+  };
 
 
 
@@ -216,6 +201,9 @@ export default function EventForm() {
 
     if (storedData) {
       const parsedData = JSON.parse(storedData);
+      console.log("Parsed data from localStorage:", parsedData);
+      console.log("selectedRadio value:", parsedData.selectedRadio);
+
       if (parsedData.eventType == "Public") {
         setValue("isPublish", true);
         // return;
@@ -223,10 +211,13 @@ export default function EventForm() {
         setValue("isPublish", false);
       }
       if (parsedData.selectedRadio == "Tickets") {
+        console.log("Setting ticketFormat to true");
         setValue("isOnline", true);
         setTicketFormat(true);
       } else {
+        console.log("Setting ticketFormat to false");
         setValue("isOnline", false);
+        setTicketFormat(false);
       }
 
       // ✅ Ensure `category` is always set
@@ -364,7 +355,7 @@ export default function EventForm() {
     }
   }, [performers, ytLinks]);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("FORM DATA", data);
     const formData = new FormData();
     const category = data.selectedEvent || data.category;
@@ -388,17 +379,17 @@ export default function EventForm() {
     formData.append("repeatExcept", data.repeatExcept ?? []);
     formData.append("performers", data.performers || []);
     // formData.append("performersYtLinks", data.performersYtLinks || []);
-   if (
-  Array.isArray(data.performersYtLinks) &&
-  data.performersYtLinks.some((link) => typeof link === "string" && link.trim() !== "")
-) {
-  const linksString = data.performersYtLinks
-    .filter((link) => typeof link === "string" && link.trim() !== "")
-    .map((link) => link.trim())
-    .join(",");
+    if (
+      Array.isArray(data.performersYtLinks) &&
+      data.performersYtLinks.some((link) => typeof link === "string" && link.trim() !== "")
+    ) {
+      const linksString = data.performersYtLinks
+        .filter((link) => typeof link === "string" && link.trim() !== "")
+        .map((link) => link.trim())
+        .join(",");
 
-  formData.append("performersYtLinks", linksString);
-}
+      formData.append("performersYtLinks", linksString);
+    }
 
 
     formData.append(
@@ -459,7 +450,39 @@ export default function EventForm() {
     const authToken = localStorage.getItem("authToken");
 
     if (!isLogin || !authToken) {
-      localStorage.setItem("eventData", JSON.stringify({ ...data }));
+      // Save form data for restoration after login
+      const dataToSave = {
+        ...data,
+        // Save additional state that's not in the form data
+        eventTags: eventTags,
+        repeatDatesRaw: repeatDatesRaw,
+        repeatExceptList: repeatExceptList,
+        youtubeLinks: youtubeLinks,
+        performersYtLinks: performersYtLinks,
+        selectedPerformers: selectedPerformers,
+        // Don't save file objects to localStorage
+        media: {
+          thumbnailImage: null,
+          posterImage: null,
+          seatingChartImage: null,
+          images: []
+        }
+      };
+
+      // Persist image Files to IndexedDB
+      const imageFiles = (data.media?.images?.length ? data.media.images : selectedImages)
+        .map((img) => (img && img.file instanceof File ? img.file : (img instanceof File ? img : null)))
+        .filter(Boolean);
+
+      await saveFormImages({
+        thumbnail: data.media?.thumbnailImage || thumbnailImage || null,
+        poster: data.media?.posterImage || posterImage || null,
+        seatingChart: data.media?.seatingChartImage || seatingChartImage || null,
+        images: imageFiles || []
+      });
+
+      localStorage.setItem("eventData", JSON.stringify(dataToSave));
+      localStorage.setItem("cameFromAuth", "true"); // Set flag to show toast after login
       toast.error("Please log in to create an event.");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");
@@ -468,43 +491,122 @@ export default function EventForm() {
     try {
       for (let [key, value] of formData.entries()) {
       }
-      dispatch(createNewEvent(formData));
-      reset();
-      setThumnPreview(null);
-      setPosterPreview(null);
-      setSeatingChartPreview(null);
-      localStorage.removeItem("eventData");
-      navigate("/home");
+      const response = await dispatch(createNewEvent(formData));
+      
+      // Check if event creation was successful
+      if (response && response.event) {
+        reset();
+        setThumnPreview(null);
+        setPosterPreview(null);
+        setSeatingChartPreview(null);
+        localStorage.removeItem("eventData");
+        await clearFormImages();
+        navigate("/home");
+      } else {
+        // Stay on page and show error if event creation failed
+        toast.error("Failed to create event. Please try again.");
+      }
     } catch (error) {
       const errorMessage =
         error?.response?.message || error?.message || "Something went wrong!";
       toast.error(errorMessage);
+      // Stay on page for registration flow
     }
   };
 
   useEffect(() => {
-    const savedData = localStorage.getItem("eventData");
-    if (savedData) {
-      reset(JSON.parse(savedData));
-      localStorage.removeItem("eventData");
-    }
-  }, []);
+    const restore = async () => {
+      const savedData = localStorage.getItem("eventData");
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          console.log("Restoring saved data:", parsedData);
+
+          // Check if user came from login/registration flow
+          const cameFromAuth = localStorage.getItem("cameFromAuth");
+          const shouldShowToast = cameFromAuth === "true";
+
+          // Reset the form with saved data
+          reset(parsedData);
+
+          // Restore additional state that's not part of the form
+          if (parsedData.eventTags) setEventTags(parsedData.eventTags);
+          if (parsedData.repeatDatesRaw) setRepeatDatesRaw(parsedData.repeatDatesRaw);
+          if (parsedData.repeatExceptList) setRepeatExceptList(parsedData.repeatExceptList);
+          if (parsedData.youtubeLinks) setYoutubeLinks(parsedData.youtubeLinks);
+          if (parsedData.performersYtLinks) setperformersYtLinks(parsedData.performersYtLinks);
+          if (parsedData.selectedPerformers) setSelectedPerformers(parsedData.selectedPerformers);
+
+          // Restore images from IndexedDB and rebuild previews
+          const imgs = await restoreFormImages();
+          if (imgs) {
+            if (imgs.thumbnail instanceof Blob) {
+              const file = new File([imgs.thumbnail], "thumbnail.jpg", { type: imgs.thumbnail.type || "image/jpeg" });
+              setThumbnailImage(file);
+              setValue("media.thumbnailImage", file);
+              setThumnPreview(URL.createObjectURL(file));
+            }
+            if (imgs.poster instanceof Blob) {
+              const file = new File([imgs.poster], "poster.jpg", { type: imgs.poster.type || "image/jpeg" });
+              setPosterImage(file);
+              setValue("media.posterImage", file);
+              setPosterPreview(URL.createObjectURL(file));
+            }
+            if (imgs.seatingChart instanceof Blob) {
+              const file = new File([imgs.seatingChart], "seating-chart.jpg", { type: imgs.seatingChart.type || "image/jpeg" });
+              setSeatingChartImage(file);
+              setValue("media.seatingChartImage", file);
+              setSeatingChartPreview(URL.createObjectURL(file));
+            }
+            if (Array.isArray(imgs.images) && imgs.images.length) {
+              const rebuilt = imgs.images.map((blob, idx) => {
+                const f = blob instanceof Blob ? new File([blob], `image-${idx + 1}.jpg`, { type: blob.type || "image/jpeg" }) : null;
+                if (!f) return null;
+                return { file: f, preview: URL.createObjectURL(f) };
+              }).filter(Boolean);
+              if (rebuilt.length) {
+                setSelectedImages(rebuilt);
+                setValue("media.images", rebuilt);
+              }
+            }
+          }
+
+          // Clear the saved data after successful restoration
+          localStorage.removeItem("eventData");
+          localStorage.removeItem("cameFromAuth"); // Clear the auth flag
+          await clearFormImages();
+          
+          // Only show toast if user came from login/registration
+          if (shouldShowToast) {
+            toast.success("Form data restored successfully, including images.");
+          }
+        } catch (error) {
+          console.error("Error restoring saved data:", error);
+          localStorage.removeItem("eventData");
+          localStorage.removeItem("cameFromAuth"); // Clear the auth flag on error too
+          await clearFormImages();
+        }
+      }
+    };
+    restore();
+  }, [reset, setValue]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const handleNextClick = handleSubmit(async (data) => {
+    console.log("handleNextClick called - creating event first");
+
+    // Create the event first
     const formData = new FormData();
     const category = data.selectedEvent || data.category;
-    data.category = category;
+
+    // Prepare event data
     formData.append("name", data.name);
     formData.append("category", category);
     formData.append("excerpt", data.excerpt);
-    formData.append(
-      "disableEventAfterSoldOut",
-      data.disableEventAfterSoldOut ?? false
-    );
+    formData.append("disableEventAfterSoldOut", data.disableEventAfterSoldOut ?? false);
     formData.append("enableRatingReview", data.enableRatingReview);
     formData.append("isRepetitive", data.isRepetitive ?? false);
     formData.append("repetitiveType", data.repetitiveType);
@@ -515,16 +617,15 @@ export default function EventForm() {
     formData.append("mapUrl", data.mapUrl || "");
     formData.append("repeatExcept", data.repeatExcept ?? []);
     formData.append("performers", data.performers || []);
-    // formData.append("performersYtLinks", data.performersYtLinks);
+
     if (
       data.performersYtLinks &&
       data.performersYtLinks.length > 0 &&
-      data.performersYtLinks[0] !== ""
+      data.performersYtLinks.some(link => link && typeof link === 'string' && link.trim() !== "")
     ) {
       const linksString = data.performersYtLinks
-        .filter((link) => link.trim() !== "")
+        .filter((link) => link && typeof link === 'string' && link.trim() !== "")
         .join(",");
-
       formData.append("performersYtLinks", linksString);
     }
 
@@ -539,19 +640,13 @@ export default function EventForm() {
 
     formData.append("repeatDates", repeatDates.join(","));
     formData.append("repeatDays", repeatDays.join(","));
-    formData.append(
-      "repeatStartTime",
-      data.repeatStartTime ? data.repeatStartTime : ""
-    );
+    formData.append("repeatStartTime", data.repeatStartTime ? data.repeatStartTime : "");
     formData.append("repeatEndTime", data.repeatEndTime);
     formData.append("youtubeLinks", data.youtubeLinks);
     formData.append("startDate", `${data.startDate}T${data.startTime}`);
     formData.append("endDate", `${data.endDate}T${data.endTime}`);
     formData.append("description", data.description1);
-    formData.append(
-      "offlinePaymentInstructions",
-      data.offlinePaymentInstructions
-    );
+    formData.append("offlinePaymentInstructions", data.offlinePaymentInstructions);
     formData.append("eventTags", data.eventTag);
     const seoTags = data.seo.metaTags.join(",");
     formData.append("seo", JSON.stringify(seoTags));
@@ -575,18 +670,46 @@ export default function EventForm() {
         const fileToUpload = image.file instanceof File ? image.file : image;
         if (fileToUpload instanceof File) {
           formData.append("images", fileToUpload);
-        } else {
         }
       });
     }
-
-    localStorage.setItem("eventFormData", JSON.stringify(data));
 
     const isLogin = JSON.parse(localStorage.getItem("isLogin"));
     const token = localStorage.getItem("authToken");
 
     if (!isLogin || !token) {
-      localStorage.setItem("eventData", JSON.stringify({ ...data }));
+      // Save form data for restoration after login
+      const dataToSave = {
+        ...data,
+        // Save additional state that's not in the form data
+        eventTags: eventTags,
+        repeatDatesRaw: repeatDatesRaw,
+        repeatExceptList: repeatExceptList,
+        youtubeLinks: youtubeLinks,
+        performersYtLinks: performersYtLinks,
+        selectedPerformers: selectedPerformers,
+        media: {
+          thumbnailImage: null,
+          posterImage: null,
+          seatingChartImage: null,
+          images: []
+        }
+      };
+
+      // Persist image Files to IndexedDB
+      const imageFiles = (data.media?.images?.length ? data.media.images : selectedImages)
+        .map((img) => (img && img.file instanceof File ? img.file : (img instanceof File ? img : null)))
+        .filter(Boolean);
+
+      await saveFormImages({
+        thumbnail: data.media?.thumbnailImage || thumbnailImage || null,
+        poster: data.media?.posterImage || posterImage || null,
+        seatingChart: data.media?.seatingChartImage || seatingChartImage || null,
+        images: imageFiles || []
+      });
+
+      localStorage.setItem("eventData", JSON.stringify(dataToSave));
+      localStorage.setItem("cameFromAuth", "true"); // Set flag to show toast after login
       toast.error("Please login to continue");
       localStorage.setItem("redirectAfterLogin", "/submit-event");
       navigate("/login?redirectTo=/submit-event");
@@ -594,14 +717,24 @@ export default function EventForm() {
     }
 
     try {
-      for (let [key, value] of formData.entries()) {
-      }
+      // Create the event first
       const response = await dispatch(createNewEvent(formData));
-      const eventId4 = response?.event._id;
-      localStorage.setItem("createdEventId", eventId4);
-      setShowTicketForm(true);
+      const eventId = response?.event?._id;
+
+      if (!eventId) {
+        toast.error("Failed to create event. Please try again.");
+        return; // Stay on page
+      }
+
+      toast.success("Event created successfully! Now manage your tickets.");
+
+      // Navigate to ticket management with the created eventId
+      navigate(`/create-ticket/${eventId}`);
+
     } catch (error) {
-      toast.error("Failed to create event.");
+      console.error("Error creating event:", error);
+      toast.error("Failed to create event. Please try again.");
+      // Stay on page for registration flow
     }
   });
 
@@ -910,9 +1043,8 @@ export default function EventForm() {
                     type="url"
                     id="mapUrl"
                     name="mapUrl"
-                    className={`mt-1 block w-full border rounded-md p-2 ${
-                      watch("venue") ? "bg-gray-200 cursor-not-allowed" : ""
-                    }`}
+                    className={`mt-1 block w-full border rounded-md p-2 ${watch("venue") ? "bg-gray-200 cursor-not-allowed" : ""
+                      }`}
                     placeholder="Enter your Venue Map URL"
                     {...register("mapUrl", {
                       validate: (value) => {
@@ -978,11 +1110,10 @@ export default function EventForm() {
                             (link) => link?.trim() !== ""
                           )}
                           classNamePrefix="react-select"
-                          className={`react-select-container ${
-                            ytLinks?.some((link) => link?.trim() !== "")
-                              ? "bg-gray-200 cursor-not-allowed"
-                              : ""
-                          }`}
+                          className={`react-select-container ${ytLinks?.some((link) => link?.trim() !== "")
+                            ? "bg-gray-200 cursor-not-allowed"
+                            : ""
+                            }`}
                         />
                         <p className="text-red-500 text-sm min-h-[1rem]">
                           {field.error?.message}
@@ -1015,11 +1146,10 @@ export default function EventForm() {
                         render={({ field }) => (
                           <input
                             type="url"
-                            className={`mt-1 block w-full border rounded-md p-2 min-h-[42px] ${
-                              performers?.length > 0
-                                ? "bg-gray-200 cursor-not-allowed"
-                                : ""
-                            }`}
+                            className={`mt-1 block w-full border rounded-md p-2 min-h-[42px] ${performers?.length > 0
+                              ? "bg-gray-200 cursor-not-allowed"
+                              : ""
+                              }`}
                             placeholder="Enter performers youtube link"
                             {...field}
                             onChange={(e) => {
@@ -1113,7 +1243,7 @@ export default function EventForm() {
                         if (e.target.showPicker) {
                           e.target.showPicker();
                         }
-                      } catch (error) {}
+                      } catch (error) { }
                     }}
                     onKeyDown={(e) => {
                       // Open picker on Enter/Space (these are valid user gestures)
@@ -1123,7 +1253,7 @@ export default function EventForm() {
                           if (e.target.showPicker) {
                             e.target.showPicker();
                           }
-                        } catch (error) {}
+                        } catch (error) { }
                       }
                       // Allow normal typing for other keys
                     }}
@@ -1147,7 +1277,7 @@ export default function EventForm() {
                         if (e.target.showPicker) {
                           e.target.showPicker();
                         }
-                      } catch (error) {}
+                      } catch (error) { }
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -1156,7 +1286,7 @@ export default function EventForm() {
                           if (e.target.showPicker) {
                             e.target.showPicker();
                           }
-                        } catch (error) {}
+                        } catch (error) { }
                       }
                     }}
                     {...register("startTime", {
@@ -1187,7 +1317,7 @@ export default function EventForm() {
                         if (e.target.showPicker) {
                           e.target.showPicker();
                         }
-                      } catch (error) {}
+                      } catch (error) { }
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -1196,7 +1326,7 @@ export default function EventForm() {
                           if (e.target.showPicker) {
                             e.target.showPicker();
                           }
-                        } catch (error) {}
+                        } catch (error) { }
                       }
                     }}
                     {...register("endDate", {
@@ -1220,7 +1350,7 @@ export default function EventForm() {
                         if (e.target.showPicker) {
                           e.target.showPicker();
                         }
-                      } catch (error) {}
+                      } catch (error) { }
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -1229,7 +1359,7 @@ export default function EventForm() {
                           if (e.target.showPicker) {
                             e.target.showPicker();
                           }
-                        } catch (error) {}
+                        } catch (error) { }
                       }
                     }}
                     {...register("endTime", {
@@ -1265,14 +1395,12 @@ export default function EventForm() {
                 <div className="flex gap-2 items-center">
                   <div
                     onClick={() => setValue("isRepetitive", !isRepetitive)}
-                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
-                      isRepetitive ? "bg-[#ff2459]" : "bg-gray-300"
-                    }`}
+                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${isRepetitive ? "bg-[#ff2459]" : "bg-gray-300"
+                      }`}
                   >
                     <div
-                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
-                        isRepetitive ? "translate-x-6" : ""
-                      }`}
+                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${isRepetitive ? "translate-x-6" : ""
+                        }`}
                     />
                   </div>
                   <p>Is Event Repetitive</p>
@@ -1419,7 +1547,7 @@ export default function EventForm() {
                             if (e.target.showPicker) {
                               e.target.showPicker();
                             }
-                          } catch (error) {}
+                          } catch (error) { }
                         }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
@@ -1428,7 +1556,7 @@ export default function EventForm() {
                               if (e.target.showPicker) {
                                 e.target.showPicker();
                               }
-                            } catch (error) {}
+                            } catch (error) { }
                           }
                         }}
                         {...register("repeatStartTime", {
@@ -1453,7 +1581,7 @@ export default function EventForm() {
                             if (e.target.showPicker) {
                               e.target.showPicker();
                             }
-                          } catch (error) {}
+                          } catch (error) { }
                         }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
@@ -1462,7 +1590,7 @@ export default function EventForm() {
                               if (e.target.showPicker) {
                                 e.target.showPicker();
                               }
-                            } catch (error) {}
+                            } catch (error) { }
                           }
                         }}
                         {...register("repeatEndTime", {})}
@@ -1826,218 +1954,19 @@ export default function EventForm() {
                         !disableEventAfterSoldOut
                       )
                     }
-                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${
-                      disableEventAfterSoldOut ? "bg-[#ff2459]" : "bg-gray-300"
-                    }`}
+                    className={`w-12 h-6 mt-2 mb-2  rounded-full p-1 transition-colors ${disableEventAfterSoldOut ? "bg-[#ff2459]" : "bg-gray-300"
+                      }`}
                   >
                     <div
-                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${
-                        disableEventAfterSoldOut ? "translate-x-6" : ""
-                      }`}
+                      className={`h-4 w-4 bg-white  border-black rounded-full shadow transform transition-transform  ${disableEventAfterSoldOut ? "translate-x-6" : ""
+                        }`}
                     />
                   </div>
                   <p>Disable Event after sold out</p>
                 </div>
               </div>
 
-              {showTicketForm && selectedRadio === "Tickets" && (
-                <form
-                  onSubmit={handleCreateTicket}
-                  className="w-full max-w-8xl px-1 sm:px-4 lg:px-8 xl:px-0 lg:ml-0 lg:mr-auto p-2 bg-gray-100 rounded-lg space-y-6"
-                >
-                  <h2 className="text-3xl font-semibold mb-6 text-[#ff2459]">
-                    CREATE TICKET
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block mb-1 font-medium">Title*</label>
-                      <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Ticket Title"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
 
-                    <div>
-                      <label className="block mb-1 font-medium">Price*</label>
-                      <input
-                        type="number"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        placeholder="Ticket Price"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">Order*</label>
-                      <input
-                        type="text"
-                        value={order}
-                        onChange={(e) => setOrder(e.target.value)}
-                        placeholder="Display Order"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Total Ticket Quantity*
-                      </label>
-                      <input
-                        type="number"
-                        value={totalTicketQuantity}
-                        onChange={(e) => setTotalTicketQuantity(e.target.value)}
-                        placeholder="Total Quantity"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Limit Per Customer*
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        value={limitPerCustomer}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (value === "") {
-                            setLimitPerCustomer("");
-                          } else {
-                            const numValue = parseFloat(value);
-                            if (!isNaN(numValue) && numValue >= 0) {
-                              setLimitPerCustomer(numValue);
-                            }
-                          }
-                        }}
-                        onBlur={(e) => {
-                          if (e.target.value === "") {
-                            setLimitPerCustomer(0);
-                          }
-                        }}
-                        placeholder="Limit per customer"
-                        required
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Sale Price
-                      </label>
-                      <input
-                        type="number"
-                        value={salePrice}
-                        onChange={(e) => setSalePrice(e.target.value)}
-                        placeholder="Optional Sale Price"
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Sale Start Date
-                      </label>
-                      <input
-                        type="datetime-local"
-                        value={saleStartDate}
-                        onChange={(e) => setSaleStartDate(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Sale End Date
-                      </label>
-                      <input
-                        type="datetime-local"
-                        value={saleEndDate}
-                        onChange={(e) => setSaleEndDate(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Promo Codes
-                      </label>
-                      <input
-                        type="text"
-                        value={promoCodes}
-                        onChange={(e) => setPromoCodes(e.target.value)}
-                        placeholder="Comma separated promo codes (e.g. VIP32,EARLYBIRD)"
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 font-medium">
-                        Booked Seats
-                      </label>
-                      <input
-                        type="text"
-                        value={bookedSeats}
-                        onChange={(e) => setBookedSeats(e.target.value)}
-                        placeholder="Comma separated seat numbers (e.g. 1,2,3)"
-                        className="w-full border border-gray-300 rounded-md px-4 py-2"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block mb-1 font-medium">
-                      Description*
-                    </label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Enter ticket description"
-                      rows={4}
-                      required
-                      className="w-full border border-gray-300 rounded-md px-4 py-2"
-                    />
-                  </div>
-
-                  <div className="flex flex-wrap gap-6 items-center">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={isDonation}
-                        onChange={(e) => setIsDonation(e.target.checked)}
-                        className="accent-blue-500"
-                      />
-                      <span>Is Donation</span>
-                    </label>
-
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={isSoldOut}
-                        onChange={(e) => setIsSoldOut(e.target.checked)}
-                        className="accent-red-500"
-                      />
-                      <span>Is Sold Out</span>
-                    </label>
-                  </div>
-
-                  <button
-                    type="submit"
-                    onClick={handleCreateTicket}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
-                  >
-                    Create Ticket
-                  </button>
-                </form>
-              )}
 
               <div className="flex justify-around p-0">
                 <Button
@@ -2046,10 +1975,16 @@ export default function EventForm() {
                   rounded={"rounded-lg"}
                   onClick={() => navigate("/create-event")}
                 />
+                {console.log("ticketFormat value:", ticketFormat)}
                 {ticketFormat ? (
                   <button
                     type="button"
-                    onClick={handleNextClick}
+                    onClick={() => {
+                      console.log("Next button clicked");
+                      console.log("Form errors:", errors);
+                      console.log("Form is valid:", isValid);
+                      handleNextClick();
+                    }}
                     className="p-1 bg-[#ff2459] px-6 rounded-lg text-white"
                   >
                     Next

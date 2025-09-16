@@ -55,6 +55,24 @@ import YouTubeWall from "../SocialMedia/YouTubeWall";
 function GetOrganizerById() {
   const { organizerId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
+
+  // Validate organizerId
+  if (!organizerId || organizerId === 'undefined') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Invalid Organizer</h2>
+          <p className="text-gray-600">The organizer you're looking for doesn't exist or the URL is incorrect.</p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
   const [category, setCategory] = useState("");
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
@@ -348,11 +366,91 @@ function GetOrganizerById() {
                     : "not specified"}
               </p>
             </div>
-            
-            <div className="lg:flex hidden w-full justify-end p-1 mt-auto">
-              <div ref={shareRef} className="relative flex items-center bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 rounded-full">
+            <div className="grid grid-cols-2 gap-6 px-2 lg:px-0 lg:mt-2 lg:w-[60%]">
+              {/* Phone Section */}
+              <div className="flex gap-2 p-0 py-0 cursor-pointer ">
                 <p
-                  className={`flex gap-1 pr-4 cursor-pointer hover:text-[#ff2459] ${ownershipEnquirySent ? "text-[#ff2459] cursor-not-allowed" : ""
+                  className="max-w-md"
+                  onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}
+                >
+                  <FaPhoneAlt
+                    className="text-red-500 relative top-1"
+                    style={{ textShadow: "1px 1px 1px black" }}
+                  />
+                </p>
+                <p onClick={hasPhoneNumber ? togglePhoneVisibility : undefined}>
+                  {!hasPhoneNumber
+                    ? "Not available"
+                    : showNumber
+                      ? data.phoneNumber
+                      : "View Contact"}
+                </p>
+              </div>
+
+              {/* Available Time Section */}
+              {data.availableTime && (
+                <div className="flex gap-2 p-0 py-0 cursor-default">
+                  <p>
+                    <FaClock
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <p>{data.availableTime}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-4 px-2 py-1 lg:px-0 lg:py-0 sm:mt-2 lg:w-[60%]">
+              {/* Website Section */}
+              {data.website && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <FaGlobe
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={
+                      data.website.startsWith("http")
+                        ? data.website
+                        : `https://${data.website}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.website}
+                  </a>
+                </div>
+              )}
+
+              {/* Email Section */}
+              {data.email && (
+                <div className="flex gap-2 items-center p-0 py-0">
+                  <p>
+                    <MdEmail
+                      className="text-red-500 relative top-1 text-xl"
+                      style={{ textShadow: "1px 1px 1px black" }}
+                    />
+                  </p>
+                  <a
+                    href={`mailto:${data.email}`}
+                    className="text-white underline hover:text-blue-400 break-all"
+                  >
+                    {data.email}
+                  </a>
+                </div>
+              )}
+            </div>
+
+            <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
+              <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
+                <p
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${ownershipEnquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
                     if (!isLogin) toast.error("Please login first to send enquiry!");
@@ -363,7 +461,9 @@ function GetOrganizerById() {
                   {ownershipEnquirySent ? "Claim Enquiry Sent" : "Claim Ownership"}
                 </p>
                 <p
-                  className={`flex gap-1 pr-4 cursor-pointer hover:text-[#ff2459] ${enquirySent ? "text-[#ff2459] cursor-not-allowed" : ""
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${enquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
                     if (!isLogin) toast.error("Please login first to send enquiry!");
@@ -375,8 +475,18 @@ function GetOrganizerById() {
                   {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                 </p>
                 <button
-                  onClick={() => toggleFavorite(data._id)}
-                  className={`flex gap-1 pr-4 hover:text-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                  onClick={() => {
+                    if (!isLogin) {
+                      toast.error("Please login first to Add favorite!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    toggleFavorite(data._id);
+                  }}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                     }`}
                 >
                   <FaHeart className="relative top-1 lg:text-base text-xs" />
@@ -412,9 +522,9 @@ function GetOrganizerById() {
                   </button>
                   <div className="flex flex-col gap-2 px-0 w-[300px] border rounded mt-8 h-auto">
                     <button
-                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3   hover:text-[#ff2459] ${ownershipEnquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${ownershipEnquirySent
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                         }`}
                       onClick={() => {
                         if (!isLogin) {
@@ -435,8 +545,8 @@ function GetOrganizerById() {
                     </button>
                     <button
                       className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${enquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                         }`}
                       onClick={() => {
                         if (!isLogin) {
@@ -473,7 +583,7 @@ function GetOrganizerById() {
                         toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
-                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${localIsFavorite ? "text-[#ff2459] font-bold" : "text-gray-900"
+                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                         }`}
                     >
                       <FaHeart className="relative top-1 lg:text-base" />
@@ -521,160 +631,244 @@ function GetOrganizerById() {
                 </div>
               </div>
 
-              <div className="lg:px-4 p-2 border-x border-b bg-white rounded-b-lg mb-2">
-                {about && (
-                  <div className="py-5">
+            {hoveredTab && (
+              <div className="fixed bottom-1 left-2 text-xs text-white bg-gray-900 px-2 py-1 rounded shadow">
+                {`${HrefUrl}#${hoveredTab}`}
+              </div>
+            )}
+
+            <div className="lg:w-[70%]  h-[600px] overflow-scroll scrollbar-hide overflow-y-hidden rounded-lg ">
+              <div className="sticky top-0 z-10">
+                <div
+                  className="text-gray-500 lg:text-base text-sm lg:w-full w-full lg:relative overflow-scroll scrollbar-hide  bg-white  flex border   md:gap-20 gap-5  
+              lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  "
+                >
+                  <button
+                    className={`px-2 ${about ? "border-b-2 border-b-red-600" : ""
+                      }`}
+                    onClick={() => {
+                      setAbout(true);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("about")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    ABOUT
+                  </button>
+                  <button
+                    className={`${upcoming ? "border-b-2 border-b-red-600" : ""
+                      } p-2`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(true);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("upcoming-event")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    UPCOMING EVENT
+                  </button>
+                  <button
+                    className={`${facebook ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(true);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("facebook")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    FACEBOOK
+                  </button>
+                  <button
+                    className={`${twitter ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(true);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("twitter")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    TWITTER
+                  </button>
+                  <button
+                    className={`${instagram ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(true);
+                      setYoutube(false);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("instagram")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    INSTAGRAM
+                  </button>
+                  <button
+                    className={`${youtube ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(true);
+                      setStat(false);
+                    }}
+                    onMouseEnter={() => setHoveredTab("youtube")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    YOUTUBE
+                  </button>
+                  <button
+                    className={`${stat ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
+                    onClick={() => {
+                      setAbout(false);
+                      setUpcoming(false);
+                      setFacebook(false);
+                      setTwitter(false);
+                      setInstagram(false);
+                      setYoutube(false);
+                      setStat(true);
+                    }}
+                    onMouseEnter={() => setHoveredTab("stat")}
+                    onMouseLeave={() => setHoveredTab(null)}
+                  >
+                    STAT
+                  </button>
+                </div>
+              </div>
+              <div className="lg:px-4 p-2 border bg-white rounded-lg h-full overflow-auto mb-2">
+                {about && data ? (
+                  <p className="py-5 ">
                     <h2 className="text-2xl font-semibold text-gray-800 py-4">
                       About the Organisers
                     </h2>
-                    <p>{data?.description || "No description available"}</p>
-                    
-                    <hr className="my-6" />
 
-                    <h2 className="text-2xl font-semibold text-gray-800 py-4">
-                      Organiser Highlights
-                    </h2>
-                    {data?.highlights && data.highlights.length > 0 ? (
-                      <ul className="list-none space-y-4 text-gray-700">
-                        {data.highlights.map((highlight, index) => (
-                          <li key={index} className="flex items-start">
-                            <CiCircleCheck className="text-green-500 text-xl mr-3 mt-1 flex-shrink-0" />
-                            <span>{highlight}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    {/* {about ? data.description : ""} */}
+                    {data?.description || "No description available"}
+                  </p>
+                ) : null}
+
+                {upcoming && (
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
+                    {upcomingEventData.length > 0 ? (
+                      upcomingEventData.map((event, index) => (
+                        <div
+                          key={index}
+                          className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
+                          onClick={() =>
+                            navigate(
+                              `/events/${event.category.toLowerCase()}/${event._id
+                              }`,
+                              { state: event._id }
+                            )
+                          }
+                        >
+                          {/* 🔹 Image Container*/}
+                          <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
+                            <img
+                              src={
+                                event.media?.thumbnailImage ||
+                                "https://via.placeholder.com/250x160?text=No+Image"
+                              }
+                              alt={event.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                          {/* 🔹 Event Details  */}
+                          <div className="p-2 flex flex-col flex-grow gap-y-2">
+                            {/* Event Name */}
+                            <div className="text-center min-h-[40px] max-h-[40px] flex items-center justify-center">
+                              <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 break-words line-clamp-2">
+                                {event.name}
+                              </h3>
+                            </div>
+
+                            {/* Category */}
+                            <div className="text-center min-h-[20px] flex items-center justify-center">
+                              <p className="text-xs sm:text-sm text-gray-500 break-words whitespace-normal">
+                                {event.category || "Music Festival"}
+                              </p>
+                            </div>
+
+                            {/* Date */}
+                            <div className="text-center min-h-[20px] flex items-center justify-center">
+                              <p className="text-xs sm:text-sm text-gray-400 break-words whitespace-normal">
+                                {new Date(event.startDate).toDateString()} -{" "}
+                                {new Date(event.endDate).toDateString()}
+                              </p>
+                            </div>
+
+                            {/* Venue */}
+                            <div className="text-center min-h-[25px] max-h-[40px] flex items-center justify-center flex-nowrap">
+                              <p className="text-xs sm:text-sm text-gray-600 font-medium break-words whitespace-normal">
+                                📍 {event.venue?.city || ""}{" "}
+                                {event.venue?.state || ""}{" "}
+                                {event.venue?.country || "Not Available"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
                     ) : (
-                      <p>No highlights available for this organiser.</p>
+                      <p className="text-center text-gray-500 col-span-full p-4 text-xs sm:text-sm md:text-base">
+                        No Upcoming Events Found
+                      </p>
                     )}
                   </div>
                 )}
-                {upcoming && (
-                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
 
-                  </div>
-                )}
-                {social && (
-                  <div>
-                    <div className="flex border-b my-4 space-x-4 lg:space-x-6 text-sm lg:text-base overflow-x-auto scrollbar-hide">
-                      <button
-                        onClick={() => data.facebookUrl && setActiveSocialTab("facebook")}
-                        disabled={!data.facebookUrl}
-                        className={`py-2 px-5 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "facebook"
-                            ? "bg-white text-blue-600 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-blue-600"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaFacebook /> Facebook
-                      </button>
-                      <button
-                        onClick={() => data.instagramUrl && setActiveSocialTab("instagram")}
-                        disabled={!data.instagramUrl}
-                        className={`py-2 px-5 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "instagram"
-                            ? "bg-white text-pink-600 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-pink-600"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaInstagram /> Instagram
-                      </button>
-                      <button
-                        onClick={() => data.youtubeId && setActiveSocialTab("youtube")}
-                        disabled={!data.youtubeId}
-                        className={`py-2 px-5 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "youtube"
-                            ? "bg-white text-red-600 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-red-600"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaYoutube /> YouTube
-                      </button>
-                      <button
-                        onClick={() => data.twitterUrl && setActiveSocialTab("twitter")}
-                        disabled={!data.twitterUrl}
-                        className={`py-2 px-5 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "twitter"
-                            ? "bg-white text-sky-500 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-sky-500"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaTwitter /> Twitter
-                      </button>
-                      <button
-                        onClick={() => data.spotifyUrl && setActiveSocialTab("spotify")}
-                        disabled={!data.spotifyUrl}
-                        className={`py-2 px-5 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "spotify"
-                            ? "bg-white text-green-500 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-green-500"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaSpotify /> Spotify
-                      </button>
-                      <button
-                        onClick={() => data.soundCloudUrl && setActiveSocialTab("soundcloud")}
-                        disabled={!data.soundCloudUrl}
-                        className={`py-2 px-5 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${activeSocialTab === "soundcloud"
-                            ? "bg-white text-orange-500 font-semibold border-t border-x"
-                            : "text-gray-500 hover:text-orange-500"
-                          } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                      >
-                        <FaSoundcloud /> SoundCloud
-                      </button>
-                    </div>
-                    <div className="py-4 flex justify-center">
-                      {activeSocialTab === 'facebook' && data.facebookUrl && <FacebookEmbeded appId="849920522233544" fbId={data.facebookUrl} />}
-                      {activeSocialTab === 'instagram' && data.instagramUrl && <InstagramEmbed instagramUrl={data.instagramUrl} />}
-                      {activeSocialTab === 'youtube' && data.youtubeId && <YouTubeWall channelId={data.youtubeId} />}
-                      {activeSocialTab === 'twitter' && data.twitterUrl && <TwitterEmbed twitterUrl={data.twitterUrl} />}
-                      {activeSocialTab === 'spotify' && data.spotifyUrl && <SocialLinkCard platformName="Spotify" url={data.spotifyUrl} icon={<FaSpotify className="text-green-500" />} />}
-                      {activeSocialTab === 'soundcloud' && data.soundCloudUrl && <SocialLinkCard platformName="SoundCloud" url={data.soundCloudUrl} icon={<FaSoundcloud className="text-orange-500" />} />}
-                      {activeSocialTab === '' && <p className="text-center text-gray-500 p-8">No social media profiles available for this organizer.</p>}
+                {facebook ? (
+                  <div className="w-full flex justify-center py-6">
+                    <div className="w-full max-w-[1200px]">
+                      <FacebookEmbeded
+                        appId={849920522233544}
+                        fbId={data.facebookUrl}
+                      />
                     </div>
                   </div>
-                )}
-                {stat && <OrganizerStats data={data} />}
-              </div>
-            </div>
-          </div>
-          
-          <div className="lg:flex lg:gap-4 mt-4 w-full">
-            <div className="lg:w-1/2 w-full mb-4 lg:mb-0">
-                <div className="shadow-lg bg-white h-full rounded-lg overflow-hidden">
-                    <h1 className="font-semibold text-xl p-3 border-b">Location</h1>
-                    <MapContainer data={data} />
+                ) : null}
+
+                <div className="font-medium text-lg text-center">
+                  {instagram &&
+                    (data.instagramUrl ? (
+                      <div className="w-full flex justify-center py-6">
+                        <div className="w-full max-w-[1200px]">
+                          <InstagramEmbed instagramUrl={data.instagramUrl} />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-5">Not Available</div>
+                    ))}
                 </div>
-            </div>
-            <div className="lg:w-1/2 w-full">
-                <div className="shadow-lg bg-white h-full rounded-lg p-4 flex flex-col">
-                    <h1 className="font-semibold text-xl pb-3 border-b mb-4">Organiser Details</h1>
-                    <div className="flex flex-col gap-y-4">
-                        {fullAddress && (
-                            <div className="flex items-start gap-4">
-                                <FaLocationDot className="text-gray-500 mt-1 text-xl shrink-0" />
-                                <span className="text-gray-700">{fullAddress}</span>
-                            </div>
-                        )}
-                        {data.phoneNumber && (
-                            <div className="flex items-center gap-4">
-                                <FaPhoneAlt className="text-gray-500 text-xl shrink-0" />
-                                <span className="text-gray-700">{data.phoneNumber}</span>
-                            </div>
-                        )}
-                        {organizerEmail && (
-                            <div className="flex items-center gap-4">
-                                <MdEmail className="text-gray-500 text-xl shrink-0" />
-                                <a href={`mailto:${organizerEmail}`} className="text-blue-600 hover:underline break-all">{organizerEmail}</a>
-                            </div>
-                        )}
-                        {data.website && (
-                            <div className="flex items-center gap-4">
-                                <FaGlobe className="text-gray-500 text-xl shrink-0" />
-                                <a href={ensureUrlProtocol(data.website)} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">{data.website}</a>
-                            </div>
-                        )}
-                        {!fullAddress && !data.phoneNumber && !organizerEmail && !data.website && (
-                            <p className="text-gray-500">No contact details provided.</p>
-                        )}
-                    </div>
-                </div>
-            </div>
-          </div>
 
           <div className="w-full mt-4">
             <div className="shadow-lg bg-white rounded-lg">
@@ -823,6 +1017,8 @@ function GetOrganizerById() {
           name={name}
           email={organizerEmail}
           enquiry={enquiry}
+          targetId={data?._id}
+          modelName="Organizer"
         />
       )}
     </div>
