@@ -1,44 +1,14 @@
 import React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-blue-900 text-white p-4 flex flex-col">
-        <h2 className="text-2xl font-bold mb-6">EVENTSNODE</h2>
-        <div className="mb-4">Ketan</div>
-        <nav className="flex-1">
-          {[
-            "Dashboard",
-            "Categories",
-            "Events",
-            "Tags",
-            "Bookings",
-            "Commissions",
-            "Taxes",
-            "Users",
-            "Contacts",
-            "Media",
-            "Banners",
-            "Pages",
-            "Blog Posts",
-            "Header Menu",
-            "Footer Menu",
-            "Venues",
-            "Settings",
-            "Promocodes",
-            "Complimentary Bookings",
-            "Currencies",
-          ].map((item) => (
-            <div
-              key={item}
-              className="py-2 px-4 hover:bg-blue-700 rounded cursor-pointer"
-            >
-              {item}
-            </div>
-          ))}
-        </nav>
-      </div>
+      
 
       {/* Main content */}
       <div className="flex-1 p-6 overflow-auto">

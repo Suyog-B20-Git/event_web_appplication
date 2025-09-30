@@ -39,8 +39,8 @@ const MeditationForm = (data) => {
   const eventDescription = data?.data.description;
   const eventAddress =
     data?.data?.venue?.city &&
-    data?.data?.venue?.state &&
-    data?.data?.venue?.country
+      data?.data?.venue?.state &&
+      data?.data?.venue?.country
       ? `${data.data.venue.city}, ${data.data.venue.state}, ${data.data.venue.country}`
       : "Not Available";
 

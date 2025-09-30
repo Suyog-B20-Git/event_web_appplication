@@ -2,20 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const SEO = ({ data, setData, nextTab }) => {
-  const location = useLocation();
-  const eventData = location.state?.event;
-
-  const [metaTitle, setMetaTitle] = useState("");
-  const [metaTags, setMetaTags] = useState("");
-  const [metaDescription, setMetaDescription] = useState("");
-
-  useEffect(() => {
-    if (!eventData) return;
-
-    setMetaTitle(eventData.metaTitle || "");
-    setMetaTags(eventData.metaTags || "");
-    setMetaDescription(eventData.metaDescription || "");
-  }, [eventData]);
 
   return (
     <form className="space-y-6">

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { GiCancel } from "react-icons/gi";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import { axiosInstance } from "../../../utility/utils";
 import { toast } from "react-toastify";
-const baseUrl = import.meta.env.VITE_API_URL;
 
-function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
+function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email, targetId, modelName }) {
   const {
     register,
     handleSubmit,
@@ -14,7 +13,7 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
   } = useForm();
 
   const [loading, setLoading] = useState(false);
-  const modalRef = useRef(null); 
+  const modalRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -29,7 +28,18 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
   }, [setEnquiry]);
 
   const onSubmit = async (data) => {
-    const payload = {
+    // Use new flexible structure if targetId and modelName are provided
+    const payload = targetId && modelName ? {
+      to: email,
+      targetId: targetId,
+      modelName: modelName,
+      fullName: data.name,
+      email: data.email,
+      contactNumber: data.contactNumber,
+      subject: data.subject,
+      message: data.message,
+    } : {
+      // Fallback to old structure for backward compatibility
       to: email,
       eventName: name,
       fullName: data.name,
@@ -40,9 +50,10 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
     };
     setLoading(true);
     try {
-      const response = await axios.post(`${baseUrl}/api/enquiries`, payload);
+      const response = await axiosInstance.post("/enquiries", payload);
       toast.success("Enquiry sent successfully!");
-      localStorage.setItem(`enquiry_sent_${name}`, "true");
+      const storageKey = targetId ? `enquiry_sent_${targetId}` : `enquiry_sent_${name}`;
+      localStorage.setItem(storageKey, "true");
       if (onEnquirySent) {
         onEnquirySent();
       }
@@ -191,9 +202,8 @@ function EnquiryForm({ enquiry, onEnquirySent, setEnquiry, name, email }) {
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${
-                      loading ? "opacity-70 cursor-not-allowed" : ""
-                    }`}
+                    className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${loading ? "opacity-70 cursor-not-allowed" : ""
+                      }`}
                   >
                     {loading && (
                       <svg

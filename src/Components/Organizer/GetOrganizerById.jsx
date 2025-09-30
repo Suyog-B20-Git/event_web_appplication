@@ -6,7 +6,7 @@ import { getOrganizerById } from "../../redux/actions/master/Organizer/getOrgani
 import {
   MdKeyboardDoubleArrowRight,
   MdOutlineNavigateNext,
-  MdEmail , 
+  MdEmail,
 } from "react-icons/md";
 import {
   FaEye,
@@ -62,6 +62,24 @@ import YouTubeWall from "../SocialMedia/YouTubeWall";
 function GetOrganizerById() {
   const { organizerId } = useParams();
   const [isPopUp, setIsPopUp] = useState(false);
+
+  // Validate organizerId
+  if (!organizerId || organizerId === 'undefined') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Invalid Organizer</h2>
+          <p className="text-gray-600">The organizer you're looking for doesn't exist or the URL is incorrect.</p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
   const [category, setCategory] = useState("");
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
@@ -275,8 +293,8 @@ function GetOrganizerById() {
                 )
                   ? `${data.city}, ${data.state}, ${data.country}`
                   : data.address?.trim()
-                  ? data.address
-                  : "not specified"}
+                    ? data.address
+                    : "not specified"}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-6 px-2 lg:px-0 lg:mt-2 lg:w-[60%]">
@@ -295,8 +313,8 @@ function GetOrganizerById() {
                   {!hasPhoneNumber
                     ? "Not available"
                     : showNumber
-                    ? data.phoneNumber
-                    : "View Contact"}
+                      ? data.phoneNumber
+                      : "View Contact"}
                 </p>
               </div>
 
@@ -343,7 +361,7 @@ function GetOrganizerById() {
               {data.email && (
                 <div className="flex gap-2 items-center p-0 py-0">
                   <p>
-                    <MdEmail  
+                    <MdEmail
                       className="text-red-500 relative top-1 text-xl"
                       style={{ textShadow: "1px 1px 1px black" }}
                     />
@@ -361,11 +379,10 @@ function GetOrganizerById() {
             <div className=" lg:flex hidden w-full justify-end p-1 cursor-pointer ">
               <div className="bg-white text-gray-900 w-max p-2 lg:text-base text-xs px-3 flex lg:gap-4 gap-1 rounded-full">
                 <p
-                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
-                    ownershipEnquirySent
-                      ? "text-[#ff2459] cursor-not-allowed"
-                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                  }`}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${ownershipEnquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                    }`}
                   onClick={() => {
                     if (!isLogin) {
                       toast.error("Please login first to send enquiry!", {
@@ -384,11 +401,10 @@ function GetOrganizerById() {
                     : "Claim Ownership"}
                 </p>
                 <p
-                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${
-                    enquirySent
-                      ? "text-[#ff2459] cursor-not-allowed"
-                      : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                  }`}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459]  ${enquirySent
+                    ? "text-[#ff2459] cursor-not-allowed"
+                    : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                    }`}
                   onClick={() => {
                     if (!isLogin) {
                       toast.error("Please login first to send enquiry!", {
@@ -422,9 +438,8 @@ function GetOrganizerById() {
                     }
                     toggleFavorite(data._id);
                   }}
-                  className={`flex gap-1 bg-white hover:text-[#ff2459] ${
-                    localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-                  }`}
+                  className={`flex gap-1 bg-white hover:text-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                    }`}
                 >
                   <FaHeart className="relative top-1 lg:text-base text-xs hover:text-[#ff2459]" />{" "}
                   {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
@@ -446,11 +461,10 @@ function GetOrganizerById() {
 
                   <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-8">
                     <button
-                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${
-                        ownershipEnquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                      }`}
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${ownershipEnquirySent
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        }`}
                       onClick={() => {
                         if (!isLogin) {
                           toast.error("Please login first to send enquiry!", {
@@ -469,11 +483,10 @@ function GetOrganizerById() {
                         : "Claim Ownership"}
                     </button>
                     <button
-                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${
-                        enquirySent
-                          ? "text-[#ff2459] cursor-not-allowed font-bold"
-                          : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-                      }`}
+                      className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3 hover:text-[#ff2459] ${enquirySent
+                        ? "text-[#ff2459] cursor-not-allowed font-bold"
+                        : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
+                        }`}
                       onClick={() => {
                         if (!isLogin) {
                           toast.error("Please login first to send enquiry!", {
@@ -509,9 +522,8 @@ function GetOrganizerById() {
                         toggleFavorite(data._id);
                         setIsPopUp(false);
                       }}
-                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${
-                        localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-                      }`}
+                      className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
+                        }`}
                     >
                       <FaHeart className="relative top-2 lg:text-base text-sm" />
                       {localIsFavorite
@@ -566,9 +578,8 @@ function GetOrganizerById() {
               lg:gap-16 font-medium lg:px-10 lg:p-0 p-2  "
                 >
                   <button
-                    className={`px-2 ${
-                      about ? "border-b-2 border-b-red-600" : ""
-                    }`}
+                    className={`px-2 ${about ? "border-b-2 border-b-red-600" : ""
+                      }`}
                     onClick={() => {
                       setAbout(true);
                       setUpcoming(false);
@@ -584,9 +595,8 @@ function GetOrganizerById() {
                     ABOUT
                   </button>
                   <button
-                    className={`${
-                      upcoming ? "border-b-2 border-b-red-600" : ""
-                    } p-2`}
+                    className={`${upcoming ? "border-b-2 border-b-red-600" : ""
+                      } p-2`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(true);
@@ -602,9 +612,8 @@ function GetOrganizerById() {
                     UPCOMING EVENT
                   </button>
                   <button
-                    className={`${
-                      facebook ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${facebook ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -620,9 +629,8 @@ function GetOrganizerById() {
                     FACEBOOK
                   </button>
                   <button
-                    className={`${
-                      twitter ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${twitter ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -638,9 +646,8 @@ function GetOrganizerById() {
                     TWITTER
                   </button>
                   <button
-                    className={`${
-                      instagram ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${instagram ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -656,9 +663,8 @@ function GetOrganizerById() {
                     INSTAGRAM
                   </button>
                   <button
-                    className={`${
-                      youtube ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${youtube ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -674,9 +680,8 @@ function GetOrganizerById() {
                     YOUTUBE
                   </button>
                   <button
-                    className={`${
-                      stat ? "border-b-2 border-b-red-600" : ""
-                    } p-2 lg:px-0 px-4`}
+                    className={`${stat ? "border-b-2 border-b-red-600" : ""
+                      } p-2 lg:px-0 px-4`}
                     onClick={() => {
                       setAbout(false);
                       setUpcoming(false);
@@ -714,8 +719,7 @@ function GetOrganizerById() {
                           className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
                           onClick={() =>
                             navigate(
-                              `/events/${event.category.toLowerCase()}/${
-                                event._id
+                              `/events/${event.category.toLowerCase()}/${event._id
                               }`,
                               { state: event._id }
                             )
@@ -999,6 +1003,8 @@ function GetOrganizerById() {
           name={name}
           email={organizerEmail}
           enquiry={enquiry}
+          targetId={data?._id}
+          modelName="Organizer"
         />
       )}
     </div>

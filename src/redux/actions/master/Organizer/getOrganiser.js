@@ -102,9 +102,8 @@ export const getOrganizer = (setLoader, filter, page, category) => {
 
     default:
       if (category) {
-        api = ` ${
-          Organizer.getOrganizerByFilter
-        }categories=${encodeURIComponent(category)}&page=${page}&limit=9`;
+        api = ` ${Organizer.getOrganizerByFilter
+          }categories=${encodeURIComponent(category)}&page=${page}&limit=9`;
         // api = ` http://localhost:5000/api/organizer/filter?categories=${encodeURIComponent(
         //   category
         // )}&page=${page}&limit=9`;

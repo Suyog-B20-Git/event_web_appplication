@@ -1,0 +1,59 @@
+/* Custom styles for react-tabs */
+.react-tabs {
+    width: 100%;
+}
+
+.react-tabs__tab-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.react-tabs__tab {
+    padding: 0.5rem 1rem;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    background: #f3f4f6;
+    color: #374151;
+    font-weight: 500;
+}
+
+.react-tabs__tab:hover {
+    background: #e5e7eb;
+}
+
+.react-tabs__tab--selected {
+    background: #ff2459 !important;
+    color: white !important;
+}
+
+.react-tabs__tab--disabled {
+    background: #f9fafb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.react-tabs__tab-panel {
+    display: none;
+}
+
+.react-tabs__tab-panel--selected {
+    display: block;
+}
+
+/* Override default react-tabs focus styles */
+.react-tabs__tab:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 36, 89, 0.2);
+}
+
+.react-tabs__tab--selected:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}

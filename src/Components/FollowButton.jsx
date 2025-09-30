@@ -50,12 +50,12 @@ const FollowButton = ({ targetId, modelName, variant = "desktop" }) => {
         },
       };
       const endpoint = isFollowing ? "unfollow" : "follow";
-      const res = 
-      await axios.post(
-        `${baseUrl}/api/${endpoint}`,
-        { modelName, targetId },
-        config
-      );
+      const res =
+        await axios.post(
+          `${baseUrl}/api/${endpoint}`,
+          { modelName, targetId },
+          config
+        );
       setIsFollowing(!isFollowing);
       isFollowing ? toast.error("Unfollowed") : toast.success("Following");
     } finally {

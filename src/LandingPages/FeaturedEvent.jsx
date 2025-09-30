@@ -37,7 +37,6 @@ import {
   getEventByCategoryAndSlug,
   getEventBySlug,
 } from "../redux/actions/master/Events/getEventById";
-import MapContainer from "../Components/CreatePage/MapComponent";
 import EnquiryForm from "../Components/Organizer/EnquiryForm";
 import { addFavouriteEvent } from "../redux/actions/master/Events/AddFavouriteEvent";
 import getFavoriteEventReducer from "../redux/reducers/pages/Events/getFavoriteEvent";
@@ -48,6 +47,7 @@ import { deleteFavouriteEvent } from "../redux/actions/master/Events/deleteFavou
 import fallbackImage from "/public/assets/staticAssets/fallback-image.jpg";
 import VenueData from "../Components/FeaturedEvent/VenueData";
 import TicketPrice from "../Components/FeaturedEvent/TicektPrice";
+import { IoShareSocialOutline } from "react-icons/io5"; // <-- IMPORT THE SHARE ICON
 
 function FeaturedEvent() {
   const {
@@ -100,13 +100,20 @@ function FeaturedEvent() {
   const VenuesData = Array.isArray(receivedData?.venue)
     ? receivedData?.venue
     : receivedData?.venue
-    ? [receivedData.venue]
-    : [];
-  const thumbnailImage = receivedData?.media?.thumbnailImage;
-  const posterImage = receivedData?.media?.posterImage;
+      ? [receivedData.venue]
+      : [];
+
+  const formatImageUrl = (url) => {
+    if (!url) return fallbackImage;
+    return url.replace(/\\/g, "/");
+  };
+
+  const thumbnailImage = formatImageUrl(receivedData?.media?.thumbnailImage);
+  const posterImage = formatImageUrl(receivedData?.media?.posterImage);
   const phoneNumber = receivedData?.organizer?.phoneNumber?.trim();
   const hasPhoneNumber = phoneNumber !== "" && phoneNumber !== undefined;
   const organizerEmail = receivedData?.organizer?.email?.trim();
+
   const togglePhone = () => {
     if (hasPhoneNumber) {
       setShowNumber((prev) => !prev);
@@ -134,12 +141,14 @@ function FeaturedEvent() {
 
   useEffect(() => {
     setEnquirySent(false);
-
-    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    const eventId = receivedData?._id;
+    const oldKey = `enquiry_sent_${name}`;
+    const newKey = eventId ? `enquiry_sent_${eventId}` : oldKey;
+    const sent = localStorage.getItem(newKey) || localStorage.getItem(oldKey);
     if (sent === "true") {
       setEnquirySent(true);
     }
-  }, [name]);
+  }, [name, receivedData?._id]);
 
   const handleEnquirySent = () => {
     setEnquirySent(true);
@@ -151,6 +160,14 @@ function FeaturedEvent() {
   }, [isFavourite]);
 
   const toggleFavorite = (id) => {
+    if (!isLogin) {
+      toast.error("Please login first to add to favourites!", {
+        transition: Zoom,
+        hideProgressBar: true,
+        autoClose: 2000,
+      });
+      return;
+    }
     if (localIsFavorite) {
       setLocalIsFavorite(false);
       dispatch(deleteFavouriteEvent(id));
@@ -158,7 +175,6 @@ function FeaturedEvent() {
       setLocalIsFavorite(true);
       dispatch(addFavouriteEvent(id));
     }
-
     dispatch(getFavouriteEventData(setLoading));
   };
 
@@ -166,6 +182,34 @@ function FeaturedEvent() {
     navigate("/bookTicket", {
       state: { data: receivedData },
     });
+  };
+
+  // --- NEW SHARE FUNCTION ---
+  const handleShare = async () => {
+    const shareData = {
+      title: receivedData.name || "Check out this event!",
+      text: `I found this event, '${receivedData.name}', and thought you might be interested.`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    } else {
+      // Fallback for browsers that don't support the Web Share API
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   useEffect(() => {
@@ -179,11 +223,10 @@ function FeaturedEvent() {
 
   useEffect(() => {
     if (receivedData && receivedData.category && receivedData._id) {
-      const newPath = `/events/${(receivedData.category || "").toLowerCase()}/${
-        receivedData._id
-      }`;
+      const newPath = `/events/${(
+        receivedData.category || ""
+      ).toLowerCase()}/${receivedData._id}`;
       const currentPath = window.location.pathname;
-
       if (currentPath !== newPath) {
         navigate(newPath, {
           state: id,
@@ -207,37 +250,13 @@ function FeaturedEvent() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    receivedData.startDate && extractDateAndTime();
   }, []);
 
-  const [date, setDate] = useState(null);
-  const [time, setTime] = useState(null);
-
-  const extractDateAndTime = () => {
-    const date = new Date(receivedData.startDate);
-
-    const formattedDate = date.toISOString().split("T")[0];
-    const formattedTime = date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-    setDate(formattedDate);
-    setTime(formattedTime);
-  };
-
-  const googleLocation = {
-    lat: receivedData.venue?.googleSearchLat,
-    lng: receivedData.venue?.googleSearchLong,
-  };
-
   const sectionRef = useRef(null);
-  const LocationRef = useRef(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const addToCalendar = () => {
     if (!receivedData.startDate) return;
-
     const eventTitle = encodeURIComponent(receivedData.name || "Event");
     const eventLocation = encodeURIComponent(
       `${receivedData.venue?.city || ""}, ${receivedData.venue?.country || ""}`
@@ -245,7 +264,6 @@ function FeaturedEvent() {
     const eventDetails = encodeURIComponent(
       `Join us for ${receivedData.name}! More details: ${window.location.href}`
     );
-
     const startDate = new Date(receivedData.startDate)
       .toISOString()
       .replace(/-|:|\.\d+/g, "");
@@ -254,478 +272,250 @@ function FeaturedEvent() {
     )
       .toISOString()
       .replace(/-|:|\.\d+/g, "");
-
     const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${eventDetails}&location=${eventLocation}`;
-
     window.open(googleCalendarUrl, "_blank");
-  };
-
-  const formatImageUrl = (url) => {
-    if (!url) return null;
-    return url.replace(/\\/g, "/");
   };
 
   const formatTo12Hour = (time24) => {
     if (!time24) return "";
-
     const [hours, minutes] = time24.split(":");
     const hour = parseInt(hours, 10);
     const minute = minutes;
-
-    if (hour === 0) {
-      return `12:${minute} AM`;
-    } else if (hour < 12) {
-      return `${hour}:${minute} AM`;
-    } else if (hour === 12) {
-      return `12:${minute} PM`;
-    } else {
-      return `${hour - 12}:${minute} PM`;
-    }
+    if (hour === 0) return `12:${minute} AM`;
+    if (hour < 12) return `${hour}:${minute} AM`;
+    if (hour === 12) return `12:${minute} PM`;
+    return `${hour - 12}:${minute} PM`;
   };
 
+  const SectionTitle = ({ children }) => (
+    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 pb-2 border-b-2 border-pink-500 inline-block">
+      {children}
+    </h2>
+  );
+
   return (
-    <div className="">
-      <div className="flex lg:flex-row flex-col gap-4 ">
+    <div className="bg-gray-100 font-sans">
+      <section className="relative text-white pt-20">
         <div
-          className="lg:w-[80%] flex justify-end items-end  h-[300px] md:h-[300px] lg:h-[450px] mt-20 sm:mt-0 relative"
-          style={{
-            backgroundImage: `url(${
-              formatImageUrl(posterImage) ||
-              formatImageUrl(thumbnailImage) ||
-              "assets/staticAssets/fallback-image.jpg"
-            })`,
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <div className="absolute top-4 right-2 bg-white/70 rounded-lg p-2 flex gap-4 block md:block lg:hidden">
-            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900">
-              <FaEye className="relative top-0.5 text-blue-600" />
-              <span>Total {receivedData.visits}</span>
-            </p>
-            <p className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900">
-              <FaEye className="relative top-0.5 text-blue-600" />
-              <span>Daily {receivedData.dailyVisits}</span>
-            </p>
-          </div>
-
-          <div className="flex justify-center gap-5 rounded bg-white/70 lg:w-max md:w-max w-full   p-2 text-black">
-            <p
-              onClick={() => {
-                if (!isLogin) {
-                  toast.error("Please login first to send enquiry!", {
-                    transition: Zoom,
-                    hideProgressBar: true,
-                    autoClose: 2000,
-                  });
-                  return;
-                }
-                if (!organizerEmail) {
-                  toast.error("Organizer email not available.");
-                  return;
-                }
-                if (!enquirySent) {
-                  setEnquiry(!enquiry);
-                }
-              }}
-              className={`flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold  hover:text-[#ff2459] ${
-                enquirySent
-                  ? "text-[#ff2459] cursor-not-allowed"
-                  : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
-              }`}
-            >
-              <IoIosInformationCircleOutline className="text-lg" />
-              {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
-            </p>
-
-            <button
-              onClick={() => {
-                if (!isLogin) {
-                  toast.error("Please login first to Add favorite!", {
-                    transition: Zoom,
-                    hideProgressBar: true,
-                    autoClose: 2000,
-                  });
-                  return;
-                }
-                toggleFavorite(receivedData._id);
-              }}
-              className={`flex gap-1 text-xs lg:text-xs text-[10px] font-bold cursor-pointer hover:text-[#ff2459] ${
-                localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
-              }`}
-            >
-              <FaHeart className="text-lg" />
-              {localIsFavorite ? "Added to Favourites" : "Add To Favourite"}
-            </button>
-
-            <p
-              onClick={addToCalendar}
-              className="flex gap-1 md:text-xs lg:text-xs text-[10px] font-bold text-gray-900 cursor-pointer hover:text-[#ff2459]"
-            >
-              <MdDateRange className="text-lg " />
-              Add to My Calendar
-            </p>
-
-            <div className="hidden md:hidden lg:flex gap-4">
-              <p className="flex gap-1 text-xs font-bold text-gray-900 ">
-                <FaEye className="relative top-0.5 text-blue-600" />
-                <span>Total {receivedData.visits}</span>
-              </p>
-              <p className="flex gap-1 text-xs font-bold text-gray-900 ">
-                <FaEye className="relative top-0.5 text-blue-600" />
-                <span>Daily {receivedData.dailyVisits}</span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl lg:m-0 m-2 lg:p-4 p-2  shadow-lg lg:w-[20%] ">
-          <h1 className="font-bold flex justify-start break-words text-xl p-2 mt-0 sm:mt-4 ">
-            {" "}
-            {receivedData.name}
-          </h1>
-          <div className="flex gap-2 pb-3 pl-4 justify-start mt-0 sm:mt-4 ">
-            <div className="relative flex flex-col space-y-4 top-0 lg:text-2xl text-gray-800 font-semibold">
-              <PiBookmarkThin />
-              <CiCalendarDate />
-              <CiLocationOn
-                onClick={() => {
-                  LocationRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest",
-                  });
-                }}
+          className="absolute inset-0 bg-cover bg-center filter blur-lg scale-110"
+          style={{ backgroundImage: `url(${posterImage || thumbnailImage})` }}
+        ></div>
+        <div className="absolute inset-0 bg-black/70"></div>
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+            <div className="w-full md:w-1/4 lg:w-1/5 flex-shrink-0">
+              <img
+                src={posterImage}
+                alt={receivedData.name || "Event Poster"}
+                className="w-full h-auto object-cover rounded-xl shadow-2xl max-h-[300px] md:max-h-[350px] aspect-[2/3]"
               />
             </div>
-            <div className="text-gray-600 md:text-base  text-xs font-medium space-y-4">
-              <p>{receivedData.category}</p>
-              <p>{receivedData?.startDate ? updateStartDateTime : "--"}</p>
-              <p></p>
-              <p
-                onClick={() => {
-                  LocationRef.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest",
-                  });
-                }}
-              >
-                {receivedData.venue?.city && receivedData.venue?.country
-                  ? `${receivedData.venue.city} - ${receivedData.venue.country}`
-                  : receivedData.venue?.name || "Not Available"}
-              </p>
-            </div>
-          </div>
-          <hr />
-          <div className="pt-2 flex justify-between gap-2 lg:pt-3 md:p-2 px-3 mt-0 sm:mt-6">
-            {receivedData?.ticketFormats?.length > 0 ? (
-              <p className="lg:text-xl text-base font-bold mt-2">
-                Price:{" "}
-                <TicketPrice ticketFormatId={receivedData.ticketFormats[0]} />
-              </p>
-            ) : (
-              <p className="lg:text-xl text-base font-bold mt-2">
-                Price: Not Available
-              </p>
-            )}
-            <button
-              onClick={() => {
-                setModal(true);
-                sectionRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "nearest",
-                });
-              }}
-              className="relative lg:text-lg text-xs font-medium rounded-md p-2 px-4 bg-[#ff2459] text-white transition-all duration-300 
-            before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-pink-700 before:transition-all before:duration-300 
-            hover:before:w-full hover:text-back hover:before:opacity-100 before:z-0 "
-            >
-              <p className="relative">Get Ticket</p>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="lg:flex p-3 mt-5 flex lg:flex-row md:flex-row flex-col  gap-7">
-        <div className="lg:w-[80%] md:w-[90%]  ">
-          {receivedData ? (
-            <EventHeading
-              heading={receivedData.name}
-              by={
-                receivedData?.organizer?.name ||
-                receivedData?.organizer?.username ||
-                receivedData?.name ||
-                "-"
-              }
-              category={receivedData.category}
-              startDate={receivedData.startDate}
-              endDate={receivedData.endDate}
-            />
-          ) : (
-            <EventHeading heading={"No Event data"} by={"-"} startDate={"-"} />
-          )}
-          <div className="border-2 m-1 mt-4 sm:mt-6 rounded-lg">
-            <div ref={sectionRef} className="p-2 pb-3">
-              <p className="font-semibold text-base lg:text-3xl px-3">
-                Get Tickets Now
-              </p>
-              <div className=" m-1 mb-2 w-36 sm:w-60 rounded-lg h-0.5 bg-[#ff2459] "></div>
-              <p className="font-semibold text-lg  ml-3 mb-6">
-                {receivedData?.startDate ? updateStartDateTime : "-"}
-              </p>
-              <hr />
-              <div className="space-y-4 ">
-                {receivedData?.ticketFormats?.length > 0 ? (
-                  <div
-                    onClick={() => {
-                      setForm(!form);
-                      handleGetTicketClick();
-                    }}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <GetTicket
-                      start={updateStartDateTime}
-                      eTime={updateEndDateTime}
-                    />
-                  </div>
-                ) : (
-                  <div className="p-4 text-center text-gray-500 select-none">
-                    No tickets available for this event.
-                  </div>
-                )}
+            <div className="flex flex-col gap-3 w-full md:w-3/4 lg:w-4/5">
+              <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight">
+                {receivedData.name || "Event Title"}
+              </h1>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-lg font-medium text-gray-200">
+                <p className="flex items-center gap-2">
+                  <PiBookmarkThin className="text-pink-400" />
+                  <span>{receivedData.category || "Category"}</span>
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-gray-300 mt-2">
+                <p className="flex items-center gap-2 text-sm">
+                  <FaEye className="text-blue-400" />
+                  <span>Total Views: {receivedData.visits || 0}</span>
+                </p>
+                <p className="flex items-center gap-2 text-sm">
+                  <FaEye className="text-blue-400" />
+                  <span>Today's Views: {receivedData.dailyVisits || 0}</span>
+                </p>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-4 items-center">
+                <button
+                  onClick={() => toggleFavorite(receivedData._id)}
+                  className={`flex items-center gap-2 font-semibold py-2 px-5 rounded-lg transition-colors duration-300 text-sm ${localIsFavorite
+                      ? "bg-pink-100 text-[#ff2459]"
+                      : "bg-gray-700/50 hover:bg-gray-600/50"
+                    }`}
+                >
+                  <FaHeart />
+                  <span>
+                    {localIsFavorite
+                      ? "Added to Favourites"
+                      : "Add to Favourite"}
+                  </span>
+                </button>
+                {/* --- SHARE BUTTON IN HERO --- */}
+                <button
+                  onClick={handleShare}
+                  className="flex items-center gap-2 font-semibold py-2 px-5 rounded-lg bg-gray-700/50 hover:bg-gray-600/50 transition-colors duration-300 text-sm"
+                >
+                  <IoShareSocialOutline />
+                  <span>Share</span>
+                </button>
               </div>
             </div>
-            <div className="w-full justify-start items-start gap-2 p-4">
-              {receivedData.isRepetitive === true && (
-                <div className="bg-white p-4 rounded-xl shadow border border-gray-200 overflow-x-auto">
-                  <div className="flex items-center gap-2 mb-3">
-                    <MdOutlineEventRepeat className="text-3xl text-pink-600" />
-                    <h1 className="text-2xl font-bold text-gray-800">
-                      Repeating Events
-                    </h1>
-                  </div>
-                  <hr className="mb-4" />
+          </div>
+        </div>
+      </section>
 
-                  <div className="text-md font-semibold text-gray-700 mb-2">
-                    Repeats on: {receivedData.repetitiveType}
-                 
-                  {receivedData.repetitiveType === "Daily" &&
-                  receivedData.repeatExcept &&
-                    receivedData.repeatExcept.length > 0 && (
-                      <h1 className="text-2xl font-bold text-red-700">
-                        Except : <span className="text-red-700"> {receivedData.repeatExcept.join(",")} </span>
-                      </h1>
-                    )}
- </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex flex-col lg:flex-row gap-10">
+          <div className="lg:w-2/3 flex flex-col gap-10">
+            {receivedData.isRepetitive === true && (
+              <div className="bg-white p-6 rounded-xl shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <MdOutlineEventRepeat className="text-3xl text-pink-600" />
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Repeating Event Details
+                  </h2>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-md font-semibold text-gray-700">
+                    Repeats: {receivedData.repetitiveType}
+                  </p>
+                  {receivedData.repetitiveType === "Daily" && receivedData.repeatExcept?.length > 0 && (
+                    <p className="text-md font-semibold text-red-600">
+                      Except on: {receivedData.repeatExcept.join(", ")}
+                    </p>
+                  )}
                   {receivedData.repetitiveType === "Monthly" && (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {receivedData.repeatDates
-                        .sort((a, b) => parseInt(a) - parseInt(b)) // Sort dates numerically
-                        .map((date, idx) => (
-                          <div
-                            key={idx}
-                            className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
-                          >
-                            {date}
-                          </div>
-                        ))}
+                    <div className="flex flex-wrap gap-2">
+                      {receivedData.repeatDates.sort((a, b) => parseInt(a) - parseInt(b)).map((date, idx) => (
+                        <div key={idx} className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow">
+                          {date}
+                        </div>
+                      ))}
                     </div>
                   )}
-
                   {receivedData.repetitiveType === "Weekly" && (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {receivedData.repeatDays
-                        .sort((a, b) => {
-                          // Define the order of days starting from Monday
-                          const dayOrder = {
-                            Monday: 1,
-                            Tuesday: 2,
-                            Wednesday: 3,
-                            Thursday: 4,
-                            Friday: 5,
-                            Saturday: 6,
-                            Sunday: 7,
-                          };
-                          return dayOrder[a] - dayOrder[b];
-                        })
-                        .map((day, idx) => (
-                          <div
-                            key={idx}
-                            className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow"
-                          >
-                            {day}
-                          </div>
-                        ))}
+                    <div className="flex flex-wrap gap-2">
+                      {receivedData.repeatDays.sort((a, b) => {
+                        const dayOrder = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 7 };
+                        return dayOrder[a] - dayOrder[b];
+                      }).map((day, idx) => (
+                        <div key={idx} className="bg-[#ff2459] text-white px-3 py-1 rounded-full text-sm font-medium shadow">
+                          {day}
+                        </div>
+                      ))}
                     </div>
                   )}
-
-                  <div className="text-lg font-semibold">
-                    <span className="font-medium text-gray-800">Time:</span>{" "}
-                    {formatTo12Hour(receivedData.repeatStartTime)} -{" "}
-                    {formatTo12Hour(receivedData.repeatEndTime)}
+                  <div className="text-lg font-semibold text-gray-800">
+                    Time: {formatTo12Hour(receivedData.repeatStartTime)} - {formatTo12Hour(receivedData.repeatEndTime)}
                   </div>
                 </div>
-              )}
-
-              <div className="bg-white p-4 mt-6 rounded-xl shadow-lg border border-gray-200">
-                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
-                  Event Description
-                </h2>
-                <hr />
-                <p className="text-lg text-gray-600 mt-2">
-                  {receivedData.description || "Description not available."}
-                </p>
               </div>
-
-              <div className="p-3 px-0 sm:px-6 mt-4 rounded-xl">
-                <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
-                  Event Tags
-                </h2>
-                {Array.isArray(receivedData?.eventTags) &&
-                receivedData.eventTags.filter((tag) => tag && tag.trim() !== "")
-                  .length > 0 ? (
-                  <div className="flex flex-wrap gap-3 mt-2">
-                    {receivedData.eventTags
-                      .filter((tag) => tag && tag.trim() !== "")
-                      .map((tag, index) => (
-                        <Button
-                          key={index}
-                          text={tag}
-                          variant={"primary"}
-                          textSize={"text-sm"}
-                          rounded={"rounded-2xl"}
-                        />
-                      ))}
-                  </div>
-                ) : (
-                  <p className="text-lg text-gray-600 mt-2">
-                    No Tags available
-                  </p>
-                )}
-              </div>
-
-              <div className="bg-white p-4 mt-4 rounded-xl shadow-lg border border-gray-200">
-                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-3">
-                  Event Performers
-                </h2>
-                <hr />
-                <p className="text-lg text-gray-600 mt-2">
-                  <PerformersSection performerIds={receivedData.performers} />
-                </p>
-              </div>
-
-              <div className="p-4 px-0 sm:px-6 mt-3 rounded-xl">
-                <h2 className="text-lg sm:text-3xl font-semibold text-gray-900 mb-3">
-                  Events Venue
-                </h2>
-                {VenuesData && VenuesData.length > 0 ? (
-                  <VenueData data={VenuesData} />
-                ) : (
-                  <p className="text-gray-500 lg:ml-5">Not Available.</p>
-                )}
-              </div>
-
-              <div ref={LocationRef} className="px-0 sm:px-6 mb-3 mt-4">
-                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-2">
-                  Location
-                </h1>
-                <MapContainer className="p-4 ml-2" location={googleLocation} />
-              </div>
-
-              <div className="px-0 sm:px-6 mb-3">
-                <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-4">
-                  Event Gallery
-                </h1>
-                {Array.isArray(receivedData?.media?.images) &&
-                receivedData.media.images.length > 0 ? (
-                  <EventGallery data={receivedData.media.images} />
-                ) : (
-                  <p className="text-lg text-gray-600 mt-2">
-                    No images available
-                  </p>
-                )}
-              </div>
-
-              <div className="px-0 sm:px-6 mb-0 lg:mt-8 sm:mt-4">
-                {Array.isArray(receivedData.youtubeVideoUrls) &&
-                receivedData.youtubeVideoUrls.some(
-                  (url) => url && url.trim() !== ""
-                ) ? (
-                  <>
-                    <h1 className="text-lg sm:text-3xl text-gray-900 font-semibold pt-10 pt-2 mb-0">
-                      Watch Videos
-                    </h1>
-                    <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
-                  </>
-                ) : (
-                  <p className="text-lg text-gray-600 mt-2"></p>
-                )}
+            )}
+            <div className="bg-white p-6 rounded-xl shadow-lg">
+              <SectionTitle>About The Event</SectionTitle>
+              <p className="text-lg text-gray-600 mt-2 leading-relaxed">
+                {receivedData.description || "Description not available."}
+              </p>
+            </div>
+            <div className="bg-white p-6 rounded-xl shadow-lg">
+              <SectionTitle>Event Performers</SectionTitle>
+              <div className="mt-2">
+                <PerformersSection performerIds={receivedData.performers} />
               </div>
             </div>
+            <div className="bg-white p-6 rounded-xl shadow-lg">
+              <SectionTitle>Event Gallery</SectionTitle>
+              {Array.isArray(receivedData?.media?.images) && receivedData.media.images.length > 0 ? (
+                <EventGallery data={receivedData.media.images} />
+              ) : (
+                <p className="text-lg text-gray-600 mt-2">No images available.</p>
+              )}
+            </div>
+            {Array.isArray(receivedData.youtubeVideoUrls) && receivedData.youtubeVideoUrls.some(url => url && url.trim() !== "") && (
+              <div className="bg-white p-6 rounded-xl shadow-lg">
+                <SectionTitle>Watch Videos</SectionTitle>
+                <WatchTrailer youtubeVideoUrl={youtubeVideoUrl} />
+              </div>
+            )}
+            <div className="bg-white p-6 rounded-xl shadow-lg">
+              <SectionTitle>Tags</SectionTitle>
+              {Array.isArray(receivedData?.eventTags) && receivedData.eventTags.map(tag => typeof tag === 'object' && tag !== null ? tag.name : tag).filter(tagName => tagName && tagName.trim() !== "").length > 0 ? (
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {receivedData.eventTags.map(tag => typeof tag === 'object' && tag !== null ? tag.name : tag).filter(tagName => tagName && tagName.trim() !== "").map((tagName, index) => (
+                    <Button key={index} text={tagName} variant={"primary"} textSize={"text-sm"} rounded={"rounded-full"} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-lg text-gray-600 mt-2">No Tags available.</p>
+              )}
+            </div>
           </div>
-        </div>
-
-        <div className="lg:flex-1 md:w-full w-full flex flex-col gap-3">
-          <div className="p-4 flex flex-col items-center w-full border rounded-xl">
-            {/* Title */}
-            <h1 className="text-xl font-semibold text-left px-6 pb-3 lg:pb-5">
-              Organizer
-            </h1>
-
-            {/* Organizer Image */}
-            <Collapsible
-              trigger={
-                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
-                  View Organizer Details
-                </div>
-              }
-              triggerWhenOpen={
-                <div className="text-center p-1 w-full font-semibold text-md mt-2 mb-2 bg-[#ff2459]  text-white hover:bg-red-600 rounded">
-                  Hide Organizer Details
-                </div>
-              }
-              className=""
-            >
-              {" "}
-              <div className="flex flex-col items-center w-full">
-                <div className="h-20 w-20 lg:h-32 lg:w-32 md:w-20 md:h-20 rounded-full bg-gray-500 flex items-center justify-center text-white text-lg font-semibold">
-                  {receivedData.organizer?.username?.charAt(0) || ""}
-                </div>
-
-                {/* Organizer Name */}
-                <p className="font-semibold lg:text-base text-sm pt-2 text-center">
-                  {receivedData.organizer?.name ||
-                    receivedData.organizer?.username ||
-                    "Organizer Name"}
-                </p>
-
-                {/* Organizer Info */}
-                <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-2 gap-2 pt-4 text-center">
-                  <p className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1">
-                    <PiBuildingApartmentFill className="text-lg" />
-                    {receivedData.venue?.city || "-"},{" "}
-                    {receivedData.venue?.country || "-"}
+          <div className="lg:w-1/3">
+            <div className="sticky top-24 flex flex-col gap-8">
+              <div ref={sectionRef} className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                  Tickets & Event Info
+                </h3>
+                <div className="space-y-3 text-gray-700 font-medium mb-5">
+                  <p className="flex items-start gap-3">
+                    <CiCalendarDate className="text-pink-500 text-xl mt-1 flex-shrink-0" />
+                    <span>{receivedData?.startDate ? updateStartDateTime : "--"}</span>
                   </p>
-                  <p
-                    className="flex items-center justify-center lg:text-xs md:text-xs text-sm gap-1 cursor-pointer"
-                    onClick={togglePhone}
-                  >
-                    <FaPhoneAlt className="text-lg" />
-                    {hasPhoneNumber
-                      ? showNumber
-                        ? phoneNumber
-                        : "View Contact"
-                      : "Not available"}
-                  </p>
-                  <p className="flex items-center gap-2 text-sm md:text-xs lg:text-xs whitespace-nowrap">
-                    <MdOutlineMailOutline className="text-base min-w-[1rem]" />
+                  <p className="flex items-start gap-3">
+                    <CiLocationOn className="text-pink-500 text-xl mt-1 flex-shrink-0" />
                     <span>
-                      {receivedData.organizer?.email || "Not available"}
+                      {receivedData.venue?.city && receivedData.venue?.country
+                        ? `${receivedData.venue.city}, ${receivedData.venue.country}`
+                        : receivedData.venue?.name || "Online"}
                     </span>
                   </p>
                 </div>
-
-                {/* Contact Organizer Button */}
+                <hr className="my-4" />
+                <div className="mt-4">
+                  {receivedData?.ticketFormats?.length > 0 ? (
+                    <div
+                      onClick={() => {
+                        setForm(!form);
+                        handleGetTicketClick();
+                      }}
+                      style={{ cursor: "pointer" }}
+                      className="block"
+                    >
+                      <GetTicket
+                        start={updateStartDateTime}
+                        eTime={updateEndDateTime}
+                      />
+                    </div>
+                  ) : (
+                    <div className="p-4 text-center text-gray-500 select-none">
+                      No tickets available for this event.
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="bg-white p-6 rounded-xl shadow-lg text-center">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">
+                  Organizer
+                </h3>
+                <div className="h-16 w-16 rounded-full bg-pink-500 flex items-center justify-center text-white text-2xl font-bold mx-auto">
+                  {receivedData.organizer?.username?.charAt(0).toUpperCase() || "O"}
+                </div>
+                <p className="font-semibold text-lg pt-3">
+                  {receivedData.organizer?.name || receivedData.organizer?.username || "Organizer Name"}
+                </p>
+                <p className="flex items-center justify-center text-sm text-gray-500 gap-1 mt-1">
+                  <PiBuildingApartmentFill />
+                  {receivedData.venue?.city || "-"},{" "}
+                  {receivedData.venue?.country || "-"}
+                </p>
+                <hr className="my-4" />
+                <div className="space-y-3 text-left">
+                  <p className="flex items-center gap-3 text-sm text-gray-700">
+                    <MdOutlineMailOutline className="text-lg text-pink-500" />
+                    <span className="truncate">{receivedData.organizer?.email || "Not available"}</span>
+                  </p>
+                  <p className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer" onClick={togglePhone}>
+                    <FaPhoneAlt className="text-lg text-pink-500" />
+                    <span>
+                      {hasPhoneNumber ? (showNumber ? phoneNumber : "View Contact") : "Not available"}
+                    </span>
+                  </p>
+                </div>
                 <button
                   onClick={() => {
                     if (!organizerEmail) {
@@ -734,89 +524,79 @@ function FeaturedEvent() {
                     }
                     setIsFormOpen(true);
                   }}
-                  className="flex shadow p-2 gap-1 w-full mt-3 rounded-md justify-center items-center"
+                  className="flex items-center justify-center shadow p-2 gap-2 w-full mt-4 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
                 >
-                  <IoIosContact className="text-xl" />
+                  <IoIosContact className="text-xl text-pink-500" />
                   Contact Organizer
                 </button>
               </div>
-            </Collapsible>
-          </div>
-
-          <div className="border-2 rounded-xl p-2 flex flex-col items-center">
-            <button
-              onClick={() => {
-                LocationRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "nearest",
-                });
-              }}
-              className="font-semibold"
-            >
-              Google Location
-            </button>
-            <p className="flex font-semibold ">
-              {/* <CiLocationOn className="relative top-1 text-pink-500" />  {receivedData.venue.googleSearchLocation ? receivedData.venue.googleSearchLocation :""} */}
-            </p>
-            {/* <p className="text-gray-400 ">Goa, india</p> */}
-          </div>
-          <div className="flex md:flex-row flex-col gap-1 border-2 rounded-xl p-2  items-center">
-            <p className="text-gray-400 ml-2">Page visited By </p>
-            <p className="font-semibold ml-2">
-              {receivedData.dailyVisits} Times
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="px-3 sm:px-10 py-2 ">
-        {/* <Speakers />
-        <Dj /> */}
-        {/* <RatingReview /> */}
-      </div>
-      {isFormOpen && (
-        <div className="w-[60%]">
-          <div className="fixed w-full inset-0 flex flex-col bg-white/50 items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-sm">
-            <div className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full]">
-              <OrganiserContact
-                isFormOpen={isFormOpen}
-                setIsFormOpen={setIsFormOpen}
-                OrganizerName={name}
-                OrganizerEmail={organizerEmail}
-              />
+              <div className="bg-white p-6 rounded-xl shadow-lg">
+                <div className="space-y-3">
+                  <button
+                    onClick={() => {
+                      if (!isLogin) {
+                        toast.error("Please login first to send enquiry!", { transition: Zoom, hideProgressBar: true, autoClose: 2000 });
+                        return;
+                      }
+                      if (!organizerEmail) {
+                        toast.error("Organizer email not available.");
+                        return;
+                      }
+                      if (!enquirySent) {
+                        setEnquiry(!enquiry);
+                      }
+                    }}
+                    className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors duration-200 ${enquirySent ? "text-pink-600 bg-pink-50 cursor-not-allowed" : "text-gray-700 hover:bg-gray-100"}`}>
+                    <IoIosInformationCircleOutline className="text-xl" />
+                    <span className="font-medium">{enquirySent ? "Enquiry Sent" : "Send Enquiry"}</span>
+                  </button>
+                  <button onClick={addToCalendar} className="w-full flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+                    <MdDateRange className="text-xl" />
+                    <span className="font-medium">Add to My Calendar</span>
+                  </button>
+                  {/* --- SHARE BUTTON IN STICKY COLUMN --- */}
+                  <button onClick={handleShare} className="w-full flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+                    <IoShareSocialOutline className="text-xl" />
+                    <span className="font-medium">Share Event</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+      {isFormOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white p-2 rounded-lg shadow-lg w-full max-w-lg">
+            <OrganiserContact
+              isFormOpen={isFormOpen}
+              setIsFormOpen={setIsFormOpen}
+              OrganizerName={name}
+              OrganizerEmail={organizerEmail}
+            />
+          </div>
+        </div>
       )}
-
       {login && (
-        <div className="fixed w-full lg:h-[120vh] pt-[40px] p-10  h-[100vh]  inset-0 flex flex-col items-center justify-center z-70 bg-white/30 overflow-x-hidden">
-          <div className="bg-white p-6 rounded-lg shadow-lg  overflow-y-scroll scrollbar-hide  lg:w-[full] w-[max-content]">
-            <div className="flex justify-end lg:p-0 mt-3 relative lg:bottom-3 -bottom-8">
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-sm w-full">
+            <div className="absolute top-2 right-2">
               <Button
                 text={"X"}
                 textSize={"text-xs"}
                 variant={"primary"}
-                rounded={"rounded-xl"}
+                rounded={"rounded-full"}
                 onClick={() => {
                   setForm(true);
                   setLogin(false);
                 }}
               />
             </div>
-
-            {/* Render components based on state */}
             {account ? <LoginModal /> : guest ? <Guest /> : <RegisterModal />}
-
-            <div className="flex gap-2 justify-center relative top-2">
-              {/* Toggle between states */}
+            <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4 text-center">
               {!guest && (
-                <p
-                  className="cursor-pointer break-words lg:text-base text-sm"
-                  onClick={() => setAccount(!account)}
-                >
-                  {account
-                    ? "Don't have an account?"
-                    : "Already have an account/Login Now"}
+                <p className="cursor-pointer text-sm" onClick={() => setAccount(!account)}>
+                  {account ? "Don't have an account?" : "Already have an account?"}
                 </p>
               )}
               <p
@@ -831,11 +611,7 @@ function FeaturedEvent() {
                   }
                 }}
               >
-                {account
-                  ? "Register here"
-                  : guest
-                  ? "Back to Register/Login"
-                  : "Checkout as Guest"}
+                {account ? "Register here" : guest ? "Back to Login" : "Checkout as Guest"}
               </p>
             </div>
           </div>
@@ -848,6 +624,8 @@ function FeaturedEvent() {
           name={name}
           email={organizerEmail}
           enquiry={enquiry}
+          targetId={receivedData?._id}
+          modelName="Event"
         />
       )}
     </div>

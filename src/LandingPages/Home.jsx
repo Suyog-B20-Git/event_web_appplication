@@ -33,7 +33,7 @@ function Home() {
 
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    dispatch(getEventData(setLoading)); 
+    dispatch(getEventData(setLoading));
     dispatch(getUpcomingEventData(setLoading));
     dispatch(getFeaturedEventData(setLoading));
     dispatch(getOrganizer(setLoading));
@@ -42,27 +42,27 @@ function Home() {
 
   const heading = [];
   const store = useSelector((state) => state.eventReducer) || { eventData: [] };
-  const data = store.eventData;
+  const data = Array.isArray(store.eventData) ? store.eventData : [];
 
   const store1 = useSelector((state) => state.upcomingEventReducer) || {
     upcomingEventData: [],
   };
-  const data1 = store1.upcomingEventData;
+  const data1 = Array.isArray(store1.upcomingEventData) ? store1.upcomingEventData : [];
 
   const store2 = useSelector((state) => state.featuredEventReducer) || {
     featuredEventData: [],
   };
-  const data2 = store2.featuredEventData;
-  
+  const data2 = Array.isArray(store2.featuredEventData) ? store2.featuredEventData : [];
+
   const store3 = useSelector((state) => state.getOrganizerReducer) || {
     organizerData: [],
   };
-  const data3 = store3.organizerData;
+  const data3 = Array.isArray(store3.organizerData) ? store3.organizerData : [];
 
   const store4 = useSelector((state) => state.getVenueReducer) || {
     venueData: [],
   };
-  const data4 = store4.venueData;
+  const data4 = Array.isArray(store4.venueData) ? store4.venueData : [];
   const data5 = [...new Set(data4)];
 
   // Create initial slides from your dynamic data
@@ -96,7 +96,7 @@ function Home() {
 
   const totalSlides = slides.length;
   const [isAuth, setIsAuth] = useState("");
-  
+
   useEffect(() => {
     setIsAuth(localStorage.getItem("isLogin"));
   }, []);
@@ -109,20 +109,20 @@ function Home() {
     const interval = setInterval(() => {
       setSlides(prevSlides => {
         const currentSlideData = prevSlides[currentSlide];
-        
+
         // Check if this slide (by eventId) already exists after the current position
-        const existsLater = prevSlides.slice(currentSlide + 1).some(slide => 
+        const existsLater = prevSlides.slice(currentSlide + 1).some(slide =>
           slide.eventId === currentSlideData.eventId
         );
-        
+
         // Only add to queue if it doesn't exist later
         if (!existsLater) {
           return [...prevSlides, { ...currentSlideData, id: Date.now() + Math.random() }];
         }
-        
+
         return prevSlides;
       });
-      
+
       setCurrentSlide((prev) => prev + 1);
     }, 2000);
 
@@ -154,22 +154,23 @@ function Home() {
   }
 
   return (
-    <div className="flex flex-col lg:gap-0 gap-0 overflow-x-hidden lg:pt-0 md:pt-0 pt-[65px]">
-      <div className="bg-gray-900 flex items-center justify-center">
-        <div className="w-full h-[250px] flex items-center justify-center bg-gray-900 p-1">
+    // Changed pt-[65px] to pt-[80px] to match Header height
+    <div className="flex flex-col lg:gap-0 gap-0 overflow-x-hidden lg:pt-0 md:pt-0 pt-[80px]">
+      <div className="flex items-center justify-center">
+        <div className="w-full h-[250px] flex items-center justify-center bg-white p-1">
           <div className="relative w-[400px] sm:w-[250px] h-full flex items-center lg:ml-[-8%]">
             <div
               className="flex transition-transform duration-100 ease-in"
               style={{
-                transform: `translateX(-${currentSlide * 400}px)`, 
+                transform: `translateX(-${currentSlide * 400}px)`,
                 transition: isTransitioning ? "transform 0.5s linear" : "none",
               }}
             >
               {slides.map((slide, index) => (
                 <div
                   key={`slide-${slide.id}-${index}`}
-                  className=" h-full flex items-center justify-center px-3 w-[400px]  lg:px-0 "
-                  
+                  className=" h-full flex items-center justify-center px-3 w-[400px]  lg:px-0 "
+
                 >
                   <div
                     onClick={() => {
@@ -177,12 +178,11 @@ function Home() {
                         state: slide.eventId
                       });
                     }}
-                    className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg transition-all duration-5000 cursor-pointer border border-pink-200 sm:mx-4 sm:ml-[10px] ${
-                      index === currentSlide ? "border-2 border-pink-300 opacity-100 scale-115" : "opacity-50 scale-80"
-                    }`}
+                    className={`relative w-full h-full rounded-2xl overflow-hidden shadow-lg transition-all duration-5000 cursor-pointer border border-black sm:mx-4 sm:ml-[10px] ${index === currentSlide ? "border-2 border-black opacity-100 scale-115" : "opacity-50 scale-80"
+                      }`}
                   >
                     <h4 className="absolute top-4 left-4 text-white text-lg font-bold bg-[#ff4259] rounded-full px-2 z-10">
-                     <span className="justify-center items-center">  {slide.category} </span>
+                      <span className="justify-center items-center">  {slide.category} </span>
                     </h4>
                     <img
                       src={slide.bgImage}
@@ -215,23 +215,23 @@ function Home() {
       {data1.length > 0 ? (
         <Cards data={data1} heading={"UPCOMING EVENTS"} />
       ) : (
-       <p></p>
+        <p></p>
       )}
       {data2.length > 0 ? (
         <Cards data={data2} heading={"FEATURED EVENTS"} />
       ) : (
-       <p></p>
+        <p></p>
       )}
       {data3.length >= 0 ? (
-        <CardData data={data3} heading={"ORGANIZERS"} navigation={"/organizers"}/>
+        <CardData data={data3} heading={"ORGANIZERS"} navigation={"/organizers"} />
       ) : (
-       <p></p>
+        <p></p>
       )}
       {data5.length > 0 ? (
-        <CardData data={data5} heading={"VENUES"} navigation={"/venues"}/>
+        <CardData data={data5} heading={"VENUES"} navigation={"/venues"} />
       ) : (
-       <p></p>
-      )} 
+        <p></p>
+      )}
     </div>
   );
 }
