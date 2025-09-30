@@ -1,56 +1,92 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowAltCircleRight } from "react-icons/fa";
 import { IoIosTimer } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
+import { getRecentlyViewData } from "../../redux/actions/master/Events/RecentlyView";
+import Loading from "../Loading";
+import { useNavigate } from "react-router-dom";
 
 function RecentView() {
-  const card1 = [
-    { img: "fI1.png", desc: "MUSIC CONCERT AT UK| ALL GABHD..." },
-    { img: "fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
-    { img: "fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
-    { img: "fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
-    { img: "fI3.png", desc: "GIRLS PARTY AT MSG Tower..." },
-    { img: "fI2.png", desc: "LIVE DANCE EVENT|ALL BIG CELEBS.." },
-  ];
-  return (
-    <div
-      className="flex flex-col p-2 lg:pt-5 mb-2 mt-4"
-      style={{ fontFamily: "Nunito" }}
-    >
-      <div className="flex justify-between items-center">
-        <div className="flex gap-4 items-center lg:pl-[105px] md:pl-4">
-          <IoIosTimer className="text-3xl" />
-          <div>
-            <p className="lg:text-2xl text-lg font-bold">RECENTLY VIEWED</p>
-            <p>Pick up where you left off</p>
-          </div>
-        </div>
-        <div className="flex gap-2 relative lg:right-32">
-          Swipe
-          <FaArrowAltCircleRight size={20} />
-        </div>
-      </div>
-      {/* <div className="flex gap-3 p-3 justify-center items-center"> */}
-      <div className="flex gap-5 lg:ml-[100px] overflow-x-auto p-2 scrollbar-hide max-w-7xl">
-        {card1.map((item, index) => {
-          return (
-            <div
-              key={index}
-              className="flex-none shadow-lg p-2 rounded-lg lg:w-[250px] w-56"
-            >
-              <img
-                src={item.img}
-                className="h-24 lg:h-32 md:h-32 w-full lg:pb-0   rounded-lg"
-                alt=""
-              />
-              <p className="font-semibold text-gray-700 lg:text-sm text-xs  pt-3  lg:break-words">
-                {item.desc}
-              </p>
+  const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(false);
+  const store = useSelector((state) => state.getRecentlyViewReducer) || {
+    recentEventData: [],
+  };
+  useEffect(() => {
+    dispatch(getRecentlyViewData(setLoading));
+  }, [dispatch]);
+
+  const data = store.recentEventData;
+
+  const navigate = useNavigate();
+  if (loading) {
+    return <Loading />;
+  }
+return (
+  <div className="flex justify-center items-center overflow-hidden">
+    <div className="lg:p-12 lg:pt-10 pt-5 p-5 w-full max-w-[1320px]">
+      {data.length > 0 && (
+        <>
+          {/* Heading */}
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex gap-2 items-center">
+              <IoIosTimer className="text-2xl" />
+              <div>
+                <p className="font-bold font-sans lg:text-2xl">RECENTLY VIEWED</p>
+                <p className="text-sm text-gray-600">Pick up where you left off</p>
+              </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+
+          {/* Responsive scroll on mobile, wrap on large screen */}
+          <div className="lg:flex lg:flex-wrap lg:gap-6 hidden">
+            {data.slice(0, 5).map((item, index) => (
+              <div
+                key={index}
+                className="cursor-pointer shadow-lg p-2 rounded-lg w-56"
+                onClick={() => navigate("/featuredEvent", { state: item._id })}
+              >
+                <img
+                  src={item.media.thumbnailImage || item.media.posterImage ||  "assets/staticAssets/fallback-image.jpg"}
+                  className="h-24 lg:h-32 w-full rounded-lg object-cover"
+                  alt=""
+                />
+                <p className="font-semibold text-gray-700 text-sm pt-3 break-words">
+                  {item.name}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Horizontal scroll for mobile */}
+          <div className="lg:hidden overflow-x-auto w-full">
+            <div className="flex flex-nowrap gap-4 w-max px-1">
+              {data.slice(0, 5).map((item, index) => (
+                <div
+                  key={index}
+                  className="flex-none cursor-pointer shadow-lg p-2 rounded-lg w-48 min-w-[192px]"
+                  onClick={() => navigate("/featuredEvent", { state: item._id })}
+                >
+                  <img
+                    src={item.media.thumbnailImage || item.media.posterImage || "assets/staticAssets/fallback-image.jpg"}
+                    className="h-24 w-full rounded-lg object-cover"
+                    alt=""
+                  />
+                  <p className="font-semibold text-gray-700 text-sm pt-3 break-words">
+                    {item.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </div>
-  );
+  </div>
+);
+
+
 }
 
 export default RecentView;

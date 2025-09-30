@@ -2,8 +2,9 @@ const initialState = {
   data: [],
   total: 1,
   params: {},
-  allData: []
-}
+  allData: [],
+  organizer: [],
+};
 
 //   const typeOfLiftMasterData = (state = initialState, action) => {
 //     switch (action.type) {
@@ -24,14 +25,13 @@ const initialState = {
 //     }
 // }
 
-const organizerReducer = (state = initialState,action) => {
+const organizerReducer = (state = initialState, action) => {
   switch (action.type) {
     case "CREATE_ORGANIZER":
-      return {...state,organizer: action.payload};
+      return { ...state, organizer: action.payload };
     default:
       return state;
   }
 };
 
-
-export default organizerReducer
+export default organizerReducer;

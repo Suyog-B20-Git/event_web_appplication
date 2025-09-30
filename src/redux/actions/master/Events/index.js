@@ -52,85 +52,20 @@ export const updateLiftType = (data, props, setisLoader) => {
   };
 };
 
-// export const getEventData = () => {
-//   return (dispatch) => {
-//     axiosInstance
-//       .get("http://localhost:5000/api/event")
-//       .then((response) => {
-//         if (!response.data.status) {
-//           toast.error(response.data.message, {
-//             transition: Zoom,
-//             hideProgressBar: true,
-//             autoClose: 2000,
-//           });
-//         } else {
-//           toast.success(response.data.message, {
-//             transition: Zoom,
-//             hideProgressBar: true,
-//             autoClose: 2000,
-//           });
-//           dispatch({
-//             type: "GET_EVENT",
-//             payload: response.data,
-//           });
-//         }
-//       })
-//       .catch((error) => {
-//         toast.error(
-//           error.response && error.response.data
-//             ? error.response.data.message
-//             : "Something went wrong!",
-//           { transition: Zoom, hideProgressBar: false, autoClose: 2000 }
-//         );
-//       });
-//   };
-// };
+
 import axios from "axios";
-// export const getEventData = () => {
-//   return async (dispatch) => {
-//     try {
-//       const response = await axios.get("http://localhost:5000/api/event");
-//       console.log("resi",response)
-//       if (!response.data.status) {
-//         toast.error(response.data.message,{
-//           transition: Zoom,
-//           hideProgressBar: true,
-//           autoClose: 2000,
-//         });
-//       } else {
-//         toast.success("Events Fetched Successfully!",{
-//           transition: Zoom,
-//           hideProgressBar: true,
-//           autoClose: 2000,
-//         });
-
-//         dispatch({
-//           type: "GET_EVENT",
-//           payload: response.data.events, // Assuming API returns events in `response.data.events`
-//         });
-//       }
-//     } catch (error) {
-//       toast.error(error.response?.data?.message || "Something went wrong!",{
-//         transition: Zoom,
-//         hideProgressBar: false,
-//         autoClose: 2000,
-//       });
-//     }
-//   };
-// };
-
-// import axios from "axios";
-
+import { Event } from "../../../Urls";
 export const getEventData = (setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
-   
+
     try {
-      const response = await axios.get("http://localhost:5000/api/event");
-      console.log("response", response);
+      // Use the public filter endpoint instead of the authenticated getAllEvents endpoint
+      const response = await axios.get(`${Event.getEventByFilter}page=1&limit=20&sortBy=startDate&sortOrder=asc`);
+      console.log("Event API Response:", response.data); // Debug log
       dispatch({
         type: "GET_EVENT",
-        eventData: response.data.events, // Ensure the API actually returns this structure
+        eventData: response.data.data?.events || [], // Access the events array from the nested data structure
       });
     } catch (error) {
       console.error(
@@ -140,10 +75,13 @@ export const getEventData = (setLoader) => {
       dispatch({
         type: "GET_EVENT",
         eventData: [],
-      })
-    }
-    finally {
+      });
+    } finally {
       setLoader(false); // Stop loading
-    } 
+    }
   };
 };
+export { getAllUsers } from "./GetAllUsers";
+export { createUser } from "./CreateUser";
+export { updateUser, getUserById } from "./UpdateUser";
+export { enableUser, disableUser, deleteUser, bulkEnableUsers, bulkDisableUsers, bulkDeleteUsers } from "./UserOps";

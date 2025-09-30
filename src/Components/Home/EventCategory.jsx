@@ -1,63 +1,76 @@
 import { FaArrowRightLong } from "react-icons/fa6";
 import Card2 from "./cards2";
-import { useState } from "react";
-import { MdOutlineCategory } from "react-icons/md";
+import { useRef, useState } from "react";
+import { MdNavigateNext, MdOutlineCategory } from "react-icons/md";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { GrFormPrevious } from "react-icons/gr";
 
 const EventCategory = () => {
-  const [show, setshow] = useState(false);
+  const scrollContainerRef = useRef(null);
+
+  const scrollLeft = () => {
+    scrollContainerRef.current.scrollBy({ left: -300, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollContainerRef.current.scrollBy({ left: 300, behavior: "smooth" });
+  };
+
   var data = [
-    { Name: "public/Ev1.png", text: "Business Events" },
-    { Name: "food.jpg", text: "Food & Drinks" },
-    { Name: "music.jpeg", text: "Music & Concerts" },
-    { Name: "travell.png", text: "Travel & Trekking" },
-    { Name: "cahrity.webp", text: "Charity & Non-profits" }
+    { Name: "assets/staticAssets/Ev1.png", text: "Business " },
+    { Name: "assets/staticAssets/fest.jpg", text: "Festival" },
+    { Name: "assets/staticAssets/music.jpeg", text: "Live Music" },
+    { Name: "assets/staticAssets/pro.jpg", text: "Professional" },
+    { Name: "assets/staticAssets/cahrity.webp", text: "Social" },
   ];
   var data1 = [
-    { Name: "public/Ev1.png", text: "Business Events"},
-    { Name: "food.jpg", text: "Food & Drinks" },
-    { Name: "music.jpeg", text: "Music & Concerts" },
-    { Name: "travell.png", text: "Travel & Trekking" },
-    { Name: "cahrity.webp", text: "Charity & Non-profits" },
-    { Name: "yoga.jpeg", text: "Yoga & Health" },
-    { Name: "sport.jpeg", text: "Sports & Fitness" },
-    { Name: "education.jpg", text: "Education & Classes" },
+    { Name: "assets/staticAssets/Ev1.png", text: "Business " },
+    { Name: "assets/staticAssets/fest.jpg", text: "Festival" },
+    { Name: "assets/staticAssets/music.jpeg", text: "Live Music" },
+    { Name: "assets/staticAssets/pro.jpg", text: "Professional" },
+    { Name: "assets/staticAssets/cahrity.webp", text: "Social" },
+    { Name: "assets/staticAssets/music.jpeg", text: "Nightlife & Club" },
+    { Name: "assets/staticAssets/sport.jpeg", text: "Sport & Leisure" },
+    { Name: "assets/staticAssets/education.jpg", text: "Theatre & Arts" },
   ];
   return (
-    <>
-      <div className=" lg:p-4 lg:pb-0 p-4 pt-1 lg:pl-14  md:pl-12   ">
-        <div className="flex justify-around items-center p-2 font-sans">
-          <div className="w-[95%]  lg:text-2xl text-xl font-bold  font-sans lg:px-24  relative md:right-8 lg:right-5  flex gap-2 ">
-            <MdOutlineCategory className="relative top-1" /> Event Category
+    <div className="flex flex-col px-4 lg:px-12 pt-2 lg:pt-10 pb-8 w-full max-w-[1340px] mx-auto">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-2 items-center">
+          <MdOutlineCategory className="text-2xl" />
+          <div>
+            <p className="font-bold font-sans lg:text-2xl text-lg">
+              EVENT CATEGORY
+            </p>
           </div>
-          <div
-            onClick={() => setshow(!show)}
-            className="flex items-center w-[10%] lg:mr-16 mr-7"
-          >
-            <button className=" shadow-md p-2 cursor-pointer text-base sm:font-medium font-normal sm:text-base text-[#000000]">
-              {show ? "ViewAll" : "ViewLess"}
-            </button>{" "}
-          </div>
-        </div>
-
-        {/* <div className="hidden"> */}
-        {/* <div
-          className={` grid grid-cols-1 sm:flex sm:justify-center sm:flex-wrap gap-5 sm:gap-16 p-8 ${
-            show === true ? "block" : "hidden"
-          }
-          `}
-        > */}
-        <div
-          className={`  grid grid-cols-2 md:grid md:grid-cols-3  lg:grid-cols-5   lg:gap-5 gap-5  lg:p-24 lg:pl-20  lg:pb-12 pt-4 pl-2 lg:pt-8
-          `}
-          // className={` grid grid-cols-2 md:grid md:grid-cols-3 lg:flex lg:justify-center flex-wrap gap-5  lg:p-8 lg:px-16 pt-4 lg:pt-8
-          // `}
-        >
-          {show
-            ? data.map((item, index) => <Card2 key={index} item={item} />)
-            : data1.map((item, index) => <Card2 key={index} item={item} />)}
         </div>
       </div>
-    </>
+
+      <div className="flex items-center justify-center w-full relative">
+        <button
+          className="hidden lg:flex mr-4 bg-black text-white p-3 rounded-full shadow-md hover:bg-gray-800"
+          onClick={scrollLeft}
+        >
+          <GrFormPrevious size={20} />
+        </button>
+
+        <div
+          ref={scrollContainerRef}
+          className="flex flex-row overflow-x-auto scrollbar-hide gap-5 lg:gap-12 w-full px-2 lg:px-0"
+        >
+          {data1.map((item, index) => (
+            <Card2 key={index} item={item} />
+          ))}
+        </div>
+
+        <button
+          className="hidden lg:flex ml-4 bg-black text-white p-3 rounded-full shadow-md hover:bg-gray-800"
+          onClick={scrollRight}
+        >
+          <MdNavigateNext size={20} />
+        </button>
+      </div>
+    </div>
   );
 };
 export default EventCategory;
