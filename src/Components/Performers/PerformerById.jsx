@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Loading from "../Loading";
@@ -6,25 +6,19 @@ import Loading from "../Loading";
 import {
   MdKeyboardDoubleArrowRight,
   MdOutlineNavigateNext,
-  MdEmail,
+  MdEmail
 } from "react-icons/md";
 import {
   FaEye,
-  FaFacebook,
   FaFacebookMessenger,
   FaHeart,
   FaInstagram,
   FaLocationDot,
-  FaShare,
-  FaSoundcloud,
-  FaSpotify,
   FaSquareFacebook,
   FaSquareXTwitter,
-  FaTwitter,
   FaWhatsapp,
   FaGlobe,
   FaClock,
-  FaYoutube,
 } from "react-icons/fa6";
 import { IoFlagSharp, IoLogoWhatsapp } from "react-icons/io5";
 import {
@@ -50,12 +44,14 @@ import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 import FacebookEmbeded from "../SocialMedia/Facebook";
 import InstagramEmbed from "../SocialMedia/Instagram";
+import YouTubeProfile from "../SocialMedia/Youtube";
 import PerformerStats from "../SocialMedia/State";
 import { getFavouritePerformerData } from "../../redux/actions/master/Performers/getFavouritePerformer";
 import { toast, Zoom } from "react-toastify";
 import { postFavouritePerformer } from "../../redux/actions/master/Performers/postFavouritePerformer";
 import { deleteFavouritePerformer } from "../../redux/actions/master/Performers/deleteFavouritePerformer";
 import {
+  getUpcomingEventData,
   getUpcomingEventsDataForProfile,
 } from "../../redux/actions/master/Events/UpcomingEvent";
 import FollowButton from "../FollowButton";
@@ -87,25 +83,27 @@ function GetPerformerById() {
   const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
-
-  
   const [about, setAbout] = useState(true);
   const [upcoming, setUpcoming] = useState(false);
-  const [social, setSocial] = useState(false);
+  const [facebook, setFacebook] = useState(false);
+  const [twitter, setTwitter] = useState(false);
+  const [instagram, setInstgram] = useState(false);
+  const [youtube, setYoutube] = useState(false);
+  const [soundCloud, setSoundCloud] = useState(false);
   const [stat, setStat] = useState(false);
-
-  const [activeSocialTab, setActiveSocialTab] = useState("");
-
-  const [showShareOptions, setShowShareOptions] = useState(false);
-  const shareRef = useRef(null);
-
+  const [spotify, setSpotify] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [eventData, setEventData] = useState(null);
   const [enquirySent, setEnquirySent] = useState(false);
   const [ownershipEnquirySent, setOwnershipEnquirySent] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const HrefUrl = window.location.href;
 
+  // get Upcoming Event Data
   useEffect(() => {
     dispatch(
       getUpcomingEventsDataForProfile({
@@ -123,49 +121,42 @@ function GetPerformerById() {
   const upcomingEventData =
     useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
 
+  if (!upcomingEventData) {
+    return <div>Loading...</div>;
+  }
+
+  const data1 = upcomingEventData;
+
   const store = useSelector((state) => state.getPerformerByIdReducer) || {
     performerData: [],
   };
 
-  const data = store.performerData || {};
+  const data = store.performerData;
   const name = data?.name;
   const email = data?.email || data?.organizerEmail;
   const targetId = data?._id;
   const modelName = "Performer";
   const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-  const currentUrl = encodeURIComponent(window.location.href);
 
   const store1 = useSelector((state) => state.getFavoritePerformerReducer) || {
     favouritePerformerData: [],
   };
   const favouritePerformer = store1.favouritePerformerData;
 
+  const store2 = useSelector(
+    (state) => state.deleteFavoritePerformerReducer
+  ) || {
+    deletedFavoritePerformerData: [],
+  };
+  const deletedFavoritePerformer = store2.deletedFavoritePerformerData;
+
   const isFavourite = favouritePerformer.some((fav) => fav._id === data?._id);
 
   useEffect(() => {
-    if (data && Object.keys(data).length > 0 && activeSocialTab === "") {
-        const socialPlatforms = [
-            data.facebookUrl && 'facebook',
-            data.instagramUrl && 'instagram',
-            data.youtubeId && 'youtube',
-            data.twitterUrl && 'twitter',
-            data.spotifyId && 'spotify',
-            data.soundcloudUrl && 'soundcloud',
-        ].filter(Boolean);
-
-        if (socialPlatforms.length > 0) {
-            setActiveSocialTab(socialPlatforms[0]);
-        }
-    }
-  }, [data, activeSocialTab]);
-
-  useEffect(() => {
-    if (name) {
-      setEnquirySent(false);
-      const sent = localStorage.getItem(`enquiry_sent_${name}`);
-      if (sent === "true") {
-        setEnquirySent(true);
-      }
+    setEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    if (sent === "true") {
+      setEnquirySent(true);
     }
   }, [name]);
 
@@ -175,12 +166,10 @@ function GetPerformerById() {
   };
 
   useEffect(() => {
-    if (targetId) {
-      setOwnershipEnquirySent(false);
-      const sent = localStorage.getItem(`enquiry_sent_${targetId}`);
-      if (sent === "true") {
-        setOwnershipEnquirySent(true);
-      }
+    setOwnershipEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${targetId}`);
+    if (sent === "true") {
+      setOwnershipEnquirySent(true);
     }
   }, [targetId]);
 
@@ -220,25 +209,11 @@ function GetPerformerById() {
   };
   const hasPhoneNumber = data?.phoneNumber && data.phoneNumber.trim() !== "";
 
-  const handleMainTabClick = (tabName) => {
-    setAbout(tabName === "about");
-    setUpcoming(tabName === "upcoming");
-    setSocial(tabName === "social");
-    setStat(tabName === "stat");
-  };
+  if (loading) {
+    return <Loading />;
+  }
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (shareRef.current && !shareRef.current.contains(event.target)) {
-        setShowShareOptions(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [shareRef]);
-
+  const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
@@ -249,25 +224,10 @@ function GetPerformerById() {
     window.open(shareUrls[platform], "_blank");
   };
 
-  const ensureUrlProtocol = (url) => {
-    if (!url) return "#";
-    if (url.startsWith("http://") || url.startsWith("https://")) {
-      return url;
-    }
-    return `https://${url}`;
-  };
-  
-  const fullAddress = [data.address, data.city, data.state, data.country].filter(Boolean).join(', ');
-
-
-  if (loading) {
-    return <Loading />;
-  }
-  
   return (
     <div className="">
       <div className="flex lg:flex-row flex-col gap-2">
-        <div className="lg:pt-6 md:pt-0 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 pb-12">
+        <div className="lg:pt-6 md:pt-0 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
           <div className="flex flex-row justify-between items-center font-medium flex-wrap">
             <div className="flex flex-row gap-2 p-3 flex-wrap">
               <p
@@ -297,11 +257,14 @@ function GetPerformerById() {
                 {data.name}
               </p>
             </div>
-            <p className="text-blue-400 lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
+
+            {/* Visit Counts */}
+            <p className="text-blue-400  lg:text-base text-xs lg:flex hidden gap-1 pt-3 p-3 pb-0 ">
               <FaEye className="relative top-1" />
               {data.visits} , {data.dailyVisits} visits today
             </p>
           </div>
+
           <div
             className=" text-white flex flex-col justify-around gap-4 lg:pt-10 pt-3 lg:px-8   lg:p-2"
             style={{
@@ -310,19 +273,19 @@ function GetPerformerById() {
             }}
           >
             <div className="flex flex-col gap-4 lg:px-0 px-2 ">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between">
                 <h1
                   className="text-white  font-medium lg:text-4xl text-2xl"
                   style={{ textShadow: "1px 1px 1px black" }}
                 >
                   {data.name}
                 </h1>
-                <div className="flex items-center shrink-0 gap-2 md:gap-4">
-                    <FollowButton targetId={targetId} modelName={modelName} />
-                    <button className="lg:hidden" onClick={() => setIsPopUp(!isPopUp)}>
-                        <CiMenuKebab className="text-white text-2xl md:text-3xl"/> 
-                    </button>
-                </div>
+                <button className="lg:hidden block">
+                  <CiMenuKebab
+                    onClick={() => setIsPopUp(!isPopUp)}
+                    className="text-black text-2xl"
+                  />
+                </button>
               </div>
               <p className="text-sm lg:block hidden">
                 {data.visits} , {data.dailyVisits} visits today
@@ -425,12 +388,21 @@ function GetPerformerById() {
                     : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
-                    if (!isLogin) toast.error("Please login first to send enquiry!");
-                    else setOwnership(!ownership);
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    setOwnership(!ownership);
                   }}
                 >
-                  <CiCircleInfo />
-                  {ownershipEnquirySent ? "Claim Enquiry Sent" : "Claim Ownership"}
+                  <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
+                  {ownershipEnquirySent
+                    ? "Claim Enquiry Sent"
+                    : "Claim Ownership"}
                 </p>
                 <p
                   className={`flex gap-1 bg-white  hover:text-[#ff2459] ${enquirySent
@@ -438,15 +410,26 @@ function GetPerformerById() {
                     : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
-                    if (!isLogin) toast.error("Please login first to send enquiry!");
-                    else if (!email) toast.error("Performer email not available.");
-                    else if (!enquirySent) setEnquiry(!enquiry);
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    if (!email) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    if (!enquirySent) {
+                      setEnquiry(!enquiry);
+                    }
                   }}
                 >
-                  <CiCircleInfo />
+                  <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
                   {enquirySent ? "Enquiry Sent" : "Send Enquiry"}
                 </p>
-                <div className="border-l h-5 mx-2 bg-gray-200"></div>
                 <button
                   onClick={() => {
                     if (!isLogin) {
@@ -462,24 +445,9 @@ function GetPerformerById() {
                   className={`flex gap-1 bg-white  ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                     }`}
                 >
-                  <FaHeart />
-                  {localIsFavorite ? "Added" : "Add Favourite"}
+                  <FaHeart className="relative top-1 lg:text-base text-xs" />{" "}
+                  {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
                 </button>
-                <button
-                  onClick={() => setShowShareOptions(!showShareOptions)}
-                  className="py-1 px-3 flex items-center gap-1.5 hover:text-[#ff2459] rounded-full hover:bg-gray-100"
-                >
-                  <FaShare />
-                  Share
-                </button>
-                {showShareOptions && (
-                    <div className="absolute bottom-full mb-2 right-0 bg-white border rounded-lg shadow-xl p-2 flex gap-3 z-20">
-                        <FaSquareFacebook onClick={() => handleShare("facebook")} className="cursor-pointer text-blue-600 text-3xl hover:scale-110 transition-transform" />
-                        <FaWhatsapp onClick={() => handleShare("whatsapp")} className="cursor-pointer text-green-500 text-3xl hover:scale-110 transition-transform" />
-                        <FaFacebookMessenger onClick={() => handleShare("messenger")} className="cursor-pointer text-blue-700 text-3xl hover:scale-110 transition-transform" />
-                        <FaSquareXTwitter onClick={() => handleShare("twitter")} className="cursor-pointer text-black text-3xl hover:scale-110 transition-transform" />
-                    </div>
-                )}
               </div>
             </div>
           </div>
@@ -487,13 +455,15 @@ function GetPerformerById() {
             <div className="lg:hidden block">
               <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-52 md:pt-42 md:pr-10 overflow-y-scroll z-40">
                 <div className="bg-white rounded-lg shadow-lg lg:w-full relative p-4">
+                  {/* Close Button */}
                   <button
                     className="absolute top-0 right-2 text-gray-900 hover:text-red-500 text-3xl"
                     onClick={() => setIsPopUp(false)}
                   >
                     &times;
                   </button>
-                  <div className="flex flex-col gap-2 px-0 h-auto w-[300px] border rounded mt-6">
+
+                  <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-6">
                     <button
                       className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${ownershipEnquirySent
                         ? "text-[#ff2459] cursor-not-allowed font-bold"
@@ -569,6 +539,7 @@ function GetPerformerById() {
               </div>
             </div>
           )}
+
           <div className=" flex lg:flex-row flex-col py-3 ">
             <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
               <div className="w-full border border-gray-200 shadow max-w-[250px] md:max-w-[400px] lg:max-w-[180px] h-auto aspect-[5/5] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
@@ -778,31 +749,18 @@ function GetPerformerById() {
                   </button>
                 </div>
               </div>
-              <div className="lg:px-4 p-2 border-x border-b bg-white rounded-b-lg">
-                {about && (
-                  <div className="py-5">
+              <div className="lg:px-4 p-2 border bg-white rounded-lg h-full overflow-auto">
+                {about && data ? (
+                  <p className="py-5 ">
                     <h2 className="text-2xl font-semibold text-gray-800 py-4">
-                      About the Performer
+                      About the Performers
                     </h2>
-                    <p>{data?.description || "No description available"}</p>
-                    
-                   
-                    <div className="mt-6">
-                      <h2 className="text-2xl font-semibold text-gray-800 py-4">
-                        Highlights
-                      </h2>
-                      {data.highlights && data.highlights.length > 0 ? (
-                        <ul className="list-disc list-inside space-y-2 text-gray-700">
-                          {data.highlights.map((highlight, idx) => (
-                            <li key={idx}>{highlight}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-gray-500">No highlights available for this performer.</p>
-                      )}
-                    </div>
-                  </div>
-                )}
+
+                    {/* {about ? data.description : ""} */}
+                    {data?.description || "No description available"}
+                  </p>
+                ) : null}
+
                 {upcoming && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-center p-4">
                     {upcomingEventData.length > 0 ? (
@@ -812,6 +770,7 @@ function GetPerformerById() {
                           className="bg-white shadow-md rounded-lg hover:shadow-lg transition-all duration-300 w-full max-w-[260px] h-[280px] flex flex-col mx-auto"
                           onClick={() => navigate(`/events/${event.category.toLowerCase()}/${event._id}`, { state: event._id })}
                         >
+                          {/* 🔹 Image Container*/}
                           <div className="w-full h-[100px] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center">
                             <img
                               src={
@@ -822,23 +781,32 @@ function GetPerformerById() {
                               className="w-full h-full object-cover"
                             />
                           </div>
+
+                          {/* 🔹 Event Details  */}
                           <div className="p-2 flex flex-col flex-grow gap-y-2">
+                            {/* Event Name */}
                             <div className="text-center min-h-[40px] max-h-[40px] flex items-center justify-center">
                               <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800 break-words line-clamp-2">
                                 {event.name}
                               </h3>
                             </div>
+
+                            {/* Category */}
                             <div className="text-center min-h-[20px] flex items-center justify-center">
                               <p className="text-xs sm:text-sm text-gray-500 break-words whitespace-normal">
                                 {event.category || "Music Festival"}
                               </p>
                             </div>
+
+                            {/* Date */}
                             <div className="text-center min-h-[20px] flex items-center justify-center">
                               <p className="text-xs sm:text-sm text-gray-400 break-words whitespace-normal">
                                 {new Date(event.startDate).toDateString()} -{" "}
                                 {new Date(event.endDate).toDateString()}
                               </p>
                             </div>
+
+                            {/* Venue */}
                             <div className="text-center min-h-[25px] max-h-[40px] flex items-center justify-center flex-nowrap">
                               <p className="text-xs sm:text-sm text-gray-600 font-medium break-words whitespace-normal">
                                 📍 {event.venue?.city || ""}{" "}
@@ -856,75 +824,14 @@ function GetPerformerById() {
                     )}
                   </div>
                 )}
-                {social && (
-                  <div>
-                    <div className="flex border-b my-4 space-x-4 lg:space-x-6 text-sm lg:text-base overflow-x-auto scrollbar-hide">
-                        <button
-                            onClick={() => data.facebookUrl && setActiveSocialTab("facebook")}
-                            disabled={!data.facebookUrl}
-                            className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${
-                                activeSocialTab === "facebook"
-                                    ? "bg-white text-blue-600 font-semibold border-t border-x"
-                                    : "text-gray-500 hover:text-blue-600"
-                            } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                        >
-                            <FaFacebook /> Facebook
-                        </button>
-                        <button
-                            onClick={() => data.instagramUrl && setActiveSocialTab("instagram")}
-                            disabled={!data.instagramUrl}
-                            className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${
-                                activeSocialTab === "instagram"
-                                    ? "bg-white text-pink-600 font-semibold border-t border-x"
-                                    : "text-gray-500 hover:text-pink-600"
-                            } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                        >
-                            <FaInstagram /> Instagram
-                        </button>
-                        <button
-                            onClick={() => data.youtubeId && setActiveSocialTab("youtube")}
-                            disabled={!data.youtubeId}
-                            className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${
-                                activeSocialTab === "youtube"
-                                    ? "bg-white text-red-600 font-semibold border-t border-x"
-                                    : "text-gray-500 hover:text-red-600"
-                            } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                        >
-                            <FaYoutube /> YouTube
-                        </button>
-                        <button
-                            onClick={() => data.twitterUrl && setActiveSocialTab("twitter")}
-                            disabled={!data.twitterUrl}
-                            className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${
-                                activeSocialTab === "twitter"
-                                    ? "bg-white text-sky-500 font-semibold border-t border-x"
-                                    : "text-gray-500 hover:text-sky-500"
-                            } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                        >
-                            <FaTwitter /> Twitter
-                        </button>
-                        <button
-                            onClick={() => data.spotifyId && setActiveSocialTab("spotify")}
-                            disabled={!data.spotifyId}
-                            className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${
-                                activeSocialTab === "spotify"
-                                    ? "bg-white text-green-500 font-semibold border-t border-x"
-                                    : "text-gray-500 hover:text-green-500"
-                            } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                        >
-                            <FaSpotify /> Spotify
-                        </button>
-                        <button
-                            onClick={() => data.soundcloudUrl && setActiveSocialTab("soundcloud")}
-                            disabled={!data.soundcloudUrl}
-                            className={`py-2 px-3 whitespace-nowrap flex items-center gap-2 rounded-t-lg -mb-px ${
-                                activeSocialTab === "soundcloud"
-                                    ? "bg-white text-orange-500 font-semibold border-t border-x"
-                                    : "text-gray-500 hover:text-orange-500"
-                            } disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500`}
-                        > 
-                            <FaSoundcloud /> SoundCloud
-                        </button>
+
+                {facebook ? (
+                  <div className="w-full flex justify-center py-6">
+                    <div className="w-full max-w-[1200px]">
+                      <FacebookEmbeded
+                        appId={849920522233544}
+                        fbId={data.facebookUrl}
+                      />
                     </div>
                   </div>
                 ) : null}
@@ -979,16 +886,16 @@ function GetPerformerById() {
             <MapContainer className="mb-4" data={data} />
           </div>
 
-          <div className="w-full mt-4">
-            <div className="shadow-lg bg-white rounded-lg">
-                <h1 className="font-semibold text-xl p-3 border-b">Comments</h1>
-                <div className="p-2">
-                    <FacebookComments dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/" />
-                </div>
-            </div>
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-0 overflow-y-scroll scrollbar-hide">
+            <FacebookComments
+              dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/"
+              numPosts={10}
+              width="auto"
+            />
+            <hr />
           </div>
-          
-          <div className=" lg:hidden flex flex-col gap-5 rounded  px-3 mt-4">
+
+          <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
             <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
               <div className="rounded p-2 shadow ">
                 <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
@@ -1068,8 +975,38 @@ function GetPerformerById() {
             </div>
           </div>
         </div>
+
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
-          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md   w-[95%] ml-3 ">
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+            <div className=" p-3 shadow gap-2 ">
+              <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+                Share
+              </h1>
+              <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
+                <FaSquareFacebook
+                  onClick={() => handleShare("facebook")}
+                  className="text-blue-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#1877f2] transition duration-300"
+                />
+
+                <FaWhatsapp
+                  onClick={() => handleShare("whatsapp")}
+                  className="text-green-600 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#25D366] transition duration-300"
+                />
+
+                <FaFacebookMessenger
+                  onClick={() => handleShare("messenger")}
+                  className="text-blue-700 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#0084ff] transition duration-300"
+                />
+
+                <FaSquareXTwitter
+                  onClick={() => handleShare("twitter")}
+                  className="text-black-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#000000] transition duration-300"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
             <div className=" p-3  shadow gap-2 ">
               <h1 className="text-lg font-medium text-gray-900 p-1 border-b ">
                 Performer Category
@@ -1131,6 +1068,7 @@ function GetPerformerById() {
           </div>
         </div>
       </div>
+
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}

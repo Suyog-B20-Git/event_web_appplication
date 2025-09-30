@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Loading from "../Loading";
@@ -10,44 +10,51 @@ import {
 } from "react-icons/md";
 import {
   FaEye,
-  FaFacebook,
   FaFacebookMessenger,
   FaHeart,
   FaInstagram,
   FaLocationDot,
-  FaShare,
   FaSquareFacebook,
   FaSquareXTwitter,
-  FaTwitter,
   FaWhatsapp,
   FaGlobe,
-  FaYoutube,
-  FaSpotify,
-  FaSoundcloud,
 } from "react-icons/fa6";
-import { IoFlagSharp, IoLogoWhatsapp } from "react-icons/io5";
+import { IoFlagSharp, IoLogoWhatsapp, IoGlobeOutline } from "react-icons/io5";
 import {
   CiCircleCheck,
   CiCircleInfo,
   CiHeart,
   CiMenuKebab,
+  CiFacebook,
+  CiCirclePlus,
 } from "react-icons/ci";
-import { FaPhoneAlt, FaClock } from "react-icons/fa";
+import { BsCalendar2DateFill } from "react-icons/bs";
+import { FaClock } from "react-icons/fa6";
+import { HiOutlineCalendarDateRange } from "react-icons/hi2";
+import { CalendarCheck } from "lucide-react";
 import MapContainer from "./Map";
+import { FcLike } from "react-icons/fc";
 import FacebookComments from "./FacebookComments";
 import EnquiryForm from "./EnquiryForm";
 import OwnerShipForm from "./OwnerShipForm";
 import FacebookEmbeded from "../SocialMedia/Facebook";
 import InstagramEmbed from "../SocialMedia/Instagram";
+import YouTubeProfile from "../SocialMedia/Youtube";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
+import PerformerStats from "../SocialMedia/State";
 import OrganizerStats from "../SocialMedia/OrganizerStat";
 import { toast, Zoom } from "react-toastify";
 import { getFavouriteOrganizerData } from "../../redux/actions/master/Organizer/GetFavouriteOrganizer";
 import { postFavouriteOrganizer } from "../../redux/actions/master/Organizer/postFavouriteOrganizer";
 import { removeFavouriteOrganizer } from "../../redux/actions/master/Organizer/removeFavouriteOrganizer";
 import {
+  getUpcomingEventData,
   getUpcomingEventsDataForProfile,
 } from "../../redux/actions/master/Events/UpcomingEvent";
+import { FaPhoneAlt } from "react-icons/fa";
+const baseUrl = import.meta.env.VITE_API_URL;
+const ytapikey = import.meta.env.VITE_YOUTUBE_API_KEY;
+import axios from "axios";
 import FollowButton from "../FollowButton";
 import CommonCalendar from "../CommonCalendar";
 import YouTubeWall from "../SocialMedia/YouTubeWall";
@@ -76,25 +83,23 @@ function GetOrganizerById() {
   const [category, setCategory] = useState("");
   const [enquiry, setEnquiry] = useState(false);
   const [ownership, setOwnership] = useState(false);
-
   const [about, setAbout] = useState(true);
   const [upcoming, setUpcoming] = useState(false);
-  const [social, setSocial] = useState(false);
+  const [facebook, setFacebook] = useState(false);
+  const [twitter, setTwitter] = useState(false);
+  const [instagram, setInstagram] = useState(false);
   const [stat, setStat] = useState(false);
-
-  const [activeSocialTab, setActiveSocialTab] = useState("");
-  const [showShareOptions, setShowShareOptions] = useState(false);
-  const shareRef = useRef(null);
-
+  const [youtube, setYoutube] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
   const [enquirySent, setEnquirySent] = useState(false);
   const [ownershipEnquirySent, setOwnershipEnquirySent] = useState(false);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [showNumber, setShowNumber] = useState(false);
-  const fallbackImage =
-    "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fG9yZ2FuaXplcnxlbnwwfHx8fDE2OTY5NzQ1NTg&ixlib=rb-4.0.3&q=80&w=1080";
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const HrefUrl = window.location.href;
 
   useEffect(() => {
     dispatch(
@@ -113,19 +118,20 @@ function GetOrganizerById() {
   const upcomingEventData =
     useSelector((state) => state.upcomingEventReducer?.upcomingEventData) || [];
 
+  if (!upcomingEventData) {
+    return <div>Loading...</div>;
+  }
+
+  const data1 = upcomingEventData;
   const store = useSelector((state) => state.getOrganizerByIdReducer) || {
     organizerData: [],
   };
 
-  const data = store.organizerData || {};
-  const coverImage = data?.coverImage;
-  const formatteddUrl = coverImage
-    ? coverImage.replace(/\\/g, "/").replace(/\/{2,}/g, "/").replace("http:/", "http://")
-    : fallbackImage;
+  const data = store.organizerData;
   const targetId = data?._id;
   const modelName = "Organizer";
   const organizerEmail = data?.email;
-  const store1 = useSelector((state) => state.getFavouriteOrganizerReducer) || { // Corrected
+  const store1 = useSelector((state) => state.getFavoriteOrganizerReducer) || {
     favouriteOrganizerData: [],
   };
   const favouriteOrganizer = store1.favouriteOrganizerData;
@@ -133,23 +139,6 @@ function GetOrganizerById() {
   const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 
   const isFavourite = favouriteOrganizer.some((fav) => fav._id === data._id);
-
-  useEffect(() => {
-    if (data && Object.keys(data).length > 0 && activeSocialTab === "") {
-        const socialPlatforms = [
-            data.facebookUrl && 'facebook',
-            data.instagramUrl && 'instagram',
-            data.youtubeId && 'youtube',
-            data.twitterUrl && 'twitter',
-            data.spotifyUrl && 'spotify',
-            data.soundCloudUrl && 'soundcloud',
-        ].filter(Boolean);
-
-        if (socialPlatforms.length > 0) {
-            setActiveSocialTab(socialPlatforms[0]);
-        }
-    }
-  }, [data, activeSocialTab]);
 
   const togglePhoneVisibility = () => {
     setShowNumber((prev) => !prev);
@@ -159,12 +148,10 @@ function GetOrganizerById() {
   const name = data.name;
 
   useEffect(() => {
-    if (name) {
-      setEnquirySent(false);
-      const sent = localStorage.getItem(`enquiry_sent_${name}`);
-      if (sent === "true") {
-        setEnquirySent(true);
-      }
+    setEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${name}`);
+    if (sent === "true") {
+      setEnquirySent(true);
     }
   }, [name]);
 
@@ -174,12 +161,10 @@ function GetOrganizerById() {
   };
 
   useEffect(() => {
-    if (targetId) {
-      setOwnershipEnquirySent(false);
-      const sent = localStorage.getItem(`enquiry_sent_${targetId}`);
-      if (sent === "true") {
-        setOwnershipEnquirySent(true);
-      }
+    setOwnershipEnquirySent(false);
+    const sent = localStorage.getItem(`enquiry_sent_${targetId}`);
+    if (sent === "true") {
+      setOwnershipEnquirySent(true);
     }
   }, [targetId]);
 
@@ -193,12 +178,6 @@ function GetOrganizerById() {
   }, [isFavourite]);
 
   const toggleFavorite = (id) => {
-    if (!isLogin) {
-      toast.error("Please login first to Add favorite!", {
-        transition: Zoom, hideProgressBar: true, autoClose: 2000,
-      });
-      return;
-    }
     if (localIsFavorite) {
       setLocalIsFavorite(false);
       dispatch(removeFavouriteOrganizer(id));
@@ -209,7 +188,7 @@ function GetOrganizerById() {
     dispatch(getFavouriteOrganizerData(setLoading));
   };
 
-  const currentUrl = encodeURIComponent(window.location.href);
+  const currentUrl = window.location.href;
   const shareUrls = {
     whatsapp: `https://api.whatsapp.com/send?text=${currentUrl}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
@@ -223,55 +202,7 @@ function GetOrganizerById() {
   useEffect(() => {
     dispatch(getOrganizerById(organizerId, setLoading));
     dispatch(getFavouriteOrganizerData(setLoading));
-  }, [dispatch, organizerId]);
-
-  const handleMainTabClick = (tabName) => {
-    setAbout(tabName === "about");
-    setUpcoming(tabName === "upcoming");
-    setSocial(tabName === "social");
-    setStat(tabName === "stat");
-  };
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (shareRef.current && !shareRef.current.contains(event.target)) {
-        setShowShareOptions(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [shareRef]);
-
-  const ensureUrlProtocol = (url) => {
-    if (!url) return "#";
-    if (url.startsWith("http://") || url.startsWith("https://")) {
-      return url;
-    }
-    return `https://${url}`;
-  };
-  
-  const fullAddress = [data.address, data.city, data.state, data.country].filter(Boolean).join(', ');
-
-  const SocialLinkCard = ({ platformName, url, icon }) => {
-    return (
-      <div className="flex flex-col items-center justify-center p-8 border rounded-lg bg-gray-50 text-center">
-        <div className="text-5xl mb-4">{icon}</div>
-        <h3 className="text-xl font-semibold text-gray-800 mb-2">{platformName} Profile</h3>
-        <p className="text-gray-600 mb-4">Click the button below to view the artist's profile on {platformName}.</p>
-        <a
-          href={ensureUrlProtocol(url)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block bg-gray-800 text-white font-bold py-3 px-8 rounded-full hover:bg-black transition-colors"
-        >
-          View on {platformName}
-        </a>
-      </div>
-    );
-  };
-
+  }, [dispatch]);
   if (loading) {
     return <Loading />;
   }
@@ -279,7 +210,7 @@ function GetOrganizerById() {
   return (
     <div>
       <div className="flex lg:flex-row flex-col gap-2">
-        <div className="lg:pt-6 md:pt-0 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 pb-12">
+        <div className="lg:pt-6 md:pt-0 pt-20 bg-gray-100 lg:w-[75%] lg:px-4 ">
           <div className="flex justify-between font-medium">
             <p className="flex flex-row  gap-2 p-3 lg:flex flex-wrap">
               <p
@@ -321,26 +252,26 @@ function GetOrganizerById() {
             </div>
           </div>
           <div
-            className="text-white flex flex-col justify-around gap-2 lg:gap-4 lg:pt-10 py-3 lg:px-8 lg:p-2"
+            className=" text-white flex flex-col justify-around gap-2 lg:gap-4 lg:pt-10 py-3 lg:px-8   lg:p-2"
             style={{
-              backgroundImage: `url(${formatteddUrl})`,
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fG9yZ2FuaXplcnxlbnwwfHx8fDE2OTY5NzQ1NTg&ixlib=rb-4.0.3&q=80&w=1080')",
             }}
           >
-
             <div className="flex flex-col gap-4 lg:px-0 px-2 lg:mt-[-15px]">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between">
                 <h1
                   className="text-white  font-medium lg:text-4xl text-2xl"
                   style={{ textShadow: "1px 1px 1px black" }}
                 >
                   {data.name}
                 </h1>
-                <div className="flex items-center shrink-0 gap-2 md:gap-4">
-                    <FollowButton targetId={targetId} modelName={modelName} />
-                    <button className="lg:hidden" onClick={() => setIsPopUp(!isPopUp)}>
-                        <CiMenuKebab className="text-white text-2xl md:text-3xl"/>
-                    </button>
-                </div>
+                <button className="lg:hidden block">
+                  <CiMenuKebab
+                    onClick={() => setIsPopUp(!isPopUp)}
+                    className="text-black text-2xl"
+                  />
+                </button>
               </div>
               <p className="text-sm lg:block hidden">
                 Total {data.visits} , {data.dailyVisits} visits today
@@ -453,12 +384,21 @@ function GetOrganizerById() {
                     : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
-                    if (!isLogin) toast.error("Please login first to send enquiry!");
-                    else setOwnership(!ownership);
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    setOwnership(!ownership);
                   }}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
-                  {ownershipEnquirySent ? "Claim Enquiry Sent" : "Claim Ownership"}
+                  {ownershipEnquirySent
+                    ? "Claim Enquiry Sent"
+                    : "Claim Ownership"}
                 </p>
                 <p
                   className={`flex gap-1 bg-white hover:text-[#ff2459]  ${enquirySent
@@ -466,9 +406,21 @@ function GetOrganizerById() {
                     : "text-gray-900 cursor-pointer hover:text-[#ff2459]"
                     }`}
                   onClick={() => {
-                    if (!isLogin) toast.error("Please login first to send enquiry!");
-                    else if (!organizerEmail) toast.error("Organizer email not available.");
-                    else if (!enquirySent) setEnquiry(!enquiry);
+                    if (!isLogin) {
+                      toast.error("Please login first to send enquiry!", {
+                        transition: Zoom,
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                      });
+                      return;
+                    }
+                    if (!organizerEmail) {
+                      toast.error("Organizer email not available.");
+                      return;
+                    }
+                    if (!enquirySent) {
+                      setEnquiry(!enquiry);
+                    }
                   }}
                 >
                   <CiCircleInfo className="relative top-1 lg:text-base text-xs" />
@@ -489,24 +441,9 @@ function GetOrganizerById() {
                   className={`flex gap-1 bg-white hover:text-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                     }`}
                 >
-                  <FaHeart className="relative top-1 lg:text-base text-xs" />
+                  <FaHeart className="relative top-1 lg:text-base text-xs hover:text-[#ff2459]" />{" "}
                   {localIsFavorite ? "Added to Favourites" : "Add Favourite"}
                 </button>
-                <button
-                  onClick={() => setShowShareOptions(!showShareOptions)}
-                  className="flex gap-1 hover:text-[#ff2459]"
-                >
-                  <FaShare className="relative top-1 lg:text-base text-xs" />
-                  Share
-                </button>
-                {showShareOptions && (
-                  <div className="absolute bottom-full mb-2 right-0 bg-white border rounded-lg shadow-xl p-2 flex gap-3 z-20">
-                    <FaSquareFacebook onClick={() => handleShare("facebook")} className="cursor-pointer text-blue-600 text-3xl hover:scale-110 transition-transform" />
-                    <FaWhatsapp onClick={() => handleShare("whatsapp")} className="cursor-pointer text-green-500 text-3xl hover:scale-110 transition-transform" />
-                    <FaFacebookMessenger onClick={() => handleShare("messenger")} className="cursor-pointer text-blue-700 text-3xl hover:scale-110 transition-transform" />
-                    <FaSquareXTwitter onClick={() => handleShare("twitter")} className="cursor-pointer text-black text-3xl hover:scale-110 transition-transform" />
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -514,13 +451,15 @@ function GetOrganizerById() {
             <div className="lg:hidden block">
               <div className="fixed w-full inset-0 flex flex-col items-center md:items-end justify-start pt-52 md:pt-42 md:pr-10 overflow-y-scroll z-40">
                 <div className="bg-white rounded-lg shadow-lg lg:w-full relative p-4">
+                  {/* Close Button */}
                   <button
                     className="absolute top-0 right-2 text-gray-900 hover:text-red-500 text-3xl"
                     onClick={() => setIsPopUp(false)}
                   >
-                    ×
+                    &times;
                   </button>
-                  <div className="flex flex-col gap-2 px-0 w-[300px] border rounded mt-8 h-auto">
+
+                  <div className="flex flex-col gap-2 px-0 h-[170px] w-[300px] border rounded mt-8">
                     <button
                       className={`flex gap-3 md:text-xs lg:text-xs ml-4 mt-3  hover:text-[#ff2459] ${ownershipEnquirySent
                         ? "text-[#ff2459] cursor-not-allowed font-bold"
@@ -586,7 +525,7 @@ function GetOrganizerById() {
                       className={`flex gap-3 p-4 px-4 bg-white hover:text-white hover:bg-[#ff2459] ${localIsFavorite ? "text-[#ff2459]" : "text-gray-900"
                         }`}
                     >
-                      <FaHeart className="relative top-1 lg:text-base" />
+                      <FaHeart className="relative top-2 lg:text-base text-sm" />
                       {localIsFavorite
                         ? "Added to Favourites"
                         : "Add Favourite"}
@@ -597,39 +536,34 @@ function GetOrganizerById() {
             </div>
           )}
           <div className=" flex lg:flex-row flex-col py-3 ">
-            <div className="lg:w-full rounded-lg ">
-              <div className="sticky top-0 z-10 bg-gray-50">
-                <div className="text-gray-500 lg:text-base text-sm flex border-b font-medium justify-around p-2">
-                  <button
-                    className={`px-3 py-2 rounded-lg ${about ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("about")}
-                  >
-                    ABOUT
-                  </button>
-                  <button
-                    className={`px-3 py-2 rounded-lg ${upcoming ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("upcoming")}
-                  >
-                    EVENT
-                  </button>
-                  <button
-                    className={`px-3 py-2 rounded-lg ${social ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("social")}
-                  >
-                    SOCIAL
-                  </button>
-                  <button
-                    className={`px-3 py-2 rounded-lg ${stat ? "bg-white shadow" : "hover:bg-gray-100"
-                      }`}
-                    onClick={() => handleMainTabClick("stat")}
-                  >
-                    STAT
-                  </button>
-                </div>
+            <div className="flex lg:w-[30%] justify-start items-center flex-col gap-3 lg:p-10">
+              <div className="w-full border border-gray-200 shadow max-w-[250px] md:max-w-[400px] lg:max-w-[180px] h-auto aspect-[5/5] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
+                {data.profileImage ? (
+                  <img
+                    src={data.profileImage}
+                    className="w-full h-full object-cover"
+                    alt="Profile"
+                  />
+                ) : (
+                  <img
+                    src="/assets/staticAssets/user-icon.png"
+                    className="w-full h-full object-cover"
+                    alt="user"
+                  />
+                )}
               </div>
+
+              <div className=" lg:flex gap-2 hidden justify-center">
+                <FollowButton targetId={targetId} modelName={modelName} />
+              </div>
+            </div>
+            <div className="flex lg:hidden gap-4 p-2 justify-center ">
+              <FollowButton
+                targetId={targetId}
+                modelName={modelName}
+                variant="mobile"
+              />
+            </div>
 
             {hoveredTab && (
               <div className="fixed bottom-1 left-2 text-xs text-white bg-gray-900 px-2 py-1 rounded shadow">
@@ -870,18 +804,40 @@ function GetOrganizerById() {
                     ))}
                 </div>
 
-          <div className="w-full mt-4">
-            <div className="shadow-lg bg-white rounded-lg">
-                <h1 className="font-semibold text-xl p-3 border-b">Comments</h1>
-                <div className="p-4">
-                    
-                    
-                     <FacebookComments dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/" />
-                </div>
+                <p className="font-medium text-lg text-center py-0">
+                  {twitter &&
+                    (data.twitterUrl ? (
+                      <TwitterEmbed twitterUrl={data.twitterUrl} />
+                    ) : (
+                      <div className="text-center">Not Available</div>
+                    ))}
+                </p>
+
+                <p className="">
+                  {youtube &&
+                    (data.youtubeId ? (
+                      <YouTubeWall channelId={data.youtubeId} />
+                    ) : (
+                      <div className="text-center">Not Available</div>
+                    ))}
+                </p>
+                <p>{stat ? <OrganizerStats data={data} /> : ""}</p>
+              </div>
             </div>
           </div>
-          
-          <div className=" lg:hidden flex flex-col gap-5 rounded  px-3 mt-4">
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-1">
+            <h1 className="font-semibold text-xl p-2 ml-2 pb-0 ">Location</h1>
+            <MapContainer className="mb-4" data={data} />
+          </div>
+
+          <div className="lg:px-0 border border-gray ml-[3%] shadow-lg bg-white lg:w-[70%] lg:ml-[30%]  w-[92%] mb-0 overflow-y-scroll scrollbar-hide">
+            <FacebookComments dataHref="https://www.bezkoder.com/vue-3-authentication-jwt/" />
+            <hr />
+          </div>
+
+          <div className="pl-8  md:w-[80%] md:ml-[25%]  pr-14 pb-2 w-full flex justify-end"></div>
+
+          <div className=" lg:hidden flex flex-col gap-5 rounded  px-3">
             <div className=" lg:hidden flex flex-col gap-5 rounded pt-0  ">
               <div className="rounded p-2 shadow ">
                 <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
@@ -894,7 +850,7 @@ function GetOrganizerById() {
                         setCategory("event planner");
                         navigate("/Organizers", { state: category });
                       }}
-                      className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white     w-max rounded-full font-medium p-1 px-4 text-xs "
+                      className="cursor-pointer bg-gray-200 hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
                       Event Planner
                     </div>
@@ -903,7 +859,7 @@ function GetOrganizerById() {
                         setCategory("wedding planner");
                         navigate("/Organizers", { state: category });
                       }}
-                      className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white     w-max rounded-full font-medium p-1 px-4 text-xs "
+                      className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white    w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
                       Wedding Planner
                     </div>
@@ -914,7 +870,7 @@ function GetOrganizerById() {
                         setCategory("adventure");
                         navigate("/Organizers", { state: category });
                       }}
-                      className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white  w-max rounded-full font-medium p-1 px-4 text-xs "
+                      className="cursor-pointer bg-gray-200 whitespace-nowrap hover:bg-[#ff2459] hover:text-white   w-max rounded-full font-medium p-1 px-4 text-xs "
                     >
                       Adventure
                     </div>
@@ -954,6 +910,35 @@ function GetOrganizerById() {
         </div>
 
         <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
+          <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
+            <div className=" p-3 shadow gap-2 ">
+              <h1 className="text-lg font-medium text-gray-900 p-2 border-b ">
+                Share
+              </h1>
+              <div className="flex flex-cols gap-4 text-2xl p-2 cursor-pointer mt-2">
+                <FaSquareFacebook
+                  onClick={() => handleShare("facebook")}
+                  className="text-blue-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#1877f2] transition duration-300"
+                />
+
+                <FaWhatsapp
+                  onClick={() => handleShare("whatsapp")}
+                  className="text-green-600 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#25D366] transition duration-300"
+                />
+
+                <FaFacebookMessenger
+                  onClick={() => handleShare("messenger")}
+                  className="text-blue-700 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#0084ff] transition duration-300"
+                />
+
+                <FaSquareXTwitter
+                  onClick={() => handleShare("twitter")}
+                  className="text-black-500 border-0 border-transparent rounded hover:shadow-[0_0_10px_3px_#000000] transition duration-300"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">
             <div className=" p-3  shadow gap-2 ">
               <h1 className="text-lg font-medium text-gray-900 p-1 border-b ">
@@ -1000,6 +985,7 @@ function GetOrganizerById() {
           </div>
         </div>
       </div>
+
       {ownership && (
         <OwnerShipForm
           setOwnership={setOwnership}
