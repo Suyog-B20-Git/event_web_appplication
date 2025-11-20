@@ -169,6 +169,10 @@ function Routess() {
           <Route path="/organizers/wedding-planner" element={<GetOrganizer />} />
           <Route path="/organizers/adventure" element={<GetOrganizer />} />
           <Route path="/organizers/event-planner" element={<GetOrganizer />} />
+          <Route path="/organizers/:slug" element={<GetOrganizer />} />
+          <Route path="/performers/:slug" element={<GetPerformers />} />
+          <Route path="/services/:slug" element={<GetService />} />
+          <Route path="/venues/:slug" element={<GetVenue />} />
           <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="/oauth-failure" element={<OAuthFailure />} />
 

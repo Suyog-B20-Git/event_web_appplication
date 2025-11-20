@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GrDashboard } from "react-icons/gr";
 import { AiFillDashboard } from "react-icons/ai";
-import { FaPuzzlePiece, FaUserCircle, FaMoneyBillWave, FaRegFileAlt, FaRupeeSign, FaFolderOpen } from "react-icons/fa";
+import { FaPuzzlePiece, FaUserCircle, FaMoneyBillWave, FaRegFileAlt, FaRupeeSign, FaFolderOpen, FaCloudDownloadAlt } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
 import { GiWallet, GiVerticalBanner } from "react-icons/gi";
 import { ImUsers } from "react-icons/im";
@@ -58,6 +58,7 @@ import AdminPromocodes from './AdminPromocodes';
 import AdminComplimentaryBookings from './AdminComplimentaryBookings';
 import AdminCurrencies from './AdminCurrencies';
 import AdminClaims from './AdminClaims';
+import AdminImportEntities from './AdminImportEntities';
 
 
 
@@ -349,6 +350,8 @@ const AdminPanelOverview = () => {
                 return selectedService ? `Edit: ${selectedService.name}` : "Edit Service";
             case "adminAddService":
                 return "Add New Service";
+            case "adminImportEntities":
+                return "Import Entities";
             default:
                 return activeSectionName;
         }
@@ -402,51 +405,69 @@ const AdminPanelOverview = () => {
                                 <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>{item.name}</span>
                             </div>
 
-                            {/* Insert Entities Dropdown after Events */}
+                            {/* Insert Import Entities and Entities Dropdown after Events */}
                             {item.id === "adminEvents" && (
-                                <div className="mt-4">
+                                <>
                                     <div
-                                        onClick={toggleEntitiesDropdown}
-                                        className={`flex items-center justify-between cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${["adminOrganizers", "adminPerformers", "adminVenues", "adminServices"].includes(activeSection)
+                                        onClick={() => handleNavigate("adminImportEntities")}
+                                        title="Import Entities"
+                                        className={`flex items-center space-x-4 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === "adminImportEntities"
                                             ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
                                             : "text-gray-300"
                                             }`}
                                     >
-                                        <div className="flex items-center space-x-4">
-                                            <div className="text-xl flex-shrink-0">
-                                                <FaPuzzlePiece />
-                                            </div>
-                                            <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
-                                                Entities
-                                            </span>
+                                        <div className="text-xl flex-shrink-0">
+                                            <FaCloudDownloadAlt />
                                         </div>
-                                        <div className={`transition-transform duration-200 ${isEntitiesDropdownOpen ? 'rotate-180' : 'rotate-0'} ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
-                                            {isEntitiesDropdownOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                                        </div>
+                                        <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+                                            Import Entities
+                                        </span>
                                     </div>
 
-                                    {/* Dropdown Items */}
-                                    {isEntitiesDropdownOpen && (
-                                        <div className="ml-4 mt-1 space-y-1">
-                                            {entitiesItems.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    onClick={() => handleNavigate(item.id)}
-                                                    title={item.name}
-                                                    className={`flex items-center space-x-4 cursor-pointer p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === item.id
-                                                        ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
-                                                        : "text-gray-300"
-                                                        }`}
-                                                >
-                                                    <div className="text-lg flex-shrink-0">{item.icon}</div>
-                                                    <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
-                                                        {item.name}
-                                                    </span>
+                                    <div className="mt-4">
+                                        <div
+                                            onClick={toggleEntitiesDropdown}
+                                            className={`flex items-center justify-between cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${["adminOrganizers", "adminPerformers", "adminVenues", "adminServices"].includes(activeSection)
+                                                ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
+                                                : "text-gray-300"
+                                                }`}
+                                        >
+                                            <div className="flex items-center space-x-4">
+                                                <div className="text-xl flex-shrink-0">
+                                                    <FaPuzzlePiece />
                                                 </div>
-                                            ))}
+                                                <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+                                                    Entities
+                                                </span>
+                                            </div>
+                                            <div className={`transition-transform duration-200 ${isEntitiesDropdownOpen ? 'rotate-180' : 'rotate-0'} ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+                                                {isEntitiesDropdownOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
+
+                                        {/* Dropdown Items */}
+                                        {isEntitiesDropdownOpen && (
+                                            <div className="ml-4 mt-1 space-y-1">
+                                                {entitiesItems.map((item) => (
+                                                    <div
+                                                        key={item.id}
+                                                        onClick={() => handleNavigate(item.id)}
+                                                        title={item.name}
+                                                        className={`flex items-center space-x-4 cursor-pointer p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === item.id
+                                                            ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
+                                                            : "text-gray-300"
+                                                            }`}
+                                                    >
+                                                        <div className="text-lg flex-shrink-0">{item.icon}</div>
+                                                        <span className={`text-sm font-medium whitespace-nowrap transition-opacity ${isDesktopSidebarExpanded || isMobileSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+                                                            {item.name}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
                             )}
                         </React.Fragment>
                     ))}
@@ -721,6 +742,7 @@ const AdminPanelOverview = () => {
                     {activeSection === "adminComplimentaryBookings" && <ComplimentaryBookings />}
                     {activeSection === "adminCurrencies" && <Currencies />}
                     {activeSection === "adminScanTickets" && <ScanTickets />}
+                    {activeSection === "adminImportEntities" && <AdminImportEntities />}
                 </main>
             </div>
         </div>

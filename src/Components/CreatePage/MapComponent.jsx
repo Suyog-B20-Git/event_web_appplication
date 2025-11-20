@@ -5,7 +5,7 @@ const MapContainer = ({ location }) => {
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const mapInstanceRef = useRef(null);
-  const GOOGLE_MAPS_API_KEY = "AIzaSyDBvQO-S7yEtX4__jyFra4HvGMz15MqGyE";
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_UNKNOWN_MAP_API_KEY_BY_MUSTAFA;
 
   const mapStyles = {
     height: window.innerWidth <= 768 ? "200px" : "400px",
@@ -13,24 +13,24 @@ const MapContainer = ({ location }) => {
   };
 
   const isValidLocation =
-  location &&
-  !isNaN(parseFloat(location.lat)) &&
-  !isNaN(parseFloat(location.lng));
+    location &&
+    !isNaN(parseFloat(location.lat)) &&
+    !isNaN(parseFloat(location.lng));
 
-const parsedLocation = isValidLocation
-  ? {
+  const parsedLocation = isValidLocation
+    ? {
       lat: parseFloat(location.lat),
       lng: parseFloat(location.lng),
     }
-  : {
+    : {
       lat: 40.7127753,
       lng: -74.0059728,
     };
 
 
   const defaultLocation = (location?.lat && location?.lng)
-  ? { lat: location.lat, lng: location.lng }
-  : { lat: 40.7127753, lng: -74.0059728 }; // Default to New York
+    ? { lat: location.lat, lng: location.lng }
+    : { lat: 40.7127753, lng: -74.0059728 }; // Default to New York
 
   // Load Google Maps script and initialize map
   useEffect(() => {

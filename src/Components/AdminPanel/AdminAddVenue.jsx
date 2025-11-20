@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form';
 import Select from 'react-select';
 import { Country, State, City } from 'country-state-city';
 import { FaBuilding, FaArrowLeft, FaSave } from 'react-icons/fa';
 
-import { getLocation } from '../../redux/actions/master/location/location';
-import { getLocationDetails } from '../../redux/actions/master/location/locationDetail';
 import { createVenue } from '../../redux/actions/master/Venue/createVenue';
+import { getCategories } from '../../redux/actions/master/Categories/getCategories';
 
 const AdminAddVenue = ({ onBack, onCreate }) => {
     const dispatch = useDispatch();
@@ -21,14 +20,12 @@ const AdminAddVenue = ({ onBack, onCreate }) => {
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
     const [selectedCity, setSelectedCity] = useState(null);
-    const [locationQuery, setLocationQuery] = useState('');
 
     const {
         control,
         handleSubmit,
         register,
         setValue,
-        watch,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -52,38 +49,242 @@ const AdminAddVenue = ({ onBack, onCreate }) => {
         }
     });
 
-    const place_id = watch('location');
+    // Google Places Autocomplete refs and state
+    const autocompleteInputRef = React.useRef(null);
+    const autocompleteRef = React.useRef(null);
+    const mapRefForAutocomplete = React.useRef(null);
+    const markerRefForAutocomplete = React.useRef(null);
+    const [selectedPlaceAddress, setSelectedPlaceAddress] = useState('');
+    const [selectedPlaceLat, setSelectedPlaceLat] = useState('');
+    const [selectedPlaceLng, setSelectedPlaceLng] = useState('');
+    const [selectedPlaceId, setSelectedPlaceId] = useState('');
+
+    // Update form values callback for Google Places
+    const updateFormValues = useCallback((formattedAddress, placeId, lat, lng) => {
+        setSelectedPlaceAddress(formattedAddress);
+        setSelectedPlaceLat(lat.toString());
+        setSelectedPlaceLng(lng.toString());
+        setSelectedPlaceId(placeId);
+        setValue('location', placeId, { shouldValidate: false });
+        setValue('googleSearchLocation', formattedAddress, { shouldValidate: false });
+        setValue('googleSearchLat', lat.toString(), { shouldValidate: false });
+        setValue('googleSearchLong', lng.toString(), { shouldValidate: false });
+    }, [setValue]);
 
     useEffect(() => {
         const fetchSubCategories = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/categories?type=Venue`);
-                const data = await response.json();
+                const data = await dispatch(getCategories('Venue'));
                 const formatted = data.data?.map((sub) => ({ label: sub.name, value: sub.name })) || [];
                 setSubCategoryList(formatted);
             } catch (error) {
+                console.error('Error fetching subcategories:', error);
                 setSubCategoryList([]);
             }
         };
         fetchSubCategories();
-    }, []);
+    }, [dispatch]);
 
-    // location suggestions and details
+    // Initialize Google Maps with Places Autocomplete
     useEffect(() => {
-        if (locationQuery) dispatch(getLocation(locationQuery));
-    }, [dispatch, locationQuery]);
+        let isMounted = true;
+        let autocompleteInstance = null;
+        let markerInstance = null;
+        let mapInstance = null;
+        let retryCount = 0;
+        const maxRetries = 10;
 
-    useEffect(() => {
-        if (place_id) dispatch(getLocationDetails(place_id));
-    }, [dispatch, place_id]);
+        const initializeAutocomplete = () => {
+            if (autocompleteRef.current) {
+                console.log("Autocomplete already initialized");
+                return;
+            }
 
-    const locationsStore = useSelector((state) => state.locationsReducer) || { locations: [] };
-    const locationOptions = Array.isArray(locationsStore?.locations)
-        ? locationsStore.locations.map((item) => ({ value: item.place_id, label: item.description }))
-        : [];
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                console.error("Google Maps API or Places library not loaded");
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(initializeAutocomplete, 500);
+                }
+                return;
+            }
 
-    const locationDetailsStore = useSelector((state) => state.locationDetailsReducer) || { locationDetails: {} };
-    const locationDetails = locationDetailsStore.locationDetails || {};
+            if (!mapRefForAutocomplete.current || !autocompleteInputRef.current) {
+                console.log("Waiting for DOM elements...", {
+                    mapRef: !!mapRefForAutocomplete.current,
+                    inputRef: !!autocompleteInputRef.current
+                });
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(initializeAutocomplete, 300);
+                }
+                return;
+            }
+
+            try {
+                const input = autocompleteInputRef.current;
+
+                // Verify input element exists
+                if (!input || typeof input.focus !== 'function') {
+                    console.error("Input element is not valid");
+                    return;
+                }
+
+                // Create map centered on India
+                mapInstance = new window.google.maps.Map(mapRefForAutocomplete.current, {
+                    center: {
+                        lat: 20.593684,
+                        lng: 78.96288
+                    },
+                    zoom: 5
+                });
+
+                // Create Autocomplete instance
+                autocompleteInstance = new window.google.maps.places.Autocomplete(input, {
+                    types: ['geocode', 'establishment'],
+                    fields: ['formatted_address', 'geometry', 'place_id', 'name', 'address_components'],
+                    componentRestrictions: undefined, // Allow all countries
+                });
+
+                autocompleteInstance.bindTo('bounds', mapInstance);
+
+                // Create marker
+                markerInstance = new window.google.maps.Marker({
+                    map: mapInstance,
+                    anchorPoint: new window.google.maps.Point(0, -29)
+                });
+
+                autocompleteRef.current = autocompleteInstance;
+                markerRefForAutocomplete.current = markerInstance;
+
+                // Handle place selection
+                autocompleteInstance.addListener('place_changed', function () {
+                    if (!isMounted) return;
+
+                    markerInstance.setVisible(false);
+
+                    const place = autocompleteInstance.getPlace();
+
+                    if (!place.geometry) {
+                        window.alert("No details available for input: '" + (place.name || '') + "'");
+                        return;
+                    }
+
+                    // Update map view
+                    if (place.geometry.viewport) {
+                        mapInstance.fitBounds(place.geometry.viewport);
+                    } else {
+                        mapInstance.setCenter(place.geometry.location);
+                        mapInstance.setZoom(17);
+                    }
+
+                    // Update marker position
+                    markerInstance.setPosition(place.geometry.location);
+                    markerInstance.setVisible(true);
+
+                    // Extract location data
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
+                    const placeId = place.place_id;
+
+                    // Extract address components
+                    let address = '';
+                    if (place.address_components) {
+                        address = [
+                            (place.address_components[0] && place.address_components[0].short_name || ''),
+                            (place.address_components[1] && place.address_components[1].short_name || ''),
+                            (place.address_components[2] && place.address_components[2].short_name || '')
+                        ].join(' ');
+                    }
+
+                    const formattedAddress = place.formatted_address || address;
+                    updateFormValues(formattedAddress, placeId, lat, lng);
+                });
+
+                console.log("Google Places Autocomplete initialized successfully", {
+                    input: input,
+                    autocomplete: autocompleteInstance
+                });
+            } catch (error) {
+                console.error("Error initializing Google Places Autocomplete:", error);
+            }
+        };
+
+        // Load Google Maps API script
+        const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_OLD_MAP_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyCyhFwey6LGAKCSSYoQnfsoF37dUjFn6ys";
+        if (!GOOGLE_MAPS_API_KEY) {
+            console.error('Google Maps API key is not defined. Please set VITE_OLD_MAP_MAPS_API_KEY in your .env file');
+            return;
+        }
+
+        if (window.google && window.google.maps && window.google.maps.places) {
+            setTimeout(() => {
+                if (isMounted) {
+                    initializeAutocomplete();
+                }
+            }, 300);
+        } else {
+            const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+
+            if (existingScript) {
+                existingScript.addEventListener('load', () => {
+                    setTimeout(() => {
+                        if (isMounted) {
+                            initializeAutocomplete();
+                        }
+                    }, 300);
+                });
+            } else {
+                const callbackName = `initMap_${Date.now()}`;
+
+                window[callbackName] = () => {
+                    setTimeout(() => {
+                        if (isMounted) {
+                            initializeAutocomplete();
+                        }
+                        delete window[callbackName];
+                    }, 300);
+                };
+
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=${callbackName}`;
+                script.async = true;
+                script.defer = true;
+
+                script.onerror = () => {
+                    console.error('Failed to load Google Maps API');
+                    delete window[callbackName];
+                };
+
+                document.head.appendChild(script);
+            }
+        }
+
+        return () => {
+            isMounted = false;
+
+            if (autocompleteInstance) {
+                try {
+                    window.google?.maps?.event?.clearInstanceListeners?.(autocompleteInstance);
+                } catch (e) {
+                    console.error("Error cleaning up autocomplete:", e);
+                }
+                autocompleteInstance = null;
+            }
+
+            if (markerInstance) {
+                try {
+                    markerInstance.setMap(null);
+                } catch (e) {
+                    console.error("Error cleaning up marker:", e);
+                }
+                markerInstance = null;
+            }
+
+            autocompleteRef.current = null;
+            markerRefForAutocomplete.current = null;
+        };
+    }, [updateFormValues]);
 
     const countryOptions = Country.getAllCountries().map((c) => ({ value: c.isoCode, label: c.name }));
     const stateOptions = selectedCountry
@@ -133,14 +334,24 @@ const AdminAddVenue = ({ onBack, onCreate }) => {
             formData.append('country', selectedCountry ? selectedCountry.label : '');
             formData.append('state', selectedState ? selectedState.label : '');
             formData.append('city', selectedCity ? selectedCity.label : '');
-            formData.append('googleSearchLocation', data.location || '');
-            formData.append('googleSearchLat', locationDetails.location?.lat || '');
-            formData.append('googleSearchLong', locationDetails.location?.lng || '');
+
+            // Construct GeoJSON Point for location field (MongoDB expects this format)
+            if (selectedPlaceLat && selectedPlaceLng) {
+                const locationGeoJSON = {
+                    type: "Point",
+                    coordinates: [parseFloat(selectedPlaceLng), parseFloat(selectedPlaceLat)] // GeoJSON: [longitude, latitude]
+                };
+                formData.append("location", JSON.stringify(locationGeoJSON));
+            }
+
+            formData.append('googleSearchLocation', selectedPlaceId || '');
+            formData.append('googleSearchLat', selectedPlaceLat || '');
+            formData.append('googleSearchLong', selectedPlaceLng || '');
 
             // basics
             formData.append('name', data.listingTitle || '');
             formData.append('description', data.listingDescription || '');
-            formData.append('address', locationDetails.address || '');
+            formData.append('address', selectedPlaceAddress || '');
             if (data.type) formData.append('type', data.type);
             if (data.amenities) formData.append('amenities', data.amenities);
             if (data.noOfSeatedGuest) formData.append('noOfSeatedGuest', data.noOfSeatedGuest);
@@ -354,27 +565,53 @@ const AdminAddVenue = ({ onBack, onCreate }) => {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Location*</label>
-                            <Controller
+                            <input
+                                type="text"
+                                id="location"
                                 name="location"
-                                control={control}
-                                rules={{ required: 'Please select a location' }}
-                                render={({ field }) => (
-                                    <Select
-                                        {...field}
-                                        isClearable
-                                        options={locationOptions}
-                                        placeholder="Search location..."
-                                        onInputChange={(value, { action }) => {
-                                            if (action === 'input-change') setLocationQuery(value);
-                                            if (action === 'input-blur' || action === 'menu-close') setLocationQuery('');
-                                        }}
-                                        onChange={(opt) => field.onChange(opt ? opt.value : null)}
-                                        value={locationOptions.find((o) => o.value === field.value) || null}
-                                    />
-                                )}
+                                ref={autocompleteInputRef}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Enter a location (start typing to see suggestions)"
+                                autoComplete="off"
+                                defaultValue={selectedPlaceAddress}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setSelectedPlaceAddress(value);
+                                    setValue('location', value, { shouldValidate: false });
+                                }}
+                                onBlur={(e) => {
+                                    const value = e.target.value || selectedPlaceAddress || '';
+                                    setValue('location', value, { shouldValidate: true });
+                                }}
+                                required
                             />
-                            {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
+                            {errors.location && (
+                                <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
+                            )}
+                            {/* Hidden fields for latitude, longitude, and place_id */}
+                            <input type="hidden" name="latitude" value={selectedPlaceLat} />
+                            <input type="hidden" name="longitude" value={selectedPlaceLng} />
+                            <input type="hidden" name="place_id" value={selectedPlaceId} />
+                            {/* Ensure Google Autocomplete dropdown is visible */}
+                            <style>{`
+                                .pac-container {
+                                    z-index: 9999 !important;
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                                }
+                                .pac-item {
+                                    padding: 8px;
+                                    cursor: pointer;
+                                }
+                                .pac-item:hover {
+                                    background-color: #f0f0f0;
+                                }
+                            `}</style>
                         </div>
+                    </div>
+                    {/* Map Container */}
+                    <div className="mt-4">
+                        <div id="map" ref={mapRefForAutocomplete} style={{ height: '300px', width: '100%', borderRadius: '8px' }}></div>
                     </div>
                 </div>
 

@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form';
 import Select from 'react-select';
 import { FaUsers, FaArrowLeft, FaSave, FaTimes, FaMapMarkerAlt, FaPhone, FaEnvelope, FaGlobe, FaCalendarAlt, FaTag, FaFacebook, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
 import { updateOrganizer } from '../../redux/actions/master/Organizer/updateOrganizer';
-import { getCountry } from '../../redux/actions/master/location/Country';
-import { getState } from '../../redux/actions/master/location/State';
-import { getCity } from '../../redux/actions/master/location/City';
-import { getLocation } from '../../redux/actions/master/location/location';
-import { getLocationDetails } from '../../redux/actions/master/location/locationDetail';
+import { getCategories } from '../../redux/actions/master/Categories/getCategories';
 import { Country, State, City } from 'country-state-city';
 import { toast } from 'react-toastify';
 
@@ -23,22 +19,54 @@ const AdminEditOrganizer = ({ organizer, onBack, onUpdate }) => {
     const [customTag, setCustomTag] = useState('');
     const [selectedSubCategory, setSelectedSubCategory] = useState([]);
     const [subCategoryList, setSubCategoryList] = useState([]);
-    const [location, setLocation] = useState('');
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
     const [selectedCity, setSelectedCity] = useState(null);
 
+    // Google Places Autocomplete refs and state
+    const autocompleteInputRef = React.useRef(null);
+    const autocompleteRef = React.useRef(null);
+    const mapRefForAutocomplete = React.useRef(null);
+    const markerRefForAutocomplete = React.useRef(null);
+    const mapInstanceRef = React.useRef(null);
+    const locationDataInitializedRef = React.useRef(false);
+    const [selectedPlaceAddress, setSelectedPlaceAddress] = useState("");
+    const [selectedPlaceLat, setSelectedPlaceLat] = useState("");
+    const [selectedPlaceLng, setSelectedPlaceLng] = useState("");
+    const [selectedPlaceId, setSelectedPlaceId] = useState("");
+
     const {
         control,
         handleSubmit,
-        watch,
         setValue,
         register,
         reset,
         formState: { errors },
     } = useForm();
 
-    const place_id = watch("location");
+    // Google Maps API Key - access at component level
+    const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_OLD_MAP_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyCyhFwey6LGAKCSSYoQnfsoF37dUjFn6ys";
+
+    // Debug: Log API key access (remove in production)
+    if (process.env.NODE_ENV === 'development') {
+        console.log('AdminEditOrganizer - API Key check:', {
+            VITE_OLD_MAP_MAPS_API_KEY: import.meta.env.VITE_OLD_MAP_MAPS_API_KEY ? 'defined' : 'undefined',
+            VITE_GOOGLE_MAPS_API_KEY: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ? 'defined' : 'undefined',
+            finalKey: GOOGLE_MAPS_API_KEY ? 'defined' : 'undefined'
+        });
+    }
+
+    // Update form values callback for Google Places
+    const updateFormValues = useCallback((formattedAddress, placeId, lat, lng) => {
+        setSelectedPlaceAddress(formattedAddress);
+        setSelectedPlaceLat(lat.toString());
+        setSelectedPlaceLng(lng.toString());
+        setSelectedPlaceId(placeId);
+        setValue('location', placeId, { shouldValidate: false });
+        setValue('googleSearchLocation', formattedAddress, { shouldValidate: false });
+        setValue('googleSearchLat', lat.toString(), { shouldValidate: false });
+        setValue('googleSearchLong', lng.toString(), { shouldValidate: false });
+    }, [setValue]);
 
     // Tag options for organizers
     const tagKeywordOptions = {
@@ -83,8 +111,7 @@ const AdminEditOrganizer = ({ organizer, onBack, onUpdate }) => {
     useEffect(() => {
         const fetchSubCategories = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/categories?type=Organizer`);
-                const data = await response.json();
+                const data = await dispatch(getCategories('Organizer'));
 
                 const formatted = data.data?.map((sub) => ({
                     label: sub.name,
@@ -99,234 +126,559 @@ const AdminEditOrganizer = ({ organizer, onBack, onUpdate }) => {
         };
 
         fetchSubCategories();
-    }, []);
+    }, [dispatch]);
 
-    // Location handling
+    // Initialize Google Maps with Places Autocomplete
     useEffect(() => {
-        if (location) {
-            dispatch(getLocation(location));
-        }
-    }, [dispatch, location]);
+        let isMounted = true;
+        let autocompleteInstance = null;
+        let markerInstance = null;
+        let mapInstance = null;
+        let retryCount = 0;
+        const maxRetries = 10;
 
-    useEffect(() => {
-        if (place_id) {
-            dispatch(getLocationDetails(place_id));
-        }
-    }, [dispatch, place_id]);
-
-    const store3 = useSelector((state) => state.locationsReducer) || { locations: [] };
-    const data3 = Array.isArray(store3?.locations) ? store3.locations : [];
-    const locationOptions = data3.map((item) => ({
-        value: item.place_id,
-        label: item.description,
-    }));
-
-    const store4 = useSelector((state) => state.locationDetailsReducer) || { locationDetails: [] };
-    const data4 = store4.locationDetails ? store4.locationDetails : [];
-
-    // Pre-fill form data when organizer changes
-    useEffect(() => {
-        if (organizer) {
-            // Reset form with organizer data
-            reset({
-                listingTitle: organizer.name || '',
-                listingDescription: organizer.description || '',
-                phone: organizer.phoneNumber || '',
-                email: organizer.email || '',
-                website: organizer.website || '',
-                availableTime: organizer.availableTime || '',
-                facebookUrl: organizer.facebookUrl || '',
-                instagramUrl: organizer.instagramUrl || '',
-                twitterUrl: organizer.twitterUrl || '',
-                youtubeUrl: organizer.youtubeUrl || '',
-                location: organizer.googleSearchLocation || '', // Pre-fill location field
-            });
-
-            // Set categories
-            setSelectedSubCategory(organizer.categories || []);
-
-            // Set tags
-            setSelectedTagKeywords(organizer.tags || []);
-
-            // Pre-populate location options if organizer has Google Maps data
-            if (organizer.googleSearchLocation) {
-                // Create a location option for the existing Google Maps location
-                const existingLocationOption = {
-                    value: organizer.googleSearchLocation, // Use the location as the value
-                    label: organizer.googleSearchLocation, // Use the location as the label
-                };
-
-                // Add to location options if not already present
-                if (!locationOptions.find(option => option.value === organizer.googleSearchLocation)) {
-                    // Note: This will be handled by the Redux store, but we can set the form value
-                    setValue("location", organizer.googleSearchLocation);
-                }
+        const initializeAutocomplete = () => {
+            if (autocompleteRef.current) {
+                console.log("Autocomplete already initialized");
+                return;
             }
 
-            // Set location data with proper async handling
-            const setLocationData = async () => {
-                try {
-                    console.log('Setting location data for organizer:', organizer.name);
-                    console.log('Organizer location data:', {
-                        country: organizer.country,
-                        state: organizer.state,
-                        city: organizer.city
-                    });
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                console.error("Google Maps API or Places library not loaded");
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(initializeAutocomplete, 500);
+                }
+                return;
+            }
 
-                    // Helper function to find country by state name
-                    const findCountryByState = (stateName) => {
-                        for (const country of Country.getAllCountries()) {
-                            const states = State.getStatesOfCountry(country.isoCode);
-                            const foundState = states.find(s => s.name === stateName);
-                            if (foundState) {
-                                return country;
-                            }
-                        }
-                        return null;
-                    };
+            if (!mapRefForAutocomplete.current || !autocompleteInputRef.current) {
+                console.log("Waiting for DOM elements...", {
+                    mapRef: !!mapRefForAutocomplete.current,
+                    inputRef: !!autocompleteInputRef.current
+                });
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(initializeAutocomplete, 300);
+                }
+                return;
+            }
 
-                    // Helper function to find country by city name
-                    const findCountryByCity = (cityName) => {
-                        for (const country of Country.getAllCountries()) {
-                            const states = State.getStatesOfCountry(country.isoCode);
-                            for (const state of states) {
-                                const cities = City.getCitiesOfState(country.isoCode, state.isoCode);
-                                const foundCity = cities.find(c => c.name === cityName);
-                                if (foundCity) {
-                                    return country;
-                                }
-                            }
-                        }
-                        return null;
-                    };
+            try {
+                const input = autocompleteInputRef.current;
 
-                    let countryToUse = null;
+                // Verify input element exists
+                if (!input || typeof input.focus !== 'function') {
+                    console.error("Input element is not valid");
+                    return;
+                }
 
-                    // Try to find country from organizer data
-                    if (organizer.country) {
-                        countryToUse = Country.getAllCountries().find(c => c.name === organizer.country);
-                    }
+                // Create map centered on India
+                mapInstance = new window.google.maps.Map(mapRefForAutocomplete.current, {
+                    center: {
+                        lat: 20.593684,
+                        lng: 78.96288
+                    },
+                    zoom: 5
+                });
 
-                    // If no country found, try to find it from state
-                    if (!countryToUse && organizer.state) {
-                        countryToUse = findCountryByState(organizer.state);
-                        console.log('Found country by state:', countryToUse?.name);
-                    }
+                // Create Autocomplete instance
+                autocompleteInstance = new window.google.maps.places.Autocomplete(input, {
+                    types: ['geocode', 'establishment'],
+                    fields: ['formatted_address', 'geometry', 'place_id', 'name', 'address_components'],
+                    componentRestrictions: undefined, // Allow all countries
+                });
 
-                    // If still no country found, try to find it from city
-                    if (!countryToUse && organizer.city) {
-                        countryToUse = findCountryByCity(organizer.city);
-                        console.log('Found country by city:', countryToUse?.name);
-                    }
+                autocompleteInstance.bindTo('bounds', mapInstance);
 
-                    if (countryToUse) {
-                        const countryOption = {
-                            value: countryToUse.isoCode,
-                            label: countryToUse.name
-                        };
+                // Create marker
+                markerInstance = new window.google.maps.Marker({
+                    map: mapInstance,
+                    anchorPoint: new window.google.maps.Point(0, -29)
+                });
 
-                        setSelectedCountry(countryOption);
-                        setValue("country", countryOption);
-                        console.log('Set country:', countryOption.label);
+                autocompleteRef.current = autocompleteInstance;
+                markerRefForAutocomplete.current = markerInstance;
+                mapInstanceRef.current = mapInstance;
 
-                        // Wait for state options to update
-                        await new Promise(resolve => setTimeout(resolve, 200));
-
-                        // Set state
-                        if (organizer.state) {
-                            const updatedStateOptions = State.getStatesOfCountry(countryToUse.isoCode).map((state) => ({
-                                value: state.isoCode,
-                                label: state.name,
-                            }));
-                            console.log('Available state options:', updatedStateOptions.length);
-
-                            const stateOption = updatedStateOptions.find(s => s.label === organizer.state);
-                            console.log('Found state option:', stateOption);
-
-                            if (stateOption) {
-                                setSelectedState(stateOption);
-                                setValue("state", stateOption);
-                                console.log('Set state:', stateOption.label);
-
-                                // Wait for city options to update
-                                await new Promise(resolve => setTimeout(resolve, 200));
-
-                                // Set city
-                                if (organizer.city) {
-                                    const updatedCityOptions = City.getCitiesOfState(countryToUse.isoCode, stateOption.value).map((city) => ({
-                                        value: city.name,
-                                        label: city.name,
-                                    }));
-                                    console.log('Available city options:', updatedCityOptions.length);
-
-                                    const cityOption = updatedCityOptions.find(c => c.label === organizer.city);
-                                    console.log('Found city option:', cityOption);
-
-                                    if (cityOption) {
-                                        setSelectedCity(cityOption);
-                                        setValue("city", cityOption);
-                                        console.log('Set city:', cityOption.label);
+                // If editing and a Place ID exists, center map using PlacesService immediately
+                if (organizer && organizer.googleSearchLocation && organizer.googleSearchLocation.startsWith('ChI')) {
+                    try {
+                        const placesService = new window.google.maps.places.PlacesService(mapInstance);
+                        placesService.getDetails(
+                            {
+                                placeId: organizer.googleSearchLocation,
+                                fields: ['formatted_address', 'geometry', 'place_id', 'name', 'address_components']
+                            },
+                            (place, status) => {
+                                if (status === window.google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location) {
+                                    const lat = place.geometry.location.lat();
+                                    const lng = place.geometry.location.lng();
+                                    mapInstance.setCenter({ lat, lng });
+                                    mapInstance.setZoom(15);
+                                    markerInstance.setPosition({ lat, lng });
+                                    markerInstance.setVisible(true);
+                                    const formattedAddress = place.formatted_address || organizer.address || '';
+                                    updateFormValues(formattedAddress, place.place_id, lat, lng);
+                                    if (autocompleteInputRef.current) {
+                                        autocompleteInputRef.current.value = formattedAddress;
                                     }
                                 }
                             }
-                        }
-                    } else {
-                        console.log('Could not determine country from organizer data');
+                        );
+                    } catch { }
+                } else if (organizer && organizer.googleSearchLat && organizer.googleSearchLong) {
+                    const lat = parseFloat(organizer.googleSearchLat);
+                    const lng = parseFloat(organizer.googleSearchLong);
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        mapInstance.setCenter({ lat, lng });
+                        mapInstance.setZoom(15);
+                        markerInstance.setPosition({ lat, lng });
+                        markerInstance.setVisible(true);
                     }
-                } catch (error) {
-                    console.error('Error setting location data:', error);
+                } else if (organizer && organizer.location?.coordinates) {
+                    const [lng, lat] = organizer.location.coordinates;
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        mapInstance.setCenter({ lat, lng });
+                        mapInstance.setZoom(15);
+                        markerInstance.setPosition({ lat, lng });
+                        markerInstance.setVisible(true);
+                    }
                 }
-            };
 
-            setLocationData().finally(() => {
-                setFormLoading(false);
-            });
-        } else {
-            setFormLoading(false);
+                // Handle place selection
+                autocompleteInstance.addListener('place_changed', function () {
+                    if (!isMounted) return;
+
+                    markerInstance.setVisible(false);
+
+                    const place = autocompleteInstance.getPlace();
+
+                    if (!place.geometry) {
+                        window.alert("No details available for input: '" + (place.name || '') + "'");
+                        return;
+                    }
+
+                    // Update map view
+                    if (place.geometry.viewport) {
+                        mapInstance.fitBounds(place.geometry.viewport);
+                    } else {
+                        mapInstance.setCenter(place.geometry.location);
+                        mapInstance.setZoom(17);
+                    }
+
+                    // Update marker position
+                    markerInstance.setPosition(place.geometry.location);
+                    markerInstance.setVisible(true);
+
+                    // Extract location data
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
+                    const placeId = place.place_id;
+
+                    // Extract address components
+                    let address = '';
+                    if (place.address_components) {
+                        address = [
+                            (place.address_components[0] && place.address_components[0].short_name || ''),
+                            (place.address_components[1] && place.address_components[1].short_name || ''),
+                            (place.address_components[2] && place.address_components[2].short_name || '')
+                        ].join(' ');
+                    }
+
+                    const formattedAddress = place.formatted_address || address;
+                    updateFormValues(formattedAddress, placeId, lat, lng);
+                });
+
+                console.log("Google Places Autocomplete initialized successfully", {
+                    input: input,
+                    autocomplete: autocompleteInstance
+                });
+            } catch (error) {
+                console.error("Error initializing Google Places Autocomplete:", error);
+            }
+        };
+
+        // Load Google Maps API script
+        if (!GOOGLE_MAPS_API_KEY) {
+            console.error('Google Maps API key is not defined. Please set VITE_OLD_MAP_MAPS_API_KEY in your .env file');
+            return;
         }
-    }, [organizer, countryOptions, reset, setValue]);
+
+        if (window.google && window.google.maps && window.google.maps.places) {
+            setTimeout(() => {
+                if (isMounted) {
+                    initializeAutocomplete();
+                }
+            }, 300);
+        } else {
+            const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+
+            if (existingScript) {
+                existingScript.addEventListener('load', () => {
+                    setTimeout(() => {
+                        if (isMounted) {
+                            initializeAutocomplete();
+                        }
+                    }, 300);
+                });
+            } else {
+                const callbackName = `initMap_${Date.now()}`;
+
+                window[callbackName] = () => {
+                    setTimeout(() => {
+                        if (isMounted) {
+                            initializeAutocomplete();
+                        }
+                        delete window[callbackName];
+                    }, 300);
+                };
+
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=${callbackName}`;
+                script.async = true;
+                script.defer = true;
+
+                script.onerror = () => {
+                    console.error('Failed to load Google Maps API');
+                    delete window[callbackName];
+                };
+
+                document.head.appendChild(script);
+            }
+        }
+
+        return () => {
+            isMounted = false;
+
+            if (autocompleteInstance) {
+                try {
+                    window.google?.maps?.event?.clearInstanceListeners?.(autocompleteInstance);
+                } catch (e) {
+                    console.error("Error cleaning up autocomplete:", e);
+                }
+                autocompleteInstance = null;
+            }
+
+            if (markerInstance) {
+                try {
+                    markerInstance.setMap(null);
+                } catch (e) {
+                    console.error("Error cleaning up marker:", e);
+                }
+                markerInstance = null;
+            }
+
+            autocompleteRef.current = null;
+            markerRefForAutocomplete.current = null;
+            mapInstanceRef.current = null;
+        };
+    }, [updateFormValues]);
+
+    // Update map with existing organizer location after map is initialized
+    useEffect(() => {
+        if (!organizer || !mapInstanceRef.current || !markerRefForAutocomplete.current) {
+            return;
+        }
+
+        // Wait a bit for map to be ready
+        const updateMapLocation = setTimeout(() => {
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                return;
+            }
+
+            const mapInstance = mapInstanceRef.current;
+            const marker = markerRefForAutocomplete.current;
+
+            if (!mapInstance || !marker) {
+                return;
+            }
+
+            // If we have a Place ID, use Places Service to get details
+            if (organizer.googleSearchLocation && organizer.googleSearchLocation.startsWith('ChI')) {
+                const placesService = new window.google.maps.places.PlacesService(mapInstance);
+                const placeId = organizer.googleSearchLocation;
+
+                placesService.getDetails(
+                    {
+                        placeId: placeId,
+                        fields: ['formatted_address', 'geometry', 'place_id', 'name', 'address_components']
+                    },
+                    (place, status) => {
+                        if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
+                            // Center map on place location
+                            if (place.geometry && place.geometry.location) {
+                                const lat = place.geometry.location.lat();
+                                const lng = place.geometry.location.lng();
+
+                                mapInstance.setCenter({ lat, lng });
+                                mapInstance.setZoom(15);
+
+                                // Show marker at place location
+                                marker.setPosition({ lat, lng });
+                                marker.setVisible(true);
+
+                                // Update form values with place details
+                                const formattedAddress = place.formatted_address || organizer.address || '';
+                                updateFormValues(formattedAddress, place.place_id, lat, lng);
+
+                                // Update input field value
+                                if (autocompleteInputRef.current) {
+                                    autocompleteInputRef.current.value = formattedAddress;
+                                }
+                            }
+                        } else {
+                            // Fallback to coordinates if Place ID lookup fails
+                            if (organizer.googleSearchLat && organizer.googleSearchLong) {
+                                const lat = parseFloat(organizer.googleSearchLat);
+                                const lng = parseFloat(organizer.googleSearchLong);
+
+                                if (!isNaN(lat) && !isNaN(lng)) {
+                                    mapInstance.setCenter({ lat, lng });
+                                    mapInstance.setZoom(15);
+                                    marker.setPosition({ lat, lng });
+                                    marker.setVisible(true);
+                                }
+                            } else if (organizer.location && organizer.location.coordinates) {
+                                // Use location coordinates as last resort
+                                const [lng, lat] = organizer.location.coordinates;
+                                if (!isNaN(lat) && !isNaN(lng)) {
+                                    mapInstance.setCenter({ lat, lng });
+                                    mapInstance.setZoom(15);
+                                    marker.setPosition({ lat, lng });
+                                    marker.setVisible(true);
+                                }
+                            }
+                        }
+                    }
+                );
+            } else if (organizer.googleSearchLat && organizer.googleSearchLong) {
+                // Fallback: Use coordinates directly
+                const lat = parseFloat(organizer.googleSearchLat);
+                const lng = parseFloat(organizer.googleSearchLong);
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    mapInstance.setCenter({ lat, lng });
+                    mapInstance.setZoom(15);
+                    marker.setPosition({ lat, lng });
+                    marker.setVisible(true);
+                }
+            } else if (organizer.location && organizer.location.coordinates) {
+                // Last resort: Use location coordinates
+                const [lng, lat] = organizer.location.coordinates;
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    mapInstance.setCenter({ lat, lng });
+                    mapInstance.setZoom(15);
+                    marker.setPosition({ lat, lng });
+                    marker.setVisible(true);
+                }
+            }
+        }, 800); // Increased timeout to ensure map is fully ready
+
+        return () => clearTimeout(updateMapLocation);
+    }, [organizer?._id, organizer?.googleSearchLocation, organizer?.googleSearchLat, organizer?.googleSearchLong, organizer?.location, updateFormValues]);
+
+    // Pre-fill form data when organizer changes
+    useEffect(() => {
+        if (!organizer) {
+            setFormLoading(false);
+            locationDataInitializedRef.current = false;
+            return;
+        }
+
+        // Reset the initialization flag when organizer changes
+        locationDataInitializedRef.current = false;
+
+        // Reset form with organizer data
+        reset({
+            listingTitle: organizer.name || '',
+            listingDescription: organizer.description || '',
+            phone: organizer.phoneNumber || '',
+            email: organizer.email || '',
+            website: organizer.website || '',
+            availableTime: organizer.availableTime || '',
+            facebookUrl: organizer.facebookUrl || '',
+            instagramUrl: organizer.instagramUrl || '',
+            twitterUrl: organizer.twitterUrl || '',
+            youtubeUrl: organizer.youtubeUrl || '',
+            location: organizer.googleSearchLocation || '', // Pre-fill location field
+        });
+
+        // Set categories
+        setSelectedSubCategory(organizer.categories || []);
+
+        // Pre-fill Google Places location data
+        // Use address (human-readable) for display, googleSearchLocation (place ID) for place_id
+        if (organizer.address && organizer.address !== 'not specified') {
+            setSelectedPlaceAddress(organizer.address);
+        } else if (organizer.googleSearchLocation) {
+            // If no address, use googleSearchLocation (might be place ID or address)
+            setSelectedPlaceAddress(organizer.googleSearchLocation);
+        }
+
+        if (organizer.googleSearchLocation) {
+            setSelectedPlaceId(organizer.googleSearchLocation);
+        }
+
+        // Handle lat/lng - they might not exist in the response
+        if (organizer.googleSearchLat) {
+            setSelectedPlaceLat(organizer.googleSearchLat.toString());
+        }
+        if (organizer.googleSearchLong) {
+            setSelectedPlaceLng(organizer.googleSearchLong.toString());
+        }
+
+        // Set tags
+        setSelectedTagKeywords(organizer.tags || []);
+
+        // Set location data with proper async handling
+        const setLocationData = async () => {
+            // Guard: Don't re-set if already initialized for this organizer
+            if (locationDataInitializedRef.current) {
+                setFormLoading(false);
+                return;
+            }
+
+            try {
+                // Helper function to find country by state name
+                const findCountryByState = (stateName) => {
+                    for (const country of Country.getAllCountries()) {
+                        const states = State.getStatesOfCountry(country.isoCode);
+                        const foundState = states.find(s => s.name === stateName);
+                        if (foundState) {
+                            return country;
+                        }
+                    }
+                    return null;
+                };
+
+                // Helper function to find country by city name
+                const findCountryByCity = (cityName) => {
+                    for (const country of Country.getAllCountries()) {
+                        const states = State.getStatesOfCountry(country.isoCode);
+                        for (const state of states) {
+                            const cities = City.getCitiesOfState(country.isoCode, state.isoCode);
+                            const foundCity = cities.find(c => c.name === cityName);
+                            if (foundCity) {
+                                return country;
+                            }
+                        }
+                    }
+                    return null;
+                };
+
+                let countryToUse = null;
+
+                // Try to find country from organizer data
+                if (organizer.country) {
+                    countryToUse = Country.getAllCountries().find(c => c.name === organizer.country);
+                }
+
+                // If no country found, try to find it from state
+                if (!countryToUse && organizer.state) {
+                    countryToUse = findCountryByState(organizer.state);
+                }
+
+                // If still no country found, try to find it from city
+                if (!countryToUse && organizer.city) {
+                    countryToUse = findCountryByCity(organizer.city);
+                }
+
+                if (countryToUse) {
+                    const countryOption = {
+                        value: countryToUse.isoCode,
+                        label: countryToUse.name
+                    };
+
+                    setSelectedCountry(countryOption);
+                    setValue("country", countryOption);
+
+                    // Wait for state options to update
+                    await new Promise(resolve => setTimeout(resolve, 200));
+
+                    // Set state
+                    if (organizer.state) {
+                        const updatedStateOptions = State.getStatesOfCountry(countryToUse.isoCode).map((state) => ({
+                            value: state.isoCode,
+                            label: state.name,
+                        }));
+
+                        const stateOption = updatedStateOptions.find(s => s.label === organizer.state);
+
+                        if (stateOption) {
+                            setSelectedState(stateOption);
+                            setValue("state", stateOption);
+
+                            // Wait for city options to update
+                            await new Promise(resolve => setTimeout(resolve, 200));
+
+                            // Set city
+                            if (organizer.city) {
+                                const updatedCityOptions = City.getCitiesOfState(countryToUse.isoCode, stateOption.value).map((city) => ({
+                                    value: city.name,
+                                    label: city.name,
+                                }));
+
+                                const cityOption = updatedCityOptions.find(c => c.label === organizer.city);
+
+                                if (cityOption) {
+                                    setSelectedCity(cityOption);
+                                    setValue("city", cityOption);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Mark as initialized to prevent re-running
+                locationDataInitializedRef.current = true;
+            } catch (error) {
+                console.error('Error setting location data:', error);
+            } finally {
+                setFormLoading(false);
+            }
+        };
+
+        setLocationData();
+    }, [organizer?._id, reset, setValue]); // Only depend on organizer ID, not the whole object
 
     // Update state options when country changes
     useEffect(() => {
-        if (selectedCountry && organizer) {
+        if (selectedCountry && organizer?.state) {
             // If the current state doesn't match the new country, clear it
             const currentStateOptions = State.getStatesOfCountry(selectedCountry.value).map((state) => ({
                 value: state.isoCode,
                 label: state.name,
             }));
 
-            if (organizer.state) {
-                const stateOption = currentStateOptions.find(s => s.label === organizer.state);
-                if (!stateOption) {
-                    // State doesn't exist in new country, clear it
-                    setSelectedState(null);
-                    setSelectedCity(null);
-                    setValue("state", null);
-                    setValue("city", null);
-                }
+            const stateOption = currentStateOptions.find(s => s.label === organizer.state);
+            if (!stateOption) {
+                // State doesn't exist in new country, clear it
+                setSelectedState(null);
+                setSelectedCity(null);
+                setValue("state", null);
+                setValue("city", null);
             }
         }
-    }, [selectedCountry, organizer, setValue]);
+    }, [selectedCountry, organizer?.state, setValue]);
 
     // Update city options when state changes
     useEffect(() => {
-        if (selectedState && selectedCountry && organizer) {
+        if (selectedState && selectedCountry && organizer?.city) {
             // If the current city doesn't match the new state, clear it
             const currentCityOptions = City.getCitiesOfState(selectedCountry.value, selectedState.value).map((city) => ({
                 value: city.name,
                 label: city.name,
             }));
 
-            if (organizer.city) {
-                const cityOption = currentCityOptions.find(c => c.label === organizer.city);
-                if (!cityOption) {
-                    // City doesn't exist in new state, clear it
-                    setSelectedCity(null);
-                    setValue("city", null);
-                }
+            const cityOption = currentCityOptions.find(c => c.label === organizer.city);
+            if (!cityOption) {
+                // City doesn't exist in new state, clear it
+                setSelectedCity(null);
+                setValue("city", null);
             }
         }
-    }, [selectedState, selectedCountry, organizer, setValue]);
+    }, [selectedState, selectedCountry, organizer?.city, setValue]);
 
     // Handle image selection
     const handleImageChange = (event) => {
@@ -397,13 +749,24 @@ const AdminEditOrganizer = ({ organizer, onBack, onUpdate }) => {
             formData.append("country", selectedCountry ? selectedCountry.label : organizer.country || "");
             formData.append("state", selectedState ? selectedState.label : organizer.state || "");
             formData.append("city", selectedCity ? selectedCity.label : organizer.city || "");
-            formData.append("location", data.location || organizer.googleSearchLocation || "");
+
+            // Construct GeoJSON Point for location field (MongoDB expects this format)
+            const lat = selectedPlaceLat || organizer.googleSearchLat;
+            const lng = selectedPlaceLng || organizer.googleSearchLong;
+            if (lat && lng) {
+                const locationGeoJSON = {
+                    type: "Point",
+                    coordinates: [parseFloat(lng), parseFloat(lat)] // GeoJSON: [longitude, latitude]
+                };
+                formData.append("location", JSON.stringify(locationGeoJSON));
+            }
+
             formData.append("name", data.listingTitle);
             formData.append("description", data.listingDescription);
-            formData.append("address", data4.address || organizer.address || "");
-            formData.append("googleSearchLocation", data.location || organizer.googleSearchLocation || "");
-            formData.append("googleSearchLat", data4.location?.lat || organizer.googleSearchLat || "");
-            formData.append("googleSearchLong", data4.location?.lng || organizer.googleSearchLong || "");
+            formData.append("address", selectedPlaceAddress || organizer.address || "");
+            formData.append("googleSearchLocation", selectedPlaceId || organizer.googleSearchLocation || "");
+            formData.append("googleSearchLat", lat || "");
+            formData.append("googleSearchLong", lng || "");
 
             // Append tags
             selectedTagKeywords.forEach((tag) => formData.append("tags[]", tag));
@@ -760,7 +1123,6 @@ const AdminEditOrganizer = ({ organizer, onBack, onUpdate }) => {
                             <div><strong>Selected Country:</strong> {selectedCountry?.label || 'Not selected'}</div>
                             <div><strong>Selected State:</strong> {selectedState?.label || 'Not selected'}</div>
                             <div><strong>Selected City:</strong> {selectedCity?.label || 'Not selected'}</div>
-                            <div><strong>Location Options:</strong> {locationOptions.length}</div>
                         </div>
                         {/* Status indicators */}
                         <div className="mt-3 flex gap-2">
@@ -893,65 +1255,76 @@ const AdminEditOrganizer = ({ organizer, onBack, onUpdate }) => {
                         </div>
 
                         {/* Location */}
-                        <div>
+                        <div className="relative">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Location*
                             </label>
-                            <Controller
+                            <input
+                                type="text"
+                                id="location"
                                 name="location"
-                                control={control}
-                                rules={{ required: "Please select a location" }}
-                                render={({ field }) => {
-                                    // Create a custom option for existing Google Maps location if not in locationOptions
-                                    let allOptions = [...locationOptions];
-                                    if (organizer.googleSearchLocation && !locationOptions.find(opt => opt.value === organizer.googleSearchLocation)) {
-                                        allOptions.unshift({
-                                            value: organizer.googleSearchLocation,
-                                            label: `${organizer.googleSearchLocation} (Current)`,
-                                        });
-                                    }
-
-                                    return (
-                                        <Select
-                                            {...field}
-                                            isClearable
-                                            options={allOptions}
-                                            placeholder="Search location..."
-                                            onInputChange={(value, { action }) => {
-                                                if (action === "input-change") {
-                                                    setLocation(value);
-                                                }
-                                                if (action === "input-blur" || action === "menu-close") {
-                                                    setLocation("");
-                                                }
-                                            }}
-                                            onChange={(selectedOption) => {
-                                                field.onChange(selectedOption ? selectedOption.value : null);
-                                            }}
-                                            value={allOptions.find(
-                                                (option) => option.value === field.value
-                                            ) || null}
-                                        />
-                                    );
+                                ref={autocompleteInputRef}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Enter a location (start typing to see suggestions)"
+                                autoComplete="off"
+                                defaultValue={selectedPlaceAddress || organizer.address || organizer.googleSearchLocation || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setSelectedPlaceAddress(value);
+                                    setValue('location', value, { shouldValidate: false });
                                 }}
+                                onBlur={(e) => {
+                                    const value = e.target.value || selectedPlaceAddress || '';
+                                    setValue('location', value, { shouldValidate: true });
+                                }}
+                                required
                             />
                             {errors.location && (
                                 <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
                             )}
                             {/* Show current Google Maps location if exists */}
-                            {organizer.googleSearchLocation && (
+                            {organizer.address && organizer.address !== 'not specified' && (
                                 <div className="mt-2 p-2 bg-blue-50 rounded-md">
                                     <p className="text-xs text-blue-700">
-                                        <strong>Current Google Maps Location:</strong> {organizer.googleSearchLocation}
+                                        <strong>Current Address:</strong> {organizer.address}
                                     </p>
+                                    {organizer.googleSearchLocation && (
+                                        <p className="text-xs text-blue-600 mt-1">
+                                            <strong>Place ID:</strong> {organizer.googleSearchLocation}
+                                        </p>
+                                    )}
                                     {organizer.googleSearchLat && organizer.googleSearchLong && (
                                         <p className="text-xs text-blue-600 mt-1">
-                                            Coordinates: {organizer.googleSearchLat}, {organizer.googleSearchLong}
+                                            <strong>Coordinates:</strong> {organizer.googleSearchLat}, {organizer.googleSearchLong}
                                         </p>
                                     )}
                                 </div>
                             )}
+                            {/* Hidden fields for latitude, longitude, and place_id */}
+                            <input type="hidden" name="latitude" value={selectedPlaceLat} />
+                            <input type="hidden" name="longitude" value={selectedPlaceLng} />
+                            <input type="hidden" name="place_id" value={selectedPlaceId} />
+                            {/* Ensure Google Autocomplete dropdown is visible */}
+                            <style>{`
+                                .pac-container {
+                                    z-index: 9999 !important;
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                                }
+                                .pac-item {
+                                    padding: 8px;
+                                    cursor: pointer;
+                                }
+                                .pac-item:hover {
+                                    background-color: #f0f0f0;
+                                }
+                            `}</style>
                         </div>
+                    </div>
+
+                    {/* Map Container */}
+                    <div className="mt-4">
+                        <div id="map" ref={mapRefForAutocomplete} style={{ height: '300px', width: '100%', borderRadius: '8px' }}></div>
                     </div>
                 </div>
 

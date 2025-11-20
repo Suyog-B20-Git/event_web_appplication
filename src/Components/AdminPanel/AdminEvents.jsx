@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const baseUrl = "http://localhost:5000/api/event";
+const baseUrl = "https://dev.eventsnode.com/api/event";
 
 const AdminEvents = () => {
   const [events, setEvents] = useState([]);
@@ -63,7 +63,7 @@ const AdminEvents = () => {
   //     ? `/${upperCategory}/${event._id}`
   //     : `/events/${lowerCategory}/${event._id}`;
   //  console.log("url is:", url)
-  //   navigate(`http://localhost:5000/api/${url}`);
+  //   navigate(`https://dev.eventsnode.com/api/${url}`);
   // };
 
 

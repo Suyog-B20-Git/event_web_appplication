@@ -88,8 +88,13 @@ function GetServiceById() {
   const [upcoming, setUpcoming] = useState(false);
   const [social, setSocial] = useState(false);
   const [stat, setStat] = useState(false);
+  const [facebook, setFacebook] = useState(false);
+  const [twitter, setTwitter] = useState(false);
+  const [instagram, setInstagram] = useState(false);
+  const [youtube, setYoutube] = useState(false);
 
   const [activeSocialTab, setActiveSocialTab] = useState("");
+  const [hoveredTab, setHoveredTab] = useState(null);
 
   const [showShareOptions, setShowShareOptions] = useState(false);
   const shareRef = useRef(null);

@@ -469,10 +469,7 @@ function FeaturedEvent() {
                 <div className="mt-4">
                   {receivedData?.ticketFormats?.length > 0 ? (
                     <div
-                      onClick={() => {
-                        setForm(!form);
-                        handleGetTicketClick();
-                      }}
+                      onClick={handleGetTicketClick}
                       style={{ cursor: "pointer" }}
                       className="block"
                     >

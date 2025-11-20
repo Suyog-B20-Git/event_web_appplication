@@ -49,6 +49,7 @@ import {
 } from "../../redux/actions/master/Events/UpcomingEvent";
 import TwitterEmbed from "../SocialMedia/TwiiterEmbed.jsx";
 import FollowButton from "../FollowButton.jsx";
+import { normalizeImageUrl } from "../../utility/urlUtils";
 import CommonCalendar from "../CommonCalendar.jsx";
 import YouTubeWall from "../SocialMedia/YouTubeWall.jsx";
 
@@ -473,16 +474,13 @@ function GetVenueById() {
               <div className="w-full border border-gray-200 shadow max-w-[250px] md:max-w-[400px] lg:max-w-[180px] h-auto aspect-[5/5] bg-gray-200 rounded-t-lg overflow-hidden flex items-center justify-center min-h-[100px]">
                 {data.profileImage ? (
                   <img
-                    src={data.profileImage
-                      .replace(/\\/g, "/")
-                      .replace(/\/{2,}/g, "/")
-                      .replace("http:/", "http://")}
+                    src={normalizeImageUrl(data.profileImage)}
                     className="w-full h-full object-cover"
                     alt="Profile"
                   />
                 ) : (
                   <img
-                    src="/assets/staticAssets/user-icon.png"
+                    src="/assets/staticAssets/user-icon.jpg"
                     className="w-full h-full object-cover"
                     alt="User"
                   />

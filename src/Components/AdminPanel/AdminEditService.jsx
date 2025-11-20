@@ -1,26 +1,251 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form';
 import Select from 'react-select';
 import { Country, State, City } from 'country-state-city';
 import { FaPuzzlePiece, FaArrowLeft, FaSave, FaTimes } from 'react-icons/fa';
-import { getLocation } from '../../redux/actions/master/location/location';
-import { getLocationDetails } from '../../redux/actions/master/location/locationDetail';
 import { updateService } from '../../redux/actions/master/Services/updateService';
+import { getCategories } from '../../redux/actions/master/Categories/getCategories';
 
 const AdminEditService = ({ service, onBack, onUpdate }) => {
     const dispatch = useDispatch();
     const [image, setImage] = useState(null);
     const [imageError, setImageError] = useState('');
+    const [subCategoryList, setSubCategoryList] = useState([]);
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
     const [selectedCity, setSelectedCity] = useState(null);
-    const [locationQuery, setLocationQuery] = useState('');
-    const [isResolvingLocation, setIsResolvingLocation] = useState(false);
-    const locationInputTimer = useRef(null);
 
-    const { control, handleSubmit, register, setValue, watch, reset, formState: { errors } } = useForm();
-    const place_id = watch('location');
+    const { control, handleSubmit, register, setValue, reset, formState: { errors } } = useForm();
+
+    // Google Places Autocomplete refs and state
+    const autocompleteInputRef = React.useRef(null);
+    const autocompleteRef = React.useRef(null);
+    const mapRefForAutocomplete = React.useRef(null);
+    const markerRefForAutocomplete = React.useRef(null);
+    const mapInstanceRef = React.useRef(null);
+    const [selectedPlaceAddress, setSelectedPlaceAddress] = useState('');
+    const [selectedPlaceLat, setSelectedPlaceLat] = useState('');
+    const [selectedPlaceLng, setSelectedPlaceLng] = useState('');
+    const [selectedPlaceId, setSelectedPlaceId] = useState('');
+
+    // Update form values callback for Google Places
+    const updateFormValues = useCallback((formattedAddress, placeId, lat, lng) => {
+        setSelectedPlaceAddress(formattedAddress);
+        setSelectedPlaceLat(lat.toString());
+        setSelectedPlaceLng(lng.toString());
+        setSelectedPlaceId(placeId);
+        setValue('location', placeId, { shouldValidate: false });
+        setValue('googleSearchLocation', formattedAddress, { shouldValidate: false });
+        setValue('googleSearchLat', lat.toString(), { shouldValidate: false });
+        setValue('googleSearchLong', lng.toString(), { shouldValidate: false });
+    }, [setValue]);
+
+    // Initialize Google Maps with Places Autocomplete
+    useEffect(() => {
+        let isMounted = true;
+        let autocompleteInstance = null;
+        let markerInstance = null;
+        let mapInstance = null;
+        let retryCount = 0;
+        const maxRetries = 10;
+
+        const initializeAutocomplete = () => {
+            if (autocompleteRef.current) {
+                return;
+            }
+            if (!window.google || !window.google.maps || !window.google.maps.places) {
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(initializeAutocomplete, 500);
+                }
+                return;
+            }
+            if (!mapRefForAutocomplete.current || !autocompleteInputRef.current) {
+                if (retryCount < maxRetries) {
+                    retryCount++;
+                    setTimeout(initializeAutocomplete, 300);
+                }
+                return;
+            }
+            try {
+                const input = autocompleteInputRef.current;
+                if (!input || typeof input.focus !== 'function') {
+                    return;
+                }
+
+                // Create map centered on India
+                mapInstance = new window.google.maps.Map(mapRefForAutocomplete.current, {
+                    center: { lat: 20.593684, lng: 78.96288 },
+                    zoom: 5
+                });
+
+                // Create Autocomplete instance
+                autocompleteInstance = new window.google.maps.places.Autocomplete(input, {
+                    types: ['geocode', 'establishment'],
+                    fields: ['formatted_address', 'geometry', 'place_id', 'name', 'address_components'],
+                    componentRestrictions: undefined,
+                });
+                autocompleteInstance.bindTo('bounds', mapInstance);
+
+                // Create marker
+                markerInstance = new window.google.maps.Marker({
+                    map: mapInstance,
+                    anchorPoint: new window.google.maps.Point(0, -29)
+                });
+
+                autocompleteRef.current = autocompleteInstance;
+                markerRefForAutocomplete.current = markerInstance;
+                mapInstanceRef.current = mapInstance;
+
+                // If editing and a Place ID exists, center map using PlacesService immediately
+                if (service && service.googleSearchLocation && service.googleSearchLocation.startsWith('ChI')) {
+                    try {
+                        const placesService = new window.google.maps.places.PlacesService(mapInstance);
+                        placesService.getDetails(
+                            {
+                                placeId: service.googleSearchLocation,
+                                fields: ['formatted_address', 'geometry', 'place_id', 'name', 'address_components']
+                            },
+                            (place, status) => {
+                                if (status === window.google.maps.places.PlacesServiceStatus.OK && place?.geometry?.location) {
+                                    const lat = place.geometry.location.lat();
+                                    const lng = place.geometry.location.lng();
+                                    mapInstance.setCenter({ lat, lng });
+                                    mapInstance.setZoom(15);
+                                    markerInstance.setPosition({ lat, lng });
+                                    markerInstance.setVisible(true);
+                                    const formattedAddress = place.formatted_address || service.address || '';
+                                    updateFormValues(formattedAddress, place.place_id, lat, lng);
+                                    if (autocompleteInputRef.current) {
+                                        autocompleteInputRef.current.value = formattedAddress;
+                                    }
+                                }
+                            }
+                        );
+                    } catch { }
+                } else if (service && service.googleSearchLat && service.googleSearchLong) {
+                    const lat = parseFloat(service.googleSearchLat);
+                    const lng = parseFloat(service.googleSearchLong);
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        mapInstance.setCenter({ lat, lng });
+                        mapInstance.setZoom(15);
+                        markerInstance.setPosition({ lat, lng });
+                        markerInstance.setVisible(true);
+                    }
+                } else if (service && service.location?.coordinates) {
+                    const [lng, lat] = service.location.coordinates;
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        mapInstance.setCenter({ lat, lng });
+                        mapInstance.setZoom(15);
+                        markerInstance.setPosition({ lat, lng });
+                        markerInstance.setVisible(true);
+                    }
+                }
+
+                // Handle place selection
+                autocompleteInstance.addListener('place_changed', function () {
+                    if (!isMounted) return;
+                    markerInstance.setVisible(false);
+                    const place = autocompleteInstance.getPlace();
+                    if (!place.geometry) {
+                        window.alert("No details available for input: '" + (place.name || '') + "'");
+                        return;
+                    }
+                    if (place.geometry.viewport) {
+                        mapInstance.fitBounds(place.geometry.viewport);
+                    } else {
+                        mapInstance.setCenter(place.geometry.location);
+                        mapInstance.setZoom(17);
+                    }
+                    markerInstance.setPosition(place.geometry.location);
+                    markerInstance.setVisible(true);
+
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
+                    const placeId = place.place_id;
+                    let address = '';
+                    if (place.address_components) {
+                        address = [
+                            (place.address_components[0] && place.address_components[0].short_name || ''),
+                            (place.address_components[1] && place.address_components[1].short_name || ''),
+                            (place.address_components[2] && place.address_components[2].short_name || '')
+                        ].join(' ');
+                    }
+                    const formattedAddress = place.formatted_address || address;
+                    updateFormValues(formattedAddress, placeId, lat, lng);
+                });
+            } catch (error) {
+                console.error("Error initializing Google Places Autocomplete:", error);
+            }
+        };
+
+        // Load Google Maps API script
+        const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_OLD_MAP_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyCyhFwey6LGAKCSSYoQnfsoF37dUjFn6ys";
+        if (!GOOGLE_MAPS_API_KEY) {
+            console.error('Google Maps API key is not defined. Please set VITE_OLD_MAP_MAPS_API_KEY in your .env file');
+            return;
+        }
+        if (window.google && window.google.maps && window.google.maps.places) {
+            setTimeout(() => { if (isMounted) initializeAutocomplete(); }, 300);
+        } else {
+            const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+            if (existingScript) {
+                existingScript.addEventListener('load', () => {
+                    setTimeout(() => { if (isMounted) initializeAutocomplete(); }, 300);
+                });
+            } else {
+                const callbackName = `initMap_${Date.now()}`;
+                window[callbackName] = () => {
+                    setTimeout(() => {
+                        if (isMounted) initializeAutocomplete();
+                        delete window[callbackName];
+                    }, 300);
+                };
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=${callbackName}`;
+                script.async = true;
+                script.defer = true;
+                script.onerror = () => { console.error('Failed to load Google Maps API'); delete window[callbackName]; };
+                document.head.appendChild(script);
+            }
+        }
+        return () => {
+            isMounted = false;
+            if (autocompleteInstance) {
+                try { window.google?.maps?.event?.clearInstanceListeners?.(autocompleteInstance); } catch { }
+                autocompleteInstance = null;
+            }
+            if (markerInstance) {
+                try { markerInstance.setMap(null); } catch { }
+                markerInstance = null;
+            }
+            autocompleteRef.current = null;
+            markerRefForAutocomplete.current = null;
+            mapInstanceRef.current = null;
+        };
+    }, [updateFormValues, service]);
+
+    // Fetch subcategories when component mounts (for Service)
+    useEffect(() => {
+        const fetchSubCategories = async () => {
+            try {
+                const data = await dispatch(getCategories('Service'));
+
+                const formatted = data.data?.map((sub) => ({
+                    label: sub.name,
+                    value: sub.name,
+                })) || [];
+
+                setSubCategoryList(formatted);
+            } catch (error) {
+                console.error('Error fetching subcategories:', error);
+                setSubCategoryList([]);
+            }
+        };
+
+        fetchSubCategories();
+    }, [dispatch]);
 
     useEffect(() => {
         if (!service) return;
@@ -33,22 +258,28 @@ const AdminEditService = ({ service, onBack, onUpdate }) => {
             availableTime: service.availableTime || '',
             location: service.googleSearchLocation || ''
         });
+
+        // Pre-fill Google Places location data
+        // Use address (human-readable) for display, googleSearchLocation (place ID) for place_id
+        if (service.address && service.address !== 'not specified') {
+            setSelectedPlaceAddress(service.address);
+        } else if (service.googleSearchLocation) {
+            // If no address, use googleSearchLocation (might be place ID or address)
+            setSelectedPlaceAddress(service.googleSearchLocation);
+        }
+
+        if (service.googleSearchLocation) {
+            setSelectedPlaceId(service.googleSearchLocation);
+        }
+
+        // Handle lat/lng - they might not exist in the response
+        if (service.googleSearchLat) {
+            setSelectedPlaceLat(service.googleSearchLat.toString());
+        }
+        if (service.googleSearchLong) {
+            setSelectedPlaceLng(service.googleSearchLong.toString());
+        }
     }, [service, reset]);
-
-    useEffect(() => { if (locationQuery) dispatch(getLocation(locationQuery)); }, [dispatch, locationQuery]);
-    const isValidPlaceId = (val) => typeof val === 'string' && /^ChI[A-Za-z0-9_-]{10,}$/.test(val);
-    useEffect(() => {
-        if (!place_id || !isValidPlaceId(place_id)) return;
-        setIsResolvingLocation(true);
-        Promise.resolve(dispatch(getLocationDetails(place_id)))
-            .catch(() => { })
-            .finally(() => setIsResolvingLocation(false));
-    }, [dispatch, place_id]);
-
-    const locationsStore = useSelector((state) => state.locationsReducer) || { locations: [] };
-    const locationOptions = Array.isArray(locationsStore?.locations) ? locationsStore.locations.map((i) => ({ value: i.place_id, label: i.description })) : [];
-    const locationDetailsStore = useSelector((state) => state.locationDetailsReducer) || { locationDetails: {} };
-    const locationDetails = locationDetailsStore.locationDetails || {};
 
     // prefill country/state/city
     useEffect(() => {
@@ -88,12 +319,24 @@ const AdminEditService = ({ service, onBack, onUpdate }) => {
         formData.append('country', selectedCountry ? selectedCountry.label : service.country || '');
         formData.append('state', selectedState ? selectedState.label : service.state || '');
         formData.append('city', selectedCity ? selectedCity.label : service.city || '');
-        formData.append('googleSearchLocation', data.location || service.googleSearchLocation || '');
-        formData.append('googleSearchLat', locationDetails.location?.lat || service.googleSearchLat || '');
-        formData.append('googleSearchLong', locationDetails.location?.lng || service.googleSearchLong || '');
+
+        // Construct GeoJSON Point for location field (MongoDB expects this format)
+        const lat = selectedPlaceLat || service.googleSearchLat;
+        const lng = selectedPlaceLng || service.googleSearchLong;
+        if (lat && lng) {
+            const locationGeoJSON = {
+                type: "Point",
+                coordinates: [parseFloat(lng), parseFloat(lat)] // GeoJSON: [longitude, latitude]
+            };
+            formData.append("location", JSON.stringify(locationGeoJSON));
+        }
+
+        formData.append('googleSearchLocation', selectedPlaceId || service.googleSearchLocation || '');
+        formData.append('googleSearchLat', lat || '');
+        formData.append('googleSearchLong', lng || '');
         formData.append('name', data.listingTitle || '');
         formData.append('description', data.listingDescription || '');
-        formData.append('address', locationDetails.address || service.address || '');
+        formData.append('address', selectedPlaceAddress || service.address || '');
         if (data.phone) formData.append('phoneNumber', data.phone);
         if (data.email) formData.append('email', data.email);
         if (data.website) formData.append('website', data.website);
@@ -165,39 +408,61 @@ const AdminEditService = ({ service, onBack, onUpdate }) => {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Location*</label>
-                            <Controller
+                            <input
+                                type="text"
+                                id="location"
                                 name="location"
-                                control={control}
-                                rules={{ required: 'Please select a location' }}
-                                render={({ field }) => {
-                                    let allOptions = [...locationOptions];
-                                    if (service?.googleSearchLocation && !locationOptions.find(opt => opt.value === service.googleSearchLocation)) {
-                                        allOptions.unshift({ value: service.googleSearchLocation, label: `${service.googleSearchLocation} (Current)` });
-                                    }
-                                    return (
-                                        <Select
-                                            {...field}
-                                            isClearable
-                                            options={allOptions}
-                                            placeholder="Search location..."
-                                            onInputChange={(value, { action }) => {
-                                                if (action === 'input-change') {
-                                                    if (locationInputTimer.current) clearTimeout(locationInputTimer.current);
-                                                    locationInputTimer.current = setTimeout(() => setLocationQuery(value), 400);
-                                                }
-                                                if (action === 'input-blur' || action === 'menu-close') {
-                                                    setLocationQuery('');
-                                                    if (locationInputTimer.current) { clearTimeout(locationInputTimer.current); locationInputTimer.current = null; }
-                                                }
-                                            }}
-                                            onChange={(opt) => field.onChange(opt ? opt.value : null)}
-                                            value={allOptions.find((o) => o.value === field.value) || null}
-                                        />
-                                    );
+                                ref={autocompleteInputRef}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="Enter a location (start typing to see suggestions)"
+                                autoComplete="off"
+                                defaultValue={selectedPlaceAddress || service.address || service.googleSearchLocation || ''}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setSelectedPlaceAddress(value);
+                                    setValue('location', value, { shouldValidate: false });
                                 }}
+                                onBlur={(e) => {
+                                    const value = e.target.value || selectedPlaceAddress || '';
+                                    setValue('location', value, { shouldValidate: true });
+                                }}
+                                required
                             />
-                            {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
+                            {errors.location && (
+                                <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
+                            )}
+                            {/* Hidden fields for latitude, longitude, and place_id */}
+                            <input type="hidden" name="latitude" value={selectedPlaceLat} />
+                            <input type="hidden" name="longitude" value={selectedPlaceLng} />
+                            <input type="hidden" name="place_id" value={selectedPlaceId} />
+                            {/* Ensure Google Autocomplete dropdown is visible */}
+                            <style>{`
+                                .pac-container {
+                                    z-index: 9999 !important;
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                                }
+                                .pac-item {
+                                    padding: 8px;
+                                    cursor: pointer;
+                                }
+                                .pac-item:hover {
+                                    background-color: #f0f0f0;
+                                }
+                            `}</style>
+                            {service?.googleSearchLocation && (
+                                <div className="mt-2 p-2 bg-blue-50 rounded-md">
+                                    <p className="text-xs text-blue-700"><strong>Current Google Maps Location:</strong> {service.googleSearchLocation}</p>
+                                    {service.googleSearchLat && service.googleSearchLong && (
+                                        <p className="text-xs text-blue-600 mt-1">Coordinates: {service.googleSearchLat}, {service.googleSearchLong}</p>
+                                    )}
+                                </div>
+                            )}
                         </div>
+                    </div>
+                    {/* Map Container */}
+                    <div className="mt-4">
+                        <div id="map" ref={mapRefForAutocomplete} style={{ height: '300px', width: '100%', borderRadius: '8px' }}></div>
                     </div>
                 </div>
 
@@ -239,17 +504,6 @@ const AdminEditService = ({ service, onBack, onUpdate }) => {
                     </div>
                 </div>
             </form>
-            {isResolvingLocation && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                    <div className="bg-white rounded-lg p-6 flex items-center gap-3 shadow-xl">
-                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-800">Resolving location…</h3>
-                            <p className="text-sm text-gray-500">Please wait, fetching map details.</p>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

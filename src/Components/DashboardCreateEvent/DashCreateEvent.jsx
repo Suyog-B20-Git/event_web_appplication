@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
 import { updateEvent } from "../../redux/actions/master/Events/UpdateEvent";
 
-const baseUrl = "http://localhost:5000/api";
+const baseUrl = "https://dev.eventsnode.com/api";
 
 const tabs = [
   { id: 0, label: "Details" },

@@ -26,7 +26,7 @@ function RegisterModal() {
 
     try {
       const response = await axios.post(
-        // "http://localhost:5000/api/auth/setup",
+        // "https://dev.eventsnode.com/api/auth/setup",
         `${Auth.register}`,
         {
           username: name,

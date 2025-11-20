@@ -546,7 +546,7 @@ function GetOrganizerById() {
                   />
                 ) : (
                   <img
-                    src="/assets/staticAssets/user-icon.png"
+                    src="/assets/staticAssets/user-icon.jpg"
                     className="w-full h-full object-cover"
                     alt="user"
                   />

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FaFacebook, FaInstagram, FaSquareXTwitter } from 'react-icons/fa6';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from "axios";
+import { normalizeImageUrl } from "../utility/urlUtils";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const CATEGORY_TITLES = {
@@ -106,10 +107,7 @@ const SearchData = () => {
                 <img
                   src={
                     item.profileImage
-                      ? item.profileImage
-                        .replace(/\\/g, "/")
-                        .replace(/\/{2,}/g, "/")
-                        .replace("http:/", "http://")
+                      ? normalizeImageUrl(item.profileImage) || "/assets/staticAssets/fallback-image.jpg"
                       : "/assets/staticAssets/fallback-image.jpg"
                   }
                   className="h-full w-full object-cover transition-transform duration-300 hover:scale-125"

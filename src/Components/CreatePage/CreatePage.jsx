@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { MdCancel } from "react-icons/md";
 import Select from "react-select";
@@ -8,9 +8,10 @@ import { getCountry } from "../../redux/actions/master/location/Country";
 import { useDispatch, useSelector } from "react-redux";
 import { getState } from "../../redux/actions/master/location/State";
 import { getCity } from "../../redux/actions/master/location/City";
-import { getLocation } from "../../redux/actions/master/location/location";
-import { getLocationDetails } from "../../redux/actions/master/location/locationDetail";
-import MapContainer from "./MapComponent";
+// OLD IMPLEMENTATION - COMMENTED OUT (No longer using backend API for location)
+// import { getLocation } from "../../redux/actions/master/location/location";
+// import { getLocationDetails } from "../../redux/actions/master/location/locationDetail";
+// import MapContainer from "./MapComponent";
 import { createNewOrganizer } from "../../redux/actions/master/Organizer";
 import { toast } from "react-toastify";
 import { createNewPerformer } from "../../redux/actions/master/Performers/PostPerformer";
@@ -43,34 +44,242 @@ function CreatePage() {
     formState: { errors },
   } = useForm();
 
+  // OLD IMPLEMENTATION - COMMENTED OUT
   // Geocode function to get coordinates from address and update map
-  const geocodeAndCenterMap = async (address) => {
-    try {
-      if (!window.google || !window.google.maps) {
-        console.error("Google Maps API not loaded");
+  // const geocodeAndCenterMap = async (address) => {
+  //   try {
+  //     if (!window.google || !window.google.maps) {
+  //       console.error("Google Maps API not loaded");
+  //       return;
+  //     }
+
+  //     const geocoder = new window.google.maps.Geocoder();
+  //     geocoder.geocode({ address: address }, (results, status) => {
+  //       if (status === 'OK' && results[0]) {
+  //         const location = results[0].geometry.location;
+  //         const lat = location.lat();
+  //         const lng = location.lng();
+
+  //         // Update the form with the geocoded coordinates
+  //         setValue('location.lat', lat);
+  //         setValue('location.lng', lng);
+
+  //         console.log('Geocoded location:', { lat, lng, address });
+  //       } else {
+  //         console.error('Geocoding failed:', status);
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error('Error in geocodeAndCenterMap:', error);
+  //   }
+  // };
+
+  // Memoize setValue callback to avoid recreating it and prevent infinite loops
+  const updateFormValues = useCallback((formattedAddress, placeId, lat, lng) => {
+    setSelectedPlaceAddress(formattedAddress);
+    setSelectedPlaceLat(lat.toString());
+    setSelectedPlaceLng(lng.toString());
+    setSelectedPlaceId(placeId);
+
+    // Update form values
+    setValue('event_geolocation', formattedAddress, { shouldValidate: false });
+    setValue('location', placeId, { shouldValidate: false });
+    setValue('googleSearchLocation', formattedAddress, { shouldValidate: false });
+    setValue('googleSearchLat', lat.toString(), { shouldValidate: false });
+    setValue('googleSearchLong', lng.toString(), { shouldValidate: false });
+    setValue('latitude', lat.toString(), { shouldValidate: false });
+    setValue('longitude', lng.toString(), { shouldValidate: false });
+  }, [setValue]);
+
+  // NEW IMPLEMENTATION: Initialize Google Maps with Places Autocomplete (like old code)
+  useEffect(() => {
+    let isMounted = true;
+    let autocompleteInstance = null;
+    let markerInstance = null;
+    let mapInstance = null;
+
+    // Function to initialize map and autocomplete
+    const initializeAutocomplete = () => {
+      // Check if already initialized to prevent re-initialization
+      if (autocompleteRef.current) {
         return;
       }
 
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ address: address }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-          const location = results[0].geometry.location;
-          const lat = location.lat();
-          const lng = location.lng();
-          
-          // Update the form with the geocoded coordinates
-          setValue('location.lat', lat);
-          setValue('location.lng', lng);
-          
-          console.log('Geocoded location:', { lat, lng, address });
-        } else {
-          console.error('Geocoding failed:', status);
+      if (!window.google || !window.google.maps || !window.google.maps.places) {
+        console.error("Google Maps API or Places library not loaded");
+        return;
+      }
+
+      // Wait for DOM elements to be ready
+      if (!mapRefForAutocomplete.current || !autocompleteInputRef.current) {
+        console.log("Waiting for DOM elements...");
+        return;
+      }
+
+      try {
+        // Create map centered on India (like old code)
+        mapInstance = new window.google.maps.Map(mapRefForAutocomplete.current, {
+          center: {
+            lat: 20.593684,
+            lng: 78.96288
+          },
+          zoom: 5
+        });
+
+        // Get the input element
+        const input = autocompleteInputRef.current;
+
+        // Create Autocomplete instance (like old code)
+        // Configure autocomplete with proper options for suggestions
+        autocompleteInstance = new window.google.maps.places.Autocomplete(input, {
+          types: ['geocode', 'establishment'], // This helps show suggestions
+          fields: ['formatted_address', 'geometry', 'place_id', 'name', 'address_components'], // Request specific fields for better performance
+        });
+
+        // Bind autocomplete to map bounds for location biasing (like old code)
+        autocompleteInstance.bindTo('bounds', mapInstance);
+
+        // Create marker
+        markerInstance = new window.google.maps.Marker({
+          map: mapInstance,
+          anchorPoint: new window.google.maps.Point(0, -29)
+        });
+
+        // Store references
+        autocompleteRef.current = autocompleteInstance;
+        markerRefForAutocomplete.current = markerInstance;
+
+        // Handle place selection (like old code)
+        autocompleteInstance.addListener('place_changed', function () {
+          if (!isMounted) return;
+
+          markerInstance.setVisible(false);
+
+          const place = autocompleteInstance.getPlace();
+
+          if (!place.geometry) {
+            window.alert("No details available for input: '" + (place.name || '') + "'");
+            return;
+          }
+
+          // Update map view
+          if (place.geometry.viewport) {
+            mapInstance.fitBounds(place.geometry.viewport);
+          } else {
+            mapInstance.setCenter(place.geometry.location);
+            mapInstance.setZoom(17); // Like old code
+          }
+
+          // Update marker position
+          markerInstance.setPosition(place.geometry.location);
+          markerInstance.setVisible(true);
+
+          // Extract location data (like old code)
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          const placeId = place.place_id;
+
+          // Extract address components
+          let address = '';
+          if (place.address_components) {
+            address = [
+              (place.address_components[0] && place.address_components[0].short_name || ''),
+              (place.address_components[1] && place.address_components[1].short_name || ''),
+              (place.address_components[2] && place.address_components[2].short_name || '')
+            ].join(' ');
+          }
+
+          // Update state and form values
+          const formattedAddress = place.formatted_address || address;
+          updateFormValues(formattedAddress, placeId, lat, lng);
+        });
+
+        console.log("Google Places Autocomplete initialized successfully");
+      } catch (error) {
+        console.error("Error initializing Google Places Autocomplete:", error);
+      }
+    };
+
+    // Load Google Maps API script with places library (like old code)
+    const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_OLD_MAP_MAPS_API_KEY || "AIzaSyCyhFwey6LGAKCSSYoQnfsoF37dUjFn6ys";
+
+    // Check if Google Maps is already loaded
+    if (window.google && window.google.maps && window.google.maps.places) {
+      // API already loaded, wait a bit for DOM to be ready
+      setTimeout(() => {
+        if (isMounted) {
+          initializeAutocomplete();
         }
-      });
-    } catch (error) {
-      console.error('Error in geocodeAndCenterMap:', error);
+      }, 300);
+    } else {
+      // Check if script already exists in DOM
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
+
+      if (existingScript) {
+        // Script exists but not loaded yet, wait for it
+        existingScript.addEventListener('load', () => {
+          setTimeout(() => {
+            if (isMounted) {
+              initializeAutocomplete();
+            }
+          }, 300);
+        });
+      } else {
+        // Create unique callback name to avoid conflicts
+        const callbackName = `initMap_${Date.now()}`;
+
+        // Set global callback function BEFORE loading script (like old code)
+        window[callbackName] = () => {
+          setTimeout(() => {
+            if (isMounted) {
+              initializeAutocomplete();
+            }
+            // Clean up callback
+            delete window[callbackName];
+          }, 300);
+        };
+
+        // Create and load script (like old code)
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=${callbackName}`;
+        script.async = true;
+        script.defer = true;
+
+        script.onerror = () => {
+          console.error('Failed to load Google Maps API');
+          delete window[callbackName];
+        };
+
+        document.head.appendChild(script);
+      }
     }
-  };
+
+    return () => {
+      isMounted = false;
+
+      // Cleanup
+      if (autocompleteInstance) {
+        try {
+          window.google?.maps?.event?.clearInstanceListeners?.(autocompleteInstance);
+        } catch (e) {
+          console.error("Error cleaning up autocomplete:", e);
+        }
+        autocompleteInstance = null;
+      }
+
+      if (markerInstance) {
+        try {
+          markerInstance.setMap(null);
+        } catch (e) {
+          console.error("Error cleaning up marker:", e);
+        }
+        markerInstance = null;
+      }
+
+      autocompleteRef.current = null;
+      markerRefForAutocomplete.current = null;
+    };
+  }, [updateFormValues]); // Only re-run if updateFormValues changes (which it won't due to useCallback)
 
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState([]);
@@ -137,7 +346,8 @@ function CreatePage() {
   }, [selectedCategory]);
 
 
-  const place_id = watch("location");
+  // OLD IMPLEMENTATION - COMMENTED OUT
+  // const place_id = watch("location");
 
   const socialProfile = [
     { label: "Facebook Url", value: "facebookUrl", placeholder: "https://www.facebook.com/abc" },
@@ -145,6 +355,16 @@ function CreatePage() {
     { label: "Youtube Url", value: "youtubeUrl", placeholder: "https://www.youtube.com/@tseries" },
     { label: "Instagram Url", value: "instagramUrl", placeholder: "https://www.instagram.com/Adidas" },
   ];
+
+  // Google Places Autocomplete - NEW IMPLEMENTATION (like old code)
+  const autocompleteInputRef = React.useRef(null);
+  const autocompleteRef = React.useRef(null);
+  const mapRefForAutocomplete = React.useRef(null);
+  const markerRefForAutocomplete = React.useRef(null);
+  const [selectedPlaceAddress, setSelectedPlaceAddress] = useState("");
+  const [selectedPlaceLat, setSelectedPlaceLat] = useState("");
+  const [selectedPlaceLng, setSelectedPlaceLng] = useState("");
+  const [selectedPlaceId, setSelectedPlaceId] = useState("");
 
   const tagKeywordList = [
     { value: "Event Planner", label: "Event Planner" },
@@ -235,7 +455,8 @@ function CreatePage() {
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-  const [location, setLocation] = useState("");
+  // OLD IMPLEMENTATION - COMMENTED OUT (Backend API approach)
+  // const [location, setLocation] = useState("");
   const [error, setError] = useState(null);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
@@ -261,31 +482,42 @@ function CreatePage() {
     }))
     : [];
 
-  useEffect(() => {
-    if (location) {
-      dispatch(getLocation(location));
-    }
-  }, [dispatch, location]);
+  // OLD IMPLEMENTATION - COMMENTED OUT (Backend API approach)
+  // useEffect(() => {
+  //   if (location) {
+  //     dispatch(getLocation(location));
+  //   }
+  // }, [dispatch, location]);
 
-  const store3 = useSelector((state) => state.locationsReducer) || {
-    locations: [],
-  };
-  const data3 = Array.isArray(store3?.locations) ? store3.locations : [];
-  const locationOptions = data3.map((item) => ({
-    value: item.place_id,
-    label: item.description,
-  }));
+  // const store3 = useSelector((state) => state.locationsReducer) || {
+  //   locations: [],
+  // };
+  // const data3 = Array.isArray(store3?.locations) ? store3.locations : [];
+  // const locationOptions = data3.map((item) => ({
+  //   value: item.place_id,
+  //   label: item.description,
+  // }));
 
-  useEffect(() => {
-    if (place_id) {
-      dispatch(getLocationDetails(place_id));
-    }
-  }, [dispatch, place_id]);
+  // useEffect(() => {
+  //   if (place_id) {
+  //     dispatch(getLocationDetails(place_id));
+  //   }
+  // }, [dispatch, place_id]);
 
-  const store4 = useSelector((state) => state.locationDetailsReducer) || {
-    locationDetails: [],
-  };
-  const data4 = store4.locationDetails ? store4.locationDetails : [];
+  // const store4 = useSelector((state) => state.locationDetailsReducer) || {
+  //   locationDetails: [],
+  // };
+  // const data4 = store4.locationDetails ? store4.locationDetails : [];
+
+  // NEW: Using data from Google Places Autocomplete
+  const data4 = selectedPlaceAddress ? {
+    location: {
+      lat: selectedPlaceLat,
+      lng: selectedPlaceLng
+    },
+    address: selectedPlaceAddress,
+    place_id: selectedPlaceId
+  } : { location: null };
 
   // handle page-redirection and data saving
 
@@ -381,13 +613,26 @@ function CreatePage() {
       formData.append("country", selectedCountry ? selectedCountry.label : "");
       formData.append("state", selectedState ? selectedState.label : "");
       formData.append("city", selectedCity ? selectedCity.label : "");
-      formData.append("location", data.location);
+      // OLD IMPLEMENTATION - COMMENTED OUT (Backend API approach)
+      // formData.append("location", data.location);
+      // formData.append("name", data.listingTitle);
+      // formData.append("description", data.listingDescription);
+      // formData.append("address", data4.address);
+      // formData.append("googleSearchLocation", data.location);
+      // formData.append("googleSearchLat", data4.location.lat);
+      // formData.append("googleSearchLong", data4.location.lng);
+
+      // NEW IMPLEMENTATION: Using Google Places Autocomplete data (like old code)
       formData.append("name", data.listingTitle);
       formData.append("description", data.listingDescription);
-      formData.append("address", data4.address);
-      formData.append("googleSearchLocation", data.location);
-      formData.append("googleSearchLat", data4.location.lat);
-      formData.append("googleSearchLong", data4.location.lng);
+      formData.append("event_geolocation", selectedPlaceAddress || "");
+      formData.append("location", selectedPlaceId || "");
+      formData.append("address", selectedPlaceAddress || "");
+      formData.append("googleSearchLocation", selectedPlaceAddress || "");
+      formData.append("googleSearchLat", selectedPlaceLat || "");
+      formData.append("googleSearchLong", selectedPlaceLng || "");
+      formData.append("latitude", selectedPlaceLat || "");
+      formData.append("longitude", selectedPlaceLng || "");
 
       //  Update map pin here
 
@@ -926,17 +1171,18 @@ function CreatePage() {
             </div>
             <div>
               <label
-                htmlFor="location"
+                htmlFor="event_geolocation"
                 className="block text-sm mb-2 font-medium text-gray-700"
               >
-                Location*{" "}
-                {errors.location && (
+                Address*{" "}
+                {errors.event_geolocation && (
                   <span className="text-[#ff2459] font-medium">
-                    {errors.location.message}
+                    {errors.event_geolocation.message}
                   </span>
                 )}
               </label>
-              <Controller
+              {/* OLD IMPLEMENTATION - COMMENTED OUT (Backend API + react-select) */}
+              {/* <Controller
                 name="location"
                 control={control}
                 rules={{
@@ -945,35 +1191,63 @@ function CreatePage() {
                 render={({ field }) => (
                   <Select
                     {...field}
-                    isClearable // Enables "X" button to clear input
+                    isClearable
                     options={locationOptions}
                     placeholder="Search location..."
-                    getOptionLabel={(option) => option.label} // Show venue name
-                    getOptionValue={(option) => option.value} // Ensure unique selection by ID
+                    getOptionLabel={(option) => option.label}
+                    getOptionValue={(option) => option.value}
                     onInputChange={(value, { action }) => {
                       if (action === "input-change") {
-                        setLocation(value); // Update search query
+                        setLocation(value);
                       }
                       if (action === "input-blur" || action === "menu-close") {
-                        setLocation(""); // Clear input when dropdown closes
+                        setLocation("");
                       }
                     }}
                     onChange={(selectedOption) => {
                       field.onChange(
                         selectedOption ? selectedOption.value : null
                       );
-                      // Removed geocodeAndCenterMap call to avoid mutating 'location' shape
-
-                      // Store only ID
                     }}
                     value={
                       locationOptions.find(
                         (option) => option.value === field.value
                       ) || null
-                    } // Maintain selected value
+                    }
                   />
                 )}
+              /> */}
+
+              {/* NEW IMPLEMENTATION: Google Places Autocomplete (like old code) */}
+              <input
+                type="text"
+                id="event_geolocation"
+                name="event_geolocation"
+                ref={autocompleteInputRef}
+                className="mt-1 block w-full border rounded-md p-2"
+                placeholder="Enter a location (start typing to see suggestions)"
+                autoComplete="off"
+                defaultValue={selectedPlaceAddress}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedPlaceAddress(value);
+                  setValue('event_geolocation', value, { shouldValidate: false });
+                }}
+                onBlur={(e) => {
+                  // Validate on blur if empty
+                  const value = e.target.value || selectedPlaceAddress || '';
+                  setValue('event_geolocation', value, { shouldValidate: true });
+                }}
+                required
               />
+              {errors.event_geolocation && (
+                <p className="text-red-500 text-sm mt-1">{errors.event_geolocation.message}</p>
+              )}
+
+              {/* Hidden fields for latitude, longitude, and place_id (like old code) */}
+              <input type="hidden" name="latitude" id="latitude" value={selectedPlaceLat} />
+              <input type="hidden" name="longitude" id="longitude" value={selectedPlaceLng} />
+              <input type="hidden" name="place_id" value={selectedPlaceId} />
             </div>
           </div>
         </div>
@@ -997,8 +1271,13 @@ function CreatePage() {
           </div>
         )}
 
+        {/* Map Container */}
         <div className="my-16">
-          <MapContainer location={data4.location} />
+          {/* OLD: MapContainer with backend location data */}
+          {/* <MapContainer location={data4.location} /> */}
+
+          {/* NEW: Map div for Google Places Autocomplete integration (like old code) */}
+          <div id="map" ref={mapRefForAutocomplete} style={{ height: '300px', width: '100%' }}></div>
         </div>
 
         {/*Contact Information*/}

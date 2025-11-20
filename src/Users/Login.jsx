@@ -10,7 +10,7 @@ import { axiosInstance } from "../../utility/utils";
 import { Auth } from "../redux/Urls";
 import { toast } from "react-toastify";
 
-const baseUrl = "http://localhost:5000/api";
+const baseUrl = "https://dev.eventsnode.com/api";
 
 function Login() {
   const navigate = useNavigate();

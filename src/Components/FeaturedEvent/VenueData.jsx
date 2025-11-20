@@ -5,6 +5,7 @@ import { FaSquareXTwitter } from "react-icons/fa6";
 import { FcLike } from "react-icons/fc";
 import { BsFire } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { normalizeImageUrl } from "../../utility/urlUtils";
 
 function VenueData({ data }) {
   const navigate = useNavigate();
@@ -25,12 +26,8 @@ function VenueData({ data }) {
                 <img
                   src={
                     item.profileImage
-                      ? item.profileImage
-                          .replace(/\\/g, "/")
-                          .replace(/\/{2,}/g, "/")
-                          .replace("http:/", "http://")
-                      : "/assets/staticAssets/fallback-image.jpg" ||
-                        "https://uploads-ssl.webflow.com/6074635e07fbbbc45f34a580/62ed4a6a17fa6378798911df_Cover-2400w.jpg"
+                      ? normalizeImageUrl(item.profileImage) || "/assets/staticAssets/fallback-image.jpg"
+                      : "/assets/staticAssets/fallback-image.jpg"
                   }
                   alt={item.name}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-125"

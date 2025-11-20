@@ -31,7 +31,7 @@ const MyEvents = () => {
 
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/organizer/events?page=${page}&limit=${rowsToShow}`,
+          `https://dev.eventsnode.com/api/organizer/events?page=${page}&limit=${rowsToShow}`,
           {
             headers: {
               Authorization: authToken,

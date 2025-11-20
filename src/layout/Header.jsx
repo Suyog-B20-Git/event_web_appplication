@@ -5,6 +5,7 @@ import {
   IoTicket,
 } from "react-icons/io5";
 import { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 import Button from "../Components/Button";
 import Sidebar from "./Sidebar";
 import {
@@ -25,11 +26,13 @@ import { CgProfile } from "react-icons/cg";
 import gsap from "gsap";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { getCategories } from "../redux/actions/master/Categories/getCategories";
 
-const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const baseUrl = import.meta.env.VITE_API_URL || "https://dev.eventsnode.com/api";
 
 const Header = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showLocationPopup, setShowLocationPopup] = useState(false);
   const [ShowPopup, setShowPopup] = useState(false);
   const [userName, setUserName] = useState("");
@@ -47,6 +50,13 @@ const Header = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [currentLocation, setCurrentLocation] = useState("Select Location");
   const [headerVisible, setHeaderVisible] = useState(true);
+  const [categories, setCategories] = useState({
+    Event: [],
+    Organizer: [],
+    Performer: [],
+    Service: [],
+    Venue: []
+  });
 
   // Add hover delay refs
   const hoverTimeoutRef = useRef(null);
@@ -122,73 +132,65 @@ const Header = () => {
     },
   ];
 
+  // Helper function to capitalize first letter of each word
+  const capitalizeWords = (str) => {
+    return str
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
+  // Build text_data dynamically from fetched categories
   const text_data = [
     {
       name: "Events",
       filterPath: "/filtered-events",
       path: "/events",
       icon: <MdEvent />,
-      popUpMenu: [
-        { name: "Business", path: "/events/business" },
-        { name: "Festivals", path: "/events/festivals" },
-        { name: "Live Music", path: "/events/live-music" },
-        { name: "Nightlife & Club", path: "/events/nightlife-and-club" },
-        { name: "Professional", path: "/events/professional" },
-        { name: "Social", path: "/events/social" },
-        { name: "Sport & Leisure", path: "/events/sport-and-leisure" },
-        { name: "Theatre & Arts", path: "/events/theatre-and-arts" },
-      ],
+      popUpMenu: categories.Event.map((cat) => ({
+        name: capitalizeWords(cat.name),
+        path: `/events/${cat.slug}`,
+      })),
     },
     {
       name: "Organisers",
       filterPath: "/Organizers",
       path: "/organizers",
       icon: <GrGroup />,
-      popUpMenu: [
-        { name: "Event Planner", path: "organizers/event-planner" },
-        { name: "Wedding Planner", path: "organizers/wedding-planner" },
-        { name: "Adventure", path: "organizers/adventure" },
-      ],
+      popUpMenu: categories.Organizer.map((cat) => ({
+        name: capitalizeWords(cat.name),
+        path: `/organizers/${cat.slug}`,
+      })),
     },
     {
       name: "Performers",
       filterPath: "/Performers",
       path: "/performers",
       icon: <IoIosPerson />,
-      popUpMenu: [
-        { name: "Band", path: "/performers/band" },
-        { name: "Disc Jockey", path: "/performers/disc-jokey" },
-        { name: "Sound Artist", path: "/performers/sound-artist" },
-        { name: "Stand up Comedian", path: "/performers/stand-up-comedian" },
-      ],
+      popUpMenu: categories.Performer.map((cat) => ({
+        name: capitalizeWords(cat.name),
+        path: `/performers/${cat.slug}`,
+      })),
     },
     {
       name: "Services",
       path: "/services",
       filterPath: "/Services",
       icon: <MdMiscellaneousServices />,
-      popUpMenu: [
-        { name: "Anchor", path: "/services/anchor" },
-        { name: "Decor", path: "/services/decor" },
-        { name: "Entertainer", path: "/services/entertainer" },
-        { name: "Party Supplies", path: "/services/party-supplies" },
-        {
-          name: "Photography & Videography",
-          path: "/services/photography-and-videography",
-        },
-        { name: "Promoters", path: "/services/promoters" },
-        { name: "DanceStudio", path: "/services/dance-studio" },
-      ],
+      popUpMenu: categories.Service.map((cat) => ({
+        name: capitalizeWords(cat.name),
+        path: `/services/${cat.slug}`,
+      })),
     },
     {
       name: "Venues",
       path: "/venues",
       filterPath: "/Venues",
       icon: <IoLocationSharp />,
-      popUpMenu: [
-        { name: "Indoor", path: "/venues/indoor" },
-        { name: "Outdoor", path: "/venues/outdoor" },
-      ],
+      popUpMenu: categories.Venue.map((cat) => ({
+        name: capitalizeWords(cat.name),
+        path: `/venues/${cat.slug}`,
+      })),
     },
   ];
 
@@ -307,44 +309,92 @@ const Header = () => {
     });
   };
 
+  // Fetch categories for all types
+  useEffect(() => {
+    const fetchAllCategories = async () => {
+      try {
+        const types = ['Event', 'Organizer', 'Performer', 'Service', 'Venue'];
+        const categoryPromises = types.map(async (type) => {
+          try {
+            const data = await dispatch(getCategories(type));
+            return { type, categories: data.data || [] };
+          } catch (error) {
+            console.error(`Error fetching ${type} categories:`, error);
+            return { type, categories: [] };
+          }
+        });
+
+        const results = await Promise.all(categoryPromises);
+        const categoriesMap = {};
+        results.forEach(({ type, categories }) => {
+          categoriesMap[type] = categories;
+        });
+        setCategories(categoriesMap);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchAllCategories();
+  }, [dispatch]);
+
   useEffect(() => {
     let categoryToSet = selectedCategory;
-    switch (selectedCategory) {
-      case "Business":
-        categoryToSet = "business & seminars";
-        break;
-      case "Festivals":
-        categoryToSet = "festivals";
-        break;
-      case "Live Music":
-        categoryToSet = "live music";
-        break;
-      case "Nightlife and club":
-        categoryToSet = "nightlife & club";
-        break;
-      case "Professional":
-        categoryToSet = "professional";
-        break;
-      case "Social":
-        categoryToSet = "social";
-        break;
-      case "Sport & Leisure":
-        categoryToSet = "sport & leisure";
-        break;
-      case "Theatre & Arts":
-        categoryToSet = "theatre & arts";
-        break;
-      case "all":
-        categoryToSet = "all";
-        break;
-      default:
-        localStorage.removeItem("selectedCategory");
-        break;
+    // Find the category from the fetched categories to get the correct format
+    const allCategories = [
+      ...categories.Event,
+      ...categories.Organizer,
+      ...categories.Performer,
+      ...categories.Service,
+      ...categories.Venue
+    ];
+
+    const foundCategory = allCategories.find(
+      cat => capitalizeWords(cat.name) === selectedCategory || cat.name.toLowerCase() === selectedCategory.toLowerCase()
+    );
+
+    if (foundCategory) {
+      categoryToSet = foundCategory.name.toLowerCase();
+    } else if (selectedCategory === "all") {
+      categoryToSet = "all";
+    } else {
+      // Fallback to old mapping for backward compatibility
+      switch (selectedCategory) {
+        case "Business":
+          categoryToSet = "business & seminars";
+          break;
+        case "Festivals":
+          categoryToSet = "festivals";
+          break;
+        case "Live Music":
+          categoryToSet = "live music";
+          break;
+        case "Nightlife and club":
+        case "Nightlife & Club":
+          categoryToSet = "nightlife & club";
+          break;
+        case "Professional":
+          categoryToSet = "professional";
+          break;
+        case "Social":
+          categoryToSet = "social";
+          break;
+        case "Sport & Leisure":
+          categoryToSet = "sport & leisure";
+          break;
+        case "Theatre & Arts":
+          categoryToSet = "theatre & arts";
+          break;
+        default:
+          localStorage.removeItem("selectedCategory");
+          return;
+      }
     }
+
     if (categoryToSet) {
       localStorage.setItem("selectedCategory", categoryToSet);
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, categories]);
 
   useEffect(() => {
     if (authToken) {
@@ -736,12 +786,12 @@ const Header = () => {
               >
                 {userName} <IoMdArrowDropdown className="text-lg" />
               </span>
-              
-             
+
+
               {isLog && (
                 <div className="absolute top-full left-0 right-0 h-2 bg-transparent z-40"></div>
               )}
-              
+
               {isLog && (
                 <div
                   ref={boxRef}
