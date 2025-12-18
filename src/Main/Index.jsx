@@ -13,14 +13,14 @@ function Index() {
   return (
     <div>
       <div
-        className={`${role === "superadmin" ? "lg:pb-[88px]" : "lg:pb-[88px] md:pb-[88px]"
-          }`}
+      // className={`${role === "superadmin" ? "lg:pb-[88px]" : "lg:pb-[88px] md:pb-[88px]"
+      //   }`}
       >
-        {" "} 
-        {!hideHeaderRoutes.includes(location.pathname) && <Header />}
+        {" "}
+        {/* {!hideHeaderRoutes.includes(location.pathname) && <Header />} */}
       </div>
       <Outlet />
-      {!hideFooterRoutes.includes(location.pathname) && <Footer />}
+      {/* {!hideFooterRoutes.includes(location.pathname) && <Footer />} */}
     </div>
   );
 }

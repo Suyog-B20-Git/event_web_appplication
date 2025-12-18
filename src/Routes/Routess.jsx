@@ -71,9 +71,9 @@ function Routess() {
     <div>
       <Routes>
         <Route path="/" element={<Index />}>
-          <Route index element={<Home />} />
-          <Route path="home" element={<Home />} />
-
+          <Route index element={<Login />} />
+          {/* <Route path="home" element={<Home />} /> */}
+          {/* 
           {text_data.map((item) => (
             <React.Fragment key={item.path}>
 
@@ -118,13 +118,13 @@ function Routess() {
                     )
                 )}
             </React.Fragment>
-          ))}
-
+          ))} */}
+          {/* 
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/submit-event" element={<CreateEventForm />} />
           <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
 
-          <Route path="/eventfilerbar" element={<EventFilterBar />} />
+          <Route path="/eventfilerbar" element={<EventFilterBar />} /> */}
 
 
 

@@ -40,7 +40,7 @@ function Login() {
         localStorage.removeItem("redirectAfterLogin");
         if (userRole === "superadmin") {
           toast.success("SuperAdmin logged in successfully!", { position: "top-right" });
-          navigate("/");
+          navigate("/admin-panel");
         } else {
           toast.success("Login successful!", { position: "top-right" });
           navigate(redirectTo);
