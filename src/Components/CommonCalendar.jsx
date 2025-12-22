@@ -212,8 +212,8 @@ const SimpleCalendar = ({
                   backgroundColor: isSelected(date)
                     ? "#4a90e2"
                     : hasEventOnDate(date)
-                    ? "#9b59b6"
-                    : "transparent",
+                      ? "#9b59b6"
+                      : "transparent",
                   color: isSelected(date) || hasEventOnDate(date) ? "white" : "#333",
                   borderRadius: "8px",
                   fontSize: "16px",
@@ -330,7 +330,7 @@ const CommonCalendar = () => {
         const mondayStr = formatDateYMD(monday);
         const sundayStr = formatDateYMD(sunday);
 
-        const baseUrl = "http://localhost:5000/api/event/filter";
+        const baseUrl = "https://dev.eventsnode.com/api/event/filter";
 
         const todayUrl = `${baseUrl}?startDate=${todayStr}&endDate=${tomorrowStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`;
         const tomorrowUrl = `${baseUrl}?startDate=${tomorrowStr}&endDate=${tomorrowEndStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`;
@@ -656,7 +656,7 @@ const CommonCalendar = () => {
           </div>
         </div>
       </div>
-      {/* Week Calendar Modal */}
+      {/* Week Calendar */}
       {showWeekCalendar && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div
@@ -685,7 +685,7 @@ const CommonCalendar = () => {
           </div>
         </div>
       )}
-      {/* Today Calendar Modal */}
+      {/* Today Calendar*/}
       {showTodayCalendar && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div ref={todayPickerRef} className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
@@ -710,7 +710,7 @@ const CommonCalendar = () => {
           </div>
         </div>
       )}
-      {/* Tomorrow Calendar Modal */}
+      {/* Tomorrow Calendar */}
       {showTomorrowCalendar && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div ref={tomorrowPickerRef} className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
@@ -728,7 +728,7 @@ const CommonCalendar = () => {
               showNavigation={false}
               activeStartDate={tomorrow}
               getEventsForDate={getEventsForTomorrowDate}
-              
+
               hoveredDate={hoveredDate}
               eventDays={eventDays}
               setHoveredDate={setHoveredDate}

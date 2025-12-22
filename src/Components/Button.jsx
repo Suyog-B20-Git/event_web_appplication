@@ -8,10 +8,10 @@ function Button({
   iconDirection = "left",
   type = "button",
   variant = "normal",
-  width,
+  width = "",
   onClick,
   color,
-  textPos,
+  textPos = "text-center",
   rounded,
   textSize,
 }) {
@@ -30,7 +30,7 @@ function Button({
       style={{ textAlign: "center" }}
       onClick={onClick}
       type={type}
-      className={`${baseStyles} ${textSize} ${rounded} ${variantStyles[variant]} ${iconPosition} font-semibold gap-2 ${width} ${textPos} ${color} `}
+      className={`${baseStyles} ${textSize || ''} ${rounded || ''} ${variantStyles[variant]} ${iconPosition} font-semibold gap-2 ${width} ${textPos} ${color || ''}`}
     >
       {icon && <span className="relative">{icon}</span>}
       {text}
@@ -46,16 +46,10 @@ Button.propTypes = {
   variant: PropTypes.oneOf(["normal", "primary"]),
   width: PropTypes.oneOf(["w-full", ""]),
   onClick: PropTypes.func,
-  color: PropTypes.color,
+  color: PropTypes.string,
   textPos: PropTypes.string,
 };
 
-Button.defaultProps = {
-  iconDirection: "left",
-  type: "button",
-  variant: "normal",
-  width: "",
-  textPos: "text-center",
-};
+// Removed defaultProps as it's deprecated in function components
 
 export default Button;

@@ -17,6 +17,16 @@ function WatchTrailer({ youtubeVideoUrl }) {
         videoId = parsedUrl.pathname.split("/shorts/")[1];
       }
 
+      // Fallback for youtu.be URLs (like https://youtu.be/t2_Q2BRzeEE?si=CPRsSjCPld3ZdC8-)
+      if (!videoId && parsedUrl.hostname === "youtu.be") {
+        videoId = parsedUrl.pathname.substring(1); // Remove the leading slash
+      }
+
+      // Clean up videoId by removing any query parameters that might be attached
+      if (videoId && videoId.includes("?")) {
+        videoId = videoId.split("?")[0];
+      }
+
       if (!videoId) {
         console.error("No video ID found in URL:", url);
         return "";

@@ -18,6 +18,38 @@ const convertUTCToLocal = (utcString) => {
   });
 };
 
+// Function to get the correct price from ticketFormats
+const getEventPrice = (event) => {
+  if (!event.ticketFormats || event.ticketFormats.length === 0) {
+    return "FREE";
+  }
+
+  // Find the minimum price among all ticket formats
+  let minPrice = Infinity;
+  let hasValidPrice = false;
+
+  event.ticketFormats.forEach(ticket => {
+    if (ticket.price !== undefined && ticket.price !== null) {
+      hasValidPrice = true;
+      
+      // Check if ticket is on sale
+      const now = new Date();
+      const isOnSale = ticket.isSale && 
+        new Date(ticket.saleStartDate) <= now && 
+        now <= new Date(ticket.saleEndDate);
+      
+      const currentPrice = isOnSale ? ticket.salePrice : ticket.price;
+      minPrice = Math.min(minPrice, currentPrice);
+    }
+  });
+
+  if (!hasValidPrice || minPrice === Infinity) {
+    return "FREE";
+  }
+
+  return `₹${minPrice} ONWARDS`;
+};
+
 // function Cards({ heading }) {
 function EventCardData({ data, heading }) {
   const navigate = useNavigate();
@@ -95,7 +127,7 @@ function EventCardData({ data, heading }) {
                   </div>
 
                   <p className="mt-auto  flex lg:justify-between gap-4 items-center text-sm lg:text-sm p-2">
-                    <span className="lg:text-sm text-xs">$1300 ONWARDS</span>
+                    <span className="lg:text-sm text-xs">{getEventPrice(item)}</span>
                     {/* <button className="rounded shadow lg:p-2 p-2 lg:m-0 mr-1 lg:text-sm text-xs bg-white">
                                      BUY NOW
                                    </button> */}

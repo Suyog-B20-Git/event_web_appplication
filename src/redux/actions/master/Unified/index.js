@@ -1,0 +1,2 @@
+export { createEntityFromUrls } from './createEntityFromUrls';
+

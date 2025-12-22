@@ -39,8 +39,8 @@ const MeditationForm = (data) => {
   const eventDescription = data?.data.description;
   const eventAddress =
     data?.data?.venue?.city &&
-    data?.data?.venue?.state &&
-    data?.data?.venue?.country
+      data?.data?.venue?.state &&
+      data?.data?.venue?.country
       ? `${data.data.venue.city}, ${data.data.venue.state}, ${data.data.venue.country}`
       : "Not Available";
 
@@ -163,6 +163,18 @@ const MeditationForm = (data) => {
     return null;
   };
 
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const handleSubmit = async () => {
     if (
       !customerDetails.name ||
@@ -186,43 +198,135 @@ const MeditationForm = (data) => {
 
     try {
       setLoading(true);
-      const bookingData = {
-        event: eventId,
-        customerName: customerDetails.name,
-        customerEmail: customerDetails.email,
-        customerPhoneNumber: customerDetails.phone,
-        price: calculateTotal(),
-        currency: "INR",
-        booking: [
-          {
-            ticketFormat: ticketFormatId,
-            promocode: selectedPromoCode,
-            bookedSeatNos: generateSeatNumbers(selectedQuantity),
-            attendees: attendees,
+
+      // Get customer ID from user profile stored in localStorage
+      const userProfileStr = localStorage.getItem('userProfile');
+      let customerId = null;
+      
+      if (userProfileStr) {
+        try {
+          const userProfile = JSON.parse(userProfileStr);
+          customerId = userProfile._id || userProfile.id;
+        } catch (e) {
+          console.error('Error parsing user profile:', e);
+        }
+      }
+      
+      if (!customerId) {
+        toast.error("Please login to continue");
+        navigate("/login");
+        return;
+      }
+
+      // Prepare booking data
+      const bookingData = [
+        {
+          ticketFormat: ticketFormatId,
+          promocode: selectedPromoCode,
+          bookedSeatNos: generateSeatNumbers(selectedQuantity),
+          attendees: attendees,
+        },
+      ];
+
+      // Step 1: Create Razorpay order
+      const orderResponse = await axios.post(
+        `${baseUrl}/api/payment/create-order`,
+        {
+          event: eventId,
+          customer: customerId,
+          booking: bookingData,
+          currency: "INR",
+        },
+        {
+          headers: {
+            Authorization: authToken,
           },
-        ],
+        }
+      );
+
+      if (orderResponse.data.status !== true) {
+        toast.error(orderResponse.data.message || "Failed to create order");
+        setLoading(false);
+        return;
+      }
+
+      const { orderId, razorpayOrderId, amount, currency, key } = orderResponse.data.data;
+
+      // Step 2: Open Razorpay checkout
+      const options = {
+        key: key,
+        amount: amount,
+        currency: currency,
+        name: eventName || "Event Booking",
+        description: `Booking for ${eventName}`,
+        order_id: razorpayOrderId,
+        prefill: {
+          name: customerDetails.name,
+          email: customerDetails.email,
+          contact: customerDetails.phone,
+        },
+        theme: {
+          color: "#ff2459",
+        },
+        handler: async function (response) {
+          // Payment success handler
+          try {
+            setLoading(true);
+            
+            // Step 3: Verify payment and create tickets
+            const verifyResponse = await axios.post(
+              `${baseUrl}/api/payment/verify`,
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                order_id: orderId,
+                booking_details: bookingData,
+              },
+              {
+                headers: {
+                  Authorization: authToken,
+                },
+              }
+            );
+
+            if (verifyResponse.data.status === true) {
+              toast.success("Payment successful! Tickets booked successfully!");
+              setCustomerDetails({ name: "", email: "", phone: "" });
+              setSelectedQuantity(0);
+              setSelectedPromoCode("");
+              setPromoDiscount(0);
+              setAttendees([]);
+              navigate("/dashboard");
+            } else {
+              toast.error(verifyResponse.data.message || "Payment verification failed");
+            }
+          } catch (err) {
+            console.error("Payment verification error:", err);
+            toast.error("Payment verification failed. Please contact support.");
+          } finally {
+            setLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            // Payment cancelled
+            setLoading(false);
+            toast.info("Payment cancelled");
+          },
+        },
       };
 
-      const response = await axios.post(`${baseUrl}/api/ticket`, bookingData, {
-        headers: {
-          Authorization: authToken,
-        },
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response) {
+        toast.error(`Payment failed: ${response.error.description || "Unknown error"}`);
+        setLoading(false);
       });
-      const responseData = response.data;
-      if (response.status === 200 || response.status === 201) {
-        toast.success("Ticket booked successfully!");
-        setCustomerDetails({ name: "", email: "", phone: "" });
-        setSelectedQuantity(0);
-        setSelectedPromoCode("");
-        setPromoDiscount(0);
-        setAttendees([]);
-        navigate("/dashboard");
-      } else {
-        toast.error("Booking failed. Please try again.");
-      }
+      
+      rzp.open();
     } catch (err) {
-      toast.error("Booking failed. Please try again.");
-    } finally {
+      console.error("Order creation error:", err);
+      toast.error(err.response?.data?.message || "Failed to initiate payment. Please try again.");
       setLoading(false);
     }
   };
@@ -559,13 +663,13 @@ const MeditationForm = (data) => {
               <div className="flex items-center">
                 <input
                   type="radio"
-                  id="free"
+                  id="razorpay"
                   name="payment"
                   defaultChecked
                   className="mr-3 w-4 h-4"
                 />
-                <label htmlFor="free" className="text-sm sm:text-base">
-                  Free (Free checkout)
+                <label htmlFor="razorpay" className="text-sm sm:text-base">
+                  Razorpay (Secure Payment Gateway)
                 </label>
               </div>
             </div>
@@ -577,7 +681,7 @@ const MeditationForm = (data) => {
               disabled={loading || selectedQuantity === 0}
               className="w-full bg-red-500 text-white py-3 sm:py-4 px-6 rounded-lg font-semibold text-base sm:text-lg hover:bg-red-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
             >
-              {loading ? "Processing..." : "Checkout"}
+              {loading ? "Processing..." : `Pay ₹${calculateTotal().toFixed(2)}`}
             </button>
           </div>
         </div>

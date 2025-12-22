@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { MdCancel } from "react-icons/md";
 import { toast } from "react-toastify";
-import axios from "axios";
-const baseUrl = import.meta.env.VITE_API_URL;
+import { axiosInstance } from "../../../utility/utils";
 
 function OrganiserContact({
   isFormOpen,
@@ -10,7 +9,7 @@ function OrganiserContact({
   OrganizerName,
   OrganizerEmail,
 }) {
- 
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -37,6 +36,7 @@ function OrganiserContact({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // For organizer contact, we use the old structure since it's specifically for event organizers
     const payload = {
       to: OrganizerEmail,
       eventName: OrganizerName,
@@ -50,7 +50,7 @@ function OrganiserContact({
     setLoading(true);
 
     try {
-      const response = await axios.post(`${baseUrl}/api/enquiries`, payload);
+      const response = await axiosInstance.post("/enquiries", payload);
       toast.success("Message sent successfully!");
       setData([...data, formData]);
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
@@ -125,9 +125,8 @@ function OrganiserContact({
             <button
               type="submit"
               disabled={loading}
-              className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${
-                loading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
+              className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${loading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
             >
               {loading && (
                 <svg

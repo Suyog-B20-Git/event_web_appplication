@@ -24,7 +24,7 @@ function LoginModal() {
 
     try {
       const response = await axios.post(
-        // "http://localhost:5000/api/auth/login",
+        // "https://dev.eventsnode.com/api/auth/login",
         `${Auth.login}`,
         {
           email,
@@ -107,7 +107,7 @@ function LoginModal() {
               />
             </div>
 
-           
+
             <p className="p-2 flex justify-center ">Login with</p>
             <div className="flex justify-center gap-3 p-2">
               <Link>

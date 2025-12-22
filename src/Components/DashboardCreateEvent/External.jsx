@@ -1,8 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-const External = ({ nextTab }) => {
+const External = ({ data, setData, nextTab }) => {
+  const location = useLocation();
+  const eventData = location.state?.event;
+
   const [externalUrl, setExternalUrl] = useState("");
   const [buttonText, setButtonText] = useState("");
+
+  useEffect(() => {
+    if (!eventData) return;
+
+    setExternalUrl(eventData.externalUrl || "");
+    setButtonText(eventData.buttonText || "");
+  }, [eventData]);
 
   const handleSave = () => {
     console.log("Saved External:", { externalUrl, buttonText });
@@ -16,8 +27,10 @@ const External = ({ nextTab }) => {
         <input
           type="text"
           placeholder="Enter external event URL"
-          value={externalUrl}
-          onChange={(e) => setExternalUrl(e.target.value)}
+         value={data.externalUrl || ""}
+        onChange={(e) =>
+          setData((prev) => ({ ...prev, externalUrl: e.target.value }))
+        }
           className="w-full border border-gray-300 rounded-lg px-4 py-2  hover:border-blue-500"
         />
       </div>
@@ -27,8 +40,10 @@ const External = ({ nextTab }) => {
         <input
           type="text"
           placeholder="Enter button text"
-          value={buttonText}
-          onChange={(e) => setButtonText(e.target.value)}
+          value={data.buttonText || ""}
+        onChange={(e) =>
+          setData((prev) => ({ ...prev, buttonText: e.target.value }))
+        }
           className="w-full border border-gray-300 rounded-lg px-4 py-2  hover:border-blue-500"
         />
       </div>
@@ -37,7 +52,7 @@ const External = ({ nextTab }) => {
         onClick={handleSave}
         className="bg-[#ff2459] text-white px-6 py-2 rounded-lg"
       >
-        Save
+        Next
       </button>
     </div>
   );

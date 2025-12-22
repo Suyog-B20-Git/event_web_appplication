@@ -1,8 +1,8 @@
-// Components/DashboardCreateEvent/SEO.jsx
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-import React from "react";
+const SEO = ({ data, setData, nextTab }) => {
 
-const SEO = ({ nextTab }) => {
   return (
     <form className="space-y-6">
       <div>
@@ -12,6 +12,10 @@ const SEO = ({ nextTab }) => {
         <input
           type="text"
           placeholder="Meta Title"
+          value={data.metaTitle || ""}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, metaTitle: e.target.value }))
+          }
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 hover:border-blue-500"
         />
       </div>
@@ -23,6 +27,10 @@ const SEO = ({ nextTab }) => {
         <input
           type="text"
           placeholder="Keywords (comma separated)"
+          value={data.metaTags || ""}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, metaTags: e.target.value }))
+          }
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 hover:border-blue-500"
         />
       </div>
@@ -34,6 +42,10 @@ const SEO = ({ nextTab }) => {
         <input
           type="text"
           placeholder="Short SEO Description"
+          value={data.metaDescription || ""}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, metaDescription: e.target.value }))
+          }
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-600 hover:border-blue-500"
         />
       </div>

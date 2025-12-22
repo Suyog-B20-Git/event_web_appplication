@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FaFacebook, FaInstagram, FaSquareXTwitter } from 'react-icons/fa6';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from "axios";
+import { normalizeImageUrl } from "../utility/urlUtils";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const CATEGORY_TITLES = {
@@ -13,7 +14,7 @@ const CATEGORY_TITLES = {
 const SearchData = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [hasData, setHasData] = useState(true); 
+  const [hasData, setHasData] = useState(true);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const city = searchParams.get("location");
@@ -27,13 +28,13 @@ const SearchData = () => {
         setHasData(false);
         return;
       }
-      
+
       try {
         const isDefault = !city || city.toLowerCase() === "all";
         const url = isDefault
           ? `${baseUrl}/api/search/detail?query=all`
           : `${baseUrl}/api/search/detail?query=${encodeURIComponent(city)}`;
-  
+
         const response = await axios.get(url);
         if (response.data?.status && response.data.data) {
           setData(response.data.data);
@@ -86,10 +87,10 @@ const SearchData = () => {
         break;
     }
   };
-  
+
   const renderCategorySection = (key, items) => {
     if (!items || items.length === 0) return null;
-   
+
     return (
       <div key={key} className="mb-10 mt-5">
         <h2 className="text-2xl font-bold uppercase mb-4">{CATEGORY_TITLES[key] || key}</h2>
@@ -104,19 +105,16 @@ const SearchData = () => {
                 className="h-40 md:h-36 lg:h-40 w-full overflow-hidden flex items-center justify-center cursor-pointer"
               >
                 <img
-                 src={
-                        item.profileImage
-                          ? item.profileImage
-                              .replace(/\\/g, "/")
-                              .replace(/\/{2,}/g, "/")
-                              .replace("http:/", "http://")
-                          : "/assets/staticAssets/fallback-image.jpg"
-                      }
+                  src={
+                    item.profileImage
+                      ? normalizeImageUrl(item.profileImage) || "/assets/staticAssets/fallback-image.jpg"
+                      : "/assets/staticAssets/fallback-image.jpg"
+                  }
                   className="h-full w-full object-cover transition-transform duration-300 hover:scale-125"
                   alt={item.name}
                 />
               </div>
-              <div 
+              <div
                 onClick={() => handleCardClick(key, item)}
                 className="p-2 cursor-pointer"
               >
@@ -125,7 +123,7 @@ const SearchData = () => {
                   {item.address}, {item.city}, {item.state}
                 </section>
               </div>
-            
+
               <div className="flex justify-between w-full px-3">
                 <div className="flex gap-2 text-lg">
                   {item.facebookUrl && (

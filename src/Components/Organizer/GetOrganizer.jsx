@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrganizer } from "../../redux/actions/master/Organizer/getOrganiser";
 import Loading from "../Loading";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FcLike } from "react-icons/fc";
 import { CiFacebook } from "react-icons/ci";
 import {
@@ -28,6 +28,7 @@ import CommonCalendar from "../CommonCalendar";
 function GetOrganizer() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { slug } = useParams(); // Get slug from URL
   const value = location.state;
   const filterValue = value ? value.toLowerCase() : "";
   const [localIsFavorite, setLocalIsFavorite] = useState("isFavourite");
@@ -36,6 +37,10 @@ function GetOrganizer() {
     /*header*/
   }
   const [category, setCategory] = useState("");
+  
+  // Convert slug to category name format (e.g., "test-orgainzer" -> "test orgainzer")
+  // This handles dynamic slugs from the URL
+  const slugCategory = slug ? slug.replace(/-/g, " ") : "";
 
   const category1 = "";
   const options = [
@@ -68,27 +73,35 @@ function GetOrganizer() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Reset page when slug changes
   useEffect(() => {
-    if (category1) {
-      dispatch(
-        getOrganizer(
-          setLoading,
-          selectedOption?.value || "",
-          currentPage,
-          category1
-        )
-      );
-    } else {
-      dispatch(
-        getOrganizer(
-          setLoading,
-          selectedOption?.value || "",
-          currentPage,
-          category ? category : filterValue
-        )
-      );
+    if (slug) {
+      setCurrentPage(1);
     }
-  }, [dispatch, selectedOption, currentPage, category1, category, filterValue]);
+  }, [slug]);
+
+  useEffect(() => {
+    // Priority: category (from button click) > slugCategory (from URL) > filterValue (from state)
+    let categoryToUse = "";
+    if (category1) {
+      categoryToUse = category1;
+    } else if (category) {
+      categoryToUse = category;
+    } else if (slugCategory) {
+      categoryToUse = slugCategory;
+    } else if (filterValue) {
+      categoryToUse = filterValue;
+    }
+
+    dispatch(
+      getOrganizer(
+        setLoading,
+        selectedOption?.value || "",
+        currentPage,
+        categoryToUse
+      )
+    );
+  }, [dispatch, selectedOption, currentPage, category1, category, filterValue, slugCategory]);
 
   const store = useSelector((state) => state.getOrganizerReducer) || {
     organizerData: [],
@@ -241,106 +254,150 @@ function GetOrganizer() {
           </div>
         </div>
 
-        <div className="grid  lg:grid-cols-3 md:grid-cols-3 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
-          {data.map((item, index) => {
-            return (
-              <div
-                key={index}
-                className="w-68 h-78 flex flex-col pb-4 shadow-md items-center justify-between rounded border  "
+        {data.length === 0 && !loading ? (
+          <div className="flex flex-col items-center justify-center py-20 px-4">
+            <div className="text-center">
+              <svg
+                className="mx-auto h-24 w-24 text-gray-400 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
               >
-                <div
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                No Organizers Found
+              </h3>
+              <p className="text-gray-600 mb-4">
+                {category || slugCategory || filterValue
+                  ? `We couldn't find any organizers in the "${category || slugCategory || filterValue}" category.`
+                  : "There are no organizers available at the moment."}
+              </p>
+              {(category || slugCategory || filterValue) && (
+                <button
                   onClick={() => {
-                    navigate(`/Organizer/${item._id}`, {
-                      state: item,
-                    });
+                    setCategory("");
+                    navigate("/organizers");
                   }}
-                  className="h-40 md:h-36 lg:h-40 w-full overflow-hidden"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#ff2459] hover:bg-[#e01e4f] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff2459] transition-colors"
                 >
-                  <img
-                    src={item.profileImage}
-                    className="rounded-t h-40 w-full object-cover transition-transform duration-300 hover:scale-125"
-                    alt={item.name}
-                  />
-                </div>
-                <div
-                  onClick={() => {
-                    navigate(`/Organizer/${item._id}`, {
-                      state: item._id,
-                    });
-                  }}
-                  className="p-2"
-                >
-                  <h1 className="font-medium text-lg capitalize">
-                    {item.name}
-                  </h1>
-                  <section className="text-sm text-gray-500 ">
-                    {item.address}, {item.city}, {item.state}
-                  </section>
-                </div>
-                <div className="flex justify-between">
-                  <p className="flex gap-2 p-1 px-3 text-lg">
-                    <button className="text-red-500">
-                      <a href={item.facebookUrl ? item.facebookUrl : ""}>
-                        {item.facebookUrl ? (
-                          <CiFacebook className="text-red-500" />
-                        ) : (
-                          ""
-                        )}
-                      </a>
-                    </button>
-                    <button className="text-red-500">
-                      <a href={item.instagramUrl ? item.instagramUrl : ""}>
-                        {item.instagramUrl ? (
-                          <FaInstagram className="text-red-500" />
-                        ) : (
-                          ""
-                        )}
-                      </a>
-                    </button>
-                    <button
+                  View All Organizers
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="grid  lg:grid-cols-3 md:grid-cols-3 lg:gap-14 gap-10 lg:p-10 p-2 lg:pt-10 pt-5 grid-cols-1">
+              {data.map((item, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="w-68 h-78 flex flex-col pb-4 shadow-md items-center justify-between rounded border  "
+                  >
+                    <div
                       onClick={() => {
-                        if (!isLogin) {
-                          toast.error("Please login first to Add favorite!", {
-                            transition: Zoom,
-                            hideProgressBar: true,
-                            autoClose: 2000,
-                          });
-                          return;
-                        }
-                        toggleFavorite(item._id);
+                        navigate(`/Organizer/${item._id}`, {
+                          state: item,
+                        });
                       }}
-                      className={`flex gap-1 text-xs font-bold cursor-pointer ${
-                        isFavoriteOrganizer(item._id)
-                          ? "text-red-500"
-                          : "text-gray-200"
-                      }`}
+                      className="h-40 md:h-36 lg:h-40 w-full overflow-hidden"
                     >
-                      <FaHeart className="text-lg" />
-                    </button>
+                      <img
+                        src={item.profileImage}
+                        className="rounded-t h-40 w-full object-cover transition-transform duration-300 hover:scale-125"
+                        alt={item.name}
+                      />
+                    </div>
+                    <div
+                      onClick={() => {
+                        navigate(`/Organizer/${item._id}`, {
+                          state: item._id,
+                        });
+                      }}
+                      className="p-2"
+                    >
+                      <h1 className="font-medium text-lg capitalize">
+                        {item.name}
+                      </h1>
+                      <section className="text-sm text-gray-500 ">
+                        {item.address}, {item.city}, {item.state}
+                      </section>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="flex gap-2 p-1 px-3 text-lg">
+                        <button className="text-red-500">
+                          <a href={item.facebookUrl ? item.facebookUrl : ""}>
+                            {item.facebookUrl ? (
+                              <CiFacebook className="text-red-500" />
+                            ) : (
+                              ""
+                            )}
+                          </a>
+                        </button>
+                        <button className="text-red-500">
+                          <a href={item.instagramUrl ? item.instagramUrl : ""}>
+                            {item.instagramUrl ? (
+                              <FaInstagram className="text-red-500" />
+                            ) : (
+                              ""
+                            )}
+                          </a>
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (!isLogin) {
+                              toast.error("Please login first to Add favorite!", {
+                                transition: Zoom,
+                                hideProgressBar: true,
+                                autoClose: 2000,
+                              });
+                              return;
+                            }
+                            toggleFavorite(item._id);
+                          }}
+                          className={`flex gap-1 text-xs font-bold cursor-pointer ${
+                            isFavoriteOrganizer(item._id)
+                              ? "text-red-500"
+                              : "text-gray-200"
+                          }`}
+                        >
+                          <FaHeart className="text-lg" />
+                        </button>
 
-                    <button className="text-red-500">
-                      <a href={item.twitterUrl ? item.twitterUrl : ""}>
-                        {item.twitterUrl ? (
-                          <FaSquareXTwitter className="text-red-500" />
-                        ) : (
-                          ""
-                        )}
-                      </a>
-                    </button>
-                  </p>
-                </div>
+                        <button className="text-red-500">
+                          <a href={item.twitterUrl ? item.twitterUrl : ""}>
+                            {item.twitterUrl ? (
+                              <FaSquareXTwitter className="text-red-500" />
+                            ) : (
+                              ""
+                            )}
+                          </a>
+                        </button>
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {data.length > 0 && (
+              <div className="pb-3">
+                <Pagination
+                  handlePreviousPage={handlePreviousPage}
+                  currentPage={currentPage}
+                  handleNextPage={handleNextPage}
+                  totalPages={totalPages}
+                />
               </div>
-            );
-          })}
-        </div>
-        <div className="pb-3">
-          <Pagination
-            handlePreviousPage={handlePreviousPage}
-            currentPage={currentPage}
-            handleNextPage={handleNextPage}
-            totalPages={totalPages}
-          />
-        </div>
+            )}
+          </>
+        )}
       </div>
       <div className="w-[25%] lg:flex hidden flex-col gap-8 rounded pt-5 pr-3 mt-2 ">
         <div className="lg:flex hidden flex-col gap-5 border justify-center bg-white shadow-md  w-[95%] ml-3 ">

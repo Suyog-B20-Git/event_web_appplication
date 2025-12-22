@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ChevronRight } from "lucide-react";
 import { FaEye } from "react-icons/fa";
 import { MdEvent } from "react-icons/md";
 import { CiLocationOn } from "react-icons/ci";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Event } from "../redux/Urls";
 
 const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal, navigate }) => {
   const [activeTime, setActiveTime] = useState("All");
@@ -12,6 +13,73 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const inFlightKeyRef = useRef(null);
+  const abortRef = useRef(null);
+
+  // Function to get the correct price from ticketFormats
+  const getEventPrice = (event) => {
+    if (!event.ticketFormats || event.ticketFormats.length === 0) {
+      return "FREE";
+    }
+
+    // Find the minimum price among all ticket formats
+    let minPrice = Infinity;
+    let hasValidPrice = false;
+
+    event.ticketFormats.forEach(ticket => {
+      if (ticket.price !== undefined && ticket.price !== null) {
+        hasValidPrice = true;
+        
+        // Check if ticket is on sale
+        const now = new Date();
+        const isOnSale = ticket.isSale && 
+          new Date(ticket.saleStartDate) <= now && 
+          now <= new Date(ticket.saleEndDate);
+        
+        const currentPrice = isOnSale ? ticket.salePrice : ticket.price;
+        minPrice = Math.min(minPrice, currentPrice);
+      }
+    });
+
+    if (!hasValidPrice || minPrice === Infinity) {
+      return "FREE";
+    }
+
+    return `₹${minPrice} ONWARDS`;
+  };
+
+  const formatYMD = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  const getDateRangeForTime = (time) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    if (time === "Today") {
+      return { startDate: formatYMD(today), endDate: formatYMD(today) };
+    }
+    if (time === "Tomorrow") {
+      return { startDate: formatYMD(tomorrow), endDate: formatYMD(tomorrow) };
+    }
+    if (time === "Weekend") {
+      // Compute Saturday and Sunday of the current week (Mon-Sun week)
+      const day = today.getDay(); // 0=Sun..6=Sat
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - ((day + 6) % 7));
+      const saturday = new Date(monday);
+      saturday.setDate(monday.getDate() + 5);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      return { startDate: formatYMD(saturday), endDate: formatYMD(sunday) };
+    }
+    return { startDate: null, endDate: null };
+  };
 
   const timeOptions = ["All", "Today", "Tomorrow", "Weekend"];
   const genres = [
@@ -37,26 +105,30 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
         time === "All"
           ? true
           : time === "Today"
-          ? eventDate.toDateString() === today.toDateString()
-          : time === "Tomorrow"
-          ? eventDate.toDateString() === tomorrow.toDateString()
-          : time === "Weekend"
-          ? eventDate.getDay() === 6 || eventDate.getDay() === 0
-          : true;
+            ? eventDate.toDateString() === today.toDateString()
+            : time === "Tomorrow"
+              ? eventDate.toDateString() === tomorrow.toDateString()
+              : time === "Weekend"
+                ? eventDate.getDay() === 6 || eventDate.getDay() === 0
+                : true;
 
       const isGenreMatch = genre === "All" ? true : event.category === genre;
 
       const isSearchMatch = search
         ? event.name.toLowerCase().includes(search.toLowerCase()) ||
-          event.venueDetails?.city.toLowerCase().includes(search.toLowerCase())
+        event.venueDetails?.city.toLowerCase().includes(search.toLowerCase())
         : true;
 
-      const isPriceMatch =
-        price === ""
-          ? true
-          : price === "free"
-          ? event.price === 0
-          : event.price > 0;
+      const isPriceMatch = (() => {
+        if (price === "") return true;
+        
+        const eventPrice = getEventPrice(event);
+        if (price === "free") {
+          return eventPrice === "FREE";
+        } else {
+          return eventPrice !== "FREE";
+        }
+      })();
 
       const isCityMatch = city
         ? event.venueDetails?.city.toLowerCase() === city.toLowerCase()
@@ -68,12 +140,38 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
 
   useEffect(() => {
     const fetchEvents = async () => {
+      const { startDate, endDate } = getDateRangeForTime(activeTime);
+
+      const params = new URLSearchParams();
+      if (startDate && endDate) {
+        params.append("startDate", startDate);
+        params.append("endDate", endDate);
+      }
+      params.append("page", "1");
+      params.append("limit", "20");
+      params.append("sortBy", "startDate");
+      params.append("sortOrder", "desc");
+
+      const url = `${Event.getEventByFilter}${params.toString()}`;
+
+      // Prevent duplicate calls for the same query (e.g., React StrictMode)
+      if (inFlightKeyRef.current === url) {
+        return; // identical request already in-flight
+      }
+
+      // Abort any previous request
+      if (abortRef.current) {
+        abortRef.current.abort();
+      }
+
+      const controller = new AbortController();
+      abortRef.current = controller;
+      inFlightKeyRef.current = url;
       setLoading(true);
+
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/event/filter?startDate=2025-06-01&endDate=2025-06-30&page=1&limit=100&sortBy=startDate&sortOrder=asc"
-        );
-        const allEvents = res.data?.data.events || [];
+        const res = await axios.get(url, { signal: controller.signal });
+        const allEvents = res.data?.data?.events || [];
         setEvents(allEvents);
         const filtered = filterEvents(
           allEvents,
@@ -81,14 +179,20 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
           activeGenre,
           searchEvent,
           priceType,
-          cityFilter // Use cityFilter here
+          cityFilter
         );
         setFilteredEvents(filtered);
       } catch (err) {
-        console.error("Fetch error:", err);
+        if (err.name !== "CanceledError" && err.name !== "AbortError") {
+          console.error("Fetch error:", err);
+        }
         setEvents([]);
         setFilteredEvents([]);
       } finally {
+        // Clear in-flight key only if it matches this request's url
+        if (inFlightKeyRef.current === url) {
+          inFlightKeyRef.current = null;
+        }
         setLoading(false);
       }
     };
@@ -105,10 +209,10 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
             {activeTime === "Weekend"
               ? "This Weekend"
               : activeTime === "Today"
-              ? "Today"
-              : activeTime === "Tomorrow"
-              ? "Tomorrow"
-              : ""}
+                ? "Today"
+                : activeTime === "Tomorrow"
+                  ? "Tomorrow"
+                  : ""}
             {activeGenre !== "All" && ` - ${activeGenre}`}
           </span>{" "}
           <span className="text-black">({filteredEvents.length})</span>
@@ -120,11 +224,10 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
             <button
               key={time}
               onClick={() => setActiveTime(time)}
-              className={`text-sm px-3 py-1.5 rounded-full border transition ${
-                activeTime === time
-                  ? "bg-red-600 text-white border-red-600"
-                  : "bg-white text-black border-gray-300 hover:bg-gray-100"
-              }`}
+              className={`text-sm px-3 py-1.5 rounded-full border transition ${activeTime === time
+                ? "bg-red-600 text-white border-red-600"
+                : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                }`}
             >
               {time}
             </button>
@@ -140,11 +243,10 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
                   <button
                     key={genre}
                     onClick={() => setActiveGenre(genre)}
-                    className={`text-xs px-3 py-1 rounded-full border shrink-0 transition ${
-                      activeGenre === genre
-                        ? "bg-red-600 text-white border-red-600"
-                        : "bg-white text-black border-gray-300 hover:bg-gray-100"
-                    }`}
+                    className={`text-xs px-3 py-1 rounded-full border shrink-0 transition ${activeGenre === genre
+                      ? "bg-red-600 text-white border-red-600"
+                      : "bg-white text-black border-gray-300 hover:bg-gray-100"
+                      }`}
                   >
                     {genre}
                   </button>
@@ -170,10 +272,9 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
                 <div className="h-24 lg:h-52 md:h-32 w-full rounded-lg flex justify-end overflow-hidden relative">
                   <div
                     style={{
-                      backgroundImage: `url(${
-                        item.media?.thumbnailImage ||
+                      backgroundImage: `url(${item.media?.thumbnailImage ||
                         "assets/staticAssets/fallback-image.jpg"
-                      })`,
+                        })`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
@@ -201,7 +302,7 @@ const EventFilterBar = ({ searchEvent, priceType, cityFilter, convertUTCToLocal,
                     {item.venueDetails?.city} - {item.venueDetails?.country}
                   </p>
                   <div className="mt-auto flex justify-between items-center text-sm">
-                    <span>{item.price === 0 ? "FREE" : `$${item.price} ONWARDS`}</span>
+                    <span>{getEventPrice(item)}</span>
                     <button
                       className="relative hover:text-white rounded shadow p-2 text-xs bg-white transition-all duration-300 
                                   before:absolute before:top-0 before:left-0 before:rounded-md before:w-0 before:h-full before:bg-[#ff2459] before:transition-all before:duration-300 

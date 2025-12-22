@@ -33,7 +33,7 @@ function Register() {
       const response = await axios.post(
         `${Auth.register}`,
 
-        //  "http://localhost:5000/api/auth/setup",
+        //  "https://dev.eventsnode.com/api/auth/setup",
         {
           username: name,
 

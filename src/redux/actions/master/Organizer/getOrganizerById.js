@@ -55,14 +55,14 @@ export const updateLiftType = (data, props, setisLoader) => {
 import axios from "axios";
 import { Organizer } from "../../../Urls";
 
-export const getOrganizerById= (id,setLoader) => {
+export const getOrganizerById = (id, setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
 
     try {
       const response = await axios.get(
         `${Organizer.getOrganizerFilter}/${id}`
-        // `http://localhost:5000/api/organizer/${id}`
+        // `https://dev.eventsnode.com/api/organizer/${id}`
       );
       dispatch({
         type: "GET_ORGANIZER_BY_ID",
