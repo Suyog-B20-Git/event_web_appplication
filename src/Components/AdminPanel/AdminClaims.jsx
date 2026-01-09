@@ -29,6 +29,8 @@ const formatStatusDisplay = (status) => {
     switch (status) {
         case "pending":
             return { text: "Pending", color: "bg-yellow-100 text-yellow-800", icon: <FaClock /> };
+        case "auto_pending":
+            return { text: "Auto Pending", color: "bg-blue-100 text-blue-800", icon: <FaClock /> };
         case "approved":
             return { text: "Approved", color: "bg-green-100 text-green-800", icon: <FaCheckCircle /> };
         case "rejected":
@@ -179,6 +181,7 @@ const AdminClaims = () => {
                         >
                             <option value="">All Status</option>
                             <option value="pending">Pending</option>
+                            <option value="auto_pending">Auto Pending</option>
                             <option value="approved">Approved</option>
                             <option value="rejected">Rejected</option>
                         </select>
@@ -328,7 +331,7 @@ const AdminClaims = () => {
                                                 View Details
                                             </button>
 
-                                            {isSuperAdmin && claim.status === "pending" && (
+                                            {isSuperAdmin && (claim.status === "pending" || claim.status === "auto_pending") && (
                                                 <>
                                                     <button
                                                         onClick={() => handleApproveClaim(claim)}

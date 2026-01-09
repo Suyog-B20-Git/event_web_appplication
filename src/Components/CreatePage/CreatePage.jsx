@@ -29,7 +29,7 @@ import TwitterEmbed from "../SocialMedia/TwiiterEmbed";
 import SoundCloudEmbed from "../SocialMedia/Soundcloud";
 import SpotifyEmbed from "../SocialMedia/SpotifyEmbed";
 import { useNavigate } from "react-router-dom";
-const baseUrl = "http://localhost:5000";
+const baseUrl = "https://dev.eventsnode.com";
 
 
 function CreatePage() {
