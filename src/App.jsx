@@ -3,25 +3,34 @@ import { useState } from "react";
 import "./index.css";
 
 import Routess from "./Routes/Routess";
-// import MyBooking from "./Pages/UserPanel/MyBooking";
-// import BookingDetails from "./Pages/UserPanel/BookingDetails";
-// import EventForm from "./Components/CreateEventFlow/EventForm";
-// import Details from "./Components/CreateEventFlow/Details";
-// import { ContextProvider } from "./Components/Util/ContextProvider";
-// import CreateProfile from "./Pages/UserPanel/CreateProfile";
-// import OrganiserContact from "./Components/FeaturedEvent/OrganiserContact";
-// import OrganiserList from "./testing/Oragsniser";
-// import Orgnizer from "../../views/Orgnizer";
-import {Orgnizer} from "../views/pages/Orgnizer/Orgnizer";
+
+import { Orgnizer } from "../views/pages/Orgnizer/Orgnizer";
 import { Provider } from "react-redux";
-import {store} from "./redux/storeConfig/store"
-// import AddOrganiser from "./testing/AddOragniser";
+import { store } from "./redux/storeConfig/store";
+import CreatePage from "./Components/CreatePage/CreatePage";
+import GetOrganizer from "./Components/Organizer/GetOrganizer";
+import GetPerformers from "./Components/Performers/Performers";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import EnquiryForm from "./Components/Organizer/EnquiryForm";
+import OwnerShipForm from "./Components/Organizer/OwnerShipForm";
+import { ContextProvider } from "./Components/Util/ContextProvider";
+import FeaturedEvent from "./LandingPages/FeaturedEvent";
+import MyBookings from "./Components/MyBookings";
+import ScrollToTop from "./layout/ScrollToTop";
+
+
 function App() {
   return (
+    // <MyBookings/>
     <Provider store={store}>
-      {/* <ContextProvider> */}
+      <ScrollToTop />
+      <ContextProvider>
+        <ScrollToTop />
         <Routess />
-      {/* </ContextProvider> */}
+      </ContextProvider>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </Provider>
   );
 }

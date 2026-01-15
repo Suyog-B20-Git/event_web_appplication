@@ -3,7 +3,7 @@ import { FaMapLocationDot } from "react-icons/fa6";
 
 function NewExperience() {
     const img=[
-        "t1.png","t2.webp","t3.png","t4.png","t5.png","t6.png"
+        "assets/staticAssets/t1.png","assets/staticAssets/t2.webp","assets/staticAssets/t3.png","assets/staticAssets/t4.png","assets/staticAssets/t5.png","assets/staticAssets/t6.png"
     ]
   return (
     // <div className="flex flex-col gap-3 px-4 lg:pt-2 lg:px-12 mt-6">

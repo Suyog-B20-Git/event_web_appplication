@@ -1,0 +1,222 @@
+import React, { useState, useEffect, useRef } from "react";
+import { GiCancel } from "react-icons/gi";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { submitOwnershipClaim } from "../../redux/actions/master/Claims";
+import { toast } from "react-toastify";
+
+function OwnerShipForm({
+  ownership,
+  setOwnership,
+  onOwnershipEnquirySent,
+  name,
+  targetId,
+  modelName,
+}) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.claims || {});
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setOwnership(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setOwnership]);
+
+  const onSubmit = async (data) => {
+    const payload = {
+      targetId: targetId,
+      modelName: modelName,
+      username: data.username,
+      email: data.email,
+      contactNumber: data.contactNumber,
+      message: data.claim,
+    };
+
+    try {
+      await dispatch(submitOwnershipClaim(payload));
+      toast.success("Claim Enquiry sent successfully!");
+      localStorage.setItem(`enquiry_sent_${targetId}`, "true");
+      if (onOwnershipEnquirySent) {
+        onOwnershipEnquirySent();
+      }
+      reset();
+      setOwnership(false);
+    } catch (error) {
+      toast.error("Error sending enquiry. Please try again later.");
+    }
+  };
+
+  const inputs = [
+    {
+      label: "Username",
+      name: "username",
+      type: "text",
+      placehoder: "",
+      pattern: "",
+      message: "",
+      required: "username is required",
+    },
+    {
+      label: "Your Email",
+      name: "email",
+      type: "email",
+      placehoder: "",
+      required: "Email is required",
+      pattern: /^\S+@\S+\.\S+$/,
+      message: "Invalid email format",
+    },
+    {
+      label: "Contact Number",
+      name: "contactNumber",
+      type: "tel",
+      placehoder: "",
+      required: "Contact Number is required",
+      pattern: /^[6-9]\d{9}$/,
+      message:
+        "Invalid phone number (Indian format: 10 digits starting with 6-9)",
+    },
+  ];
+
+  return (
+    <div>
+      <div className="">
+        <div className="fixed w-full inset-0 flex flex-col items-center justify-center  overflow-y-scroll  z-40 backdrop-blur-md bg-black/50">
+          <div
+            ref={modalRef}
+            className="bg-white p-2 rounded-lg   shadow-lg  lg:w-[full] relative"
+          >
+            <button
+              className="absolute top-0 right-3 text-gray-700 hover:text-red-500 text-3xl"
+              onClick={() => setOwnership(!ownership)}
+            >
+              &times;
+            </button>
+
+            <div className="lg:w-[600px] md:w-[600px] w-[350px] mt-4">
+              <div className="flex justify-between border-b">
+                <h1 className=" p-2 font-medium text-gray-600">
+                  Verify Ownership of{" "}
+                  <span className="text-[#ff2459]">{name}</span>
+                </h1>
+              </div>
+
+              <form
+                className="flex flex-col   "
+                onSubmit={handleSubmit(onSubmit)}
+              >
+                {inputs.map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col p-1  gap-1 text-gray-700"
+                    >
+                      <label
+                        className="capitalize lg:text-base text-sm p-1 pb-0.5
+                       "
+                      >
+                        {item.label}
+                      </label>
+                      <input
+                        className="bg-gray-100 rounded-md p-2 px-2"
+                        placeholder={item.placehoder}
+                        type={item.type}
+                        {...register(item.name, {
+                          required: item.required,
+                          pattern: {
+                            value: item.pattern,
+                            message: item.message,
+                          },
+                        })}
+                      />
+
+                      {errors[item.name] && (
+                        <p className="text-xs px-1 text-red-500">
+                          {errors[item.name].message}*
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+
+                <label className="capitalize text-gray-700 p-1 px-2 ">
+                  Your Claim
+                </label>
+                <textarea
+                  placeholder="Enter your Claim..."
+                  defaultValue="Hello, I would like to notify you that I am the owner of this listing. I would like to verify its authenticity."
+                  {...register("claim", {
+                    required: "Please fill claim input field",
+                  })}
+                  className="bg-gray-100 rounded-md mb-3 p-2 px-2 ml-2"
+                />
+
+                {errors.claim && (
+                  <p className="text-xs px-2 pt-1 relative bottom-3  text-red-500">
+                    {errors.claim.message}*
+                  </p>
+                )}
+
+                <hr />
+
+                <div className="flex justify-end p-2 gap-3 text-sm">
+                  <button
+                    type="button"
+                    onClick={() => setOwnership(!ownership)}
+                    className="text-gray-800 font-medium bg-white border hover:bg-gray-100 rounded-lg px-4 p-1"
+                  >
+                    CLOSE{" "}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`flex items-center gap-2 text-white font-medium bg-[#ff2459] hover:bg-[#e11e4d] rounded-lg px-4 py-1 ${loading ? "opacity-70 cursor-not-allowed" : ""
+                      }`}
+                  >
+                    {loading && (
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8z"
+                        />
+                      </svg>
+                    )}
+                    {loading ? "Sending..." : "SUBMIT"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default OwnerShipForm;

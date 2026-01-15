@@ -53,16 +53,14 @@ export const updateLiftType = (data, props, setisLoader) => {
 };
 
 import axios from "axios";
-
+// const PORT = import.meta.env.VITE_API_PORT;]
+import { Event } from "../../../Urls";
 export const getUpcomingEventData = (setLoader) => {
   return async (dispatch) => {
     setLoader(true); // Start loading
 
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/event/upcoming?page=1&limit=10&timezoneOffset=0"
-      );
-      console.log("response", response);
+      const response = await axios.get(Event.upcomingEvent);
       dispatch({
         type: "GET_UPCOMING_EVENT",
         eventData: response.data.events, // Ensure the API actually returns this structure
@@ -72,6 +70,59 @@ export const getUpcomingEventData = (setLoader) => {
         "API Error:",
         error.response ? error.response.data : error.message
       );
+      dispatch({
+        type: "GET_UPCOMING_EVENT",
+        eventData: [],
+      });
+    } finally {
+      setLoader(false); // Stop loading
+    }
+  };
+};
+
+export const getUpcomingEventsDataForProfile = ({
+  page = 1,
+  limit = 10,
+  timezoneOffset = 0,
+  sortBy = "startDate",
+  sortOrder = "asc",
+  performer,
+  organizer,
+  venue,
+  setLoader, // A function to control loader visibility
+}) => {
+  return async (dispatch) => {
+    setLoader(true); // Start loading
+
+    try {
+      // Build query parameters based on the input values
+      const params = {
+        page,
+        limit,
+        timezoneOffset,
+        sortBy,
+        sortOrder,
+      };
+
+      // Include filters if provided
+      if (performer) params.performer = performer;
+      if (organizer) params.organizer = organizer;
+      if (venue) params.venue = venue;
+
+      // Make the API request using the provided query parameters
+      const response = await axios.get(Event.upcomingEvent, { params });
+
+      // Dispatch the fetched data; you can adjust the payload structure if needed
+      dispatch({
+        type: "GET_UPCOMING_EVENT",
+        eventData: response.data.events, // expecting an object with total, page, limit, totalPages, events
+      });
+    } catch (error) {
+      console.error(
+        "API Error:",
+        error.response ? error.response.data : error.message
+      );
+      // Dispatch an empty payload or an error-specific payload as required
       dispatch({
         type: "GET_UPCOMING_EVENT",
         eventData: [],

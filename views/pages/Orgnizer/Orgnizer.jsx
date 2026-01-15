@@ -19,7 +19,6 @@ export const Orgnizer = () => {
   const onSubmit = (data) => {
     dispatch(createNewOrganizer(data));
     setPreview(data);
-    console.log("Form submitted:", data);
   };
 
   return (
@@ -102,7 +101,7 @@ export const Orgnizer = () => {
                     name="website"
                     type="text"
                     {...register("website")}
-                    onChange={(e) => setValue("website", e.target.value, { shouldValidate: true })}
+                    onChange={(e) => setValue("website", e.target.value, { shouldValidate: false })}
                   />
                 </FormGroup>
 
@@ -116,7 +115,7 @@ export const Orgnizer = () => {
                     name="facebookUrl"
                     type="text"
                     {...register("facebookUrl")}
-                    onChange={(e) => setValue("facebookUrl", e.target.value, { shouldValidate: true })}
+                    onChange={(e) => setValue("facebookUrl", e.target.value, { shouldValidate: false })}
                   />
                 </FormGroup>
 
@@ -127,7 +126,7 @@ export const Orgnizer = () => {
                     name="instagramUrl"
                     type="text"
                     {...register("instagramUrl")}
-                    onChange={(e) => setValue("instagramUrl", e.target.value, { shouldValidate: true })}
+                    onChange={(e) => setValue("instagramUrl", e.target.value, { shouldValidate: false })}
                   />
                 </FormGroup>
 
@@ -138,7 +137,7 @@ export const Orgnizer = () => {
                     name="youtubeUrl"
                     type="text"
                     {...register("youtubeUrl")}
-                    onChange={(e) => setValue("youtubeUrl", e.target.value, { shouldValidate: true })}
+                    onChange={(e) => setValue("youtubeUrl", e.target.value, { shouldValidate: false })}
                   />
                 </FormGroup>
 
@@ -149,7 +148,7 @@ export const Orgnizer = () => {
                     name="twitterUrl"
                     type="text"
                     {...register("twitterUrl")}
-                    onChange={(e) => setValue("twitterUrl", e.target.value, { shouldValidate: true })}
+                    onChange={(e) => setValue("twitterUrl", e.target.value, { shouldValidate: false })}
                   />
                 </FormGroup>
 
