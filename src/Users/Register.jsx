@@ -9,7 +9,8 @@ import { axiosInstance } from "../../utility/utils";
 import { Auth } from "../redux/Urls";
 import { toast } from "react-toastify";
 
-const baseUrl = "https://dev.eventsnode.com/api";
+// const baseUrl = "https://dev.eventsnode.com/api";
+const baseUrl = "http://localhost:5000/api";
 
 function Register() {
   const [username, setUsername] = useState("");

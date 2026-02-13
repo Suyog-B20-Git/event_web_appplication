@@ -47,8 +47,8 @@ import AdminHeaderMenu from "../Components/AdminPanel/AdminHeaderMenu";
 import AdminCommissions from "../Components/AdminPanel/AdminCommissions";
 import AdminFooterMenu from "../Components/AdminPanel/AdminFooterMenu";
 import AdminTaxes from "../Components/AdminPanel/AdminTaxes";
-// import AdminUsers from "../Components/AdminPanel/AdminUsers";
 import AdminUsers from "../Components/AdminPanel/AdminUsers";
+import AdminLayout from "../Components/AdminPanel/AdminLayout";
 import AddUser from "../Components/AdminPanel/AddUser";
 import EditUser from "../Components/AdminPanel/EditUser";
 import ViewUser from "../Components/AdminPanel/ViewUser";
@@ -130,33 +130,38 @@ function Routess() {
 
 
 
-          <Route path="/header-menu" element={<AdminHeaderMenu />} />
-          <Route path="/commission" element={<AdminCommissions />} />
-          <Route path="/banners" element={<AdminBanners />} />
           <Route path="/admin-panel" element={<AdminPanelOverview />} />
-          <Route path="/admin/tags" element={<AdminTags />} />
-          <Route path="/admin/bookings" element={<AdminBookings />} />
-          <Route path="/admin/posts" element={<AdminBlogPost />} />
-          <Route path="/admin/add-post" element={<AdminAddPost />} />
-          <Route path="/admin/edit-post/:id" element={<AdminAddPost />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/add-user" element={<AddUser />} />
-          <Route path="/admin/edit-user/:userId" element={<EditUser />} />
-          <Route path="/admin/view-user/:userId" element={<ViewUser />} />
-          <Route path="/contacts" element={<AdminContacts />} />
-          <Route path="/admin/venues" element={<AdminVenues />} />
-          <Route path="/admin/settings" element={<AdminSettings />} />
-          <Route path="/admin/promocodes" element={<AdminPromocodes />} />
-          <Route path="/admin/complimentary-bookings" element={<AdminComplimentaryBookings />} />
-          <Route path="/admin/currencies" element={<AdminCurrencies />} />
+
+          <Route element={<AdminLayout />}>
+            <Route path="/header-menu" element={<AdminHeaderMenu />} />
+            <Route path="/commission" element={<AdminCommissions />} />
+            <Route path="/banners" element={<AdminBanners />} />
+            <Route path="/admin/tags" element={<AdminTags />} />
+            <Route path="/admin/bookings" element={<AdminBookings />} />
+            <Route path="/admin/posts" element={<AdminBlogPost />} />
+            <Route path="/admin/add-post" element={<AdminAddPost />} />
+            <Route path="/admin/edit-post/:id" element={<AdminAddPost />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/add-user" element={<AddUser />} />
+            <Route path="/admin/edit-user/:userId" element={<EditUser />} />
+            <Route path="/admin/view-user/:userId" element={<ViewUser />} />
+            <Route path="/contacts" element={<AdminContacts />} />
+            <Route path="/admin/venues" element={<AdminVenues />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/promocodes" element={<AdminPromocodes />} />
+            <Route path="/admin/complimentary-bookings" element={<AdminComplimentaryBookings />} />
+            <Route path="/admin/currencies" element={<AdminCurrencies />} />
+          </Route>
 
 
 
 
-          <Route path="/dashboard/create-event" element={<DashCreateEvent />} />
-          <Route path="/dashboard/update-event" element={<DashCreateEvent />} />
-          <Route path="/admin/dashboard/create-event" element={<DashCreateEvent />} />
-          <Route path="/admin/dashboard/update-event" element={<DashCreateEvent />} />
+          <Route path="/dashboard/create-event" element={<AdminPanelOverview />} />
+          <Route path="/dashboard/update-event" element={<AdminPanelOverview />} />
+          <Route path="/dashboard/update-event/:eventId" element={<AdminPanelOverview />} />
+          <Route path="/admin/dashboard/create-event" element={<AdminPanelOverview />} />
+          <Route path="/admin/dashboard/update-event" element={<AdminPanelOverview />} />
+          <Route path="/admin/dashboard/update-event/:eventId" element={<AdminPanelOverview />} />
 
 
           <Route path="/adminPanelOverview" element={<AdminPanelOverview />} />

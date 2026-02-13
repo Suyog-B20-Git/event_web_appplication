@@ -127,11 +127,28 @@ const AdminCommissions = () => {
                             <DetailItem icon={<FaUserTie size={14} />} label="Organiser Earning">{formatCurrency(item.organiserEarning)}</DetailItem>
                         </div>
                         
-                        <footer className="p-3 bg-gray-50 rounded-b-lg flex justify-end items-center space-x-2">
-                           <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors"><FaEye className="mr-2"/>View</button>
-                           <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"><FaPencilAlt className="mr-2"/>Edit</button>
-                           <button onClick={() => handleDeleteSingle(item.id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"><FaTrash className="mr-2"/>Delete</button>
+                        <footer className="p-3 bg-gray-50 rounded-b-lg flex w-full gap-2 justify-between sm:justify-end items-center">
+
+                            <button className="flex flex-1 sm:flex-none items-center justify-center text-sm font-semibold py-2 px-2 sm:px-4 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors">
+                                <FaEye className="mr-1 sm:mr-2" />
+                                View
+                            </button>
+
+                            <button className="flex flex-1 sm:flex-none items-center justify-center text-sm font-semibold py-2 px-2 sm:px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors">
+                                <FaPencilAlt className="mr-1 sm:mr-2" />
+                                Edit
+                            </button>
+
+                            <button
+                                onClick={() => handleDeleteSingle(item.id)}
+                                className="flex flex-1 sm:flex-none items-center justify-center text-sm font-semibold py-2 px-2 sm:px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"
+                            >
+                                <FaTrash className="mr-1 sm:mr-2" />
+                                Delete
+                            </button>
+
                         </footer>
+
                     </div>
                 )) : (
                     <div className="text-center py-16 px-6 bg-white rounded-lg shadow-sm border border-gray-200">

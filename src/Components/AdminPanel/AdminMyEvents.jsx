@@ -21,7 +21,8 @@ const AdminMyEvents = () => {
   const [selectedOrganizer, setSelectedOrganizer] = useState("");
   const dropdownRef = useRef(null);
   const token = localStorage.getItem("authToken");
-  const baseUrl = "https://dev.eventsnode.com/api";
+  // const baseUrl = "https://dev.eventsnode.com/api";
+  const baseUrl = "http://localhost:5000/api";
 
   const [toast, setToast] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
@@ -45,9 +46,9 @@ const AdminMyEvents = () => {
   const [selectedPosUsers, setSelectedPosUsers] = useState([]);
   const [subOrganizersLoading, setSubOrganizersLoading] = useState(false);
 
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2500);
+  const showToast = (msg, type = 'success') => {
+    setToast({ message: msg, type });
+    setTimeout(() => setToast(null), 3000);
   };
 
   const fetchEvents = async () => {
@@ -71,7 +72,7 @@ const AdminMyEvents = () => {
       setTotalEvents(responseData.totalEvents || 0);
     } catch (err) {
       // console.error("Failed to load events", err);
-      showToast("❌ Failed to load events. Please try again.");
+      showToast("Failed to load events. Please try again.", 'error');
     } finally {
       setLoading(false);
     }
@@ -141,10 +142,10 @@ const AdminMyEvents = () => {
         const eventData = response.data;
         navigate("/dashboard/update-event", { state: { event: eventData } });
       } else {
-        showToast("Could not fetch event details.");
+        showToast("Could not fetch event details.", 'error');
       }
     } catch (error) {
-      showToast("Error fetching event. Please try again.");
+      showToast("Error fetching event. Please try again.", 'error');
     }
   };
 
@@ -212,18 +213,26 @@ const AdminMyEvents = () => {
   const handleTogglePublish = async (event) => {
     const id = event._id;
     try {
+      console.log("Toggling publish status for event:", id, "Current status:", event.isPublish);
+
       if (event.isPublish) {
         // If currently published, make it private
-        await dispatch(makeEventPrivate(id));
+        console.log("Making event private...");
+        const result = await dispatch(makeEventPrivate(id));
+        console.log("makeEventPrivate result:", result);
+        showToast("Event made private successfully");
       } else {
         // If currently private, make it public
-        await dispatch(makeEventPublic(id));
+        console.log("Making event public...");
+        const result = await dispatch(makeEventPublic(id));
+        console.log("makeEventPublic result:", result);
+        showToast("Event made public successfully");
       }
       // Refresh the events list after successful operation
-      fetchEvents();
+      await fetchEvents();
     } catch (error) {
-      // Error handling is already done in the Redux action
       console.error("Toggle publish failed:", error);
+      showToast("Failed to update event publish status. Please try again.", 'error');
     }
   };
 
@@ -658,13 +667,10 @@ const AdminMyEvents = () => {
 
       {renderPagination()}
       {toast && (
-        <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-md z-50 transition-all duration-300">
-          {toast}
-        </div>
-      )}
-      {toast && (
-        <div className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-md z-50 transition-all duration-300">
-          {toast}
+        <div className={`fixed top-4 right-4 text-white px-4 py-2 rounded shadow-md z-50 transition-all duration-300 ${
+          (typeof toast === 'object' && toast.type === 'error') ? 'bg-red-600' : 'bg-green-600'
+        }`}>
+          {typeof toast === 'object' ? toast.message : toast}
         </div>
       )}
 

@@ -16,11 +16,83 @@ import axios from "axios"; // Keep for fetching event data
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaExclamationTriangle, FaCheckCircle } from 'react-icons/fa';
 import { useDispatch } from "react-redux";
 import { createNewEvent } from "../../redux/actions/master/Events/CreateEvent";
 import { updateEvent } from "../../redux/actions/master/Events/UpdateEvent";
 
-const baseUrl = "https://dev.eventsnode.com/api";
+// Custom Confirmation Dialog Component
+const ConfirmationDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText, cancelText, type = 'warning' }) => {
+  if (!isOpen) return null;
+
+  const getIcon = () => {
+    switch (type) {
+      case 'danger':
+        return <FaExclamationTriangle className="text-red-500 text-4xl" />;
+      case 'success':
+        return <FaCheckCircle className="text-green-500 text-4xl" />;
+      default:
+        return <FaExclamationTriangle className="text-yellow-500 text-4xl" />;
+    }
+  };
+
+  const getButtonStyles = () => {
+    switch (type) {
+      case 'danger':
+        return {
+          confirm: 'bg-red-500 hover:bg-red-600 text-white',
+          cancel: 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+        };
+      case 'success':
+        return {
+          confirm: 'bg-green-500 hover:bg-green-600 text-white',
+          cancel: 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+        };
+      default:
+        return {
+          confirm: 'bg-blue-500 hover:bg-blue-600 text-white',
+          cancel: 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+        };
+    }
+  };
+
+  const buttonStyles = getButtonStyles();
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full transform transition-all">
+        <div className="p-6">
+          <div className="flex items-center justify-center mb-4">
+            {getIcon()}
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+            {title}
+          </h3>
+          <p className="text-gray-600 text-center mb-6">
+            {message}
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${buttonStyles.cancel}`}
+            >
+              {cancelText || 'Cancel'}
+            </button>
+            <button
+              onClick={onConfirm}
+              className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${buttonStyles.confirm}`}
+            >
+              {confirmText || 'Confirm'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// const baseUrl = "https://dev.eventsnode.com/api";
+const baseUrl = "http://localhost:5000/api";
 
 const tabs = [
   { id: 0, label: "Details" },
@@ -112,12 +184,13 @@ const getInitialState = () => ({
   tags: [],
 });
 
-const DashCreateEvent = () => {
+const DashCreateEvent = ({ eventIdFromRoute = null }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const passedEventData = location.state;
-  const { eventId } = useParams();
+  const { eventId: eventIdFromParams } = useParams();
+  const eventId = eventIdFromParams || eventIdFromRoute;
   const token = localStorage.getItem("authToken");
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
@@ -130,6 +203,38 @@ const DashCreateEvent = () => {
 
   const [toast, setToast] = useState(null);
   const [confirmModal, setConfirmModal] = useState({ show: false, message: "" });
+
+  // Confirmation dialog state
+  const [confirmationDialog, setConfirmationDialog] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    confirmText: '',
+    cancelText: '',
+    type: 'warning',
+    onConfirm: null
+  });
+
+  // Show confirmation dialog
+  const showConfirmation = (title, message, confirmText, cancelText, type, onConfirm) => {
+    setConfirmationDialog({
+      isOpen: true,
+      title,
+      message,
+      confirmText,
+      cancelText,
+      type,
+      onConfirm: () => {
+        onConfirm();
+        setConfirmationDialog(prev => ({ ...prev, isOpen: false }));
+      }
+    });
+  };
+
+  // Close confirmation dialog
+  const closeConfirmation = () => {
+    setConfirmationDialog(prev => ({ ...prev, isOpen: false }));
+  };
 
   // Initialize form state from event data
   const initializeFormState = useCallback((data) => {
@@ -637,10 +742,10 @@ const DashCreateEvent = () => {
       const resolvedEventId = passedEventData?.event?._id || eventId;
       if (resolvedEventId) {
         await dispatch(updateEvent(resolvedEventId, formData));
-        navigate('/admin-panel');
+        navigate('/admin-panel?section=events');
       } else {
         await dispatch(createNewEvent(formData));
-        navigate('/admin-panel');
+        navigate('/admin-panel?section=events');
       }
     } catch (error) {
       console.error("Error saving event:", error);
@@ -668,8 +773,36 @@ const DashCreateEvent = () => {
         pauseOnHover
         theme="light"
       />
+
+      <ConfirmationDialog
+        isOpen={confirmationDialog.isOpen}
+        onClose={closeConfirmation}
+        onConfirm={confirmationDialog.onConfirm}
+        title={confirmationDialog.title}
+        message={confirmationDialog.message}
+        confirmText={confirmationDialog.confirmText}
+        cancelText={confirmationDialog.cancelText}
+        type={confirmationDialog.type}
+      />
+
       <div className="p-4 md:p-6 bg-white rounded-lg shadow-md max-w-8xl mx-auto min-h-[calc(100vh-2rem)] md:min-h-[calc(100vh-3rem)] lg:min-h-screen">
-        <h2 className="text-2xl font-bold mb-6">{isEditMode ? "Update Event" : "Create Event"}</h2>
+        <div className="flex items-center mb-6">
+          <button
+            onClick={() => showConfirmation(
+              'Leave Event Creation',
+              'Are you sure you want to go back? Any unsaved changes will be lost.',
+              'Leave',
+              'Stay',
+              'warning',
+              () => navigate('/admin-panel?section=events')
+            )}
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mr-4"
+          >
+            <FaArrowLeft className="mr-2" />
+            Back to Admin Panel
+          </button>
+          <h2 className="text-2xl font-bold">{isEditMode ? "Update Event" : "Create Event"}</h2>
+        </div>
 
         {!loading && (
           <Tabs

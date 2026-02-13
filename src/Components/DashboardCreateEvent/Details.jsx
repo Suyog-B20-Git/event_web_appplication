@@ -13,7 +13,8 @@ const Details = ({ data, setData, nextTab }) => {
     const fetchCategories = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("https://dev.eventsnode.com/api/categories?type=Event");
+        const response = await axios.get("http://localhost:5000/api/categories?type=Event");
+        // const response = await axios.get("https://dev.eventsnode.com/api/categories?type=Event");
         if (response.data.status) {
           setCategories(response.data.data || []);
         }

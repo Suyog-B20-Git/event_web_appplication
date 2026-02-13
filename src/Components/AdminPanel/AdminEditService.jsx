@@ -358,7 +358,8 @@ const AdminEditService = ({ service, onBack, onUpdate }) => {
                     <div className="flex items-center space-x-3">
                         <button onClick={onBack} className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors"><FaArrowLeft className="text-gray-600" /></button>
                         <div className="bg-indigo-100 p-2 rounded-lg"><FaPuzzlePiece className="text-2xl text-indigo-600" /></div>
-                        <div><h1 className="text-3xl font-bold text-gray-800">Edit Service</h1><p className="text-sm text-gray-500">Service ID: {service?._id}</p></div>
+                        <div><h1 className="text-3xl font-bold text-gray-800">Edit Service</h1>
+                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
                         <button onClick={onBack} className="flex items-center bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"><FaTimes className="mr-2" /> Cancel</button>

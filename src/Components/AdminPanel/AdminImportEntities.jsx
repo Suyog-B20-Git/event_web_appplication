@@ -546,7 +546,7 @@ const AdminImportEntities = () => {
                         </div>
 
                         {/* Submit Button */}
-                        <div className="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                        <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4 pt-4 border-t border-gray-200">
                             <button
                                 type="button"
                                 onClick={() => {

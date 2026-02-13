@@ -330,7 +330,8 @@ const CommonCalendar = () => {
         const mondayStr = formatDateYMD(monday);
         const sundayStr = formatDateYMD(sunday);
 
-        const baseUrl = "https://dev.eventsnode.com/api/event/filter";
+        // const baseUrl = "https://dev.eventsnode.com/api/event/filter";  
+        const baseUrl = "http://localhost:5000/api/event/filter";    
 
         const todayUrl = `${baseUrl}?startDate=${todayStr}&endDate=${tomorrowStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`;
         const tomorrowUrl = `${baseUrl}?startDate=${tomorrowStr}&endDate=${tomorrowEndStr}&page=1&limit=100&sortBy=startDate&sortOrder=asc`;

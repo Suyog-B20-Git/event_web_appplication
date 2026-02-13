@@ -295,7 +295,7 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
             />
 
             <header className="mb-6">
-                <div className="flex justify-between items-center flex-wrap gap-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                     <div className="flex items-center space-x-3">
                         <div className="bg-blue-100 p-2 rounded-lg">
                             <FaUsers className="text-2xl text-blue-600" />
@@ -304,22 +304,22 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                         <span className="text-sm text-gray-500">({pagination.totalPerformers} total)</span>
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-col sm:flex-row sm:justify-end gap-2 w-full">
                         <button
                             onClick={onNavigateToAddPerformer}
-                            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
+                            className="flex items-center justify-center w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
                         >
                             <FaPlus className="mr-2" /> Add New
                         </button>
                         {selectedPerformers.length > 0 && (
                             <>
-                                <button onClick={handleBulkEnable} className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
+                                <button onClick={handleBulkEnable} className="flex items-center justify-center w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
                                     Enable ({selectedPerformers.length})
                                 </button>
-                                <button onClick={handleBulkDisable} className="flex items-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
+                                <button onClick={handleBulkDisable} className="flex items-center justify-center w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
                                     Disable ({selectedPerformers.length})
                                 </button>
-                                <button onClick={handleBulkDelete} className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
+                                <button onClick={handleBulkDelete} className="flex items-center justify-center w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
                                     <FaTrash className="mr-2" /> Delete ({selectedPerformers.length})
                                 </button>
                             </>
@@ -437,7 +437,7 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                                         />
                                         <div>
                                             <h3 className="font-bold text-lg text-indigo-700">{performer.name}</h3>
-                                            <p className="text-sm text-gray-500">Performer ID: <span className="font-medium text-gray-600">{performer._id}</span></p>
+                                            {/* <p className="text-sm text-gray-500">Performer ID: <span className="font-medium text-gray-600">{performer._id}</span></p> */}
                                         </div>
                                     </div>
                                     <StatusBadge status={performer.isEnabled} />
@@ -449,32 +449,81 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                                     <DetailItem icon={<FaCalendarAlt size={14} />} label="Created At">{formatDate(performer.createdAt)}</DetailItem>
                                 </div>
 
-                                <footer className="p-3 bg-gray-50 rounded-b-lg flex flex-wrap justify-end items-center gap-2">
+                                <footer
+                                className="
+                                    p-3 bg-gray-50 rounded-b-lg
+                                    grid grid-cols-2 gap-2
+                                    sm:flex sm:justify-end sm:items-center
+                                "
+                                >
                                     {performer.isEnabled ? (
-                                        <button onClick={() => handleSingleDisable(performer._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white transition-colors">
-                                            Disable
+                                        <button
+                                        onClick={() => handleSingleDisable(performer._id)}
+                                        className="
+                                            flex items-center justify-center
+                                            w-full sm:w-fit
+                                            text-sm font-semibold py-2 px-4
+                                            rounded-lg bg-yellow-500 hover:bg-yellow-600
+                                            text-white transition-colors
+                                        "
+                                        >
+                                        Disable
                                         </button>
                                     ) : (
-                                        <button onClick={() => handleSingleEnable(performer._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors">
-                                            Enable
+                                        <button
+                                        onClick={() => handleSingleEnable(performer._id)}
+                                        className="
+                                            flex items-center justify-center
+                                            w-full sm:w-fit
+                                            text-sm font-semibold py-2 px-4
+                                            rounded-lg bg-green-500 hover:bg-green-600
+                                            text-white transition-colors
+                                        "
+                                        >
+                                        Enable
                                         </button>
                                     )}
+
                                     <button
                                         onClick={() => onNavigateToViewPerformer(performer)}
-                                        className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-blue-500 hover:bg-blue-600
+                                        text-white transition-colors
+                                        "
                                     >
-                                        <FaEye className="mr-2" />View
+                                        <FaEye className="mr-2" /> View
                                     </button>
+
                                     <button
                                         onClick={() => onNavigateToEditPerformer(performer)}
-                                        className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white transition-colors"
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-indigo-500 hover:bg-indigo-600
+                                        text-white transition-colors
+                                        "
                                     >
-                                        <FaPencilAlt className="mr-2" />Edit
+                                        <FaPencilAlt className="mr-2" /> Edit
                                     </button>
-                                    <button onClick={() => handleDeleteSingle(performer._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors">
-                                        <FaTrash className="mr-2" />Delete
+
+                                    <button
+                                        onClick={() => handleDeleteSingle(performer._id)}
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-red-500 hover:bg-red-600
+                                        text-white transition-colors
+                                        "
+                                    >
+                                        <FaTrash className="mr-2" /> Delete
                                     </button>
                                 </footer>
+
                             </div>
                         ))}
                     </>
@@ -494,18 +543,29 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                 {pagination.totalPages > 1 && (
                     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <div className="text-sm text-gray-600">
-                                Showing {((pagination.currentPage - 1) * pagination.limit) + 1} to {Math.min(pagination.currentPage * pagination.limit, pagination.totalPerformers)} of {pagination.totalPerformers} performers
+                            <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
+                                {pagination.totalPerformers > pagination.limit ? (
+                                    <>
+                                        <span className="hidden sm:inline">
+                                            Showing {((pagination.currentPage - 1) * pagination.limit) + 1} to {Math.min(pagination.currentPage * pagination.limit, pagination.totalPerformers)} of {pagination.totalPerformers} performers
+                                        </span>
+                                        <span className="sm:hidden">
+                                            {((pagination.currentPage - 1) * pagination.limit) + 1}-{Math.min(pagination.currentPage * pagination.limit, pagination.totalPerformers)} of {pagination.totalPerformers}
+                                        </span>
+                                    </>
+                                ) : (
+                                    <span>{pagination.totalPerformers} performers</span>
+                                )}
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 sm:gap-2">
                                 <button
                                     onClick={() => handlePageChange(1)}
                                     disabled={pagination.currentPage === 1}
-                                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                                    className="p-1.5 sm:p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                                     title="First Page"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
                                     </svg>
                                 </button>
@@ -513,15 +573,15 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                                 <button
                                     onClick={() => handlePageChange(pagination.currentPage - 1)}
                                     disabled={!pagination.hasPrevPage}
-                                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                                    className="p-1.5 sm:p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                                     title="Previous Page"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </button>
 
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-0.5 sm:gap-1">
                                     {(() => {
                                         const getVisiblePages = () => {
                                             const totalPages = pagination.totalPages;
@@ -566,7 +626,7 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                                                 <button
                                                     key={pageNum}
                                                     onClick={() => handlePageChange(pageNum)}
-                                                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${pagination.currentPage === pageNum
+                                                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-medium transition-all ${pagination.currentPage === pageNum
                                                         ? "bg-blue-600 text-white shadow-lg scale-105"
                                                         : "bg-white text-gray-700 hover:bg-gray-50 hover:text-blue-600 border border-gray-300"
                                                         }`}
@@ -581,10 +641,10 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                                 <button
                                     onClick={() => handlePageChange(pagination.currentPage + 1)}
                                     disabled={!pagination.hasNextPage}
-                                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                                    className="p-1.5 sm:p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                                     title="Next Page"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                 </button>
@@ -592,17 +652,18 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                                 <button
                                     onClick={() => handlePageChange(pagination.totalPages)}
                                     disabled={pagination.currentPage === pagination.totalPages}
-                                    className="p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                                    className="p-1.5 sm:p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                                     title="Last Page"
                                 >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M6 5l7 7-7 7" />
                                     </svg>
                                 </button>
                             </div>
 
-                            <div className="flex items-center gap-2 text-sm">
-                                <span className="text-gray-600">Show:</span>
+                            <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                                <span className="text-gray-600 hidden sm:inline">Show:</span>
+                                <span className="text-gray-600 sm:hidden">Show</span>
                                 <select
                                     value={pagination.limit}
                                     onChange={(e) => {
@@ -610,7 +671,7 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                                         setPagination((prev) => ({ ...prev, limit: newLimit }));
                                         fetchPerformers(1, searchTerm, filters.categories, filters.city, filters.state);
                                     }}
-                                    className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 >
                                     <option value={5}>5</option>
                                     <option value={10}>10</option>
@@ -618,7 +679,8 @@ const AdminPerformers = ({ onNavigateToViewPerformer, onNavigateToEditPerformer,
                                     <option value={50}>50</option>
                                     <option value={100}>100</option>
                                 </select>
-                                <span className="text-gray-600">per page</span>
+                                <span className="text-gray-600 hidden sm:inline">per page</span>
+                                <span className="text-gray-600 sm:hidden">/page</span>
                             </div>
                         </div>
                     </div>

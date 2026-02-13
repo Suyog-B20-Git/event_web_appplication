@@ -51,7 +51,7 @@ const AdminViewService = ({ service, onBack, onEdit }) => {
                         <div className="bg-indigo-100 p-2 rounded-lg"><FaPuzzlePiece className="text-2xl text-indigo-600" /></div>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800">{service.name}</h1>
-                            <p className="text-sm text-gray-500">Service ID: {service._id}</p>
+                            {/* <p className="text-sm text-gray-500">Service ID: {service._id}</p> */}
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">

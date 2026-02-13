@@ -121,57 +121,106 @@ const AdminPages = ({
   return (
     <div>
       {/* Header Section */}
-      <div className="flex justify-between items-center bg-transparent p-0 rounded-lg mb-6">
-        <div className="flex items-center space-x-4">
-          <FaRegFileAlt className="text-2xl text-gray-600" />
-          <h1 className="text-2xl font-bold text-gray-800">Pages</h1>
+      <div className="bg-transparent p-0 rounded-lg mb-6">
 
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => onNavigateToCreatePage()}
-              className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
-            >
-              <FaPlus className="mr-2" /> Add New
-            </button>
-            <button
-              onClick={handleBulkDelete}
-              className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
-            >
-              <FaTrash className="mr-2" /> Bulk Delete
-            </button>
-            <button
-              onClick={onNavigateToOrder}
-              className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
-            >
-              <FaBars className="mr-2" /> Order
-            </button>
-          </div>
+      {/* TOP ROW — unchanged for web */}
+      <div className="flex items-center space-x-4">
+        <FaRegFileAlt className="text-2xl text-gray-600" />
+        <h1 className="text-2xl font-bold text-gray-800">Pages</h1>
+
+        {/* DESKTOP buttons — SAME AS BEFORE */}
+        <div className="hidden md:flex items-center space-x-2">
+          <button
+            onClick={() => onNavigateToCreatePage()}
+            className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
+          >
+            <FaPlus className="mr-2" /> Add New
+          </button>
+
+          <button
+            onClick={handleBulkDelete}
+            className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
+          >
+            <FaTrash className="mr-2" /> Bulk Delete
+          </button>
+
+          <button
+            onClick={onNavigateToOrder}
+            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-4 text-sm rounded-full shadow-sm transition-colors duration-200"
+          >
+            <FaBars className="mr-2" /> Order
+          </button>
         </div>
       </div>
 
+      {/* MOBILE buttons — ONLY visible on mobile */}
+      <div className="flex gap-2 mt-3 md:hidden">
+        <button
+          onClick={() => onNavigateToCreatePage()}
+          className="flex-1 flex items-center justify-center
+                    bg-green-500 hover:bg-green-600 text-white
+                    font-semibold py-1 px-3 text-sm rounded-full shadow-sm"
+        >
+          <FaPlus className="mr-2" /> Add
+        </button>
+
+        <button
+          onClick={handleBulkDelete}
+          className="flex-1 flex items-center justify-center
+                    bg-red-500 hover:bg-red-600 text-white
+                    font-semibold py-1 px-3 text-sm rounded-full shadow-sm"
+        >
+          <FaTrash className="mr-2" /> Delete
+        </button>
+
+        <button
+          onClick={onNavigateToOrder}
+          className="flex-1 flex items-center justify-center
+                    bg-blue-500 hover:bg-blue-600 text-white
+                    font-semibold py-1 px-3 text-sm rounded-full shadow-sm"
+        >
+          <FaBars className="mr-2" /> Order
+        </button>
+      </div>
+
+      </div>
+
+
       {/* Table Section */}
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center space-x-2 text-sm">
-            <span>Show</span>
-            <select className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-            </select>
-            <span>entries</span>
-          </div>
-          <div className="flex items-center space-x-2 text-sm">
-            <span>Search:</span>
-            <input
-              type="text"
-              className="border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search pages..."
-            />
-          </div>
-        </div>
+      <div className="flex flex-col gap-3 mb-4
+                md:flex-row md:justify-between md:items-center">
+
+      {/* Show entries */}
+      <div className="flex items-center space-x-2 text-sm">
+        <span>Show</span>
+        <select
+          className="border border-gray-300 rounded-md px-2 py-1
+                    focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+        </select>
+        <span>entries</span>
+      </div>
+
+      {/* Search */}
+      <div className="flex items-center space-x-2 text-sm w-full md:w-auto">
+        <span className="shrink-0">Search:</span>
+        <input
+          type="text"
+          className="w-full md:w-auto
+                    border border-gray-300 rounded-md px-2 py-1
+                    focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search pages..."
+        />
+      </div>
+
+    </div>
+
 
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">

@@ -136,8 +136,8 @@ const ViewUser = () => {
                             </p>
                             <div className="flex items-center mt-2">
                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${userData.isEnabled
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-red-100 text-red-800'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
                                     }`}>
                                     {userData.isEnabled ? (
                                         <>

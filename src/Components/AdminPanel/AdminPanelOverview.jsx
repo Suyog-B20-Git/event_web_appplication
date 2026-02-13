@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSearchParams, useLocation, useParams, useNavigate } from 'react-router-dom';
 import { GrDashboard } from "react-icons/gr";
 import { AiFillDashboard } from "react-icons/ai";
 import { FaPuzzlePiece, FaUserCircle, FaMoneyBillWave, FaRegFileAlt, FaRupeeSign, FaFolderOpen, FaCloudDownloadAlt } from "react-icons/fa";
@@ -59,6 +60,7 @@ import AdminComplimentaryBookings from './AdminComplimentaryBookings';
 import AdminCurrencies from './AdminCurrencies';
 import AdminClaims from './AdminClaims';
 import AdminImportEntities from './AdminImportEntities';
+import DashCreateEvent from '../DashboardCreateEvent/DashCreateEvent';
 
 
 
@@ -81,6 +83,10 @@ const Media = () => <div>Media Component</div>;
 const ScanTickets = () => <div>ScanTickets Component</div>;
 
 const AdminPanelOverview = () => {
+    const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const params = useParams();
+    const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState("adminDashboard");
     const [isSidebarPinned, setIsSidebarPinned] = useState(false);
     const [isMouseHovering, setIsMouseHovering] = useState(false);
@@ -107,6 +113,24 @@ const AdminPanelOverview = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    useEffect(() => {
+        const section = searchParams.get('section');
+        if (section === 'dashboard') {
+            setActiveSection('adminDashboard');
+        } else if (section === 'events') {
+            setActiveSection('adminEvents');
+        }
+    }, [searchParams]);
+
+    useEffect(() => {
+        const pathname = location.pathname || '';
+        if (pathname.includes('/admin/dashboard/create-event') || pathname.includes('/dashboard/create-event')) {
+            setActiveSection('adminCreateEvent');
+        } else if (pathname.includes('/admin/dashboard/update-event') || pathname.includes('/dashboard/update-event')) {
+            setActiveSection('adminUpdateEvent');
+        }
+    }, [location.pathname]);
 
     const sections = [
         { name: "Dashboard", icon: <AiFillDashboard />, id: "adminDashboard" },
@@ -148,6 +172,9 @@ const AdminPanelOverview = () => {
     };
 
     const handleNavigate = (sectionId) => {
+        if (sectionId === 'adminEvents' && ['adminCreateEvent', 'adminUpdateEvent'].includes(activeSection)) {
+            navigate('/admin-panel?section=events');
+        }
         setActiveSection(sectionId);
         setIsMobileSidebarOpen(false);
         setSelectedPage(null);
@@ -352,13 +379,18 @@ const AdminPanelOverview = () => {
                 return "Add New Service";
             case "adminImportEntities":
                 return "Import Entities";
+            case "adminCreateEvent":
+                return "Create Event";
+            case "adminUpdateEvent":
+                return "Update Event";
             default:
                 return activeSectionName;
         }
     };
 
     return (
-        <div className="flex min-h-screen bg-gray-50 mt-[-88px]">
+        // Root admin layout: prevent full-page horizontal scroll; rely on parent layout for vertical spacing
+        <div className="flex min-h-screen bg-gray-50 w-full max-w-full overflow-x-hidden">
             <div
                 className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity md:hidden ${isMobileSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 onClick={() => setIsMobileSidebarOpen(false)}
@@ -396,7 +428,8 @@ const AdminPanelOverview = () => {
                                 title={item.name}
                                 className={`flex items-center space-x-4 cursor-pointer p-3 rounded-lg hover:bg-gray-700/50 transition-all duration-200 ease-in-out ${activeSection === item.id ||
                                     (item.id === "adminPages" && ["adminViewPage", "adminEditPage", "adminCreatePage", "adminOrderPages"].includes(activeSection)) ||
-                                    (item.id === "adminBlogPosts" && ["adminAddPost", "adminEditPost"].includes(activeSection))
+                                    (item.id === "adminBlogPosts" && ["adminAddPost", "adminEditPost"].includes(activeSection)) ||
+                                    (item.id === "adminEvents" && ["adminCreateEvent", "adminUpdateEvent"].includes(activeSection))
                                     ? "text-white bg-gradient-to-r from-blue-500 to-cyan-400 shadow-lg"
                                     : "text-gray-300"
                                     }`}
@@ -474,9 +507,9 @@ const AdminPanelOverview = () => {
                 </nav>
             </aside>
 
-            <div className={`flex flex-col flex-1 transition-all duration-300 relative z-0 ${isDesktopSidebarExpanded ? 'md:ml-56' : 'md:ml-16'}`}>
-                <header className="p-2 md:p-4 h-16 flex items-center justify-between z-30 sticky top-0 bg-white/80 backdrop-blur-lg border-b border-gray-200/60">
-                    <div className="flex items-center">
+            <div className={`flex flex-col flex-1 w-full max-w-full transition-all duration-300 relative z-20 ${isDesktopSidebarExpanded ? 'md:ml-56' : 'md:ml-16'}`}>
+                <header className="p-2 md:p-3 h-14 md:h-16 flex items-center justify-between z-30 sticky top-0 bg-white border-b border-gray-200 shadow-sm pointer-events-none">
+                    <div className="flex items-center pointer-events-auto">
                         <button onClick={() => setIsMobileSidebarOpen(true)} className="p-2 rounded-md text-gray-700 hover:bg-gray-200/70 mr-2 md:hidden">
                             <BiMenuAltLeft size={24} />
                         </button>
@@ -517,11 +550,17 @@ const AdminPanelOverview = () => {
                                     <span className="mx-2 font-light text-gray-400">&gt;</span>
                                 </>
                             )}
+                            {["adminCreateEvent", "adminUpdateEvent"].includes(activeSection) && (
+                                <>
+                                    <span className="cursor-pointer hover:text-gray-900" onClick={() => handleNavigate('adminEvents')}>Events</span>
+                                    <span className="mx-2 font-light text-gray-400">&gt;</span>
+                                </>
+                            )}
                             <span className="font-semibold text-gray-800">{getBreadcrumbText()}</span>
                         </div>
                     </div>
 
-                    <div className="relative" ref={profileDropdownRef}>
+                    <div className="relative  pointer-events-auto"  ref={profileDropdownRef}>
                         <button onClick={() => setProfileDropdownOpen(prev => !prev)} className="p-2 rounded-full hover:bg-gray-200/70">
                             <HiOutlineUserCircle size={28} className="text-gray-600" />
                         </button>
@@ -549,10 +588,12 @@ const AdminPanelOverview = () => {
                     </div>
                 </header>
 
-                <main className="flex-1 p-4 md:p-6 bg-gray-50">
+                <main className="flex-1 w-full max-w-full px-4 md:px-6 pb-4 md:pb-6 pt-0 bg-gray-50 min-h-0 overflow-x-hidden">
                     {activeSection === "adminDashboard" && <Dashboard />}
                     {activeSection === "adminCategories" && <Categories />}
                     {activeSection === "adminEvents" && <Events />}
+                    {activeSection === "adminCreateEvent" && <DashCreateEvent eventIdFromRoute={null} />}
+                    {activeSection === "adminUpdateEvent" && <DashCreateEvent eventIdFromRoute={params.eventId || location.state?.event?._id} />}
                     {activeSection === "adminTags" && <AdminTags />}
                     {activeSection === "adminBookings" && <AdminBookings />}
                     {activeSection === "adminHeaderMenu" && <AdminHeaderMenu />}

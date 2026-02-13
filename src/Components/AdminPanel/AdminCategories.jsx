@@ -267,35 +267,35 @@ const AdminCategories = () => {
   }, []);
 
   return (
-    <div className="p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
-        <div className="flex items-center gap-2">
-          <FaFolderOpen className="text-3xl text-gray-700" />
-          <h2 className="text-3xl font-semibold text-gray-800">Categories</h2>
+    <div className="pt-2 px-3 pb-3 sm:pt-3 sm:px-4 sm:pb-4 max-w-full overflow-x-hidden min-w-0">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-3 min-w-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <FaFolderOpen className="text-2xl sm:text-3xl text-gray-700 flex-shrink-0" />
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-800 truncate">Categories</h2>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full lg:w-auto justify-start lg:justify-end min-w-0">
           <button
             onClick={handleAddNew}
-            className="bg-green-500 text-white text-lg font-semibold  px-4 py-2 rounded-xl"
+            className="bg-green-500 text-white text-xs sm:text-base lg:text-lg font-semibold px-3 py-2 sm:px-4 rounded-xl"
           >
             Add New
           </button>
           <button
             onClick={handleBulkDeactivate}
-            className="bg-red-500 text-white  text-lg font-semibold px-4 py-2 rounded-xl"
+            className="bg-red-500 text-white text-xs sm:text-base lg:text-lg font-semibold px-3 py-2 sm:px-4 rounded-xl"
           >
             Bulk Deactivate
           </button>
           <button
             onClick={handleBulkActivate}
-            className="bg-green-500 text-white  text-lg font-semibold px-4 py-2 rounded-xl"
+            className="bg-green-500 text-white text-xs sm:text-base lg:text-lg font-semibold px-3 py-2 sm:px-4 rounded-xl"
           >
             Bulk Activate
           </button>
           <button
             onClick={handleBulkPermanentDelete}
-            className="bg-red-700 text-white  text-lg font-semibold px-4 py-2 rounded-xl"
+            className="bg-red-700 text-white text-xs sm:text-base lg:text-lg font-semibold px-3 py-2 sm:px-4 rounded-xl col-span-2 sm:col-span-1"
           >
             Bulk Permanent Delete
           </button>
@@ -303,13 +303,14 @@ const AdminCategories = () => {
       </div>
       {/* </div> */}
       <input
-        className="mb-4 border px-3 py-1 rounded-xl w-full sm:w-1/3"
+        className="mb-4 border px-4 py-3 rounded-xl w-full max-w-full sm:w-1/2 lg:w-1/3 text-sm sm:text-base min-w-0"
         placeholder="Search by name"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <div className="overflow-x-auto">
+      {/* Table wrapper: only the table should scroll horizontally on small screens */}
+      <div className="w-full overflow-x-auto overflow-y-visible scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 pb-2 min-w-0">
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
@@ -317,25 +318,25 @@ const AdminCategories = () => {
           </div>
         ) : (
           <>
-            <table className="min-w-full border text-sm">
+            <table className="min-w-[600px] w-full border text-xs sm:text-sm">
               <thead className="bg-gray-200">
                 <tr>
-                  <th className="p-2">
+                  <th className="p-2 sm:p-3">
                     <input type="checkbox" disabled />
                   </th>
                   {/* <th className="p-2">Id</th> */}
-                  <th className="p-3 text-left">Category</th>
-                  <th className="p-3 text-left">Sub-Category</th>
-                  <th className="p-3">Thumb</th>
+                  <th className="p-2 sm:p-3 text-left text-xs sm:text-sm font-semibold">Category</th>
+                  <th className="p-2 sm:p-3 text-left text-xs sm:text-sm font-semibold">Sub-Category</th>
+                  <th className="p-2 sm:p-3 text-xs sm:text-sm font-semibold">Thumb</th>
                   {/* <th className="p-2">Updated At</th> */}
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Actions</th>
+                  <th className="p-2 sm:p-3 text-xs sm:text-sm font-semibold">Status</th>
+                  <th className="p-2 sm:p-3 text-xs sm:text-sm font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((cat) => (
                   <tr key={cat._id} className="border-t">
-                    <td className="p-2">
+                    <td className="p-2 sm:p-3">
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(cat._id)}
@@ -343,9 +344,9 @@ const AdminCategories = () => {
                       />
                     </td>
                     {/* <td className="p-2">{cat._id}</td> */}
-                    <td className="p-3">{cat.type}</td>
-                    <td className="p-3">{cat.name}</td>
-                    <td className="p-3 text-center">
+                    <td className="p-2 sm:p-3 text-xs sm:text-sm">{cat.type}</td>
+                    <td className="p-2 sm:p-3 text-xs sm:text-sm">{cat.name}</td>
+                    <td className="p-2 sm:p-3 text-center">
                       {categoryIcons[cat.name?.toLowerCase()] || (
                         <span className="text-gray-400">No Icon</span>
                       )}
@@ -359,7 +360,7 @@ const AdminCategories = () => {
                       </span>
                     </td>
 
-                    <td className="p-3 relative">
+                    <td className="p-2 sm:p-3 relative">
                       <div className="relative inline-block text-right bg-green-500 text-white px-2 py-1 rounded-xl">
                         <button
                           onClick={(e) => {

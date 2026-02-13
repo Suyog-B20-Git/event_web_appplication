@@ -69,10 +69,28 @@ const AdminBookings = () => {
 
             <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div className="flex bg-gray-100 p-1 rounded-lg">
-                        <button onClick={() => setActiveTab('bookings')} className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors ${activeTab === 'bookings' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>Active</button>
-                        <button onClick={() => setActiveTab('failed')} className={`px-4 py-1.5 text-sm font-semibold rounded-md transition-colors ${activeTab === 'failed' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>Failed</button>
+                    <div className="flex w-full bg-gray-100 p-1 rounded-lg gap-1">
+                        <button
+                            onClick={() => setActiveTab('bookings')}
+                            className={`flex-1 w-full min-w-0 py-1.5 text-sm font-semibold rounded-md transition-colors text-center
+                            ${activeTab === 'bookings'
+                                ? 'bg-white text-indigo-600 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                            Active
+                        </button>
+
+                        <button
+                            onClick={() => setActiveTab('failed')}
+                            className={`flex-1 w-full min-w-0 py-1.5 text-sm font-semibold rounded-md transition-colors text-center
+                            ${activeTab === 'failed'
+                                ? 'bg-white text-red-600 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                            Failed
+                        </button>
                     </div>
+
                     <div className="relative w-full md:w-80">
                         <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input type="text" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search all booking details..." className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
@@ -104,13 +122,38 @@ const AdminBookings = () => {
                             <DetailItem icon={<FaUndo size={14} />} label="Cancel Status" value={booking.cancelStatus} />
                             <DetailItem icon={<FaCalendarAlt size={14} />} label="Created At" value={booking.createdAt} />
                         </div>
+                        <footer className="p-3 bg-gray-50 rounded-b-lg w-full">
+  <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end sm:items-center">
 
-                        <footer className="p-3 bg-gray-50 rounded-b-lg flex justify-end items-center space-x-2">
-                            <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors"><FaEye className="mr-2" />View</button>
-                            <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white transition-colors"><FaDownload className="mr-2" />Download</button>
-                            <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white transition-colors"><FaFileInvoice className="mr-2" />Invoice</button>
-                            <ActionsDropdown bookingId={booking.id} />
-                        </footer>
+    <button className="flex items-center justify-center gap-2 text-sm font-semibold py-2 px-3 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800">
+      <FaEye /> View
+    </button>
+
+    <button className="flex items-center justify-center gap-2 text-sm font-semibold py-2 px-3 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white">
+      <FaDownload /> Download
+    </button>
+
+    <button className="flex items-center justify-center gap-2 text-sm font-semibold py-2 px-3 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white">
+      <FaFileInvoice /> Invoice
+    </button>
+
+    {/* ACTION BUTTON (REPLACES ⋮ ICON) */}
+    <ActionsDropdown
+      bookingId={booking.id}
+      trigger={
+        <button className="w-full flex items-center justify-center gap-2 text-sm font-semibold py-2 px-3 rounded-lg bg-gray-700 hover:bg-gray-800 text-white">
+          <FaEllipsisV />
+          Action
+        </button>
+      }
+    />
+
+  </div>
+</footer>
+
+
+
+
                     </div>
                 )) : (
                     <div className="text-center py-16 px-6 bg-white rounded-lg shadow-sm border border-gray-200">

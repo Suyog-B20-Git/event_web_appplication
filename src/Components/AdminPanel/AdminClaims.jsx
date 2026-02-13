@@ -171,47 +171,49 @@ const AdminClaims = () => {
             </div>
 
             {/* Filters */}
-            <div className="mb-4 space-y-4">
-                <div className="flex gap-4">
-                    <div className="flex-1">
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                        >
-                            <option value="">All Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="auto_pending">Auto Pending</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
-                    <div className="flex-1">
-                        <select
-                            value={modelFilter}
-                            onChange={(e) => setModelFilter(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                        >
-                            <option value="">All Types</option>
-                            <option value="Organizer">Organizer</option>
-                            <option value="Performer">Performer</option>
-                            <option value="Venue">Venue</option>
-                            <option value="Service">Service</option>
-                        </select>
-                    </div>
+            <div className="mb-4">
+                <div className="grid grid-cols-2 gap-4">
+
+                    {/* Status */}
+                    <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="auto_pending">Auto Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                    </select>
+
+                    {/* Type */}
+                    <select
+                    value={modelFilter}
+                    onChange={(e) => setModelFilter(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                    <option value="">All Types</option>
+                    <option value="Organizer">Organizer</option>
+                    <option value="Performer">Performer</option>
+                    <option value="Venue">Venue</option>
+                    <option value="Service">Service</option>
+                    </select>
+
+                    {/* Search */}
                     {isSuperAdmin && (
-                        <div className="flex-1">
-                            <input
-                                type="text"
-                                placeholder="Search by username or email..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                            />
-                        </div>
+                    <input
+                        type="text"
+                        placeholder="Search by username or email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="col-span-2 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
                     )}
+
                 </div>
             </div>
+
 
             {/* Loading State */}
             {loading && (
@@ -234,19 +236,23 @@ const AdminClaims = () => {
                     {Array.isArray(claims) && claims.length > 0 ? (
                         claims.map((claim) => {
                             const statusInfo = formatStatusDisplay(claim.status);
+
                             return (
                                 <div
                                     key={claim._id}
                                     className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
                                 >
-                                    <div className="flex items-start justify-between">
+                                    <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+                                        {/* LEFT CONTENT */}
                                         <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
+                                            <div className="flex items-center gap-3 mb-2 flex-wrap">
                                                 <FaClipboardList className="text-gray-500" />
                                                 <h3 className="text-lg font-semibold text-gray-900">
                                                     {claim.modelName} Claim
                                                 </h3>
-                                                <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}>
+                                                <span
+                                                    className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${statusInfo.color}`}
+                                                >
                                                     {statusInfo.icon}
                                                     {statusInfo.text}
                                                 </span>
@@ -254,48 +260,61 @@ const AdminClaims = () => {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                                                 <div>
-                                                    <span className="font-medium">Entity:</span> {claim.targetId?.name || claim.targetId}
+                                                    <span className="font-medium">Entity:</span>{" "}
+                                                    {claim.targetId?.name || claim.targetId}
                                                 </div>
                                                 <div>
-                                                    <span className="font-medium">Type:</span> {claim.modelName}
+                                                    <span className="font-medium">Type:</span>{" "}
+                                                    {claim.modelName}
                                                 </div>
+
                                                 {claim.targetId?.city && (
                                                     <div>
-                                                        <span className="font-medium">City:</span> {claim.targetId.city}
+                                                        <span className="font-medium">City:</span>{" "}
+                                                        {claim.targetId.city}
                                                     </div>
                                                 )}
-                                                {claim.targetId?.categories && claim.targetId.categories.length > 0 && (
+
+                                                {claim.targetId?.categories?.length > 0 && (
                                                     <div>
-                                                        <span className="font-medium">Categories:</span> {claim.targetId.categories.join(', ')}
+                                                        <span className="font-medium">Categories:</span>{" "}
+                                                        {claim.targetId.categories.join(", ")}
                                                     </div>
                                                 )}
+
                                                 <div>
-                                                    <span className="font-medium">Submitted:</span> {formatDate(claim.createdAt)}
+                                                    <span className="font-medium">Submitted:</span>{" "}
+                                                    {formatDate(claim.createdAt)}
                                                 </div>
+
                                                 {claim.contactNumber && (
                                                     <div>
-                                                        <span className="font-medium">Contact:</span> {claim.contactNumber}
+                                                        <span className="font-medium">Contact:</span>{" "}
+                                                        {claim.contactNumber}
                                                     </div>
                                                 )}
                                             </div>
 
-                                            {/* Enhanced target description */}
+                                            {/* Description */}
                                             {claim.targetId?.description && (
                                                 <div className="mt-3">
-                                                    <span className="font-medium text-gray-700">Description:</span>
+                                                    <span className="font-medium text-gray-700">
+                                                        Description:
+                                                    </span>
                                                     <p className="text-gray-600 mt-1 text-sm line-clamp-2">
                                                         {claim.targetId.description.length > 100
                                                             ? `${claim.targetId.description.substring(0, 100)}...`
-                                                            : claim.targetId.description
-                                                        }
+                                                            : claim.targetId.description}
                                                     </p>
                                                 </div>
                                             )}
 
-                                            {/* Target tags */}
-                                            {claim.targetId?.tags && claim.targetId.tags.length > 0 && (
+                                            {/* Tags */}
+                                            {claim.targetId?.tags?.length > 0 && (
                                                 <div className="mt-2">
-                                                    <span className="font-medium text-gray-700">Tags:</span>
+                                                    <span className="font-medium text-gray-700">
+                                                        Tags:
+                                                    </span>
                                                     <div className="flex flex-wrap gap-1 mt-1">
                                                         {claim.targetId.tags.slice(0, 3).map((tag, index) => (
                                                             <span
@@ -316,41 +335,95 @@ const AdminClaims = () => {
 
                                             {claim.message && (
                                                 <div className="mt-3">
-                                                    <span className="font-medium text-gray-700">Message:</span>
-                                                    <p className="text-gray-600 mt-1 text-sm">{claim.message}</p>
+                                                    <span className="font-medium text-gray-700">
+                                                        Message:
+                                                    </span>
+                                                    <p className="text-gray-600 mt-1 text-sm">
+                                                        {claim.message}
+                                                    </p>
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="ml-4 flex gap-2">
-                                            <button
-                                                onClick={() => handleViewClaim(claim)}
-                                                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
-                                            >
-                                                <FaEye className="text-sm" />
-                                                View Details
-                                            </button>
+                                        {/* ACTIONS */}
+                                        <div className="w-full md:w-auto md:ml-4 mt-4 md:mt-0">
+                                            {/* Desktop buttons */}
+                                            <div className="hidden md:flex gap-2">
+                                                <button
+                                                    onClick={() => handleViewClaim(claim)}
+                                                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+                                                >
+                                                    <FaEye className="text-sm" />
+                                                    View Details
+                                                </button>
 
-                                            {isSuperAdmin && (claim.status === "pending" || claim.status === "auto_pending") && (
-                                                <>
-                                                    <button
-                                                        onClick={() => handleApproveClaim(claim)}
-                                                        className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
-                                                        disabled={loading}
-                                                    >
-                                                        <FaCheck className="text-sm" />
-                                                        Approve
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleRejectClaim(claim)}
-                                                        className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition"
-                                                        disabled={loading}
-                                                    >
-                                                        <FaTimes className="text-sm" />
-                                                        Reject
-                                                    </button>
-                                                </>
-                                            )}
+                                                {isSuperAdmin &&
+                                                    (claim.status === "pending" ||
+                                                        claim.status === "auto_pending") && (
+                                                        <>
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleApproveClaim(claim)
+                                                                }
+                                                                className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
+                                                                disabled={loading}
+                                                            >
+                                                                <FaCheck className="text-sm" />
+                                                                Approve
+                                                            </button>
+
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleRejectClaim(claim)
+                                                                }
+                                                                className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition"
+                                                                disabled={loading}
+                                                            >
+                                                                <FaTimes className="text-sm" />
+                                                                Reject
+                                                            </button>
+                                                        </>
+                                                    )}
+                                            </div>
+
+                                            {/* Mobile buttons */}
+                                            <div className="md:hidden flex gap-2 mt-2">
+                                                <button
+                                                    onClick={() => handleViewClaim(claim)}
+                                                    className="flex-1 flex items-center justify-center gap-2 bg-blue-500 text-white py-2 rounded-lg"
+                                                >
+                                                    <FaEye className="text-sm" />
+                                                    View
+                                                </button>
+
+                                                {isSuperAdmin &&
+                                                    (claim.status === "pending" ||
+                                                        claim.status === "auto_pending") && (
+                                                        <>
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleApproveClaim(claim)
+                                                                }
+                                                                className="flex-1 flex items-center justify-center gap-2 bg-green-500 text-white py-2 rounded-lg"
+                                                                disabled={loading}
+                                                            >
+                                                                <FaCheck className="text-sm" />
+                                                                Approve
+                                                            </button>
+
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleRejectClaim(claim)
+                                                                }
+                                                                className="flex-1 flex items-center justify-center gap-2 bg-red-500 text-white py-2 rounded-lg"
+                                                                disabled={loading}
+                                                            >
+                                                                <FaTimes className="text-sm" />
+                                                                Reject
+                                                            </button>
+                                                        </>
+                                                    )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -359,17 +432,19 @@ const AdminClaims = () => {
                     ) : (
                         <div className="text-center py-12">
                             <FaClipboardList className="mx-auto text-gray-400 text-4xl mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No Claims Found</h3>
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                No Claims Found
+                            </h3>
                             <p className="text-gray-600">
                                 {statusFilter || modelFilter
                                     ? "Try adjusting your filters to see more claims."
-                                    : "You haven't submitted any claims yet."
-                                }
+                                    : "You haven't submitted any claims yet."}
                             </p>
                         </div>
                     )}
                 </div>
             )}
+
 
             {/* Pagination */}
             {Array.isArray(claims) && claims.length > 0 && pagination && pagination.totalPages > 1 && (

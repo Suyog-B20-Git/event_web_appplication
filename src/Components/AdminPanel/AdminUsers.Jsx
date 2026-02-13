@@ -340,36 +340,61 @@ const AdminUsers = () => {
             />
 
             <header className="mb-6">
-                <div className="flex justify-between items-center flex-wrap gap-4">
-                    <div className="flex items-center space-x-3">
-                        <div className="bg-green-100 p-2 rounded-lg"><FaUsers className="text-2xl text-green-600" /></div>
-                        <h1 className="text-3xl font-bold text-gray-800">Users</h1>
-                        <span className="text-sm text-gray-500">({pagination.totalUsers} total)</span>
-                    </div>
+            <div className="flex justify-between items-center flex-nowrap md:flex-wrap gap-4">
 
-                    <div className="flex items-center space-x-2">
-                        <button
-                            onClick={() => navigate('/admin/add-user')}
-                            className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
-                        >
-                            <FaPlus className="mr-2" /> Add New
-                        </button>
-                        {selectedUsers.length > 0 && (
-                            <>
-                                <button onClick={handleBulkEnable} className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                                    Enable ({selectedUsers.length})
-                                </button>
-                                <button onClick={handleBulkDisable} className="flex items-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                                    Disable ({selectedUsers.length})
-                                </button>
-                                <button onClick={handleBulkDelete} className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                                    <FaTrash className="mr-2" /> Delete ({selectedUsers.length})
-                                </button>
-                            </>
-                        )}
-                    </div>
+                {/* LEFT : ICON + TITLE */}
+                <div className="flex items-center space-x-3">
+                <div className="bg-green-100 p-2 rounded-lg">
+                    <FaUsers className="text-2xl text-green-600" />
                 </div>
+
+                <h1 className="text-3xl font-bold text-gray-800">
+                    Users
+                </h1>
+
+                <span className="text-sm text-gray-500">
+                    ({pagination.totalUsers} total)
+                </span>
+                </div>
+
+                {/* RIGHT : ACTIONS */}
+                <div className="flex items-center space-x-2 shrink-0">
+                <button
+                    onClick={() => navigate('/admin/add-user')}
+                    className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
+                >
+                    <FaPlus className="mr-2" /> Add New
+                </button>
+
+                {selectedUsers.length > 0 && (
+                    <>
+                    <button
+                        onClick={handleBulkEnable}
+                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
+                    >
+                        Enable ({selectedUsers.length})
+                    </button>
+
+                    <button
+                        onClick={handleBulkDisable}
+                        className="flex items-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
+                    >
+                        Disable ({selectedUsers.length})
+                    </button>
+
+                    <button
+                        onClick={handleBulkDelete}
+                        className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
+                    >
+                        <FaTrash className="mr-2" /> Delete ({selectedUsers.length})
+                    </button>
+                    </>
+                )}
+                </div>
+
+            </div>
             </header>
+
 
             {/* Search and Filters */}
             <div className="mb-6 space-y-4">
@@ -479,7 +504,7 @@ const AdminUsers = () => {
                                         />
                                         <div>
                                             <h3 className="font-bold text-lg text-indigo-700">{user.username}</h3>
-                                            <p className="text-sm text-gray-500">User ID: <span className="font-medium text-gray-600">{user._id}</span></p>
+                                            {/* <p className="text-sm text-gray-500">User ID: <span className="font-medium text-gray-600">{user._id}</span></p> */}
                                         </div>
                                     </div>
                                     <StatusBadge status={user.isEnabled} />
@@ -492,32 +517,49 @@ const AdminUsers = () => {
                                     <DetailItem icon={<FaCalendarAlt size={14} />} label="Created At">{formatDate(user.createdAt)}</DetailItem>
                                 </div>
 
-                                <footer className="p-3 bg-gray-50 rounded-b-lg flex flex-wrap justify-end items-center gap-2">
-                                    {user.isEnabled ? (
-                                        <button onClick={() => handleSingleDisable(user._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white transition-colors">
-                                            Disable
-                                        </button>
-                                    ) : (
-                                        <button onClick={() => handleSingleEnable(user._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors">
-                                            Enable
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={() => navigate(`/admin/view-user/${user._id}`)}
-                                        className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors"
-                                    >
-                                        <FaEye className="mr-2" />View
-                                    </button>
-                                    <button
-                                        onClick={() => navigate(`/admin/edit-user/${user._id}`)}
-                                        className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"
-                                    >
-                                        <FaPencilAlt className="mr-2" />Edit
-                                    </button>
-                                    <button onClick={() => handleDeleteSingle(user._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors">
-                                        <FaTrash className="mr-2" />Delete
-                                    </button>
-                                </footer>
+                                <footer className="p-3 bg-gray-50 rounded-b-lg w-full">
+  <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end sm:items-center">
+
+    {user.isEnabled ? (
+      <button
+        onClick={() => handleSingleDisable(user._id)}
+        className="flex items-center justify-center text-sm font-semibold py-2 px-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white transition-colors"
+      >
+        Disable
+      </button>
+    ) : (
+      <button
+        onClick={() => handleSingleEnable(user._id)}
+        className="flex items-center justify-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+      >
+        Enable
+      </button>
+    )}
+
+    <button
+      onClick={() => navigate(`/admin/view-user/${user._id}`)}
+      className="flex items-center justify-center text-sm font-semibold py-2 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors"
+    >
+      <FaEye className="mr-2" /> View
+    </button>
+
+    <button
+      onClick={() => navigate(`/admin/edit-user/${user._id}`)}
+      className="flex items-center justify-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+    >
+      <FaPencilAlt className="mr-2" /> Edit
+    </button>
+
+    <button
+      onClick={() => handleDeleteSingle(user._id)}
+      className="flex items-center justify-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"
+    >
+      <FaTrash className="mr-2" /> Delete
+    </button>
+
+  </div>
+</footer>
+
                             </div>
                         ))}
 

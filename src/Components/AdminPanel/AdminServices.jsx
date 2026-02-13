@@ -142,19 +142,19 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
             )}
             <ConfirmationDialog {...confirmationDialog} onClose={closeConfirm} />
             <header className="mb-6">
-                <div className="flex justify-between items-center flex-wrap gap-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                     <div className="flex items-center space-x-3">
                         <div className="bg-blue-100 p-2 rounded-lg"><FaPuzzlePiece className="text-2xl text-blue-600" /></div>
                         <h1 className="text-3xl font-bold text-gray-800">Services</h1>
                         <span className="text-sm text-gray-500">({pagination.totalServices} total)</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <button onClick={() => { setIsNavigating(true); setTimeout(() => onNavigateToAddService?.(), 0); }} className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"><FaPlus className="mr-2" /> Add New</button>
+                    <div className="flex flex-col sm:flex-row sm:justify-end gap-2 w-full">
+                        <button onClick={() => { setIsNavigating(true); setTimeout(() => onNavigateToAddService?.(), 0); }} className="flex items-center justify-center w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"><FaPlus className="mr-2" /> Add New</button>
                         {selectedServices.length > 0 && (
                             <>
-                                <button onClick={handleBulkEnable} className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">Enable ({selectedServices.length})</button>
-                                <button onClick={handleBulkDisable} className="flex items-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">Disable ({selectedServices.length})</button>
-                                <button onClick={handleBulkDelete} className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"><FaTrash className="mr-2" /> Delete ({selectedServices.length})</button>
+                                <button onClick={handleBulkEnable} className="flex items-center justify-center w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">Enable ({selectedServices.length})</button>
+                                <button onClick={handleBulkDisable} className="flex items-center justify-center w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">Disable ({selectedServices.length})</button>
+                                <button onClick={handleBulkDelete} className="flex items-center w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"><FaTrash className="mr-2" /> Delete ({selectedServices.length})</button>
                             </>
                         )}
                     </div>
@@ -228,7 +228,7 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
                                         <input type="checkbox" checked={selectedServices.includes(service._id)} onChange={() => handleSelect(service._id)} className="h-5 w-5 rounded text-indigo-600 border-gray-300 focus:ring-indigo-500" />
                                         <div>
                                             <h3 className="font-bold text-lg text-indigo-700">{service.name}</h3>
-                                            <p className="text-sm text-gray-500">Service ID: <span className="font-medium text-gray-600">{service._id}</span></p>
+                                            {/* <p className="text-sm text-gray-500">Service ID: <span className="font-medium text-gray-600">{service._id}</span></p> */}
                                         </div>
                                     </div>
                                     <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${service.isEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{service.isEnabled ? 'Enabled' : 'Disabled'}</span>
@@ -239,16 +239,87 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
                                     <DetailItem icon={<FaCalendarAlt size={14} />} label="Created At">{service.createdAt ? new Date(service.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}</DetailItem>
                                     <DetailItem icon={<FaEye size={14} />} label="Visits">{typeof service.visits === 'number' ? service.visits : '0'}</DetailItem>
                                 </div>
-                                <footer className="p-3 bg-gray-50 rounded-b-lg flex flex-wrap justify-end items-center gap-2">
+                                <footer
+                                className="
+                                    p-3 bg-gray-50 rounded-b-lg
+                                    grid grid-cols-2 gap-2
+                                    sm:flex sm:justify-end sm:items-center
+                                "
+                                >
                                     {service.isEnabled ? (
-                                        <button onClick={() => handleSingleDisable(service._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white transition-colors">Disable</button>
+                                        <button
+                                        onClick={() => handleSingleDisable(service._id)}
+                                        className="
+                                            flex items-center justify-center
+                                            w-full sm:w-fit
+                                            text-sm font-semibold py-2 px-4
+                                            rounded-lg bg-yellow-500 hover:bg-yellow-600
+                                            text-white transition-colors
+                                        "
+                                        >
+                                        Disable
+                                        </button>
                                     ) : (
-                                        <button onClick={() => handleSingleEnable(service._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors">Enable</button>
+                                        <button
+                                        onClick={() => handleSingleEnable(service._id)}
+                                        className="
+                                            flex items-center justify-center
+                                            w-full sm:w-fit
+                                            text-sm font-semibold py-2 px-4
+                                            rounded-lg bg-green-500 hover:bg-green-600
+                                            text-white transition-colors
+                                        "
+                                        >
+                                        Enable
+                                        </button>
                                     )}
-                                    <button onClick={() => { setIsNavigating(true); setTimeout(() => onNavigateToViewService?.(service), 0); }} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"><FaEye className="mr-2" />View</button>
-                                    <button onClick={() => { setIsNavigating(true); setTimeout(() => onNavigateToEditService?.(service), 0); }} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white transition-colors"><FaPencilAlt className="mr-2" />Edit</button>
-                                    <button onClick={() => handleDeleteSingle(service._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"><FaTrash className="mr-2" />Delete</button>
+
+                                    <button
+                                        onClick={() => {
+                                        setIsNavigating(true);
+                                        setTimeout(() => onNavigateToViewService?.(service), 0);
+                                        }}
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-blue-500 hover:bg-blue-600
+                                        text-white transition-colors
+                                        "
+                                    >
+                                        <FaEye className="mr-2" /> View
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                        setIsNavigating(true);
+                                        setTimeout(() => onNavigateToEditService?.(service), 0);
+                                        }}
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-indigo-500 hover:bg-indigo-600
+                                        text-white transition-colors
+                                        "
+                                    >
+                                        <FaPencilAlt className="mr-2" /> Edit
+                                    </button>
+
+                                    <button
+                                        onClick={() => handleDeleteSingle(service._id)}
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-red-500 hover:bg-red-600
+                                        text-white transition-colors
+                                        "
+                                    >
+                                        <FaTrash className="mr-2" /> Delete
+                                    </button>
                                 </footer>
+
                             </div>
                         ))}
                     </>

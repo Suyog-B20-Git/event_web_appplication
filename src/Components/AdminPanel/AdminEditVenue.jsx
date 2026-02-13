@@ -572,7 +572,7 @@ const AdminEditVenue = ({ venue, onBack, onUpdate }) => {
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800">Edit Venue</h1>
-                            <p className="text-sm text-gray-500">Venue ID: {venue._id}</p>
+                            {/* <p className="text-sm text-gray-500">Venue ID: {venue._id}</p> */}
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">

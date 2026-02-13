@@ -20,6 +20,12 @@ const AdminAddVenue = ({ onBack, onCreate }) => {
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [selectedState, setSelectedState] = useState(null);
     const [selectedCity, setSelectedCity] = useState(null);
+    const [toast, setToast] = useState(null);
+
+    const showToast = (msg, type = 'success') => {
+        setToast({ message: msg, type });
+        setTimeout(() => setToast(null), 3000);
+    };
 
     const {
         control,
@@ -376,10 +382,16 @@ const AdminAddVenue = ({ onBack, onCreate }) => {
             if (data.twitterUrl) formData.append('twitterUrl', data.twitterUrl);
 
             await dispatch(createVenue(formData));
-            onCreate?.();
-            onBack?.();
+            showToast("Venue created successfully!");
+            // Delay navigation so user can see the success toast
+            setTimeout(() => {
+                onCreate?.();
+                onBack?.();
+            }, 500);
         } catch (err) {
-            // handled by toasts in action if present
+            console.error("Error creating venue:", err);
+            const errorMessage = err.response?.data?.message || "Failed to create venue. Please try again.";
+            showToast(`${errorMessage}`, 'error');
         } finally {
             setIsSubmitting(false);
         }
@@ -652,6 +664,15 @@ const AdminAddVenue = ({ onBack, onCreate }) => {
                     </div>
                 </div>
             </form>
+
+            {/* Toast Notification */}
+            {toast && (
+                <div className={`fixed top-4 right-4 text-white px-4 py-2 rounded shadow-md z-50 transition-all duration-300 ${
+                    toast.type === 'error' ? 'bg-red-600' : 'bg-green-600'
+                }`}>
+                    {toast.message}
+                </div>
+            )}
         </div>
     );
 };

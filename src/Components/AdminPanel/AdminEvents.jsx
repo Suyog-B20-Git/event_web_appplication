@@ -1,9 +1,10 @@
 // AdminEvents.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const baseUrl = "https://dev.eventsnode.com/api/event";
+// const baseUrl = "https://dev.eventsnode.com/api/event";
+const baseUrl = "http://localhost:5000/api/event";
 
 const AdminEvents = () => {
   const [events, setEvents] = useState([]);
@@ -13,6 +14,8 @@ const AdminEvents = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalEvents, setTotalEvents] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({});
+  const buttonRefs = useRef({});
 
   const navigate = useNavigate();
   const token = localStorage.getItem("authToken");
@@ -110,10 +113,80 @@ const AdminEvents = () => {
 
 
   useEffect(() => {
-    const handleClickOutside = () => setDropdownOpen(null);
+    const handleClickOutside = (e) => {
+      // Don't close if clicking inside the dropdown menu
+      if (!e.target.closest('.dropdown-menu-container') && !e.target.closest('.dropdown-button')) {
+        setDropdownOpen(null);
+      }
+    };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+  const calculateMenuPosition = (eventId, buttonElement) => {
+    if (!buttonElement) return;
+
+    const rect = buttonElement.getBoundingClientRect();
+    const menuHeight = 200; // Approximate height of the menu
+    const menuWidth = 128; // w-32 = 128px
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+
+    // Calculate available space below and above
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    
+    // Determine if menu should open above or below
+    const openAbove = spaceBelow < menuHeight && spaceAbove > spaceBelow;
+    
+    // Calculate horizontal position (right-aligned, but ensure it doesn't go off-screen)
+    let left = rect.right - menuWidth;
+    if (left < 10) {
+      left = rect.left; // Align to left if right would go off-screen
+    }
+    if (left + menuWidth > viewportWidth - 10) {
+      left = viewportWidth - menuWidth - 10; // Ensure it doesn't go off right edge
+    }
+
+    // Calculate vertical position (fixed positioning is relative to viewport)
+    let top;
+    if (openAbove) {
+      top = rect.top - menuHeight - 4; // 4px gap above
+    } else {
+      top = rect.bottom + 4; // 4px gap below
+    }
+
+    // Ensure menu doesn't go off top or bottom of viewport
+    if (top < 10) {
+      top = 10; // Minimum top margin
+    }
+    if (top + menuHeight > viewportHeight - 10) {
+      top = viewportHeight - menuHeight - 10; // Ensure it fits in viewport
+    }
+
+    setMenuPosition({
+      [eventId]: {
+        top: `${top}px`,
+        left: `${left}px`,
+        position: 'fixed',
+      }
+    });
+  };
+
+  const handleDropdownToggle = (eventId, e) => {
+    e.stopPropagation();
+    const buttonElement = buttonRefs.current[eventId];
+    
+    if (dropdownOpen === eventId) {
+      setDropdownOpen(null);
+    } else {
+      setDropdownOpen(eventId);
+      // Calculate position after state update
+      setTimeout(() => {
+        calculateMenuPosition(eventId, buttonElement);
+      }, 0);
+    }
+  };
 
   const formatDate = (str) => {
     if (!str) return "";
@@ -176,30 +249,37 @@ const AdminEvents = () => {
                   <td className="p-3">{event.isEnabled}</td>
                   <td className="p-3 relative">
                     <button
-                      className="bg-green-500 text-white px-2 py-1  w-16 h-8 flex items-center justify-center rounded-xl h "
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDropdownOpen(dropdownOpen === event._id ? null : event._id);
-                      }}
-
+                      ref={(el) => (buttonRefs.current[event._id] = el)}
+                      className="dropdown-button bg-green-500 text-white px-2 py-1 w-16 h-8 flex items-center justify-center rounded-xl"
+                      onClick={(e) => handleDropdownToggle(event._id, e)}
                     >
-                      <span className="text-md font-bold text-white-600 w-full ">
+                      <span className="text-md font-bold text-white-600 w-full">
                         {" "}
                         ⋮
                       </span>
                     </button>
                     {dropdownOpen === event._id && (
-                      <div className="absolute right-0 mt-2 w-32 bg-red-100 text-gray-800 font-semibold border border-gray-200 rounded-xl shadow z-10">
+                      <div
+                        className="dropdown-menu-container w-32 bg-red-100 text-gray-800 font-semibold border border-gray-200 rounded-xl shadow-lg z-50"
+                        style={menuPosition[event._id] || {}}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <button
-                          onClick={() => handleEdit(event._id)}
-                          className="block w-full   px-2 py-1  mb-1 rounded-xl hover:bg-purple-400"
+                          onClick={() => {
+                            handleEdit(event._id);
+                            setDropdownOpen(null);
+                          }}
+                          className="block w-full px-2 py-1 mb-1 rounded-xl hover:bg-purple-400 text-left"
                         >
                           Edit Event
                         </button>
                         <button
                           // onClick={() => navigate(`/events/${event.category}/${event.organizer}`)}
-                          onClick={() => handleView(event)}
-                          className="block w-full   px-2 py-1  mb-1 rounded-xl hover:bg-purple-400"
+                          onClick={() => {
+                            handleView(event);
+                            setDropdownOpen(null);
+                          }}
+                          className="block w-full px-2 py-1 mb-1 rounded-xl hover:bg-purple-400 text-left"
                         //        onClick={(e) => {
                         //   e.stopPropagation();
                         //    if (event.category && event.id) {
@@ -219,21 +299,30 @@ const AdminEvents = () => {
                           View Event
                         </button>
                         <button
-                          onClick={() => handleDelete(event)}
-                          className="block w-full px-2 py-1  mb-1 rounded-xl hover:bg-purple-400"
+                          onClick={() => {
+                            handleDelete(event);
+                            setDropdownOpen(null);
+                          }}
+                          className="block w-full px-2 py-1 mb-1 rounded-xl hover:bg-purple-400 text-left"
                         >
                           Delete Event
                         </button>
                         <button
-                          onClick={() => navigate(`/create-ticket/${event._id}`)}
+                          onClick={() => {
+                            navigate(`/create-ticket/${event._id}`);
+                            setDropdownOpen(null);
+                          }}
                           className="block w-full px-2 py-1 mb-1 rounded-xl hover:bg-purple-400"
                         >
                           Manage Tickets
                         </button>
                         <button
-                          onClick={() => navigate(`/adminMyEvents`)}
+                          onClick={() => {
+                            navigate(`/adminMyEvents`);
+                            setDropdownOpen(null);
+                          }}
 
-                          className="block w-full  px-2 py-1  mb-1 rounded-xl hover:bg-purple-400"
+                          className="block w-full px-2 py-1 mb-1 rounded-xl hover:bg-purple-400 text-left"
                         >
                           More Actions
                         </button>

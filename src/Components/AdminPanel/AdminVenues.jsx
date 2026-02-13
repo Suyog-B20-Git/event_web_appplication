@@ -313,7 +313,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
             />
 
             <header className="mb-6">
-                <div className="flex justify-between items-center flex-wrap gap-4">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                     <div className="flex items-center space-x-3">
                         <div className="bg-blue-100 p-2 rounded-lg">
                             <FaBuilding className="text-2xl text-blue-600" />
@@ -322,22 +322,22 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                         <span className="text-sm text-gray-500">({pagination.totalVenues} total)</span>
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-col sm:flex-row sm:justify-end gap-2 w-full">
                         <button
                             onClick={onNavigateToAddVenue}
-                            className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
+                            className="flex items-center justify-center w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
                         >
                             <FaPlus className="mr-2" /> Add New
                         </button>
                         {selectedVenues.length > 0 && (
                             <>
-                                <button onClick={handleBulkEnable} className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
+                                <button onClick={handleBulkEnable} className="flex items-center justify-center w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
                                     Enable ({selectedVenues.length})
                                 </button>
-                                <button onClick={handleBulkDisable} className="flex items-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
+                                <button onClick={handleBulkDisable} className="flex items-center justify-center w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
                                     Disable ({selectedVenues.length})
                                 </button>
-                                <button onClick={handleBulkDelete} className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
+                                <button onClick={handleBulkDelete} className="flex items-center justify-center w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
                                     <FaTrash className="mr-2" /> Delete ({selectedVenues.length})
                                 </button>
                             </>
@@ -464,7 +464,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                                         )}
                                         <div>
                                             <h3 className="font-bold text-lg text-indigo-700">{venue.name}</h3>
-                                            <p className="text-sm text-gray-500">Venue ID: <span className="font-medium text-gray-600">{venue._id}</span></p>
+                                            {/* <p className="text-sm text-gray-500">Venue ID: <span className="font-medium text-gray-600">{venue._id}</span></p> */}
                                             {venue.address && (
                                                 <p className="text-xs text-gray-500 truncate max-w-[48ch]">{venue.address}</p>
                                             )}
@@ -483,32 +483,81 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                                     <DetailItem icon={<FaEye size={14} />} label="Visits">{typeof venue.visits === 'number' ? venue.visits : '0'}</DetailItem>
                                 </div>
 
-                                <footer className="p-3 bg-gray-50 rounded-b-lg flex flex-wrap justify-end items-center gap-2">
+                                <footer
+                                className="
+                                    p-3 bg-gray-50 rounded-b-lg
+                                    grid grid-cols-2 gap-2
+                                    sm:flex sm:justify-end sm:items-center
+                                "
+                                >
                                     {venue.isEnabled ? (
-                                        <button onClick={() => handleSingleDisable(venue._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white transition-colors">
-                                            Disable
+                                        <button
+                                        onClick={() => handleSingleDisable(venue._id)}
+                                        className="
+                                            flex items-center justify-center
+                                            w-full sm:w-fit
+                                            text-sm font-semibold py-2 px-4
+                                            rounded-lg bg-yellow-500 hover:bg-yellow-600
+                                            text-white transition-colors
+                                        "
+                                        >
+                                        Disable
                                         </button>
                                     ) : (
-                                        <button onClick={() => handleSingleEnable(venue._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors">
-                                            Enable
+                                        <button
+                                        onClick={() => handleSingleEnable(venue._id)}
+                                        className="
+                                            flex items-center justify-center
+                                            w-full sm:w-fit
+                                            text-sm font-semibold py-2 px-4
+                                            rounded-lg bg-green-500 hover:bg-green-600
+                                            text-white transition-colors
+                                        "
+                                        >
+                                        Enable
                                         </button>
                                     )}
+
                                     <button
                                         onClick={() => onNavigateToViewVenue(venue)}
-                                        className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-blue-500 hover:bg-blue-600
+                                        text-white transition-colors
+                                        "
                                     >
-                                        <FaEye className="mr-2" />View
+                                        <FaEye className="mr-2" /> View
                                     </button>
+
                                     <button
                                         onClick={() => onNavigateToEditVenue(venue)}
-                                        className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white transition-colors"
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-indigo-500 hover:bg-indigo-600
+                                        text-white transition-colors
+                                        "
                                     >
-                                        <FaPencilAlt className="mr-2" />Edit
+                                        <FaPencilAlt className="mr-2" /> Edit
                                     </button>
-                                    <button onClick={() => handleDeleteSingle(venue._id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors">
-                                        <FaTrash className="mr-2" />Delete
+
+                                    <button
+                                        onClick={() => handleDeleteSingle(venue._id)}
+                                        className="
+                                        flex items-center justify-center
+                                        w-full sm:w-fit
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-red-500 hover:bg-red-600
+                                        text-white transition-colors
+                                        "
+                                    >
+                                        <FaTrash className="mr-2" /> Delete
                                     </button>
                                 </footer>
+
                             </div>
                         ))}
                     </>

@@ -511,7 +511,7 @@ const AdminEditPerformer = ({ performer, onBack, onUpdate }) => {
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800">Edit Performer</h1>
-                            <p className="text-sm text-gray-500">Performer ID: {performer._id}</p>
+                            {/* <p className="text-sm text-gray-500">Performer ID: {performer._id}</p> */}
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">

@@ -854,7 +854,7 @@ const AdminEditOrganizer = ({ organizer, onBack, onUpdate }) => {
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold text-gray-800">Edit Organizer</h1>
-                            <p className="text-sm text-gray-500">Organizer ID: {organizer._id}</p>
+                            {/* <p className="text-sm text-gray-500">Organizer ID: {organizer._id}</p> */}
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">

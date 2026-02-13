@@ -75,27 +75,43 @@ const AdminBanners = () => {
     return (
         <div className="bg-gray-50 p-4 md:p-6 min-h-screen">
             <header className="mb-6">
-                <div className="flex justify-between items-center flex-wrap gap-4">
-                    <div className="flex items-center space-x-3">
-                        <div className="bg-orange-100 p-2 rounded-lg"><FaImage className="text-2xl text-orange-600" /></div>
-                        <h1 className="text-3xl font-bold text-gray-800">Banners</h1>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                         <button className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                            <FaPlus className="mr-2" /> Add New
-                        </button>
-                        {selectedBanners.length > 0 && (
-                            <button onClick={handleBulkDelete} className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                                <FaTrash className="mr-2" /> Bulk Delete ({selectedBanners.length})
-                            </button>
-                        )}
-                         <button className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                            <FaBars className="mr-2" /> Order
-                        </button>
-                    </div>
+            <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+
+                {/* Title */}
+                <div className="flex items-center space-x-3">
+                <div className="bg-orange-100 p-2 rounded-lg">
+                    <FaImage className="text-2xl text-orange-600" />
                 </div>
+                <h1 className="text-3xl font-bold text-gray-800">Banners</h1>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 w-full md:w-auto">
+
+                <button
+                    className="flex-1 md:flex-none
+                            flex items-center justify-center
+                            bg-green-500 hover:bg-green-600
+                            text-white font-semibold py-2 px-4 text-sm
+                            rounded-lg shadow-sm transition-colors"
+                >
+                    <FaPlus className="mr-2" /> Add New
+                </button>
+
+                <button
+                    className="flex-1 md:flex-none
+                            flex items-center justify-center
+                            bg-blue-500 hover:bg-blue-600
+                            text-white font-semibold py-2 px-4 text-sm
+                            rounded-lg shadow-sm transition-colors"
+                >
+                    <FaBars className="mr-2" /> Order
+                </button>
+
+                </div>
+            </div>
             </header>
+
 
             <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
                 <div className="relative w-full">
@@ -126,11 +142,46 @@ const AdminBanners = () => {
                             <DetailItem icon={<FaCalendarAlt size={14} />} label="Last Updated">{new Date(banner.updatedAt).toLocaleString('en-IN')}</DetailItem>
                         </div>
                         
-                        <footer className="p-3 bg-gray-50 rounded-b-lg flex justify-end items-center space-x-2">
-                           <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-yellow-400 hover:bg-yellow-500 text-white transition-colors"><FaEye className="mr-2"/>View</button>
-                           <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"><FaPencilAlt className="mr-2"/>Edit</button>
-                           <button onClick={() => handleDeleteSingle(banner.id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"><FaTrash className="mr-2"/>Delete</button>
+                        <footer className="p-3 bg-gray-50 rounded-b-lg
+                            flex gap-2
+                            justify-between md:justify-end">
+
+                            <button
+                                className="flex-1 md:flex-none
+                                        flex items-center justify-center
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-yellow-400 hover:bg-yellow-500
+                                        text-white transition-colors"
+                            >
+                                <FaEye className="mr-2" />
+                                View
+                            </button>
+
+                            <button
+                                className="flex-1 md:flex-none
+                                        flex items-center justify-center
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-blue-500 hover:bg-blue-600
+                                        text-white transition-colors"
+                            >
+                                <FaPencilAlt className="mr-2" />
+                                Edit
+                            </button>
+
+                            <button
+                                onClick={() => handleDeleteSingle(banner.id)}
+                                className="flex-1 md:flex-none
+                                        flex items-center justify-center
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-red-500 hover:bg-red-600
+                                        text-white transition-colors"
+                            >
+                                <FaTrash className="mr-2" />
+                                Delete
+                            </button>
+
                         </footer>
+
                     </div>
                 )) : (
                     <div className="text-center py-16 px-6 bg-white rounded-lg shadow-sm border border-gray-200">

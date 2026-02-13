@@ -84,27 +84,41 @@ const AdminTaxes = () => {
     return (
         <div className="bg-gray-50 p-4 md:p-6 min-h-screen">
             <header className="mb-6">
-                <div className="flex justify-between items-center flex-wrap gap-4">
+                <div className="flex justify-between items-center flex-nowrap md:flex-wrap gap-4">
+
+                    {/* LEFT : ICON + TITLE */}
                     <div className="flex items-center space-x-3">
-                        <div className="bg-blue-100 p-2 rounded-lg"><FaFileInvoiceDollar className="text-2xl text-blue-600" /></div>
-                        <h1 className="text-3xl font-bold text-gray-800">Taxes</h1>
+                    <div className="bg-blue-100 p-2 rounded-lg">
+                        <FaFileInvoiceDollar className="text-2xl text-blue-600" />
                     </div>
-                    
-                    <div className="flex items-center space-x-2">
-                        <button className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                            <FaPlus className="mr-2" /> Add New
-                        </button>
-                        {selectedTaxes.length > 0 && (
-                            <button onClick={handleBulkDelete} className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                                <FaTrash className="mr-2" /> Bulk Delete ({selectedTaxes.length})
-                            </button>
-                        )}
-                        <button className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
-                            <FaBars className="mr-2" /> Order
-                        </button>
+                    <h1 className="text-3xl font-bold text-gray-800">
+                        Taxes
+                    </h1>
                     </div>
+
+                    {/* RIGHT : ACTIONS */}
+                    <div className="flex items-center space-x-2 shrink-0">
+                    <button className="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
+                        <FaPlus className="mr-2" /> Add New
+                    </button>
+
+                    {selectedTaxes.length > 0 && (
+                        <button
+                        onClick={handleBulkDelete}
+                        className="flex items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors"
+                        >
+                        <FaTrash className="mr-2" /> Bulk Delete ({selectedTaxes.length})
+                        </button>
+                    )}
+
+                    <button className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 text-sm rounded-lg shadow-sm transition-colors">
+                        <FaBars className="mr-2" /> Order
+                    </button>
+                    </div>
+
                 </div>
             </header>
+
 
             <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
                 <div className="relative w-full md:w-1/2 lg:w-1/3">
@@ -136,11 +150,28 @@ const AdminTaxes = () => {
                             </DetailItem>
                         </div>
                         
-                        <footer className="p-3 bg-gray-50 rounded-b-lg flex justify-end items-center space-x-2">
-                           <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors"><FaEye className="mr-2"/>View</button>
-                           <button className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors"><FaPencilAlt className="mr-2"/>Edit</button>
-                           <button onClick={() => handleDeleteSingle(tax.id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"><FaTrash className="mr-2"/>Delete</button>
+                        <footer className="p-3 bg-gray-50 rounded-b-lg flex w-full gap-2 justify-between sm:justify-end items-center">
+
+                            <button className="flex flex-1 sm:flex-none items-center justify-center text-sm font-semibold py-2 px-2 sm:px-4 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors">
+                                <FaEye className="mr-1 sm:mr-2" />
+                                View
+                            </button>
+
+                            <button className="flex flex-1 sm:flex-none items-center justify-center text-sm font-semibold py-2 px-2 sm:px-4 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors">
+                                <FaPencilAlt className="mr-1 sm:mr-2" />
+                                Edit
+                            </button>
+
+                            <button
+                                onClick={() => handleDeleteSingle(tax.id)}
+                                className="flex flex-1 sm:flex-none items-center justify-center text-sm font-semibold py-2 px-2 sm:px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"
+                            >
+                                <FaTrash className="mr-1 sm:mr-2" />
+                                Delete
+                            </button>
+
                         </footer>
+
                     </div>
                 )) : (
                     <div className="text-center py-16 px-6 bg-white rounded-lg shadow-sm border border-gray-200">

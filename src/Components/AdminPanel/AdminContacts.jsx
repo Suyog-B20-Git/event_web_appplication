@@ -181,11 +181,36 @@ const AdminContacts = () => {
                             <DetailItem icon={<FaCalendarAlt size={14} />} label="Created At">{contact.createdAt ? new Date(contact.createdAt).toLocaleString('en-IN') : 'N/A'}</DetailItem>
                         </div>
                         
-                        <footer className="p-3 bg-gray-50 rounded-b-lg flex justify-end items-center space-x-2">
-                          
-                           <button onClick={() => setViewingContact(contact)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-colors"><FaEye className="mr-2"/>View</button>
-                           <button onClick={() => handleDeleteSingle(contact.id)} className="flex items-center text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"><FaTrash className="mr-2"/>Delete</button>
+                        <footer className="p-3 bg-gray-50 rounded-b-lg flex gap-2
+                            justify-between
+                            md:justify-end">
+
+                            <button
+                                onClick={() => setViewingContact(contact)}
+                                className="flex-1 md:flex-none
+                                        flex items-center justify-center
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-gray-200 hover:bg-gray-300
+                                        text-gray-800 transition-colors"
+                            >
+                                <FaEye className="mr-2" />
+                                View
+                            </button>
+
+                            <button
+                                onClick={() => handleDeleteSingle(contact.id)}
+                                className="flex-1 md:flex-none
+                                        flex items-center justify-center
+                                        text-sm font-semibold py-2 px-4
+                                        rounded-lg bg-red-500 hover:bg-red-600
+                                        text-white transition-colors"
+                            >
+                                <FaTrash className="mr-2" />
+                                Delete
+                            </button>
+
                         </footer>
+
                     </div>
                 )) : (
                     <div className="text-center py-16 px-6 bg-white rounded-lg shadow-sm border border-gray-200">
