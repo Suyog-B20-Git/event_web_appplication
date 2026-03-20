@@ -37,6 +37,30 @@ export const deleteVenue = (venueId) => async (dispatch) => {
     }
 };
 
+export const approveVenue = (venueId) => async (dispatch) => {
+    try {
+        dispatch({ type: 'APPROVE_VENUE_REQUEST' });
+        const response = await axiosInstance.put(`/venue/${venueId}/approve`);
+        dispatch({ type: 'APPROVE_VENUE_SUCCESS', payload: response.data });
+        return response.data;
+    } catch (error) {
+        dispatch({ type: 'APPROVE_VENUE_FAILURE', payload: error.response?.data?.message || 'Error approving venue' });
+        throw error;
+    }
+};
+
+export const rejectVenue = (venueId, reason) => async (dispatch) => {
+    try {
+        dispatch({ type: 'REJECT_VENUE_REQUEST' });
+        const response = await axiosInstance.put(`/venue/${venueId}/reject`, { reason });
+        dispatch({ type: 'REJECT_VENUE_SUCCESS', payload: response.data });
+        return response.data;
+    } catch (error) {
+        dispatch({ type: 'REJECT_VENUE_FAILURE', payload: error.response?.data?.message || 'Error rejecting venue' });
+        throw error;
+    }
+};
+
 // Bulk operations
 export const bulkEnableVenues = (venueIds) => async (dispatch) => {
     try {

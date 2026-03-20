@@ -240,12 +240,12 @@ const Location = ({ data, setData, nextTab }) => {
 
       {/* Create New Venue Button */}
       <div className="flex items-center gap-4">
-        {/* <button
+        <button
           onClick={() => setShowForm(true)}
           className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
         >
           + Create Venue
-        </button> */}
+        </button>
         <div className="flex justify-end flex-1">
           <button
             onClick={handleSave}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { FaBuilding, FaPlus, FaTrash, FaSearch, FaEye, FaPencilAlt, FaFilter, FaTimes, FaExclamationTriangle, FaCheckCircle, FaMapMarkerAlt, FaStar, FaCalendarAlt } from 'react-icons/fa';
 import { getAllVenuesAdmin } from '../../redux/actions/master/Venue/getVenuesAdmin';
-import { enableVenue, disableVenue, deleteVenue as deleteVenueAction, bulkEnableVenues, bulkDisableVenues, bulkDeleteVenues } from '../../redux/actions/master/Venue/VenueOps';
+import { enableVenue, disableVenue, deleteVenue as deleteVenueAction, bulkEnableVenues, bulkDisableVenues, bulkDeleteVenues, approveVenue, rejectVenue } from '../../redux/actions/master/Venue/VenueOps';
 
 // Custom Confirmation Dialog Component
 const ConfirmationDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText, cancelText, type = 'warning' }) => {
@@ -69,6 +69,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
         limit: 10
     });
     const [filters, setFilters] = useState({ categories: '', city: '', state: '' });
+    const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'params', 'enabled', 'disabled'
     const [showFilters, setShowFilters] = useState(false);
 
     // Confirmation dialogs state
@@ -83,7 +84,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
     });
 
     // Fetch venues function
-    const fetchVenues = async (page = 1, search = '', categoryFilter = '', cityFilter = '', stateFilter = '') => {
+    const fetchVenues = async (page = 1, search = '', categoryFilter = '', cityFilter = '', stateFilter = '', currentStatusFilter = statusFilter) => {
         setLoading(true);
         try {
             const params = {
@@ -92,7 +93,8 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                 name: search || undefined,
                 categories: categoryFilter || undefined,
                 city: cityFilter || undefined,
-                state: stateFilter || undefined
+                state: stateFilter || undefined,
+                status: currentStatusFilter !== 'all' ? currentStatusFilter : undefined
             };
 
             const result = await dispatch(getAllVenuesAdmin(params));
@@ -107,13 +109,13 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
 
     // Initial load
     useEffect(() => {
-        fetchVenues();
-    }, []);
+        fetchVenues(1, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
+    }, [statusFilter]);
 
     // Handle search with debounce
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            fetchVenues(1, searchTerm, filters.categories, filters.city, filters.state);
+            fetchVenues(1, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
         }, 500);
 
         return () => clearTimeout(timeoutId);
@@ -155,6 +157,41 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
     };
 
     // Single operations
+    const handleApprove = async (venueId) => {
+        const venue = venues.find(v => v._id === venueId);
+        showConfirmation(
+            'Approve Venue',
+            `Are you sure you want to approve "${venue?.name}"? This will make it active and visible to users.`,
+            'Approve Venue',
+            'Cancel',
+            'success',
+            async () => {
+                try {
+                    await dispatch(approveVenue(venueId));
+                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
+                } catch (e) { }
+            }
+        );
+    };
+
+    const handleReject = async (venueId) => {
+        const venue = venues.find(v => v._id === venueId);
+        // Prompt for reason could be added here, currently just simple rejection
+        showConfirmation(
+            'Reject Venue',
+            `Are you sure you want to reject "${venue?.name}"?`,
+            'Reject Venue',
+            'Cancel',
+            'danger',
+            async () => {
+                try {
+                    await dispatch(rejectVenue(venueId));
+                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
+                } catch (e) { }
+            }
+        );
+    };
+
     const handleSingleEnable = async (venueId) => {
         const venue = venues.find(v => v._id === venueId);
         showConfirmation(
@@ -166,7 +203,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
             async () => {
                 try {
                     await dispatch(enableVenue(venueId));
-                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state);
+                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
                 } catch (e) { }
             }
         );
@@ -183,7 +220,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
             async () => {
                 try {
                     await dispatch(disableVenue(venueId));
-                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state);
+                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
                 } catch (e) { }
             }
         );
@@ -201,7 +238,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                 try {
                     await dispatch(deleteVenueAction(venueId));
                     setSelectedVenues(prev => prev.filter(id => id !== venueId));
-                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state);
+                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
                 } catch (e) { }
             }
         );
@@ -220,7 +257,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                 try {
                     await dispatch(bulkEnableVenues(selectedVenues));
                     setSelectedVenues([]);
-                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state);
+                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
                 } catch (e) { }
             }
         );
@@ -238,7 +275,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                 try {
                     await dispatch(bulkDisableVenues(selectedVenues));
                     setSelectedVenues([]);
-                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state);
+                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
                 } catch (e) { }
             }
         );
@@ -256,21 +293,24 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                 try {
                     await dispatch(bulkDeleteVenues(selectedVenues));
                     setSelectedVenues([]);
-                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state);
+                    fetchVenues(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
                 } catch (e) { }
             }
         );
     };
 
     const handlePageChange = (page) => {
-        fetchVenues(page, searchTerm, filters.categories, filters.city, filters.state);
+        fetchVenues(page, searchTerm, filters.categories, filters.city, filters.state, statusFilter);
     };
 
     // Utility functions
-    const StatusBadge = ({ status }) => {
+    const StatusBadge = ({ venue }) => {
+        if (venue.pendingApproval) {
+            return <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800">Pending Approval</span>;
+        }
         const styles = { true: 'bg-green-100 text-green-800', false: 'bg-red-100 text-red-800', undefined: 'bg-red-100 text-red-800' };
-        const label = status ? 'Enabled' : 'Disabled';
-        return <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${styles[status]}`}>{label}</span>;
+        const label = venue.isEnabled ? 'Enabled' : 'Disabled';
+        return <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${styles[venue.isEnabled]}`}>{label}</span>;
     };
 
     const formatCategories = (categories) => {
@@ -345,6 +385,22 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                     </div>
                 </div>
             </header>
+
+            {/* Status Tabs */}
+            <div className="flex space-x-1 bg-white p-1 rounded-lg border border-gray-200 mb-6 w-fit">
+                {['all', 'pending', 'enabled', 'disabled'].map((status) => (
+                    <button
+                        key={status}
+                        onClick={() => setStatusFilter(status)}
+                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${statusFilter === status
+                            ? 'bg-blue-500 text-white shadow-sm'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                    >
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                    </button>
+                ))}
+            </div>
 
             {/* Search and Filters */}
             <div className="mb-6 space-y-4">
@@ -470,7 +526,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                                             )}
                                         </div>
                                     </div>
-                                    <StatusBadge status={venue.isEnabled} />
+                                    <StatusBadge venue={venue} />
                                 </div>
 
                                 <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-5">
@@ -484,16 +540,43 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                                 </div>
 
                                 <footer
-                                className="
+                                    className="
                                     p-3 bg-gray-50 rounded-b-lg
                                     grid grid-cols-2 gap-2
                                     sm:flex sm:justify-end sm:items-center
                                 "
                                 >
-                                    {venue.isEnabled ? (
+                                    {venue.pendingApproval ? (
+                                        <>
+                                            <button
+                                                onClick={() => handleApprove(venue._id)}
+                                                className="
+                                            flex items-center justify-center
+                                            w-full sm:w-fit
+                                            text-sm font-semibold py-2 px-4
+                                            rounded-lg bg-green-500 hover:bg-green-600
+                                            text-white transition-colors
+                                        "
+                                            >
+                                                Approve
+                                            </button>
+                                            <button
+                                                onClick={() => handleReject(venue._id)}
+                                                className="
+                                            flex items-center justify-center
+                                            w-full sm:w-fit
+                                            text-sm font-semibold py-2 px-4
+                                            rounded-lg bg-red-500 hover:bg-red-600
+                                            text-white transition-colors
+                                        "
+                                            >
+                                                Reject
+                                            </button>
+                                        </>
+                                    ) : venue.isEnabled ? (
                                         <button
-                                        onClick={() => handleSingleDisable(venue._id)}
-                                        className="
+                                            onClick={() => handleSingleDisable(venue._id)}
+                                            className="
                                             flex items-center justify-center
                                             w-full sm:w-fit
                                             text-sm font-semibold py-2 px-4
@@ -501,12 +584,12 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                                             text-white transition-colors
                                         "
                                         >
-                                        Disable
+                                            Disable
                                         </button>
                                     ) : (
                                         <button
-                                        onClick={() => handleSingleEnable(venue._id)}
-                                        className="
+                                            onClick={() => handleSingleEnable(venue._id)}
+                                            className="
                                             flex items-center justify-center
                                             w-full sm:w-fit
                                             text-sm font-semibold py-2 px-4
@@ -514,7 +597,7 @@ const AdminVenues = ({ onNavigateToViewVenue, onNavigateToEditVenue, onNavigateT
                                             text-white transition-colors
                                         "
                                         >
-                                        Enable
+                                            Enable
                                         </button>
                                     )}
 

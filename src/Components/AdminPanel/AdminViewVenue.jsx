@@ -12,14 +12,17 @@ const Badge = ({ children }) => (
     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2 mb-2">{children}</span>
 );
 
-const StatusBadge = ({ status }) => {
+const StatusBadge = ({ venue }) => {
+    if (venue.pendingApproval) {
+        return <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800">Pending Approval</span>;
+    }
     const styles = {
         true: 'bg-green-100 text-green-800',
         false: 'bg-red-100 text-red-800',
         undefined: 'bg-red-100 text-red-800'
     };
-    const label = status ? 'Enabled' : 'Disabled';
-    return <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${styles[status]}`}>{label}</span>;
+    const label = venue.isEnabled ? 'Enabled' : 'Disabled';
+    return <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${styles[venue.isEnabled]}`}>{label}</span>;
 };
 
 const formatDate = (dateString) => {
@@ -50,7 +53,7 @@ const AdminViewVenue = ({ venue, onBack, onEdit }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <StatusBadge status={venue.isEnabled} />
+                        <StatusBadge venue={venue} />
                         <button onClick={() => onEdit?.(venue)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700">Edit</button>
                     </div>
                 </div>

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import SeatingChartEditor from "./SeatingChartEditor";
 
 const NewVenueForm = () => {
   const [form, setForm] = useState({});
+  const [showSeatingEditor, setShowSeatingEditor] = useState(false);
+  const [seatingChartData, setSeatingChartData] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
@@ -11,9 +14,28 @@ const NewVenueForm = () => {
     });
   };
 
+  const handleSeatingChartSave = (data) => {
+    setSeatingChartData(data);
+    setForm(prev => ({ ...prev, seatingChartConfig: data }));
+    // Auto-calculate capacity from chart
+    const capacity = data.objects.reduce((total, obj) => {
+      if (obj.type === 'section') return total + (obj.capacity || 0);
+      if (obj.type === 'table') return total + (obj.seats || 0);
+      return total;
+    }, 0);
+
+    setForm(prev => ({
+      ...prev,
+      seatedGuests: capacity,
+      seatingChartConfig: data
+    }));
+    setShowSeatingEditor(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", form);
+    console.log("Form Submitted:", { ...form, seatingChartConfig: seatingChartData });
+    // TODO: Dispatch create venue action with seatingChartConfig
   };
 
   return (
@@ -205,6 +227,59 @@ const NewVenueForm = () => {
             onChange={handleChange}
             className="w-full mt-1 border  hover:border-pink-500 p-2 rounded-2xl"
           />
+        </div>
+
+        <div className="border p-4 rounded-xl bg-gray-50">
+          <label className="block font-medium text-gray-700 mb-2">
+            Seating Arrangement:
+          </label>
+
+          {!showSeatingEditor ? (
+            <div className="flex flex-col gap-2">
+              {seatingChartData ? (
+                <div className="text-green-600 font-medium flex items-center gap-2">
+                  <span>✓ Seating Layout Designed ({seatingChartData.objects.length} elements)</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowSeatingEditor(true)}
+                    className="text-blue-600 underline text-sm"
+                  >
+                    Edit Layout
+                  </button>
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm mb-2">No seating layout designed yet.</p>
+              )}
+              <button
+                type="button"
+                onClick={() => setShowSeatingEditor(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 self-start"
+              >
+                {seatingChartData ? "Modify Seating Chart" : "Design Seating Chart"}
+              </button>
+            </div>
+          ) : (
+            <div className="fixed inset-0 bg-black bg-opacity-75 z-[60] flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg w-full max-w-6xl h-[80vh] flex flex-col">
+                <div className="p-4 border-b flex justify-between items-center">
+                  <h3 className="text-xl font-bold">Design Seating Chart</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowSeatingEditor(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕ Close
+                  </button>
+                </div>
+                <div className="flex-1 overflow-hidden p-4">
+                  <SeatingChartEditor
+                    onSave={handleSeatingChartSave}
+                    initialData={seatingChartData}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div>
