@@ -81,12 +81,17 @@ export const getAllClaims = (params = {}) => {
     };
 };
 
-export const updateClaimStatus = (claimId, status) => {
+export const updateClaimStatus = (claimId, status, rejectionReason = null) => {
     return async (dispatch) => {
         try {
             dispatch({ type: "UPDATE_CLAIM_STATUS_REQUEST" });
 
-            const response = await axiosInstance.put(`/claims/${claimId}/status`, { status });
+            const payload = { status };
+            if (rejectionReason) {
+                payload.rejectionReason = rejectionReason;
+            }
+
+            const response = await axiosInstance.put(`/claims/${claimId}/status`, payload);
 
             if (response.data.status) {
                 dispatch({

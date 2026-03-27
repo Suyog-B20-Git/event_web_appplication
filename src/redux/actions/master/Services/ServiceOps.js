@@ -24,4 +24,12 @@ export const bulkDeleteServices = (ids) => async (dispatch) => {
     await axiosInstance.delete(`/services/bulk-delete`, { data: { serviceIds: ids } });
 };
 
+export const approveService = (id) => async (dispatch) => {
+    await axiosInstance.put(`/services/${id}/approve`);
+};
+
+export const rejectService = (id, reason) => async (dispatch) => {
+    await axiosInstance.put(`/services/${id}/reject`, { reason });
+};
+
 

@@ -11,6 +11,7 @@ export const getAllServicesAdmin = (params = {}) => async (dispatch) => {
         if (params.categories) queryParams.append('categories', params.categories);
         if (params.city) queryParams.append('city', params.city);
         if (params.state) queryParams.append('state', params.state);
+        if (params.status) queryParams.append('status', params.status);
 
         const response = await axiosInstance.get(`/services?${queryParams.toString()}`);
 

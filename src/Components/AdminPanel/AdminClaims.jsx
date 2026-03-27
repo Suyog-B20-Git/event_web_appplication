@@ -124,7 +124,7 @@ const AdminClaims = () => {
 
         try {
             const status = actionType === "approve" ? "approved" : "rejected";
-            await dispatch(updateClaimStatus(actionClaim._id, status));
+            await dispatch(updateClaimStatus(actionClaim._id, status, rejectionReason));
 
             const message = actionType === "approve"
                 ? "Claim approved successfully!"

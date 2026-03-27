@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { FaPuzzlePiece, FaPlus, FaTrash, FaSearch, FaEye, FaPencilAlt, FaFilter, FaTimes, FaExclamationTriangle, FaCheckCircle, FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
 import { getAllServicesAdmin } from '../../redux/actions/master/Services/getServicesAdmin';
-import { enableService, disableService, deleteService as deleteServiceAction, bulkEnableServices, bulkDisableServices, bulkDeleteServices } from '../../redux/actions/master/Services/ServiceOps';
+import { enableService, disableService, deleteService as deleteServiceAction, bulkEnableServices, bulkDisableServices, bulkDeleteServices, approveService, rejectService } from '../../redux/actions/master/Services/ServiceOps';
 
 const ConfirmationDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText, cancelText, type = 'warning' }) => {
     if (!isOpen) return null;
@@ -54,13 +54,22 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
     const [selectedServices, setSelectedServices] = useState([]);
     const [pagination, setPagination] = useState({ currentPage: 1, totalPages: 1, totalServices: 0, hasNextPage: false, hasPrevPage: false, limit: 10 });
     const [filters, setFilters] = useState({ categories: '', city: '', state: '' });
+    const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'pending', 'enabled', 'disabled'
     const [showFilters, setShowFilters] = useState(false);
     const [confirmationDialog, setConfirmationDialog] = useState({ isOpen: false, title: '', message: '', confirmText: '', cancelText: '', type: 'warning', onConfirm: null });
 
-    const fetchServices = async (page = 1, search = '', categoryFilter = '', cityFilter = '', stateFilter = '') => {
+    const fetchServices = async (page = 1, search = '', categoryFilter = '', cityFilter = '', stateFilter = '', currentStatusFilter = statusFilter) => {
         setLoading(true);
         try {
-            const params = { page, limit: pagination.limit, name: search || undefined, categories: categoryFilter || undefined, city: cityFilter || undefined, state: stateFilter || undefined };
+            const params = {
+                page,
+                limit: pagination.limit,
+                name: search || undefined,
+                categories: categoryFilter || undefined,
+                city: cityFilter || undefined,
+                state: stateFilter || undefined,
+                status: currentStatusFilter !== 'all' ? currentStatusFilter : undefined
+            };
             const result = await dispatch(getAllServicesAdmin(params));
             setServices(result.services || []);
             setPagination(result.pagination || {});
@@ -70,9 +79,9 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
         }
     };
 
-    useEffect(() => { fetchServices(); }, []);
+    useEffect(() => { fetchServices(1, searchTerm, filters.categories, filters.city, filters.state, statusFilter); }, [statusFilter]);
     useEffect(() => {
-        const t = setTimeout(() => { fetchServices(1, searchTerm, filters.categories, filters.city, filters.state); }, 500);
+        const t = setTimeout(() => { fetchServices(1, searchTerm, filters.categories, filters.city, filters.state, statusFilter); }, 500);
         return () => clearTimeout(t);
     }, [searchTerm, filters]);
 
@@ -87,41 +96,53 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
     const showConfirm = (title, message, confirmText, type, onConfirm) => setConfirmationDialog({ isOpen: true, title, message, confirmText, cancelText: 'Cancel', type, onConfirm: () => { onConfirm(); setConfirmationDialog(prev => ({ ...prev, isOpen: false })); } });
     const closeConfirm = () => setConfirmationDialog(prev => ({ ...prev, isOpen: false }));
 
+    const handleApprove = async (id) => {
+        const entity = services.find(s => s._id === id);
+        showConfirm('Approve Service', `Are you sure you want to approve "${entity?.name}"?`, 'Approve', 'success', async () => {
+            try { await dispatch(approveService(id)); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter); } catch (e) { }
+        });
+    };
+    const handleReject = async (id) => {
+        const entity = services.find(s => s._id === id);
+        showConfirm('Reject Service', `Are you sure you want to reject "${entity?.name}"?`, 'Reject', 'danger', async () => {
+            try { await dispatch(rejectService(id)); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter); } catch (e) { }
+        });
+    };
     const handleSingleEnable = async (id) => {
         const entity = services.find(s => s._id === id);
         showConfirm('Enable Service', `Are you sure you want to enable "${entity?.name}"?`, 'Enable', 'success', async () => {
-            try { await dispatch(enableService(id)); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state); } catch (e) { }
+            try { await dispatch(enableService(id)); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter); } catch (e) { }
         });
     };
     const handleSingleDisable = async (id) => {
         const entity = services.find(s => s._id === id);
         showConfirm('Disable Service', `Are you sure you want to disable "${entity?.name}"?`, 'Disable', 'warning', async () => {
-            try { await dispatch(disableService(id)); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state); } catch (e) { }
+            try { await dispatch(disableService(id)); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter); } catch (e) { }
         });
     };
     const handleDeleteSingle = async (id) => {
         const entity = services.find(s => s._id === id);
         showConfirm('Delete Service', `Delete "${entity?.name}"? This cannot be undone.`, 'Delete', 'danger', async () => {
-            try { await dispatch(deleteServiceAction(id)); setSelectedServices(prev => prev.filter(x => x !== id)); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state); } catch (e) { }
+            try { await dispatch(deleteServiceAction(id)); setSelectedServices(prev => prev.filter(x => x !== id)); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter); } catch (e) { }
         });
     };
 
     const handleBulkEnable = async () => {
         if (selectedServices.length === 0) return alert('Select services first.');
         showConfirm('Enable Services', `Enable ${selectedServices.length} selected service(s)?`, 'Enable', 'success', async () => {
-            try { await dispatch(bulkEnableServices(selectedServices)); setSelectedServices([]); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state); } catch (e) { }
+            try { await dispatch(bulkEnableServices(selectedServices)); setSelectedServices([]); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter); } catch (e) { }
         });
     };
     const handleBulkDisable = async () => {
         if (selectedServices.length === 0) return alert('Select services first.');
         showConfirm('Disable Services', `Disable ${selectedServices.length} selected service(s)?`, 'Disable', 'warning', async () => {
-            try { await dispatch(bulkDisableServices(selectedServices)); setSelectedServices([]); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state); } catch (e) { }
+            try { await dispatch(bulkDisableServices(selectedServices)); setSelectedServices([]); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter); } catch (e) { }
         });
     };
     const handleBulkDelete = async () => {
         if (selectedServices.length === 0) return alert('Select services first.');
         showConfirm('Delete Services', `Delete ${selectedServices.length} selected service(s)? This cannot be undone.`, 'Delete', 'danger', async () => {
-            try { await dispatch(bulkDeleteServices(selectedServices)); setSelectedServices([]); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state); } catch (e) { }
+            try { await dispatch(bulkDeleteServices(selectedServices)); setSelectedServices([]); fetchServices(pagination.currentPage, searchTerm, filters.categories, filters.city, filters.state, statusFilter); } catch (e) { }
         });
     };
 
@@ -160,6 +181,21 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
                     </div>
                 </div>
             </header>
+
+            <div className="flex space-x-1 bg-white p-1 rounded-lg border border-gray-200 mb-6 w-fit">
+                {['all', 'pending', 'enabled', 'disabled'].map((s) => (
+                    <button
+                        key={s}
+                        onClick={() => setStatusFilter(s)}
+                        className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${statusFilter === s
+                            ? 'bg-blue-500 text-white shadow-sm'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                    >
+                        {s.charAt(0).toUpperCase() + s.slice(1)}
+                    </button>
+                ))}
+            </div>
 
             <div className="mb-6 space-y-4">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -231,7 +267,13 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
                                             {/* <p className="text-sm text-gray-500">Service ID: <span className="font-medium text-gray-600">{service._id}</span></p> */}
                                         </div>
                                     </div>
-                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${service.isEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{service.isEnabled ? 'Enabled' : 'Disabled'}</span>
+                                    <div className="flex items-center space-x-2">
+                                        {service.pendingApproval ? (
+                                            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800">Pending Approval</span>
+                                        ) : (
+                                            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${service.isEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{service.isEnabled ? 'Enabled' : 'Disabled'}</span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-5">
                                     <DetailItem icon={<FaMapMarkerAlt size={14} />} label="Location">{service.city}, {service.state}</DetailItem>
@@ -246,10 +288,25 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
                                     sm:flex sm:justify-end sm:items-center
                                 "
                                 >
-                                    {service.isEnabled ? (
+                                    {service.pendingApproval ? (
+                                        <>
+                                            <button
+                                                onClick={() => handleApprove(service._id)}
+                                                className="flex items-center justify-center w-full sm:w-fit text-sm font-semibold py-2 px-4 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors"
+                                            >
+                                                Approve
+                                            </button>
+                                            <button
+                                                onClick={() => handleReject(service._id)}
+                                                className="flex items-center justify-center w-full sm:w-fit text-sm font-semibold py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"
+                                            >
+                                                Reject
+                                            </button>
+                                        </>
+                                    ) : service.isEnabled ? (
                                         <button
-                                        onClick={() => handleSingleDisable(service._id)}
-                                        className="
+                                            onClick={() => handleSingleDisable(service._id)}
+                                            className="
                                             flex items-center justify-center
                                             w-full sm:w-fit
                                             text-sm font-semibold py-2 px-4
@@ -257,12 +314,12 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
                                             text-white transition-colors
                                         "
                                         >
-                                        Disable
+                                            Disable
                                         </button>
                                     ) : (
                                         <button
-                                        onClick={() => handleSingleEnable(service._id)}
-                                        className="
+                                            onClick={() => handleSingleEnable(service._id)}
+                                            className="
                                             flex items-center justify-center
                                             w-full sm:w-fit
                                             text-sm font-semibold py-2 px-4
@@ -270,7 +327,7 @@ const AdminServices = ({ onNavigateToViewService, onNavigateToEditService, onNav
                                             text-white transition-colors
                                         "
                                         >
-                                        Enable
+                                            Enable
                                         </button>
                                     )}
 
