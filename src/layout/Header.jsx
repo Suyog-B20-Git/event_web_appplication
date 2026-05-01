@@ -28,8 +28,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { getCategories } from "../redux/actions/master/Categories/getCategories";
 
-const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-// const baseUrl = import.meta.env.VITE_API_URL || "https://dev.eventsnode.com/api";
+// const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const baseUrl = import.meta.env.VITE_API_URL || "https://dev.eventsnode.com/api";
 
 const Header = () => {
   const navigate = useNavigate();

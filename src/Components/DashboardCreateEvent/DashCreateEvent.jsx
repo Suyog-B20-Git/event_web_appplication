@@ -91,8 +91,8 @@ const ConfirmationDialog = ({ isOpen, onClose, onConfirm, title, message, confir
   );
 };
 
-// const baseUrl = "https://dev.eventsnode.com/api";
-const baseUrl = "http://localhost:5000/api";
+const baseUrl = "https://dev.eventsnode.com/api";
+// const baseUrl = "http://localhost:5000/api";
 
 const tabs = [
   { id: 0, label: "Details" },

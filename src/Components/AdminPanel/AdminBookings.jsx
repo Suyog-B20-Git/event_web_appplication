@@ -133,7 +133,7 @@ const AdminBookings = () => {
         try {
             const status = 'active';
             const response = await axios.get(
-                `http://localhost:5000/api/bookings/all-admin?page=${page}&limit=${rowsPerPage}&search=${searchTerm}&status=${status}&eventId=${selectedEventId}`,
+                `https://dev.eventsnode.com/api/bookings/all-admin?page=${page}&limit=${rowsPerPage}&search=${searchTerm}&status=${status}&eventId=${selectedEventId}`,
                 {
                     headers: {
                         Authorization: authToken,
@@ -161,7 +161,7 @@ const AdminBookings = () => {
         setLoadingDetails(true);
         setViewingOrder(null);
         try {
-            const response = await axios.get(`http://localhost:5000/api/bookings/orders/${orderId}`, {
+            const response = await axios.get(`https://dev.eventsnode.com/api/bookings/orders/${orderId}`, {
                 headers: { Authorization: authToken }
             });
             if (response.data.status) {
@@ -176,7 +176,7 @@ const AdminBookings = () => {
 
     const fetchEvents = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/event?limit=1000', {
+            const response = await axios.get('https://dev.eventsnode.com/api/event?limit=1000', {
                 headers: { Authorization: authToken }
             });
             if (response.data.events) {

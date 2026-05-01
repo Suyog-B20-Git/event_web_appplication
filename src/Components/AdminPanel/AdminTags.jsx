@@ -48,7 +48,7 @@ const AdminTags = () => {
     });
 
     const token = localStorage.getItem("authToken");
-    const baseUrl = "http://localhost:5000/api/tag";
+    const baseUrl = "https://dev.eventsnode.com/api/tag";
 
     // Custom showToast helper removed, using direct calls or simple wrapper if needed
     // But to keep code minimal change, let's just use toast directly in calls.

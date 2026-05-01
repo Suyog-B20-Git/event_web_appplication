@@ -3,8 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-// const baseUrl = "https://dev.eventsnode.com/api/event";
-const baseUrl = "http://localhost:5000/api/event";
+const baseUrl = "https://dev.eventsnode.com/api/event";
+// const baseUrl = "http://localhost:5000/api/event";
 
 const AdminEvents = () => {
   const [events, setEvents] = useState([]);

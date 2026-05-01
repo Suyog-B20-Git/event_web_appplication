@@ -1,8 +1,8 @@
 import axios from "axios";
 
 // Use the same base URL as the rest of the codebase
-// const API_URL = "https://dev.eventsnode.com/api";
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://dev.eventsnode.com/api";
+// const API_URL = "http://localhost:5000/api";
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
